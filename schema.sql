@@ -1,8 +1,5 @@
 -- ─── DATABASE INITIALIZATION SCHEMA FOR RIT FRESHERS HUB ───
--- Stack: PostgreSQL 16 + pgvector
-
--- Enable the pgvector extension for AI semantic search capabilities
-CREATE EXTENSION IF NOT EXISTS vector;
+-- Stack: PostgreSQL (Standard compatible)
 
 -- 1. Notes & PYQs Module Table
 CREATE TABLE IF NOT EXISTS notes_pyqs (
@@ -24,7 +21,7 @@ CREATE TABLE IF NOT EXISTS ai_chat_messages (
     conversation_id VARCHAR(100) NOT NULL,
     sender_role VARCHAR(20) NOT NULL CHECK (sender_role IN ('user', 'assistant')),
     content TEXT NOT NULL,
-    embedding vector(1536), -- Vector representation of message for semantic search (e.g. OpenAI/Gemini embeddings)
+    embedding TEXT, -- Text representation of vector embeddings for standard local environments
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
