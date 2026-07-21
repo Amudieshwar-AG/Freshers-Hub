@@ -36,19 +36,17 @@ Welcome to the team! This guide explains how to get set up, which Git branch you
 
 ---
 
-## 📋 Step 2: Module to Branch & Database Table Mapping
+## 📋 Step 2: Workload & Branch Assignments (5-Member Team)
 
-| Assignee Name | Portal Module | Git Branch Name | Database Table(s) to Use |
+Since we have a 5-member team (You + 4 friends) to manage the 9 modules, the workload is grouped logically below. Write your names next to your assigned roles:
+
+| Team Member | Assigned Modules | Git Branch Name(s) | Database Table(s) to Use |
 | :--- | :--- | :--- | :--- |
-| **Friend 1** | 📚 Notes & PYQs | `feature/notes-pyqs` | `notes_pyqs` |
-| **Friend 2** | 🤖 AI Fresher Assistant | `feature/ai-assistant` | `ai_chat_messages` |
-| **Friend 3** | 🗺️ Campus Map | `feature/campus-map` | `campus_locations` |
-| **Friend 4** | 🚌 Bus Routes | `feature/bus-routes` | `bus_routes`, `bus_stops` |
-| **Friend 5** | 👩‍🏫 Faculty Directory | `feature/faculty-directory` | `faculty` |
-| **Friend 6** | 💬 Freshers Q&A | `feature/freshers-qa` | `community_questions`, `community_answers` |
-| **Friend 7** | 🎉 Clubs & Events | `feature/clubs-events` | `clubs`, `events` |
-| **Friend 8** | 🧰 Student Toolkit | `feature/student-toolkit` | `toolkit_items` |
-| **Friend 9** | 🤫 Anonymous Confession | `feature/anonymous-confessions` | `confessions` |
+| **You (Lead)** | 🤖 **AI Assistant** & Core APIs | `feature/ai-assistant` | `ai_chat_messages` |
+| **Friend 1** | 📚 **Notes & PYQs** & 🧰 **Toolkit** | `feature/notes-pyqs`, `feature/student-toolkit` | `notes_pyqs`, `toolkit_items` |
+| **Friend 2** | 💬 **Q&A Forum** & 🤫 **Confessions** | `feature/freshers-qa`, `feature/anonymous-confessions` | `community_questions`, `community_answers`, `confessions` |
+| **Friend 3** | 🗺️ **Campus Map** & 🚌 **Bus Routes** | `feature/campus-map`, `feature/bus-routes` | `campus_locations`, `bus_routes`, `bus_stops` |
+| **Friend 4** | 👩‍🏫 **Faculty Directory** & 🎉 **Events** | `feature/faculty-directory`, `feature/clubs-events` | `faculty`, `clubs`, `events` |
 
 ---
 
