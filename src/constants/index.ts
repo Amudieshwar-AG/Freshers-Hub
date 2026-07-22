@@ -12,11 +12,11 @@ export const NAV_LINKS = [
 
 // ─── Stats ────────────────────────────────────────────────────────────────────
 export const STATS: Stat[] = [
-  { value: 150, suffix: '+', label: 'PYQs', icon: 'FileText' },
-  { value: 40, suffix: '+', label: 'Faculty', icon: 'Users' },
-  { value: 25, suffix: '+', label: 'Clubs', icon: 'Star' },
+  { value: 20, suffix: '+', label: 'Sports', icon: 'Trophy' },
+  { value: 100, suffix: '+', label: 'Faculty', icon: 'Users' },
+  { value: 18, suffix: '', label: 'Clubs', icon: 'Star' },
   { value: 24, suffix: '/7', label: 'AI Assistant', icon: 'Bot' },
-  { value: 1000, suffix: '+', label: 'Students', icon: 'GraduationCap' },
+  { value: 5000, suffix: '+', label: 'Students', icon: 'GraduationCap' },
 ];
 
 // ─── Features ────────────────────────────────────────────────────────────────

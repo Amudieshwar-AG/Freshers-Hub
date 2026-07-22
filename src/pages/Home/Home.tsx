@@ -39,154 +39,35 @@ export default function Home() {
                 transition={{ duration: 0.7 }}
                 className="relative w-full max-w-lg"
               >
-                {/* Main campus image/graphic card */}
+                {/* Main campus image/graphic card with soft blurry drop shadow */}
                 <div
-                  className="rounded-[24px] overflow-hidden bg-white border border-[#E5E7EB] relative aspect-[4/3] w-full"
-                  style={{ boxShadow: '0 24px 60px -12px rgba(0,0,0,0.15)' }}
+                  className="rounded-[24px] overflow-hidden bg-white border border-[#E5E7EB]/50 relative aspect-[4/3] w-full"
+                  style={{ boxShadow: '0 30px 70px -15px rgba(0, 0, 0, 0.12), 0 15px 35px -20px rgba(0, 0, 0, 0.08)' }}
                 >
-                  {/* Inline Premium Vector SVG Illustration of RIT Campus Building & Canopy */}
-                  <svg viewBox="0 0 800 600" className="w-full h-full select-none" preserveAspectRatio="xMidYMid slice">
-                    <defs>
-                      <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#1E3A8A" />
-                        <stop offset="40%" stopColor="#3B82F6" />
-                        <stop offset="100%" stopColor="#93C5FD" />
-                      </linearGradient>
-                      <linearGradient id="grassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#059669" />
-                        <stop offset="100%" stopColor="#065F46" />
-                      </linearGradient>
-                      <linearGradient id="pathGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#F1F5F9" />
-                        <stop offset="100%" stopColor="#CBD5E1" />
-                      </linearGradient>
-                      <linearGradient id="buildGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#E2E8F0" />
-                        <stop offset="100%" stopColor="#F8FAFC" />
-                      </linearGradient>
-                      <linearGradient id="canopyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#F97316" />
-                        <stop offset="100%" stopColor="#EA580C" />
-                      </linearGradient>
-                      <filter id="glow">
-                        <feGaussianBlur stdDeviation="15" result="coloredBlur"/>
-                        <feMerge>
-                          <feMergeNode in="coloredBlur"/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
-                    </defs>
-
-                    {/* Sky */}
-                    <rect width="800" height="600" fill="url(#skyGrad)" />
-
-                    {/* Glowing Sun */}
-                    <circle cx="700" cy="100" r="50" fill="#FEF08A" opacity="0.8" filter="url(#glow)" />
-
-                    {/* Distant Hills / Tree Line */}
-                    <path d="M0 450 Q150 420 300 440 T600 430 T800 450 L800 600 L0 600 Z" fill="#047857" opacity="0.7" />
-                    <path d="M0 460 Q200 440 400 455 T800 460 L800 600 L0 600 Z" fill="url(#grassGrad)" />
-
-                    {/* Academic Building Facade (Modern RIT Blocks) */}
-                    <rect x="50" y="200" width="300" height="260" fill="url(#buildGrad)" rx="8" />
-                    {/* Windows Grid */}
-                    <g fill="#475569" opacity="0.3">
-                      {/* Row 1 */}
-                      <rect x="75" y="230" width="35" height="40" rx="3" />
-                      <rect x="135" y="230" width="35" height="40" rx="3" />
-                      <rect x="195" y="230" width="35" height="40" rx="3" />
-                      <rect x="255" y="230" width="35" height="40" rx="3" />
-                      {/* Row 2 */}
-                      <rect x="75" y="300" width="35" height="40" rx="3" />
-                      <rect x="135" y="300" width="35" height="40" rx="3" />
-                      <rect x="195" y="300" width="35" height="40" rx="3" />
-                      <rect x="255" y="300" width="35" height="40" rx="3" />
-                      {/* Row 3 */}
-                      <rect x="75" y="370" width="35" height="40" rx="3" />
-                      <rect x="135" y="370" width="35" height="40" rx="3" />
-                      <rect x="195" y="370" width="35" height="40" rx="3" />
-                      <rect x="255" y="370" width="35" height="40" rx="3" />
-                    </g>
-
-                    {/* Main Entrance Pillars & Arch (RIT Architecture) */}
-                    <rect x="380" y="150" width="380" height="310" fill="#F1F5F9" rx="16" opacity="0.95" />
-                    <rect x="400" y="170" width="340" height="290" fill="#E2E8F0" rx="12" />
-
-                    {/* Premium Canopy Truss Structure (RIT Event Canopy Representation) */}
-                    <polygon points="360,150 780,120 780,180 360,210" fill="url(#canopyGrad)" opacity="0.9" />
-                    <g stroke="white" strokeWidth="3" opacity="0.8">
-                      <line x1="380" y1="155" x2="380" y2="200" />
-                      <line x1="450" y1="150" x2="450" y2="195" />
-                      <line x1="520" y1="145" x2="520" y2="190" />
-                      <line x1="590" y1="140" x2="590" y2="185" />
-                      <line x1="660" y1="135" x2="660" y2="180" />
-                      <line x1="730" y1="130" x2="730" y2="175" />
-                      
-                      {/* Cross trusses */}
-                      <line x1="380" y1="155" x2="450" y2="195" />
-                      <line x1="450" y1="150" x2="520" y2="190" />
-                      <line x1="520" y1="145" x2="590" y2="185" />
-                      <line x1="590" y1="140" x2="660" y2="180" />
-                      <line x1="660" y1="135" x2="730" y2="175" />
-                    </g>
-
-                    {/* Columns supporting Canopy */}
-                    <rect x="400" y="195" width="25" height="265" fill="#64748B" rx="4" />
-                    <rect x="520" y="190" width="25" height="270" fill="#64748B" rx="4" />
-                    <rect x="640" y="180" width="25" height="280" fill="#64748B" rx="4" />
-                    <rect x="730" y="175" width="25" height="285" fill="#64748B" rx="4" />
-
-                    {/* Campus Pathway leading to building */}
-                    <polygon points="350,460 550,460 700,600 100,600" fill="url(#pathGrad)" />
-                    <line x1="400" y1="460" x2="250" y2="600" stroke="#CBD5E1" strokeWidth="4" />
-                    <line x1="500" y1="460" x2="550" y2="600" stroke="#CBD5E1" strokeWidth="4" />
-
-                    {/* Trees & Foliage in Foreground */}
-                    <g fill="#059669">
-                      <circle cx="80" cy="480" r="45" />
-                      <circle cx="120" cy="510" r="35" />
-                      <circle cx="720" cy="500" r="50" />
-                      <circle cx="760" cy="480" r="40" />
-                    </g>
-                    <g fill="#10B981">
-                      <circle cx="75" cy="465" r="35" />
-                      <circle cx="715" cy="485" r="40" />
-                    </g>
-                  </svg>
-                  {/* Subtle dark gradient overlay to ensure text contrast */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 pointer-events-none" />
+                  <img 
+                    src="/images.jpg" 
+                    alt="Rajalakshmi Institute of Technology Campus" 
+                    className="w-full h-full object-cover select-none"
+                  />
                   
-                  {/* Text on top of the image (RIT Events Hub Style) */}
-                  <div className="absolute bottom-6 left-6 z-10 text-left pointer-events-none">
-                    <h2 className="text-white font-extrabold text-2xl tracking-wide leading-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
-                      Rajalakshmi Institute
-                    </h2>
-                    <p className="text-orange-400 font-bold text-sm mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      of Technology, Chennai
-                    </p>
-                    <div className="inline-flex items-center gap-1.5 mt-3.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Est. 2008 • NBA & NAAC A+</span>
+                  {/* Subtle dark gradient overlay to ensure text contrast */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 pointer-events-none" />
+                    
+                    {/* Text on top of the image (RIT Events Hub Style) */}
+                    <div className="absolute bottom-6 left-6 z-10 text-left pointer-events-none">
+                      <h2 className="text-white font-extrabold text-2xl tracking-wide leading-tight" style={{ fontFamily: 'Playfair Display, serif', color: '#FFFFFF' }}>
+                        Rajalakshmi Institute
+                      </h2>
+                      <p className="text-orange-400 font-bold text-sm mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        of Technology, Chennai
+                      </p>
+                      <div className="inline-flex items-center gap-1.5 mt-3.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Est. 2008 • NBA & NAAC A+</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Overlapping Dark Card (Innovation Card - Exact Match with Reference Image) */}
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  className="absolute -bottom-6 -right-4 md:-right-8 bg-[#1E293B] text-white p-6 rounded-2xl border border-white/10 max-w-[240px] z-20"
-                  style={{ boxShadow: '0 12px 40px rgba(0,0,0,0.25)' }}
-                >
-                  <span className="text-[#F97316] text-[11px] font-bold tracking-wider uppercase mb-1.5 block" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    INNOVATION
-                  </span>
-                  <p className="text-[12px] text-slate-300 leading-relaxed font-semibold" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    Where engineering meets guidance. Fueling the academic journey of our freshers.
-                  </p>
                 </motion.div>
-              </motion.div>
             </div>
 
             {/* Right – Text Content */}
@@ -231,7 +112,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="flex flex-wrap gap-4 mb-8"
               >
-                <Link to="/notes">
+                <a href="#built-for-freshers">
                   <motion.button
                     whileHover={{ scale: 1.03, boxShadow: '0 8px 25px rgba(249,115,22,0.3)' }}
                     whileTap={{ scale: 0.97 }}
@@ -245,7 +126,7 @@ export default function Home() {
                     Explore Hub
                     <ArrowRight className="w-3.5 h-3.5" />
                   </motion.button>
-                </Link>
+                </a>
 
                 <Link to="/ai-assistant">
                   <motion.button
@@ -297,7 +178,7 @@ export default function Home() {
       </section>
 
       {/* ─── Features Section ─────────────────────────────────────────────────── */}
-      <section className="section-padding" style={{ backgroundColor: '#FAFAFA' }}>
+      <section id="built-for-freshers" className="section-padding" style={{ backgroundColor: '#FAFAFA' }}>
         <div className="container-custom">
           <SectionTitle
             tag="Everything You Need"
