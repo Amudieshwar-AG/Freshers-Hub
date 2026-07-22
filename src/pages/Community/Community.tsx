@@ -1,18 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageCircle, Heart, TrendingUp, ThumbsUp, Send,
-  Shield, Lock, Smile, ChevronRight, Search, Plus
+  Shield, Lock, Smile, ChevronRight, Search, Plus, User
 } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
 import { QUESTIONS_DATA, CONFESSIONS_DATA } from '@/constants';
-import { formatDate } from '@/lib/utils';
 
 type Tab = 'qa' | 'confession';
 
 const TRENDING_TAGS = ['hostel', 'academics', 'clubs', 'campus', 'canteen', 'sports', 'placement', 'library'];
+
+const AVATARS: Record<string, string> = {
+  'Priya S.': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=80',
+  'Ravi K.': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&h=120&q=80',
+  'Arun M.': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&h=120&q=80',
+};
+
+const getAvatar = (author: string) => {
+  return AVATARS[author] || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(author)}`;
+};
+
+const getRelativeTime = (dateString: string) => {
+  const now = new Date('2026-07-22T11:56:24+05:30').getTime(); // Current local time from metadata
+  const past = new Date(dateString).getTime();
+  const msPerMinute = 60 * 1000;
+  const msPerHour = msPerMinute * 60;
+  const msPerDay = msPerHour * 24;
+  const elapsed = now - past;
+
+  if (elapsed < msPerMinute) {
+    return 'just now';
+  } else if (elapsed < msPerHour) {
+    return Math.round(elapsed / msPerMinute) + 'm ago';
+  } else if (elapsed < msPerDay) {
+    return Math.round(elapsed / msPerHour) + 'h ago';
+  } else {
+    const days = Math.round(elapsed / msPerDay);
+    return days === 1 ? 'yesterday' : `${days}d ago`;
+  }
+};
 
 export default function Community() {
   const [activeTab, setActiveTab] = useState<Tab>('qa');
@@ -21,10 +50,30 @@ export default function Community() {
   const [confessionPosted, setConfessionPosted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [questions, setQuestions] = useState<any[]>(QUESTIONS_DATA);
 
-  const filteredQuestions = QUESTIONS_DATA.filter((q) =>
+  const fetchQuestions = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/questions');
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.length > 0) {
+          // Sort newest first
+          setQuestions(data.reverse());
+        }
+      }
+    } catch (error) {
+      console.log('Backend not available. Falling back to local static questions data.', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchQuestions();
+  }, []);
+
+  const filteredQuestions = questions.filter((q) =>
     q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    q.tags.some((t) => t.includes(searchQuery.toLowerCase()))
+    (q.tags && q.tags.some((t: string) => t.toLowerCase().includes(searchQuery.toLowerCase())))
   );
 
   const handleConfess = () => {
@@ -34,34 +83,81 @@ export default function Community() {
     setTimeout(() => setConfessionPosted(false), 3000);
   };
 
-  const toggleLike = (id: string) => {
+  const toggleLike = async (id: string) => {
     setLikedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
+
+    try {
+      await fetch(`http://localhost:8080/api/questions/${id}/upvote`, {
+        method: 'POST'
+      });
+      fetchQuestions();
+    } catch (error) {
+      console.log('Backend not available for upvote sync.', error);
+    }
+  };
+
+  const handlePostQuestion = async () => {
+    if (!questionText.trim()) return;
+    
+    const newQuestion = {
+      title: questionText.split('\n')[0].substring(0, 100) || "Q&A Question",
+      body: questionText,
+      author: 'Priya S.',
+      tags: ['fresher', 'general'],
+      upvotes: 0,
+      isAnswered: false,
+      createdAt: new Date().toISOString(),
+      answers: []
+    };
+
+    try {
+      const response = await fetch('http://localhost:8080/api/questions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: newQuestion.title,
+          body: newQuestion.body,
+          author: newQuestion.author,
+          tags: newQuestion.tags
+        })
+      });
+
+      if (response.ok) {
+        const saved = await response.json();
+        setQuestions(prev => [saved, ...prev]);
+        setQuestionText('');
+      } else {
+        setQuestions(prev => [{ ...newQuestion, id: String(Date.now()) }, ...prev]);
+        setQuestionText('');
+      }
+    } catch (error) {
+      console.error("Error saving question:", error);
+      setQuestions(prev => [{ ...newQuestion, id: String(Date.now()) }, ...prev]);
+      setQuestionText('');
+    }
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAFAFA' }}>
+    <div className="min-h-screen" style={{ backgroundColor: '#FAFBFD' }}>
       {/* Header */}
-      <div className="bg-white border-b border-[#E5E7EB] py-10">
+      <div className="bg-white border-b border-slate-100 py-12">
         <div className="container-custom">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
-            RIT{' '}
-            <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              Community
-            </span>
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            RIT Community
           </h1>
-          <p className="text-[#475569]" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <p className="text-slate-500 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
             Ask questions, share confessions, and connect with fellow RIT students.
           </p>
         </div>
       </div>
 
-      <div className="container-custom py-8">
+      <div className="container-custom py-10">
         {/* Tabs */}
-        <div className="flex gap-2 bg-white rounded-2xl p-2 border border-[#E5E7EB] mb-8 w-fit" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
+        <div className="flex gap-1.5 bg-slate-100 rounded-xl p-1.5 border border-slate-200/40 mb-8 w-fit">
           {[
             { id: 'qa' as Tab, label: 'Freshers Q&A', icon: MessageCircle },
             { id: 'confession' as Tab, label: 'Confessions', icon: Heart },
@@ -69,19 +165,18 @@ export default function Community() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="relative flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all"
-              style={{ fontFamily: 'Poppins, sans-serif', color: activeTab === tab.id ? 'white' : '#475569' }}
+              className="relative flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-all cursor-pointer"
+              style={{ fontFamily: 'Poppins, sans-serif', color: activeTab === tab.id ? '#ffffff' : '#64748B' }}
             >
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="community-tab"
-                  className="absolute inset-0 rounded-xl"
-                  style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)' }}
-                  transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                  className="absolute inset-0 rounded-lg bg-slate-950"
+                  transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }}
                 />
               )}
               <span className="relative z-10 flex items-center gap-2">
-                <tab.icon className="w-4 h-4" />
+                <tab.icon className="w-3.5 h-3.5" />
                 {tab.label}
               </span>
             </button>
@@ -93,33 +188,34 @@ export default function Community() {
           {activeTab === 'qa' && (
             <motion.div
               key="qa"
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.3 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.25 }}
             >
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
                   {/* Ask Question Box */}
-                  <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5 mb-6" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
-                    <h3 className="text-sm font-semibold text-[#1E293B] mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>Ask a Question</h3>
+                  <div className="bg-white rounded-xl border border-slate-200/80 p-5 mb-8 shadow-xs">
+                    <h3 className="text-sm font-semibold text-slate-900 mb-3 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>Ask a Question</h3>
                     <textarea
                       value={questionText}
                       onChange={(e) => setQuestionText(e.target.value)}
                       placeholder="What's on your mind? Ask your seniors anything about RIT..."
                       rows={3}
-                      className="w-full border border-[#E5E7EB] rounded-xl p-3 text-sm text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:border-[#F97316] resize-none transition-colors mb-3"
+                      className="w-full border border-slate-200 rounded-xl p-3 text-[13px] text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400 focus:bg-white bg-slate-50/30 resize-none transition-all mb-4"
                       style={{ fontFamily: 'Inter, sans-serif' }}
                     />
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-[#94A3B8]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      <span className="text-[11px] text-slate-400" style={{ fontFamily: 'Inter, sans-serif' }}>
                         Your question will be visible to all students
                       </span>
                       <motion.button
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-white text-sm font-semibold"
-                        style={{ fontFamily: 'Poppins, sans-serif', background: 'linear-gradient(135deg, #F97316, #FB923C)' }}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
+                        onClick={handlePostQuestion}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-[13px] font-semibold bg-[#F97316] hover:bg-[#EA580C] transition-colors cursor-pointer"
+                        style={{ fontFamily: 'Poppins, sans-serif' }}
                       >
                         <Plus className="w-4 h-4" />
                         Post Question
@@ -128,91 +224,121 @@ export default function Community() {
                   </div>
 
                   {/* Search */}
-                  <div className="relative mb-5">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
+                  <div className="relative mb-6">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type="text"
                       placeholder="Search questions..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#E5E7EB] bg-white text-sm text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:border-[#F97316] transition-colors"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-[13px] text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400 transition-colors"
                       style={{ fontFamily: 'Inter, sans-serif' }}
                     />
                   </div>
 
                   {/* Questions */}
                   <StaggerContainer className="flex flex-col gap-4">
-                    {filteredQuestions.map((q) => (
-                      <StaggerItem key={q.id}>
-                        <motion.div
-                          whileHover={{ y: -2 }}
-                          className="bg-white rounded-2xl border border-[#E5E7EB] p-5"
-                          style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
-                        >
-                          <div className="flex items-start gap-4">
-                            {/* Votes */}
-                            <div className="flex flex-col items-center gap-1 shrink-0">
-                              <button
-                                onClick={() => toggleLike(q.id)}
-                                className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
-                                style={{ backgroundColor: likedIds.has(q.id) ? '#FFF7ED' : '#F8FAFC' }}
-                              >
-                                <ThumbsUp className="w-4 h-4" style={{ color: likedIds.has(q.id) ? '#F97316' : '#94A3B8' }} />
-                              </button>
-                              <span className="text-xs font-semibold text-[#475569]">{q.votes + (likedIds.has(q.id) ? 1 : 0)}</span>
-                            </div>
+                    {filteredQuestions.map((q, idx) => {
+                      const isFeatured = idx === 0 && searchQuery === '';
+                      return (
+                        <StaggerItem key={q.id}>
+                          <motion.div
+                            whileHover={{ y: -1 }}
+                            className={`bg-white rounded-xl border p-5 transition-all shadow-xs ${
+                              isFeatured
+                                ? 'border-l-4 border-l-slate-900 border-slate-200'
+                                : 'border-slate-200/80'
+                            }`}
+                          >
+                            <div className="flex items-start gap-4">
+                              {/* Avatar */}
+                              <img
+                                src={getAvatar(q.author)}
+                                alt={q.author}
+                                className="w-9 h-9 rounded-lg object-cover bg-slate-100 border border-slate-100 shrink-0"
+                              />
 
-                            <div className="flex-1">
-                              <h3 className="text-sm font-semibold text-[#1E293B] mb-1.5 hover:text-[#F97316] cursor-pointer transition-colors"
-                                style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                {q.title}
-                              </h3>
-                              <p className="text-xs text-[#94A3B8] mb-3 line-clamp-2" style={{ fontFamily: 'Inter, sans-serif' }}>{q.body}</p>
-                              <div className="flex items-center justify-between flex-wrap gap-2">
-                                <div className="flex flex-wrap gap-1.5">
-                                  {q.tags.map((tag) => (
-                                    <span
-                                      key={tag}
-                                      className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#F8FAFC] text-[#94A3B8] border border-[#E5E7EB]"
-                                      style={{ fontFamily: 'Inter, sans-serif' }}
-                                    >
-                                      #{tag}
-                                    </span>
-                                  ))}
-                                </div>
-                                <div className="flex items-center gap-3 text-xs text-[#94A3B8]">
-                                  <span className="flex items-center gap-1">
-                                    <MessageCircle className="w-3.5 h-3.5" />
-                                    {q.answers} answers
-                                  </span>
-                                  {q.isAnswered && (
-                                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-semibold">✓ Answered</span>
+                              <div className="flex-1 min-w-0">
+                                {/* Header / Meta */}
+                                <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                                  <span className="text-xs font-semibold text-slate-800">{q.author}</span>
+                                  <span className="text-[10px] text-slate-300">•</span>
+                                  <span className="text-[11px] text-slate-400">{getRelativeTime(q.createdAt)}</span>
+                                  {isFeatured && (
+                                    <span className="ml-auto px-2 py-0.5 rounded text-[10px] font-bold bg-slate-900 text-white tracking-wider uppercase">★ Popular</span>
                                   )}
+                                </div>
+
+                                <h3 className={`font-bold text-slate-950 mb-1 hover:text-slate-700 cursor-pointer transition-colors tracking-tight ${
+                                  isFeatured ? 'text-base md:text-lg' : 'text-sm md:text-base'
+                                }`}
+                                  style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                  {q.title}
+                                </h3>
+                                <p className="text-[13px] text-slate-600 mb-4 leading-relaxed line-clamp-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                                  {q.body}
+                                </p>
+
+                                <div className="flex items-center justify-between flex-wrap gap-3 pt-1 border-t border-slate-100">
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {q.tags.map((tag) => (
+                                      <span
+                                        key={tag}
+                                        className="px-2.5 py-0.5 rounded-lg text-[10px] font-medium bg-slate-100 text-slate-600"
+                                        style={{ fontFamily: 'Inter, sans-serif' }}
+                                      >
+                                        #{tag}
+                                      </span>
+                                    ))}
+                                  </div>
+
+                                  <div className="flex items-center gap-4 text-[11px] text-slate-400">
+                                    <span className="flex items-center gap-1.5">
+                                      <MessageCircle className="w-3.5 h-3.5 text-slate-400" />
+                                      {q.answers} answers
+                                    </span>
+                                    {q.isAnswered && (
+                                      <span className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 font-semibold text-[10px]">✓ Answered</span>
+                                    )}
+
+                                    {/* Like/Vote Button inside bottom bar */}
+                                    <button
+                                      onClick={() => toggleLike(q.id)}
+                                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
+                                        likedIds.has(q.id)
+                                          ? 'bg-slate-900 text-white font-semibold'
+                                          : 'bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800'
+                                      }`}
+                                    >
+                                      <ThumbsUp className="w-3 h-3" />
+                                      <span>{q.votes + (likedIds.has(q.id) ? 1 : 0)}</span>
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      </StaggerItem>
-                    ))}
+                          </motion.div>
+                        </StaggerItem>
+                      );
+                    })}
                   </StaggerContainer>
                 </div>
 
                 {/* Sidebar */}
-                <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-6">
                   {/* Trending */}
                   <AnimatedContainer direction="right" delay={0.1}>
-                    <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
+                    <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs">
                       <div className="flex items-center gap-2 mb-4">
-                        <TrendingUp className="w-4.5 h-4.5 text-[#F97316]" />
-                        <h3 className="text-sm font-semibold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Trending Topics</h3>
+                        <TrendingUp className="w-4 h-4 text-slate-600" />
+                        <h3 className="text-sm font-semibold text-slate-850 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>Trending Topics</h3>
                       </div>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1.5">
                         {TRENDING_TAGS.map((tag) => (
                           <button
                             key={tag}
                             onClick={() => setSearchQuery(tag)}
-                            className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#FFF7ED] text-[#F97316] hover:bg-[#F97316] hover:text-white transition-all border border-[#FED7AA]"
+                            className="px-2.5 py-1.5 rounded-lg text-[11px] font-medium bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-all border-0 cursor-pointer"
                             style={{ fontFamily: 'Inter, sans-serif' }}
                           >
                             #{tag}
@@ -224,15 +350,15 @@ export default function Community() {
 
                   {/* Stats */}
                   <AnimatedContainer direction="right" delay={0.2}>
-                    <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
+                    <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs">
                       {[
                         { label: 'Total Questions', value: '124' },
                         { label: 'Answered', value: '98%' },
                         { label: 'Active Students', value: '340+' },
                       ].map((stat, i) => (
-                        <div key={i} className={`flex justify-between py-2.5 ${i < 2 ? 'border-b border-[#E5E7EB]' : ''}`}>
-                          <span className="text-xs text-[#94A3B8]" style={{ fontFamily: 'Inter, sans-serif' }}>{stat.label}</span>
-                          <span className="text-xs font-bold text-[#F97316]" style={{ fontFamily: 'Poppins, sans-serif' }}>{stat.value}</span>
+                        <div key={i} className={`flex justify-between py-2.5 ${i < 2 ? 'border-b border-slate-100' : ''}`}>
+                          <span className="text-xs text-slate-400" style={{ fontFamily: 'Inter, sans-serif' }}>{stat.label}</span>
+                          <span className="text-xs font-bold text-slate-900" style={{ fontFamily: 'Poppins, sans-serif' }}>{stat.value}</span>
                         </div>
                       ))}
                     </div>
@@ -246,25 +372,25 @@ export default function Community() {
           {activeTab === 'confession' && (
             <motion.div
               key="confession"
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.3 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.25 }}
             >
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
                   {/* Post confession */}
                   <div
-                    className="rounded-3xl p-6 mb-8 border"
-                    style={{ background: 'linear-gradient(135deg, #1E293B, #334155)', borderColor: 'rgba(255,255,255,0.1)' }}
+                    className="rounded-xl p-5 mb-6 border"
+                    style={{ background: '#0F172A', borderColor: 'rgba(255,255,255,0.05)' }}
                   >
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'rgba(249,115,22,0.2)' }}>
-                        <Lock className="w-5 h-5 text-[#F97316]" />
+                      <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-slate-800">
+                        <Lock className="w-4.5 h-4.5 text-slate-300" />
                       </div>
                       <div>
-                        <h3 className="text-white font-semibold text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>Share Anonymously</h3>
-                        <p className="text-slate-400 text-xs">Your identity is never revealed</p>
+                        <h3 className="text-white font-semibold text-sm tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>Share Anonymously</h3>
+                        <p className="text-slate-400 text-[11px]">Your identity is never revealed</p>
                       </div>
                     </div>
 
@@ -273,29 +399,26 @@ export default function Community() {
                       onChange={(e) => setConfessionText(e.target.value)}
                       placeholder="Share your thoughts, stories, crushes, or anything on your mind... It's completely anonymous 🤫"
                       rows={4}
-                      className="w-full rounded-xl p-4 text-sm placeholder-slate-500 focus:outline-none resize-none mb-4"
+                      className="w-full rounded-xl p-3 text-[13px] placeholder-slate-500 focus:outline-none resize-none mb-4 bg-white/5 border border-white/10 text-white"
                       style={{
                         fontFamily: 'Inter, sans-serif',
-                        backgroundColor: 'rgba(255,255,255,0.06)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        color: 'white',
                       }}
                     />
 
-                    <div className="flex items-center gap-3 p-3 rounded-xl mb-4" style={{ backgroundColor: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.2)' }}>
-                      <Shield className="w-4 h-4 text-[#F97316] shrink-0" />
-                      <span className="text-xs text-slate-400" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    <div className="flex items-center gap-2.5 p-3 rounded-lg mb-4 bg-white/5 border border-white/10">
+                      <Shield className="w-4 h-4 text-slate-300 shrink-0" />
+                      <span className="text-[11px] text-slate-400" style={{ fontFamily: 'Inter, sans-serif' }}>
                         No IP tracking. No username. 100% anonymous posting.
                       </span>
                     </div>
 
                     <div className="flex items-center gap-3">
                       <motion.button
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
+                        whileHover={{ scale: 1.01 }}
+                        whileTap={{ scale: 0.99 }}
                         onClick={handleConfess}
-                        className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-white text-sm font-semibold"
-                        style={{ fontFamily: 'Poppins, sans-serif', background: 'linear-gradient(135deg, #F97316, #FB923C)' }}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-white text-[13px] font-semibold bg-[#F97316] hover:bg-[#EA580C] transition-colors cursor-pointer"
+                        style={{ fontFamily: 'Poppins, sans-serif' }}
                       >
                         <Smile className="w-4 h-4" />
                         Post Anonymously
@@ -322,39 +445,40 @@ export default function Community() {
                     {CONFESSIONS_DATA.map((conf) => (
                       <StaggerItem key={conf.id}>
                         <motion.div
-                          whileHover={{ y: -2 }}
-                          className="bg-white rounded-2xl border border-[#E5E7EB] p-5"
-                          style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
+                          whileHover={{ y: -1 }}
+                          className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs"
                         >
                           <div className="flex items-start justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#FFF7ED]">
-                                <Shield className="w-4 h-4 text-[#F97316]" />
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-50 border border-slate-100">
+                                <Shield className="w-4 h-4 text-slate-500" />
                               </div>
                               <div>
-                                <span className="text-xs font-semibold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Anonymous</span>
-                                <p className="text-[10px] text-[#94A3B8]">{formatDate(conf.createdAt)}</p>
+                                <span className="text-xs font-semibold text-slate-800" style={{ fontFamily: 'Poppins, sans-serif' }}>Anonymous</span>
+                                <p className="text-[10px] text-slate-400">{getRelativeTime(conf.createdAt)}</p>
                               </div>
                             </div>
                             {conf.category && (
-                              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#FFF7ED] text-[#F97316] border border-[#FED7AA]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-50 text-slate-650 border border-slate-200/40" style={{ fontFamily: 'Poppins, sans-serif' }}>
                                 {conf.category}
                               </span>
                             )}
                           </div>
-                          <p className="text-sm text-[#475569] leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>{conf.content}</p>
+                          <p className="text-[13px] text-slate-700 leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>{conf.content}</p>
                           <div className="flex items-center justify-between">
                             <button
                               onClick={() => toggleLike(conf.id)}
-                              className="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all"
-                              style={{ backgroundColor: likedIds.has(conf.id) ? '#FFF7ED' : '#F8FAFC' }}
+                              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all cursor-pointer ${
+                                likedIds.has(conf.id)
+                                  ? 'bg-slate-900 text-white'
+                                  : 'bg-slate-50 hover:bg-slate-100 text-slate-500'
+                              }`}
                             >
                               <Heart
                                 className="w-3.5 h-3.5"
-                                style={{ color: likedIds.has(conf.id) ? '#F97316' : '#94A3B8' }}
-                                fill={likedIds.has(conf.id) ? '#F97316' : 'none'}
+                                fill={likedIds.has(conf.id) ? '#ffffff' : 'none'}
                               />
-                              <span className="text-xs text-[#94A3B8]">{conf.reactions + (likedIds.has(conf.id) ? 1 : 0)}</span>
+                              <span className="text-xs">{conf.reactions + (likedIds.has(conf.id) ? 1 : 0)}</span>
                             </button>
                           </div>
                         </motion.div>
@@ -365,9 +489,9 @@ export default function Community() {
 
                 {/* Sidebar */}
                 <AnimatedContainer direction="right" delay={0.15}>
-                  <div className="bg-white rounded-2xl border border-[#E5E7EB] p-5" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
-                    <h3 className="text-sm font-semibold text-[#1E293B] mb-4 flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      <Shield className="w-4 h-4 text-[#F97316]" />
+                  <div className="bg-white rounded-xl border border-slate-200/80 p-5 shadow-xs">
+                    <h3 className="text-sm font-semibold text-slate-850 mb-4 flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <Shield className="w-4 h-4 text-slate-500" />
                       Community Rules
                     </h3>
                     {[
@@ -377,9 +501,9 @@ export default function Community() {
                       'Keep it relevant to campus life',
                       'Confessions are 100% anonymous',
                     ].map((rule, i) => (
-                      <div key={i} className="flex items-start gap-2.5 py-2.5 border-b border-[#E5E7EB] last:border-0">
-                        <ChevronRight className="w-3.5 h-3.5 text-[#F97316] mt-0.5 shrink-0" />
-                        <span className="text-xs text-[#475569]" style={{ fontFamily: 'Inter, sans-serif' }}>{rule}</span>
+                      <div key={i} className="flex items-start gap-2.5 py-2.5 border-b border-slate-100 last:border-0">
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0" />
+                        <span className="text-xs text-slate-650" style={{ fontFamily: 'Inter, sans-serif' }}>{rule}</span>
                       </div>
                     ))}
                   </div>
