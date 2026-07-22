@@ -1,5 +1,5 @@
 {
   "telegram_bot_token": "8859374355:AAH0dhwstkTBhRerRTjzmb2RG2fjPbigzvo",
-  "helper_chat_ids": [971749136],
+  "helper_chat_ids": [971749136,5567776672],
   "spring_backend_url": "http://localhost:8080"
 }
