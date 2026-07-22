@@ -1,0 +1,14 @@
+com\rit\portal\config\DataInitializer.class
+com\rit\portal\entity\CommunityQuestion$CommunityQuestionBuilder.class
+com\rit\portal\entity\NotePyq$NotePyqBuilder.class
+com\rit\portal\repository\CommunityAnswerRepository.class
+com\rit\portal\entity\CommunityAnswer$CommunityAnswerBuilder.class
+com\rit\portal\controller\NotePyqController.class
+com\rit\portal\entity\CommunityQuestion.class
+com\rit\portal\entity\NotePyq.class
+com\rit\portal\repository\NotePyqRepository.class
+com\rit\portal\entity\CommunityAnswer.class
+com\rit\portal\controller\CommunityQuestionController.class
+com\rit\portal\repository\CommunityQuestionRepository.class
+com\rit\portal\config\WebConfig.class
+com\rit\portal\PortalApplication.class
