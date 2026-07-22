@@ -61,7 +61,7 @@ export default function Campus() {
         {/* Tabs */}
         <div className="flex gap-2 bg-white rounded-2xl p-2 border border-[#E5E7EB] mb-8 w-fit" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
           {TABS.map((tab) => {
-            const Icon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[tab.icon];
+            const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[tab.icon];
             return (
               <button
                 key={tab.id}
@@ -144,7 +144,7 @@ export default function Campus() {
               {/* Quick Nav */}
               <div className="p-6 grid grid-cols-4 sm:grid-cols-8 gap-4">
                 {CAMPUS_LOCATIONS.map((loc) => {
-                  const Icon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[loc.icon];
+                  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[loc.icon];
                   return (
                     <motion.button
                       key={loc.id}
