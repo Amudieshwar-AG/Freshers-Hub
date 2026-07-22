@@ -78,16 +78,20 @@ export default function Community() {
       const response = await fetch('http://localhost:8080/api/questions');
       if (response.ok) {
         const data = await response.json();
+        console.log("API DATA FETCHED:", data);
         if (data) {
           // Merge database questions with static mock data, matching IDs to prevent duplicates
           const backendIds = new Set(data.map((q: any) => q.id.toString()));
           const uniqueMocks = QUESTIONS_DATA.filter(q => !backendIds.has(q.id.toString()));
-          // Sort backend questions newest first, then append mock questions
-          setQuestions([...[...data].reverse(), ...uniqueMocks]);
+          const merged = [...[...data].reverse(), ...uniqueMocks];
+          console.log("MERGED QUESTIONS LIST:", merged);
+          setQuestions(merged);
         }
+      } else {
+        console.error("Failed to fetch questions from backend: HTTP status", response.status);
       }
     } catch (error) {
-      console.log('Backend not available. Falling back to local static questions data.', error);
+      console.error('Backend not available. Falling back to local static questions data.', error);
     }
   };
 
