@@ -122,8 +122,8 @@ def telegram_polling_thread():
         # Re-load config dynamic updates
         current_config = load_config()
         helpers = current_config.get("helper_chat_ids", [])
-        backend_url = current_config.get("spring_backend_url")
-        bot_token = current_config.get("telegram_bot_token")
+        backend_url = os.environ.get("SPRING_BACKEND_URL") or current_config.get("spring_backend_url")
+        bot_token = os.environ.get("TELEGRAM_BOT_TOKEN") or current_config.get("telegram_bot_token")
 
         url = f"https://api.telegram.org/bot{bot_token}/getUpdates"
         params = {"offset": offset, "timeout": 20}
@@ -242,7 +242,7 @@ async def on_message(message):
                 logging.info(f"Submitting Discord answer for question {question_id} by helper '{author_name}'")
                 
                 # Post answer to Spring Boot backend
-                backend_url = current_config.get("spring_backend_url")
+                backend_url = os.environ.get("SPRING_BACKEND_URL") or current_config.get("spring_backend_url")
                 backend_endpoint = f"{backend_url}/api/questions/{question_id}/answers"
                 answer_payload = {
                     "body": message.content,
