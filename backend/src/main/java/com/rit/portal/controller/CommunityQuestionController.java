@@ -5,6 +5,10 @@ import com.rit.portal.entity.CommunityQuestion;
 import com.rit.portal.repository.CommunityAnswerRepository;
 import com.rit.portal.repository.CommunityQuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -26,9 +30,23 @@ public class CommunityQuestionController {
     private final RestTemplate restTemplate = new RestTemplate();
     private static final String TELEGRAM_BOT_URL = "http://localhost:8082/send_question";
 
+    /** Legacy – returns all questions (kept for backwards compatibility) */
     @GetMapping
     public List<CommunityQuestion> getAllQuestions() {
         return questionRepository.findAll();
+    }
+
+    /**
+     * Paginated – returns a Spring Page of questions ordered newest-first.
+     * Usage: GET /api/questions/paged?page=0&size=5
+     * Response includes: content[], totalElements, totalPages, number (current page), last (boolean)
+     */
+    @GetMapping("/paged")
+    public Page<CommunityQuestion> getQuestionsPaged(
+            @RequestParam(defaultValue = "0")  int page,
+            @RequestParam(defaultValue = "5")  int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return questionRepository.findAll(pageable);
     }
 
     @PostMapping
@@ -36,9 +54,9 @@ public class CommunityQuestionController {
         if (question.getUpvotes() == null) question.setUpvotes(0);
         if (question.getIsAnswered() == null) question.setIsAnswered(false);
         question.setCreatedAt(LocalDateTime.now());
-        
+
         CommunityQuestion saved = questionRepository.save(question);
-        
+
         // Notify Telegram bot in a background thread to keep it robust and non-blocking
         new Thread(() -> {
             try {
@@ -47,7 +65,7 @@ public class CommunityQuestionController {
                 payload.put("title", saved.getTitle());
                 payload.put("body", saved.getBody());
                 payload.put("author", saved.getAuthor());
-                
+
                 restTemplate.postForEntity(TELEGRAM_BOT_URL, payload, String.class);
             } catch (Exception e) {
                 System.err.println("Failed to notify Telegram Bot intermediary: " + e.getMessage());
@@ -64,12 +82,12 @@ public class CommunityQuestionController {
             if (answer.getUpvotes() == null) answer.setUpvotes(0);
             if (answer.getIsAccepted() == null) answer.setIsAccepted(false);
             answer.setCreatedAt(LocalDateTime.now());
-            
+
             CommunityAnswer savedAnswer = answerRepository.save(answer);
-            
+
             question.setIsAnswered(true);
             questionRepository.save(question);
-            
+
             return ResponseEntity.ok(savedAnswer);
         }).orElse(ResponseEntity.notFound().build());
     }

@@ -64,6 +64,8 @@ const getRelativeTime = (dateString: string) => {
 };
 
 export default function Community() {
+  const PAGE_SIZE = 5;
+
   const [activeTab, setActiveTab] = useState<Tab>('qa');
   const [confessionText, setConfessionText] = useState('');
   const [questionText, setQuestionText] = useState('');
@@ -72,8 +74,13 @@ export default function Community() {
   const [searchQuery, setSearchQuery] = useState('');
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [expandedQuestionIds, setExpandedQuestionIds] = useState<Set<string>>(new Set());
-  const [questions, setQuestions] = useState<any[]>(QUESTIONS_DATA);
-  const [visibleCount, setVisibleCount] = useState(5);
+  // Server-side pagination
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  // Fallback static questions for when backend is unavailable
+  const [staticQuestions] = useState<any[]>(QUESTIONS_DATA);
 
   const toggleAnswers = (id: string) => {
     setExpandedQuestionIds((prev) => {
@@ -87,30 +94,37 @@ export default function Community() {
     });
   };
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = async (page = 0) => {
+    setLoading(true);
     try {
-      const response = await fetch('http://localhost:8080/api/questions');
+      const response = await fetch(`http://localhost:8080/api/questions/paged?page=${page}&size=${PAGE_SIZE}`);
       if (response.ok) {
         const data = await response.json();
-        console.log("API DATA FETCHED:", data);
-        if (data) {
-          // Merge database questions with static mock data, matching IDs to prevent duplicates
-          const backendIds = new Set(data.map((q: any) => q.id.toString()));
-          const uniqueMocks = QUESTIONS_DATA.filter(q => !backendIds.has(q.id.toString()));
-          const merged = [...[...data].reverse(), ...uniqueMocks];
-          console.log("MERGED QUESTIONS LIST:", merged);
-          setQuestions(merged);
-        }
+        // Spring Page response: { content: [], totalPages, totalElements, number }
+        setQuestions(data.content || []);
+        setTotalPages(data.totalPages || 1);
+        setCurrentPage(data.number ?? page);
       } else {
         console.error("Failed to fetch questions from backend: HTTP status", response.status);
+        // Fallback: slice static questions
+        const start = page * PAGE_SIZE;
+        setQuestions(staticQuestions.slice(start, start + PAGE_SIZE));
+        setTotalPages(Math.ceil(staticQuestions.length / PAGE_SIZE));
+        setCurrentPage(page);
       }
     } catch (error) {
       console.error('Backend not available. Falling back to local static questions data.', error);
+      const start = page * PAGE_SIZE;
+      setQuestions(staticQuestions.slice(start, start + PAGE_SIZE));
+      setTotalPages(Math.ceil(staticQuestions.length / PAGE_SIZE));
+      setCurrentPage(page);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchQuestions();
+    fetchQuestions(0);
   }, []);
 
   const getAnswersCount = (q: any) => {
@@ -124,6 +138,7 @@ export default function Community() {
     return votesVal;
   };
 
+  // Client-side filter applied on top of current page (for search within page)
   const filteredQuestions = questions.filter((q) => {
     const titleVal = q.title || "";
     const tagsVal = q.tags || [];
@@ -131,8 +146,12 @@ export default function Community() {
       tagsVal.some((t: string) => t.toLowerCase().includes(searchQuery.toLowerCase()));
   });
 
-  const visibleQuestions = filteredQuestions.slice(0, visibleCount);
-  const hasMore = visibleCount < filteredQuestions.length;
+  const handlePageChange = (newPage: number) => {
+    setExpandedQuestionIds(new Set()); // collapse any open answers
+    fetchQuestions(newPage);
+    // Scroll back to the top of the questions list smoothly
+    document.getElementById('qa-questions-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const handleConfess = () => {
     if (!confessionText.trim()) return;
@@ -306,16 +325,33 @@ export default function Community() {
                       type="text"
                       placeholder="Search questions..."
                       value={searchQuery}
-                      onChange={(e) => { setSearchQuery(e.target.value); setVisibleCount(5); }}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-[13px] text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400 transition-colors"
                       style={{ fontFamily: 'Inter, sans-serif' }}
                     />
                   </div>
 
                   {/* Questions */}
-                  <StaggerContainer key={visibleCount + '-' + filteredQuestions.length} className="flex flex-col gap-4">
-                    {visibleQuestions.map((q, idx) => {
-                      const isFeatured = idx === 0 && searchQuery === '';
+                  <div id="qa-questions-list">
+                    {loading ? (
+                      <div className="flex flex-col gap-3">
+                        {[...Array(PAGE_SIZE)].map((_, i) => (
+                          <div key={i} className="bg-white rounded-xl border border-slate-200/50 p-5 animate-pulse">
+                            <div className="flex items-start gap-4">
+                              <div className="w-10 h-10 rounded-xl bg-slate-100 shrink-0" />
+                              <div className="flex-1 space-y-2">
+                                <div className="h-3 w-1/4 rounded bg-slate-100" />
+                                <div className="h-4 w-2/3 rounded bg-slate-100" />
+                                <div className="h-3 w-full rounded bg-slate-100" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <StaggerContainer key={`${currentPage}-${filteredQuestions.length}`} className="flex flex-col gap-4">
+                        {filteredQuestions.map((q, idx) => {
+                          const isFeatured = idx === 0 && searchQuery === '' && currentPage === 0;
                       return (
                         <StaggerItem key={q.id}>
                           <motion.div
@@ -434,42 +470,67 @@ export default function Community() {
                           </motion.div>
                         </StaggerItem>
                       );
-                    })}
-                  </StaggerContainer>
+                        })}
+                      </StaggerContainer>
+                    )}
 
-                  {/* Load More / Show Less */}
-                  {filteredQuestions.length > 5 && (
-                    <div className="flex flex-col items-center gap-3 mt-6">
-                      {hasMore ? (
-                        <>
-                          <p className="text-[11px] text-slate-400 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
-                            Showing {visibleCount} of {filteredQuestions.length} questions
-                          </p>
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-6 px-1">
+                      <motion.button
+                        whileHover={{ scale: 1.04 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 0 || loading}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-[12px] font-semibold transition-all duration-200 cursor-pointer ${
+                          currentPage === 0 || loading
+                            ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
+                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm'
+                        }`}
+                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                      >
+                        <ChevronRight className="w-4 h-4 rotate-180" />
+                        Prev
+                      </motion.button>
+
+                      <div className="flex items-center gap-1.5">
+                        {Array.from({ length: totalPages }).map((_, i) => (
                           <motion.button
-                            whileHover={{ scale: 1.015 }}
-                            whileTap={{ scale: 0.985 }}
-                            onClick={() => setVisibleCount((c) => c + 5)}
-                            className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 text-[13px] font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 cursor-pointer shadow-sm"
+                            key={i}
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => handlePageChange(i)}
+                            disabled={loading}
+                            className={`w-7 h-7 rounded-lg text-[11px] font-bold transition-all duration-200 cursor-pointer border ${
+                              i === currentPage
+                                ? 'bg-slate-900 text-white border-slate-900'
+                                : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                            }`}
                             style={{ fontFamily: 'Poppins, sans-serif' }}
                           >
-                            <ChevronRight className="w-4 h-4 rotate-90" />
-                            Load More Questions
+                            {i + 1}
                           </motion.button>
-                        </>
-                      ) : (
-                        <motion.button
-                          whileHover={{ scale: 1.015 }}
-                          whileTap={{ scale: 0.985 }}
-                          onClick={() => setVisibleCount(5)}
-                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-500 text-[13px] font-medium hover:bg-slate-50 hover:border-slate-300 transition-all duration-200 cursor-pointer"
-                          style={{ fontFamily: 'Poppins, sans-serif' }}
-                        >
-                          <ChevronRight className="w-4 h-4 -rotate-90" />
-                          Show Less
-                        </motion.button>
-                      )}
+                        ))}
+                      </div>
+
+                      <motion.button
+                        whileHover={{ scale: 1.04 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage >= totalPages - 1 || loading}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-[12px] font-semibold transition-all duration-200 cursor-pointer ${
+                          currentPage >= totalPages - 1 || loading
+                            ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
+                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm'
+                        }`}
+                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                      >
+                        Next
+                        <ChevronRight className="w-4 h-4" />
+                      </motion.button>
                     </div>
                   )}
+                  </div>
                 </div>
 
                 {/* Sidebar */}
