@@ -75,6 +75,17 @@ export default function Community() {
     fetchQuestions();
   }, []);
 
+  const getAnswersCount = (q: any) => {
+    if (Array.isArray(q.answers)) return q.answers.length;
+    if (typeof q.answers === 'number') return q.answers;
+    return 0;
+  };
+
+  const getVotesCount = (q: any) => {
+    const votesVal = typeof q.upvotes === 'number' ? q.upvotes : (typeof q.votes === 'number' ? q.votes : 0);
+    return votesVal;
+  };
+
   const filteredQuestions = questions.filter((q) =>
     q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (q.tags && q.tags.some((t: string) => t.toLowerCase().includes(searchQuery.toLowerCase())))
@@ -316,7 +327,7 @@ export default function Community() {
                                   <div className="flex items-center gap-4 text-[11px] text-slate-400">
                                     <span className="flex items-center gap-1.5">
                                       <MessageCircle className="w-3.5 h-3.5 text-slate-400" />
-                                      {q.answers} answers
+                                      {getAnswersCount(q)} answers
                                     </span>
                                     {q.isAnswered && (
                                       <span className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 font-semibold text-[10px]">✓ Answered</span>
@@ -326,13 +337,13 @@ export default function Community() {
                                     <button
                                       onClick={() => toggleLike(q.id)}
                                       className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all cursor-pointer ${
-                                        likedIds.has(q.id)
+                                        likedIds.has(q.id.toString())
                                           ? 'bg-slate-900 text-white font-semibold'
                                           : 'bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800'
                                       }`}
                                     >
                                       <ThumbsUp className="w-3 h-3" />
-                                      <span>{q.votes + (likedIds.has(q.id) ? 1 : 0)}</span>
+                                      <span>{getVotesCount(q) + (likedIds.has(q.id.toString()) ? 1 : 0)}</span>
                                     </button>
                                   </div>
                                 </div>
