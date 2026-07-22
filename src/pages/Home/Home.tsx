@@ -37,21 +37,30 @@ export default function Home() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.7 }}
-                className="relative w-full max-w-lg"
+                className="relative w-full max-w-lg group"
               >
-                  {/* Main campus image/graphic card */}
-                  <div
-                    className="rounded-[24px] overflow-hidden bg-white border border-[#E5E7EB] relative aspect-[4/3] w-full"
-                    style={{ boxShadow: '0 24px 60px -12px rgba(0,0,0,0.15)' }}
-                  >
-                    <img 
-                      src="/images.jpg" 
-                      alt="Rajalakshmi Institute of Technology Campus" 
-                      className="w-full h-full object-cover select-none"
-                    />
-                    
-                    {/* Subtle dark gradient overlay to ensure text contrast */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 pointer-events-none" />
+                {/* Ambient Blurry Glow behind the image container */}
+                <div 
+                  className="absolute -inset-3 bg-gradient-to-tr from-[#F97316]/20 to-transparent rounded-[32px] blur-2xl opacity-80 pointer-events-none" 
+                />
+
+                {/* Main campus image/graphic card */}
+                <div
+                  className="rounded-[24px] overflow-hidden bg-white border border-[#E5E7EB] relative aspect-[4/3] w-full"
+                  style={{ boxShadow: '0 24px 60px -12px rgba(0,0,0,0.15)' }}
+                >
+                  <img 
+                    src="/images.jpg" 
+                    alt="Rajalakshmi Institute of Technology Campus" 
+                    className="w-full h-full object-cover select-none"
+                  />
+                  
+                  {/* Glassmorphic border overlay (frosted edge blur effect) */}
+                  <div className="absolute inset-0 border-[12px] border-white/15 backdrop-blur-[2px] rounded-[24px] pointer-events-none" />
+                  <div className="absolute inset-[12px] border border-white/10 pointer-events-none" />
+                  
+                  {/* Subtle dark gradient overlay to ensure text contrast */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 pointer-events-none" />
                     
                     {/* Text on top of the image (RIT Events Hub Style) */}
                     <div className="absolute bottom-6 left-6 z-10 text-left pointer-events-none">
