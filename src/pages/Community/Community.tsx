@@ -47,6 +47,7 @@ export default function Community() {
   const [activeTab, setActiveTab] = useState<Tab>('qa');
   const [confessionText, setConfessionText] = useState('');
   const [questionText, setQuestionText] = useState('');
+  const [authorName, setAuthorName] = useState('');
   const [confessionPosted, setConfessionPosted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
@@ -57,9 +58,12 @@ export default function Community() {
       const response = await fetch('http://localhost:8080/api/questions');
       if (response.ok) {
         const data = await response.json();
-        if (data && data.length > 0) {
-          // Sort newest first
-          setQuestions(data.reverse());
+        if (data) {
+          // Merge database questions with static mock data, matching IDs to prevent duplicates
+          const backendIds = new Set(data.map((q: any) => q.id.toString()));
+          const uniqueMocks = QUESTIONS_DATA.filter(q => !backendIds.has(q.id.toString()));
+          // Sort backend questions newest first, then append mock questions
+          setQuestions([...[...data].reverse(), ...uniqueMocks]);
         }
       }
     } catch (error) {
@@ -103,10 +107,12 @@ export default function Community() {
   const handlePostQuestion = async () => {
     if (!questionText.trim()) return;
     
+    const displayAuthor = authorName.trim() || 'Anonymous';
+    
     const newQuestion = {
       title: questionText.split('\n')[0].substring(0, 100) || "Q&A Question",
       body: questionText,
-      author: 'Priya S.',
+      author: displayAuthor,
       tags: ['fresher', 'general'],
       upvotes: 0,
       isAnswered: false,
@@ -128,16 +134,23 @@ export default function Community() {
 
       if (response.ok) {
         const saved = await response.json();
-        setQuestions(prev => [saved, ...prev]);
+        setQuestions(prev => {
+          // Prepend saved question and filter out duplicate placeholders
+          const filtered = prev.filter(q => q.id.toString() !== saved.id.toString());
+          return [saved, ...filtered];
+        });
         setQuestionText('');
+        setAuthorName('');
       } else {
         setQuestions(prev => [{ ...newQuestion, id: String(Date.now()) }, ...prev]);
         setQuestionText('');
+        setAuthorName('');
       }
     } catch (error) {
       console.error("Error saving question:", error);
       setQuestions(prev => [{ ...newQuestion, id: String(Date.now()) }, ...prev]);
       setQuestionText('');
+      setAuthorName('');
     }
   };
 
@@ -203,7 +216,15 @@ export default function Community() {
                       onChange={(e) => setQuestionText(e.target.value)}
                       placeholder="What's on your mind? Ask your seniors anything about RIT..."
                       rows={3}
-                      className="w-full border border-slate-200 rounded-xl p-3 text-[13px] text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400 focus:bg-white bg-slate-50/30 resize-none transition-all mb-4"
+                      className="w-full border border-slate-200 rounded-xl p-3 text-[13px] text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400 focus:bg-white bg-slate-50/30 resize-none transition-all mb-3"
+                      style={{ fontFamily: 'Inter, sans-serif' }}
+                    />
+                    <input
+                      type="text"
+                      value={authorName}
+                      onChange={(e) => setAuthorName(e.target.value)}
+                      placeholder="Your Name (optional)"
+                      className="w-full md:w-64 border border-slate-200 rounded-xl px-3 py-2 text-[13px] text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400 focus:bg-white bg-slate-50/30 transition-all mb-4"
                       style={{ fontFamily: 'Inter, sans-serif' }}
                     />
                     <div className="flex items-center justify-between">
