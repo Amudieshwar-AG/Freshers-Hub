@@ -281,6 +281,7 @@ export default function Community() {
                     </div>
                   </div>
 
+
                   {/* Search */}
                   <div className="relative mb-6">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -295,7 +296,7 @@ export default function Community() {
                   </div>
 
                   {/* Questions */}
-                  <StaggerContainer className="flex flex-col gap-4">
+                  <StaggerContainer key={filteredQuestions.length} className="flex flex-col gap-4">
                     {filteredQuestions.map((q, idx) => {
                       const isFeatured = idx === 0 && searchQuery === '';
                       return (
