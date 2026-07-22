@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface NotePyqRepository extends JpaRepository<NotePyq, Long> {
+public interface NotePyqRepository extends JpaRepository<NotePyq, Integer> {
     List<NotePyq> findBySemester(Integer semester);
     List<NotePyq> findByDepartment(String department);
     List<NotePyq> findByFileType(String fileType);

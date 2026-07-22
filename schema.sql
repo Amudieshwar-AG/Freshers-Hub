@@ -3,7 +3,7 @@
 
 -- 1. Notes & PYQs Module Table
 CREATE TABLE IF NOT EXISTS notes_pyqs (
-    id SERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     subject VARCHAR(250) NOT NULL,
     department VARCHAR(250) NOT NULL,
