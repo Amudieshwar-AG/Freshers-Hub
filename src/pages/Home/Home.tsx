@@ -37,17 +37,12 @@ export default function Home() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.7 }}
-                className="relative w-full max-w-lg group"
+                className="relative w-full max-w-lg"
               >
-                {/* Ambient Blurry Glow behind the image container */}
-                <div 
-                  className="absolute -inset-3 bg-gradient-to-tr from-[#F97316]/20 to-transparent rounded-[32px] blur-2xl opacity-80 pointer-events-none" 
-                />
-
-                {/* Main campus image/graphic card */}
+                {/* Main campus image/graphic card with soft blurry drop shadow */}
                 <div
-                  className="rounded-[24px] overflow-hidden bg-white border border-[#E5E7EB] relative aspect-[4/3] w-full"
-                  style={{ boxShadow: '0 24px 60px -12px rgba(0,0,0,0.15)' }}
+                  className="rounded-[24px] overflow-hidden bg-white border border-[#E5E7EB]/50 relative aspect-[4/3] w-full"
+                  style={{ boxShadow: '0 30px 70px -15px rgba(0, 0, 0, 0.12), 0 15px 35px -20px rgba(0, 0, 0, 0.08)' }}
                 >
                   <img 
                     src="/images.jpg" 
@@ -55,12 +50,8 @@ export default function Home() {
                     className="w-full h-full object-cover select-none"
                   />
                   
-                  {/* Glassmorphic border overlay (frosted edge blur effect) */}
-                  <div className="absolute inset-0 border-[12px] border-white/15 backdrop-blur-[2px] rounded-[24px] pointer-events-none" />
-                  <div className="absolute inset-[12px] border border-white/10 pointer-events-none" />
-                  
                   {/* Subtle dark gradient overlay to ensure text contrast */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 pointer-events-none" />
                     
                     {/* Text on top of the image (RIT Events Hub Style) */}
                     <div className="absolute bottom-6 left-6 z-10 text-left pointer-events-none">
@@ -121,7 +112,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="flex flex-wrap gap-4 mb-8"
               >
-                <Link to="/notes">
+                <a href="#built-for-freshers">
                   <motion.button
                     whileHover={{ scale: 1.03, boxShadow: '0 8px 25px rgba(249,115,22,0.3)' }}
                     whileTap={{ scale: 0.97 }}
@@ -135,7 +126,7 @@ export default function Home() {
                     Explore Hub
                     <ArrowRight className="w-3.5 h-3.5" />
                   </motion.button>
-                </Link>
+                </a>
 
                 <Link to="/ai-assistant">
                   <motion.button
@@ -187,7 +178,7 @@ export default function Home() {
       </section>
 
       {/* ─── Features Section ─────────────────────────────────────────────────── */}
-      <section className="section-padding" style={{ backgroundColor: '#FAFAFA' }}>
+      <section id="built-for-freshers" className="section-padding" style={{ backgroundColor: '#FAFAFA' }}>
         <div className="container-custom">
           <SectionTitle
             tag="Everything You Need"
