@@ -24,8 +24,28 @@ const getAvatar = (author: string) => {
 };
 
 const getRelativeTime = (dateString: string) => {
-  const now = new Date('2026-07-22T11:56:24+05:30').getTime(); // Current local time from metadata
-  const past = new Date(dateString).getTime();
+  if (!dateString) return 'just now';
+  
+  // Normalize microsecond timestamps (e.g. 2026-07-22T13:28:18.174367) to standard millisecond precision
+  let normalized = dateString;
+  const dotIndex = dateString.indexOf('.');
+  if (dotIndex !== -1) {
+    const mainPart = dateString.substring(0, dotIndex);
+    let msPart = dateString.substring(dotIndex + 1);
+    // Strip any trailing non-digits (like timezone offsets Z or +05:30) for truncation, then keep first 3 digits
+    const nonDigitMatch = msPart.match(/\D/);
+    let suffix = '';
+    if (nonDigitMatch && nonDigitMatch.index !== undefined) {
+      suffix = msPart.substring(nonDigitMatch.index);
+      msPart = msPart.substring(0, nonDigitMatch.index);
+    }
+    normalized = `${mainPart}.${msPart.substring(0, 3)}${suffix}`;
+  }
+
+  const now = new Date().getTime(); // Dynamic local time
+  const past = new Date(normalized).getTime();
+  if (isNaN(past)) return 'just now';
+
   const msPerMinute = 60 * 1000;
   const msPerHour = msPerMinute * 60;
   const msPerDay = msPerHour * 24;
@@ -86,10 +106,12 @@ export default function Community() {
     return votesVal;
   };
 
-  const filteredQuestions = questions.filter((q) =>
-    q.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (q.tags && q.tags.some((t: string) => t.toLowerCase().includes(searchQuery.toLowerCase())))
-  );
+  const filteredQuestions = questions.filter((q) => {
+    const titleVal = q.title || "";
+    const tagsVal = q.tags || [];
+    return titleVal.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tagsVal.some((t: string) => t.toLowerCase().includes(searchQuery.toLowerCase()));
+  });
 
   const handleConfess = () => {
     if (!confessionText.trim()) return;
@@ -313,7 +335,7 @@ export default function Community() {
 
                                 <div className="flex items-center justify-between flex-wrap gap-3 pt-1 border-t border-slate-100">
                                   <div className="flex flex-wrap gap-1.5">
-                                    {q.tags.map((tag) => (
+                                    {(q.tags || []).map((tag) => (
                                       <span
                                         key={tag}
                                         className="px-2.5 py-0.5 rounded-lg text-[10px] font-medium bg-slate-100 text-slate-600"
