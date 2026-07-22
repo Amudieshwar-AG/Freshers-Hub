@@ -71,7 +71,20 @@ export default function Community() {
   const [confessionPosted, setConfessionPosted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+  const [expandedQuestionIds, setExpandedQuestionIds] = useState<Set<string>>(new Set());
   const [questions, setQuestions] = useState<any[]>(QUESTIONS_DATA);
+
+  const toggleAnswers = (id: string) => {
+    setExpandedQuestionIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id.toString())) {
+        next.delete(id.toString());
+      } else {
+        next.add(id.toString());
+      }
+      return next;
+    });
+  };
 
   const fetchQuestions = async () => {
     try {
@@ -352,10 +365,17 @@ export default function Community() {
                                   </div>
 
                                   <div className="flex items-center gap-4 text-[11px] text-slate-400">
-                                    <span className="flex items-center gap-1.5">
-                                      <MessageCircle className="w-3.5 h-3.5 text-slate-400" />
-                                      {getAnswersCount(q)} answers
-                                    </span>
+                                    <button
+                                      onClick={() => toggleAnswers(q.id)}
+                                      className={`flex items-center gap-1.5 px-2 py-1 rounded-lg transition-all cursor-pointer border-0 bg-slate-50 hover:bg-slate-100 ${
+                                        expandedQuestionIds.has(q.id.toString())
+                                          ? 'bg-slate-900 text-white font-semibold'
+                                          : 'text-slate-500 hover:text-slate-800'
+                                      }`}
+                                    >
+                                      <MessageCircle className="w-3.5 h-3.5" />
+                                      <span>{getAnswersCount(q)} answers</span>
+                                    </button>
                                     {q.isAnswered && (
                                       <span className="px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 font-semibold text-[10px]">✓ Answered</span>
                                     )}
@@ -374,6 +394,37 @@ export default function Community() {
                                     </button>
                                   </div>
                                 </div>
+
+                                {/* Expandable Answers Section */}
+                                {expandedQuestionIds.has(q.id.toString()) && (
+                                  <div className="mt-4 pt-4 border-t border-slate-100/80 flex flex-col gap-3">
+                                    <div className="flex items-center justify-between">
+                                      <h4 className="text-xs font-bold text-slate-800 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                        Answers ({getAnswersCount(q)})
+                                      </h4>
+                                    </div>
+                                    {Array.isArray(q.answers) && q.answers.length > 0 ? (
+                                      <div className="flex flex-col gap-2.5 max-h-60 overflow-y-auto pr-1">
+                                        {q.answers.map((ans: any) => (
+                                          <div key={ans.id} className="bg-slate-50/60 rounded-xl p-3.5 border border-slate-100/90 hover:border-slate-200/60 transition-all">
+                                            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                                              <span className="text-[11px] font-semibold text-slate-700">{ans.author}</span>
+                                              <span className="text-[9px] text-slate-300">•</span>
+                                              <span className="text-[10px] text-slate-400">{getRelativeTime(ans.createdAt)}</span>
+                                            </div>
+                                            <p className="text-xs text-slate-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                                              {ans.body}
+                                            </p>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <p className="text-xs text-slate-400 italic font-medium py-1" style={{ fontFamily: 'Inter, sans-serif' }}>
+                                        No answers posted yet. Senior helpers can reply to this question via the Telegram Bot!
+                                      </p>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </motion.div>
