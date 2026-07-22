@@ -9,7 +9,7 @@ interface FeatureCardProps {
 }
 
 export default function FeatureCard({ feature }: FeatureCardProps) {
-  const IconComponent = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[feature.icon];
+  const IconComponent = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>>)[feature.icon];
 
   return (
     <motion.div

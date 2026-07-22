@@ -227,11 +227,11 @@ export default function Home() {
                   { icon: 'Map', label: 'Campus Context', desc: 'RIT-specific answers' },
                   { icon: 'Zap', label: 'Instant Answers', desc: 'No wait time' },
                 ].map((item, i) => {
-                  const Icon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[item.icon];
+                  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>>)[item.icon];
                   return (
                     <div key={i} className="flex items-start gap-3 p-4 rounded-xl border border-[#E5E7EB] bg-[#FAFAFA]">
                       <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-[#FFF7ED] shrink-0">
-                        {Icon && <Icon className="w-4.5 h-4.5" style={{ color: '#F97316' } as React.CSSProperties} />}
+                        {Icon && <Icon className="w-4.5 h-4.5" style={{ color: '#F97316' }} />}
                       </div>
                       <div>
                         <div className="text-sm font-semibold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>{item.label}</div>
@@ -331,7 +331,7 @@ export default function Home() {
               {/* Quick nav buttons */}
               <div className="p-5 grid grid-cols-4 sm:grid-cols-8 gap-3">
                 {CAMPUS_LOCATIONS.map((loc) => {
-                  const Icon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[loc.icon];
+                  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[loc.icon];
                   return (
                     <Link to="/campus" key={loc.id}>
                       <motion.div
