@@ -586,11 +586,7 @@ export default function Community() {
                                               </div>
                                             ))}
                                           </div>
-                                        ) : (
-                                          <p className="text-xs text-slate-400 italic font-medium py-1 pl-4" style={{ fontFamily: 'Inter, sans-serif' }}>
-                                            No answers posted yet. Senior helpers can reply to this question via the Telegram Bot!
-                                          </p>
-                                        )}
+                                        ) : null}
                                       </div>
                                     )}
                                   </div>
