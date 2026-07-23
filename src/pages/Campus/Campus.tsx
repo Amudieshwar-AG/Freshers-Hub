@@ -1,12 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, ChevronRight, MapPin, Users, BookOpen, Filter, ArrowUpDown } from 'lucide-react';
+import { Search, ChevronRight, MapPin, Users, BookOpen, Filter, ArrowUpDown, Loader2 } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import BusCard from '@/components/BusCard/BusCard';
 import FacultyCard from '@/components/FacultyCard/FacultyCard';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
-import { BUS_ROUTES, FACULTY_DATA, CAMPUS_LOCATIONS, DEPARTMENTS } from '@/constants';
+import { FACULTY_DATA, CAMPUS_LOCATIONS, DEPARTMENTS } from '@/constants';
 import * as LucideIcons from 'lucide-react';
+import type { BusRoute } from '@/types';
 
 type Tab = 'map' | 'bus' | 'faculty';
 
@@ -16,6 +17,27 @@ export default function Campus() {
   const [selectedDept, setSelectedDept] = useState('All Departments');
   const [sortBy, setSortBy] = useState('Name A-Z');
   const [busSearch, setBusSearch] = useState('');
+  const [busRoutes, setBusRoutes] = useState<BusRoute[]>([]);
+  const [loadingBus, setLoadingBus] = useState(true);
+
+  useEffect(() => {
+    if (activeTab === 'bus' && busRoutes.length === 0) {
+      setLoadingBus(true);
+      fetch('http://localhost:8080/api/bus-routes')
+        .then((res) => {
+          if (!res.ok) throw new Error('Failed to fetch');
+          return res.json();
+        })
+        .then((data) => {
+          setBusRoutes(data);
+          setLoadingBus(false);
+        })
+        .catch((err) => {
+          console.error('Error fetching bus routes:', err);
+          setLoadingBus(false);
+        });
+    }
+  }, [activeTab, busRoutes.length]);
 
   const filteredAndSortedFaculty = useMemo(() => {
     const filtered = FACULTY_DATA.filter((f) => {
@@ -38,7 +60,7 @@ export default function Campus() {
     });
   }, [searchFaculty, selectedDept, sortBy]);
 
-  const filteredRoutes = BUS_ROUTES.filter((r) =>
+  const filteredRoutes = busRoutes.filter((r) =>
     r.name.toLowerCase().includes(busSearch.toLowerCase()) ||
     r.from.toLowerCase().includes(busSearch.toLowerCase()) ||
     r.number.toLowerCase().includes(busSearch.toLowerCase())
@@ -86,7 +108,7 @@ export default function Campus() {
         {/* Tabs */}
         <div className="flex gap-2 bg-white rounded-2xl p-2 border border-[#E5E7EB] mb-8 w-fit" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
           {TABS.map((tab) => {
-            const Icon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[tab.icon];
+            const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[tab.icon];
             return (
               <button
                 key={tab.id}
@@ -169,7 +191,7 @@ export default function Campus() {
               {/* Quick Nav */}
               <div className="p-6 grid grid-cols-4 sm:grid-cols-8 gap-4">
                 {CAMPUS_LOCATIONS.map((loc) => {
-                  const Icon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[loc.icon];
+                  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[loc.icon];
                   return (
                     <motion.button
                       key={loc.id}
@@ -204,13 +226,29 @@ export default function Campus() {
                 style={{ fontFamily: 'Inter, sans-serif' }}
               />
             </div>
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {filteredRoutes.map((route) => (
-                <StaggerItem key={route.id}>
-                  <BusCard route={route} />
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
+            
+            {loadingBus ? (
+              <div className="flex flex-col items-center justify-center py-16 gap-3">
+                <Loader2 className="w-8 h-8 text-[#F97316] animate-spin" />
+                <p className="text-sm text-[#94A3B8]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Loading live bus routes from RIT Transport...
+                </p>
+              </div>
+            ) : filteredRoutes.length === 0 ? (
+              <div className="text-center py-16 text-[#94A3B8]">
+                <p className="text-sm font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  No bus routes found matching "{busSearch}"
+                </p>
+              </div>
+            ) : (
+              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {filteredRoutes.map((route) => (
+                  <StaggerItem key={route.id}>
+                    <BusCard route={route} />
+                  </StaggerItem>
+                ))}
+              </StaggerContainer>
+            )}
           </motion.div>
         )}
 

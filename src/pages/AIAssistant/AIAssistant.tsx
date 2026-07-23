@@ -157,7 +157,7 @@ export default function AIAssistant() {
                   background: msg.role === 'user' ? 'linear-gradient(135deg, #F97316, #FB923C)' : '#F8FAFC',
                   color: msg.role === 'user' ? 'white' : '#1E293B',
                   borderRadius: msg.role === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                  border: msg.role === 'ai' ? '1px solid #E5E7EB' : 'none',
+                  border: msg.role === 'assistant' ? '1px solid #E5E7EB' : 'none',
                   fontFamily: 'Inter, sans-serif',
                 }}
                 dangerouslySetInnerHTML={{ __html: formatContent(msg.content) }}

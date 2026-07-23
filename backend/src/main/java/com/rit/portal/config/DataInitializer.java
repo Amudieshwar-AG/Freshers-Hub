@@ -1,18 +1,30 @@
 package com.rit.portal.config;
 
 import com.rit.portal.entity.NotePyq;
+import com.rit.portal.entity.BusRoute;
+import com.rit.portal.entity.BusStop;
 import com.rit.portal.repository.NotePyqRepository;
+import com.rit.portal.repository.BusRouteRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
 
     @Autowired
     private NotePyqRepository noteRepository;
+
+    @Autowired
+    private BusRouteRepository busRouteRepository;
 
     @Override
     public void run(String... args) throws Exception {
@@ -108,6 +120,53 @@ public class DataInitializer implements CommandLineRunner {
                     .build()
             ));
             System.out.println("🌱 Database successfully seeded with Notes & PYQs test data!");
+        }
+
+        // Seed Bus Routes
+        if (busRouteRepository.count() == 0) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                InputStream is = getClass().getResourceAsStream("/bus_routes.json");
+                if (is != null) {
+                    List<Map<String, Object>> routesList = mapper.readValue(is, new TypeReference<List<Map<String, Object>>>() {});
+                    List<BusRoute> routesToSave = new ArrayList<>();
+                    
+                    for (Map<String, Object> routeMap : routesList) {
+                        BusRoute br = BusRoute.builder()
+                            .number((String) routeMap.get("number"))
+                            .name((String) routeMap.get("name"))
+                            .from((String) routeMap.get("from"))
+                            .to((String) routeMap.get("to"))
+                            .departureTime((String) routeMap.get("departureTime"))
+                            .arrivalTime((String) routeMap.get("arrivalTime"))
+                            .color((String) routeMap.get("color"))
+                            .build();
+                        
+                        List<Map<String, String>> stopsList = (List<Map<String, String>>) routeMap.get("stops");
+                        List<BusStop> stops = new ArrayList<>();
+                        if (stopsList != null) {
+                            for (int i = 0; i < stopsList.size(); i++) {
+                                Map<String, String> stopMap = stopsList.get(i);
+                                stops.add(BusStop.builder()
+                                    .route(br)
+                                    .name(stopMap.get("name"))
+                                    .time(stopMap.get("time"))
+                                    .stopOrder(i + 1)
+                                    .build());
+                            }
+                        }
+                        br.setStops(stops);
+                        routesToSave.add(br);
+                    }
+                    busRouteRepository.saveAll(routesToSave);
+                    System.out.println("🌱 Database successfully seeded with " + routesToSave.size() + " Bus Routes and stops!");
+                } else {
+                    System.err.println("⚠️ Could not find bus_routes.json in resources!");
+                }
+            } catch (Exception e) {
+                System.err.println("❌ Failed to seed bus routes: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 }
