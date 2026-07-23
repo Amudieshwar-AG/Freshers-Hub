@@ -25,7 +25,7 @@ const getAvatar = (author: string) => {
 
 const getRelativeTime = (dateString: string) => {
   if (!dateString) return 'just now';
-  
+
   // Normalize microsecond timestamps (e.g. 2026-07-22T13:28:18.174367) to standard millisecond precision
   let normalized = dateString;
   const dotIndex = dateString.indexOf('.');
@@ -193,7 +193,7 @@ export default function Community() {
     });
 
     // Optimistically update count (+1 if liked, -1 if unliked)
-    setQuestions((prev) => 
+    setQuestions((prev) =>
       prev.map((q) => {
         if (q.id.toString() === id) {
           const votesVal = typeof q.upvotes === 'number' ? q.upvotes : (typeof q.votes === 'number' ? q.votes : 0);
@@ -231,11 +231,11 @@ export default function Community() {
 
   const handlePostQuestion = async () => {
     if (!questionText.trim()) return;
-    
+
     const displayAuthor = authorName.trim() || 'Anonymous';
-    
+
     // Auto-detect hashtags based on question text content
-    const detectedTags = TRENDING_TAGS.filter(tag => 
+    const detectedTags = TRENDING_TAGS.filter(tag =>
       questionText.toLowerCase().includes(tag.toLowerCase())
     );
     const finalTags = detectedTags.length > 0 ? detectedTags : ['fresher', 'general'];
@@ -401,11 +401,10 @@ export default function Community() {
                         <button
                           key={chip.id}
                           onClick={() => setSortFilter(chip.id as any)}
-                          className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap cursor-pointer transition-all border ${
-                            isActive
+                          className={`px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap cursor-pointer transition-all border ${isActive
                               ? 'bg-[#F97316] text-white border-[#F97316] shadow-sm'
                               : 'bg-white hover:bg-slate-50 text-slate-600 border-[#E5E7EB]'
-                          }`}
+                            }`}
                           style={{ fontFamily: 'Poppins, sans-serif' }}
                         >
                           {chip.label}
@@ -453,200 +452,194 @@ export default function Community() {
                           const isTrending = (likesCount + ansCount) >= 5;
                           const isBodyExpanded = expandedBodyIds.has(q.id.toString());
 
-                      return (
-                        <StaggerItem key={q.id}>
-                          <motion.div
-                            whileHover={{ y: -2, boxShadow: '0 12px 30px -4px rgba(249,115,22,0.08)' }}
-                            onClick={() => handleCardClick(q.id)}
-                            transition={{ duration: 0.2 }}
-                            className="bg-white border border-[#E5E7EB] border-l-4 border-l-transparent rounded-2xl p-4 transition-all duration-300 cursor-pointer hover:border-l-[#F97316]"
-                            style={{ boxShadow: '0 2px 12px -3px rgba(0,0,0,0.05)' }}
-                          >
-                            <div className="flex items-start gap-3">
-                              {/* Avatar */}
-                              <img
-                                src={getAvatar(q.author)}
-                                alt={q.author}
-                                className="w-8 h-8 rounded-full object-cover bg-slate-50 border border-slate-100 shrink-0"
-                              />
+                          return (
+                            <StaggerItem key={q.id}>
+                              <motion.div
+                                whileHover={{ y: -2, boxShadow: '0 12px 30px -4px rgba(249,115,22,0.08)' }}
+                                onClick={() => handleCardClick(q.id)}
+                                transition={{ duration: 0.2 }}
+                                className="bg-white border border-[#E5E7EB] border-l-4 border-l-transparent rounded-2xl p-4 transition-all duration-300 cursor-pointer hover:border-l-[#F97316]"
+                                style={{ boxShadow: '0 2px 12px -3px rgba(0,0,0,0.05)' }}
+                              >
+                                <div className="flex items-start gap-3">
+                                  {/* Avatar */}
+                                  <img
+                                    src={getAvatar(q.author)}
+                                    alt={q.author}
+                                    className="w-8 h-8 rounded-full object-cover bg-slate-50 border border-slate-100 shrink-0"
+                                  />
 
-                              <div className="flex-1 min-w-0">
-                                {/* Header / Meta */}
-                                <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
-                                  <span className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>{q.author}</span>
-                                  <span className="text-[10px] text-slate-300">•</span>
-                                  <span className="text-[10px] text-slate-400 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>{getRelativeTime(q.createdAt)}</span>
-                                  
-                                  {/* Badges on Top Right */}
-                                  <div className="ml-auto flex items-center gap-1 shrink-0">
-                                    {isTrending && (
-                                      <span className="bg-amber-50 text-amber-700 border border-amber-200/40 text-[9px] px-1.5 py-0.5 rounded font-semibold tracking-wide uppercase">★ Trending</span>
-                                    )}
-                                    {q.isAnswered || ansCount > 0 ? (
-                                      <span className="bg-emerald-50 text-emerald-750 border border-emerald-200/40 text-[9px] px-1.5 py-0.5 rounded font-semibold tracking-wide uppercase">✓ Answered</span>
-                                    ) : (
-                                      <span className="bg-slate-50 text-slate-400 border border-slate-200/40 text-[9px] px-1.5 py-0.5 rounded font-semibold tracking-wide uppercase">Unanswered</span>
-                                    )}
-                                  </div>
-                                </div>
+                                  <div className="flex-1 min-w-0">
+                                    {/* Header / Meta */}
+                                    <div className="flex items-center gap-1.5 mb-1.5 flex-wrap">
+                                      <span className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>{q.author}</span>
+                                      <span className="text-[10px] text-slate-300">•</span>
+                                      <span className="text-[10px] text-slate-400 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>{getRelativeTime(q.createdAt)}</span>
 
-                                <h3 className={`font-bold text-[#1E293B] mb-1 hover:text-[#F97316] transition-colors tracking-tight ${
-                                  isFeatured ? 'text-base md:text-lg' : 'text-sm md:text-base'
-                                }`}
-                                  style={{ fontFamily: 'Playfair Display, serif' }}>
-                                  {q.title}
-                                </h3>
-                                
-                                <p className={`text-[12.5px] text-slate-500 mb-3.5 leading-relaxed transition-all duration-300 ${
-                                  isBodyExpanded ? '' : 'line-clamp-1'
-                                }`} style={{ fontFamily: 'Inter, sans-serif' }}>
-                                  {q.body}
-                                </p>
-
-                                <div className="flex items-center justify-between flex-wrap gap-3 pt-2.5 border-t border-slate-100/60">
-                                  {/* Left side: Replies & Likes & Tags inline */}
-                                  <div className="flex items-center gap-4 flex-wrap text-[11px]">
-                                    {/* Replies button */}
-                                    <button
-                                      onClick={(e) => { e.stopPropagation(); handleCardClick(q.id); }}
-                                      className={`flex items-center gap-1 text-[11px] font-bold transition-all duration-200 cursor-pointer ${
-                                        expandedQuestionIds.has(q.id.toString())
-                                          ? 'text-[#F97316]'
-                                          : 'text-slate-500 hover:text-slate-800'
-                                      }`}
-                                    >
-                                      <MessageCircle className="w-3.5 h-3.5" />
-                                      <span style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                        {ansCount > 0 ? `${ansCount} ${ansCount === 1 ? 'reply' : 'replies'}` : 'No replies yet'}
-                                      </span>
-                                    </button>
-
-                                    {/* Upvotes button */}
-                                    <button
-                                      onClick={(e) => { e.stopPropagation(); handleLike(q.id.toString()); }}
-                                      className={`flex items-center gap-1 text-[11px] font-bold transition-all duration-200 cursor-pointer ${
-                                        isLiked
-                                          ? 'text-rose-600'
-                                          : 'text-slate-500 hover:text-slate-850'
-                                      }`}
-                                    >
-                                      <ThumbsUp className="w-3.5 h-3.5" fill={isLiked ? 'currentColor' : 'none'} />
-                                      <span style={{ fontFamily: 'Poppins, sans-serif' }}>{likesCount}</span>
-                                    </button>
-
-                                    {/* Tags Inline */}
-                                    <div className="flex items-center gap-1 flex-wrap pl-1 border-l border-slate-100">
-                                      {(q.tags || []).map((tag) => (
-                                        <span
-                                          key={tag}
-                                          onClick={(e) => { e.stopPropagation(); setSearchQuery(tag); }}
-                                          className="px-1.5 py-0.5 rounded bg-slate-50 text-[10px] font-semibold text-slate-400 border border-slate-100 hover:bg-slate-100 hover:text-slate-600 transition-colors"
-                                          style={{ fontFamily: 'Inter, sans-serif' }}
-                                        >
-                                          #{tag}
-                                        </span>
-                                      ))}
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Expandable Answers Section */}
-                                {expandedQuestionIds.has(q.id.toString()) && (
-                                  <div className="mt-4 pt-4 border-t border-slate-150 flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
-                                    <div className="flex items-center justify-between">
-                                      <h4 className="text-[10px] font-bold text-slate-500 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                        Replies ({ansCount})
-                                      </h4>
-                                    </div>
-                                    {Array.isArray(q.answers) && q.answers.length > 0 ? (
-                                      <div className="flex flex-col gap-3.5 max-h-80 overflow-y-auto pr-1">
-                                        {q.answers.map((ans: any) => (
-                                          <div key={ans.id} className="relative pl-6 flex items-start gap-2.5 group">
-                                            {/* Thread connector line */}
-                                            <div className="absolute left-[9px] top-[-16px] bottom-3 w-3 border-l border-b border-slate-200 rounded-bl-lg pointer-events-none" />
-                                            
-                                            {/* Senior Avatar */}
-                                            <img
-                                              src={getAvatar(ans.author)}
-                                              alt={ans.author}
-                                              className="w-6 h-6 rounded-full object-cover bg-slate-50 border border-slate-100 shrink-0 relative z-10"
-                                            />
-
-                                            <div className="flex-1 min-w-0">
-                                              <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                                                <span className="text-[11.5px] font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>{ans.author}</span>
-                                                {/* Blue verified check icon for senior helpers */}
-                                                <span className="inline-flex text-blue-500" title="Verified Senior Helper">
-                                                  <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                                                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                                                  </svg>
-                                                </span>
-                                                <span className="text-[9px] text-slate-350">•</span>
-                                                <span className="text-[10px] text-slate-450 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>{getRelativeTime(ans.createdAt)}</span>
-                                              </div>
-                                              <p className="text-[12.5px] text-slate-600 leading-relaxed font-normal" style={{ fontFamily: 'Inter, sans-serif' }}>
-                                                {ans.body}
-                                              </p>
-                                            </div>
-                                          </div>
-                                        ))}
+                                      {/* Badges on Top Right */}
+                                      <div className="ml-auto flex items-center gap-1 shrink-0">
+                                        {isTrending && (
+                                          <span className="bg-amber-50 text-amber-700 border border-amber-200/40 text-[9px] px-1.5 py-0.5 rounded font-semibold tracking-wide uppercase">★ Trending</span>
+                                        )}
+                                        {q.isAnswered || ansCount > 0 ? (
+                                          <span className="bg-emerald-50 text-emerald-750 border border-emerald-200/40 text-[9px] px-1.5 py-0.5 rounded font-semibold tracking-wide uppercase">✓ Answered</span>
+                                        ) : (
+                                          <span className="bg-slate-50 text-slate-400 border border-slate-200/40 text-[9px] px-1.5 py-0.5 rounded font-semibold tracking-wide uppercase">Unanswered</span>
+                                        )}
                                       </div>
-                                    ) : (
-                                      <p className="text-xs text-slate-400 italic font-medium py-1 pl-4" style={{ fontFamily: 'Inter, sans-serif' }}>
-                                        No answers posted yet. Senior helpers can reply to this question via the Telegram Bot!
-                                      </p>
+                                    </div>
+
+                                    <h3 className={`font-bold text-[#1E293B] mb-1 hover:text-[#F97316] transition-colors tracking-tight ${isFeatured ? 'text-base md:text-lg' : 'text-sm md:text-base'
+                                      }`}
+                                      style={{ fontFamily: 'Playfair Display, serif' }}>
+                                      {q.title}
+                                    </h3>
+
+                                    <p className={`text-[12.5px] text-slate-500 mb-3.5 leading-relaxed transition-all duration-300 ${isBodyExpanded ? '' : 'line-clamp-1'
+                                      }`} style={{ fontFamily: 'Inter, sans-serif' }}>
+                                      {q.body}
+                                    </p>
+
+                                    <div className="flex items-center justify-between flex-wrap gap-3 pt-2.5 border-t border-slate-100/60">
+                                      {/* Left side: Replies & Likes & Tags inline */}
+                                      <div className="flex items-center gap-4 flex-wrap text-[11px]">
+                                        {/* Replies button */}
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); handleCardClick(q.id); }}
+                                          className={`flex items-center gap-1 text-[11px] font-bold transition-all duration-200 cursor-pointer ${expandedQuestionIds.has(q.id.toString())
+                                              ? 'text-[#F97316]'
+                                              : 'text-slate-500 hover:text-slate-800'
+                                            }`}
+                                        >
+                                          <MessageCircle className="w-3.5 h-3.5" />
+                                          <span style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                            {ansCount > 0 ? `${ansCount} ${ansCount === 1 ? 'reply' : 'replies'}` : 'No replies yet'}
+                                          </span>
+                                        </button>
+
+                                        {/* Upvotes button */}
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); handleLike(q.id.toString()); }}
+                                          className={`flex items-center gap-1 text-[11px] font-bold transition-all duration-200 cursor-pointer ${isLiked
+                                              ? 'text-rose-600'
+                                              : 'text-slate-500 hover:text-slate-850'
+                                            }`}
+                                        >
+                                          <ThumbsUp className="w-3.5 h-3.5" fill={isLiked ? 'currentColor' : 'none'} />
+                                          <span style={{ fontFamily: 'Poppins, sans-serif' }}>{likesCount}</span>
+                                        </button>
+
+                                        {/* Tags Inline */}
+                                        <div className="flex items-center gap-1 flex-wrap pl-1 border-l border-slate-100">
+                                          {(q.tags || []).map((tag) => (
+                                            <span
+                                              key={tag}
+                                              onClick={(e) => { e.stopPropagation(); setSearchQuery(tag); }}
+                                              className="px-1.5 py-0.5 rounded bg-slate-50 text-[10px] font-semibold text-slate-400 border border-slate-100 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+                                              style={{ fontFamily: 'Inter, sans-serif' }}
+                                            >
+                                              #{tag}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Expandable Answers Section */}
+                                    {expandedQuestionIds.has(q.id.toString()) && (
+                                      <div className="mt-4 pt-4 border-t border-slate-150 flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
+                                        <div className="flex items-center justify-between">
+                                          <h4 className="text-[10px] font-bold text-slate-500 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                            Replies ({ansCount})
+                                          </h4>
+                                        </div>
+                                        {Array.isArray(q.answers) && q.answers.length > 0 ? (
+                                          <div className="flex flex-col gap-3.5 max-h-80 overflow-y-auto pr-1">
+                                            {q.answers.map((ans: any) => (
+                                              <div key={ans.id} className="relative pl-6 flex items-start gap-2.5 group">
+                                                {/* Thread connector line */}
+                                                <div className="absolute left-[9px] top-[-16px] bottom-3 w-3 border-l border-b border-slate-200 rounded-bl-lg pointer-events-none" />
+
+                                                {/* Senior Avatar */}
+                                                <img
+                                                  src={getAvatar(ans.author)}
+                                                  alt={ans.author}
+                                                  className="w-6 h-6 rounded-full object-cover bg-slate-50 border border-slate-100 shrink-0 relative z-10"
+                                                />
+
+                                                <div className="flex-1 min-w-0">
+                                                  <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                                                    <span className="text-[11.5px] font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>{ans.author}</span>
+                                                    {/* Blue verified check icon for senior helpers */}
+                                                    <span className="inline-flex text-blue-500" title="Verified Senior Helper">
+                                                      <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                                                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                                                      </svg>
+                                                    </span>
+                                                    <span className="text-[9px] text-slate-350">•</span>
+                                                    <span className="text-[10px] text-slate-450 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>{getRelativeTime(ans.createdAt)}</span>
+                                                  </div>
+                                                  <p className="text-[12.5px] text-slate-600 leading-relaxed font-normal" style={{ fontFamily: 'Inter, sans-serif' }}>
+                                                    {ans.body}
+                                                  </p>
+                                                </div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        ) : (
+                                          <p className="text-xs text-slate-400 italic font-medium py-1 pl-4" style={{ fontFamily: 'Inter, sans-serif' }}>
+                                            No answers posted yet. Senior helpers can reply to this question via the Telegram Bot!
+                                          </p>
+                                        )}
+                                      </div>
                                     )}
                                   </div>
-                                )}
-                              </div>
-                            </div>
-                          </motion.div>
-                        </StaggerItem>
-                      );
-                    })}
-                  </StaggerContainer>
-                )}
+                                </div>
+                              </motion.div>
+                            </StaggerItem>
+                          );
+                        })}
+                      </StaggerContainer>
+                    )}
 
-                  {/* Pagination — arrows only */}
-                  {!loading && totalPages > 1 && (
-                    <div className="flex items-center justify-between mt-6 px-1">
-                      <motion.button
-                        whileHover={{ scale: 1.04 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 0 || loading}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-[12px] font-semibold transition-all duration-200 ${
-                          currentPage === 0
-                            ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
-                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm cursor-pointer'
-                        }`}
-                        style={{ fontFamily: 'Poppins, sans-serif' }}
-                      >
-                        <ChevronRight className="w-4 h-4 rotate-180" />
-                        Prev
-                      </motion.button>
+                    {/* Pagination — arrows only */}
+                    {!loading && totalPages > 1 && (
+                      <div className="flex items-center justify-between mt-6 px-1">
+                        <motion.button
+                          whileHover={{ scale: 1.04 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          disabled={currentPage === 0 || loading}
+                          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-[12px] font-semibold transition-all duration-200 ${currentPage === 0
+                              ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
+                              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm cursor-pointer'
+                            }`}
+                          style={{ fontFamily: 'Poppins, sans-serif' }}
+                        >
+                          <ChevronRight className="w-4 h-4 rotate-180" />
+                          Prev
+                        </motion.button>
 
-                      <span className="text-[11px] text-slate-405 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        Page {currentPage + 1} of {totalPages} &middot; {filteredQuestions.length} questions
-                      </span>
+                        <span className="text-[11px] text-slate-405 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Page {currentPage + 1} of {totalPages} &middot; {filteredQuestions.length} questions
+                        </span>
 
-                      <motion.button
-                        whileHover={{ scale: 1.04 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage >= totalPages - 1 || loading}
-                        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-[12px] font-semibold transition-all duration-200 ${
-                          currentPage >= totalPages - 1
-                            ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
-                            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm cursor-pointer'
-                        }`}
-                        style={{ fontFamily: 'Poppins, sans-serif' }}
-                      >
-                        Next
-                        <ChevronRight className="w-4 h-4" />
-                      </motion.button>
-                    </div>
-                  )}
+                        <motion.button
+                          whileHover={{ scale: 1.04 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          disabled={currentPage >= totalPages - 1 || loading}
+                          className={`flex items-center gap-1.5 px-4 py-2 rounded-xl border text-[12px] font-semibold transition-all duration-200 ${currentPage >= totalPages - 1
+                              ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
+                              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm cursor-pointer'
+                            }`}
+                          style={{ fontFamily: 'Poppins, sans-serif' }}
+                        >
+                          Next
+                          <ChevronRight className="w-4 h-4" />
+                        </motion.button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -803,11 +796,10 @@ export default function Community() {
                           <div className="flex items-center justify-between">
                             <button
                               onClick={() => toggleLike(conf.id)}
-                              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all duration-200 cursor-pointer border text-[10px] font-bold ${
-                                likedIds.has(conf.id)
+                              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all duration-200 cursor-pointer border text-[10px] font-bold ${likedIds.has(conf.id)
                                   ? 'bg-rose-50 text-rose-600 border-rose-100/60 hover:bg-rose-100/60'
                                   : 'bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 border-slate-200/30'
-                              }`}
+                                }`}
                             >
                               <Heart
                                 className="w-3.5 h-3.5"
