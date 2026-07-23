@@ -1,6 +1,5 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useSearchParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
 import Navbar from '@/components/Navbar/Navbar';
 import Footer from '@/components/Footer/Footer';
 
@@ -12,6 +11,8 @@ const pageVariants = {
 
 export default function MainLayout() {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const hideFooter = location.pathname === '/notes' && searchParams.has('toolkit');
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FAFAFA' }}>
@@ -28,7 +29,7 @@ export default function MainLayout() {
           <Outlet />
         </motion.main>
       </AnimatePresence>
-      <Footer />
+      {!hideFooter && <Footer />}
     </div>
   );
 }

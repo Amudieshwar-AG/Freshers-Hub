@@ -887,14 +887,12 @@ export const CONFESSIONS_DATA: Confession[] = [
 
 // ─── Toolkit Items ───────────────────────────────────────────────────────────
 export const TOOLKIT_ITEMS: ToolkitItem[] = [
-  { id: '1', title: 'Timetable 2025-26', description: 'Semester timetable for all departments', type: 'pdf', url: '#', icon: 'Clock', category: 'Academic' },
-  { id: '2', title: 'Academic Calendar', description: 'Important dates, holidays, and exams', type: 'pdf', url: '#', icon: 'CalendarDays', category: 'Academic' },
-  { id: '3', title: 'Fee Payment Form', description: 'Semester fee payment form', type: 'form', url: '#', icon: 'CreditCard', category: 'Administrative' },
-  { id: '4', title: 'Syllabus 2025', description: 'Updated syllabus for all semesters', type: 'pdf', url: '#', icon: 'BookMarked', category: 'Academic' },
-  { id: '5', title: 'Regulations 2021', description: 'Anna University regulations document', type: 'pdf', url: '#', icon: 'ScrollText', category: 'Regulatory' },
-  { id: '6', title: 'ERP Portal Guide', description: 'Step-by-step guide to use ERP system', type: 'pdf', url: '#', icon: 'Monitor', category: 'Guide' },
-  { id: '7', title: 'Leave Application', description: 'Student leave application form', type: 'form', url: '#', icon: 'FileCheck', category: 'Administrative' },
-  { id: '8', title: 'Bus Pass Form', description: 'Apply for monthly bus pass', type: 'form', url: '#', icon: 'Bus', category: 'Administrative' },
+  { id: '1', title: 'CS tools', description: 'Computer Science tools and resources', type: 'link', url: '#', icon: 'Code', category: 'Engineering' },
+  { id: '2', title: 'Business tools', description: 'Business systems and management resources', type: 'link', url: '#', icon: 'Briefcase', category: 'Engineering' },
+  { id: '3', title: 'Cybersecurity tools', description: 'Security and networking tools', type: 'link', url: '#', icon: 'Shield', category: 'Engineering' },
+  { id: '4', title: 'AI tools', description: 'Artificial Intelligence and Machine Learning resources', type: 'link', url: '#', icon: 'Brain', category: 'Engineering' },
+  { id: '5', title: 'Electrical and Electronic tools', description: 'Electrical and Electronics engineering tools', type: 'link', url: '#', icon: 'Cpu', category: 'Engineering' },
+  { id: '6', title: 'Biotech tools', description: 'Biotechnology tools and lab resources', type: 'link', url: '#', icon: 'FlaskConical', category: 'Engineering' },
 ];
 
 // ─── Campus Locations ────────────────────────────────────────────────────────
