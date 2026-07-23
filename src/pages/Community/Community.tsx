@@ -9,8 +9,6 @@ import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/An
 import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
 import { CONFESSIONS_DATA } from '@/constants';
 
-type Tab = 'qa' | 'confession';
-
 const TRENDING_TAGS = ['hostel', 'academics', 'clubs', 'campus', 'canteen', 'sports', 'placement', 'library', 'cat exam', 'semester', 'labs', 'exams'];
 
 const AVATARS: Record<string, string> = {
@@ -66,11 +64,8 @@ const getRelativeTime = (dateString: string) => {
 export default function Community() {
   const PAGE_SIZE = 5;
 
-  const [activeTab, setActiveTab] = useState<Tab>('qa');
-  const [confessionText, setConfessionText] = useState('');
   const [questionText, setQuestionText] = useState('');
   const [authorName, setAuthorName] = useState('');
-  const [confessionPosted, setConfessionPosted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
   const [expandedQuestionIds, setExpandedQuestionIds] = useState<Set<string>>(new Set());
@@ -168,13 +163,6 @@ export default function Community() {
     setCurrentPage(newPage);
     // Scroll back to the top of the questions list smoothly
     document.getElementById('qa-questions-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
-  const handleConfess = () => {
-    if (!confessionText.trim()) return;
-    setConfessionPosted(true);
-    setConfessionText('');
-    setTimeout(() => setConfessionPosted(false), 3000);
   };
 
   const handleLike = async (id: string) => {
@@ -300,44 +288,7 @@ export default function Community() {
       </div>
 
       <div className="container-custom py-10">
-        {/* Tabs */}
-        <div className="flex gap-1.5 bg-slate-100 rounded-xl p-1.5 border border-slate-200/40 mb-8 w-fit">
-          {[
-            { id: 'qa' as Tab, label: 'Freshers Q&A', icon: MessageCircle },
-            { id: 'confession' as Tab, label: 'Confessions', icon: Heart },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className="relative flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-all cursor-pointer"
-              style={{ fontFamily: 'Poppins, sans-serif', color: activeTab === tab.id ? '#ffffff' : '#64748B' }}
-            >
-              {activeTab === tab.id && (
-                <motion.div
-                  layoutId="community-tab"
-                  className="absolute inset-0 rounded-lg bg-slate-950"
-                  transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }}
-                />
-              )}
-              <span className="relative z-10 flex items-center gap-2">
-                <tab.icon className="w-3.5 h-3.5" />
-                {tab.label}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        <AnimatePresence mode="wait">
-          {/* Q&A Tab */}
-          {activeTab === 'qa' && (
-            <motion.div
-              key="qa"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25 }}
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">                  {/* Ask Question Box */}
                   <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 mb-8" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
                     <h3 className="text-base font-semibold text-[#1E293B] mb-3 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>Ask a Question</h3>
@@ -689,167 +640,6 @@ export default function Community() {
                   </AnimatedContainer>
                 </div>
               </div>
-            </motion.div>
-          )}
-
-          {/* Confessions Tab */}
-          {activeTab === 'confession' && (
-            <motion.div
-              key="confession"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.25 }}
-            >
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                  {/* Post confession */}
-                  <div
-                    className="rounded-2xl p-6 mb-6 border"
-                    style={{ background: '#0F172A', borderColor: 'rgba(255,255,255,0.05)' }}
-                  >
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-slate-800">
-                        <Lock className="w-4.5 h-4.5 text-slate-300" />
-                      </div>
-                      <div>
-                        <h3 className="text-white font-semibold text-sm tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>Share Anonymously</h3>
-                        <p className="text-slate-400 text-[11px]">Your identity is never revealed</p>
-                      </div>
-                    </div>
-
-                    <textarea
-                      value={confessionText}
-                      onChange={(e) => setConfessionText(e.target.value)}
-                      placeholder="Share your thoughts, stories, crushes, or anything on your mind... It's completely anonymous 🤫"
-                      rows={4}
-                      className="w-full rounded-2xl p-3.5 text-[13px] placeholder-slate-500 focus:outline-none resize-none mb-4 bg-white/5 border border-white/10 text-white"
-                      style={{
-                        fontFamily: 'Inter, sans-serif',
-                      }}
-                    />
-
-                    <div className="flex items-center gap-2.5 p-3 rounded-xl mb-4 bg-white/5 border border-white/10">
-                      <Shield className="w-4 h-4 text-slate-300 shrink-0" />
-                      <span className="text-[11px] text-slate-400" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        No IP tracking. No username. 100% anonymous posting.
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      <motion.button
-                        whileHover={{ scale: 1.01 }}
-                        whileTap={{ scale: 0.99 }}
-                        onClick={handleConfess}
-                        className="flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl text-white text-[13px] font-semibold bg-[#F97316] hover:bg-[#EA580C] transition-colors cursor-pointer"
-                        style={{ fontFamily: 'Poppins, sans-serif' }}
-                      >
-                        <Smile className="w-4 h-4" />
-                        Post Anonymously
-                      </motion.button>
-
-                      <AnimatePresence>
-                        {confessionPosted && (
-                          <motion.span
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0 }}
-                            className="text-xs text-emerald-400"
-                            style={{ fontFamily: 'Inter, sans-serif' }}
-                          >
-                            ✓ Posted successfully!
-                          </motion.span>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  </div>
-
-                  {/* Confessions Feed */}
-                   {CONFESSIONS_DATA.length > 0 ? (
-                     <StaggerContainer className="flex flex-col gap-4">
-                       {CONFESSIONS_DATA.map((conf) => (
-                         <StaggerItem key={conf.id}>
-                           <motion.div
-                             whileHover={{ y: -4, boxShadow: '0 20px 50px -12px rgba(0,0,0,0.12)', borderColor: '#CBD5E1' }}
-                             transition={{ duration: 0.25 }}
-                             className="bg-white rounded-2xl border border-[#E5E7EB] p-6 transition-all duration-300"
-                             style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
-                           >
-                             <div className="flex items-start justify-between mb-3">
-                               <div className="flex items-center gap-2.5">
-                                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-50 border border-slate-100">
-                                   <Shield className="w-4 h-4 text-slate-500" />
-                                 </div>
-                                 <div>
-                                   <span className="text-xs font-bold text-slate-800" style={{ fontFamily: 'Poppins, sans-serif' }}>Anonymous</span>
-                                   <p className="text-[10px] text-slate-400 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>{getRelativeTime(conf.createdAt)}</p>
-                                 </div>
-                               </div>
-                               {conf.category && (
-                                 <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-50 text-slate-600 border border-slate-200/40" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                   {conf.category}
-                                 </span>
-                               )}
-                             </div>
-                             <p className="text-[13px] text-slate-755 leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>{conf.content}</p>
-                             <div className="flex items-center justify-between">
-                               <button
-                                 onClick={() => toggleLike(conf.id)}
-                                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all duration-200 cursor-pointer border text-[10px] font-bold ${likedIds.has(conf.id)
-                                     ? 'bg-rose-50 text-rose-600 border-rose-100/60 hover:bg-rose-100/60'
-                                     : 'bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 border-slate-200/30'
-                                   }`}
-                               >
-                                 <Heart
-                                   className="w-3.5 h-3.5"
-                                   fill={likedIds.has(conf.id) ? '#e11d48' : 'none'}
-                                   color={likedIds.has(conf.id) ? '#e11d48' : 'currentColor'}
-                                 />
-                                 <span>{conf.reactions + (likedIds.has(conf.id) ? 1 : 0)}</span>
-                               </button>
-                             </div>
-                           </motion.div>
-                         </StaggerItem>
-                       ))}
-                     </StaggerContainer>
-                   ) : (
-                     <div className="bg-white rounded-2xl border border-[#E5E7EB] p-8 text-center" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
-                       <Shield className="w-8 h-8 text-slate-300 mx-auto mb-3" />
-                       <p className="text-sm font-semibold text-slate-700 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                         No Confessions Yet
-                       </p>
-                       <p className="text-xs text-slate-400" style={{ fontFamily: 'Inter, sans-serif' }}>
-                         Be the first to post a confession anonymously!
-                       </p>
-                     </div>
-                   )}
-                </div>
-
-                {/* Sidebar */}
-                <AnimatedContainer direction="right" delay={0.15}>
-                  <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
-                    <h3 className="text-sm font-semibold text-[#1E293B] mb-4 flex items-center gap-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      <Shield className="w-4 h-4 text-slate-500" />
-                      Community Rules
-                    </h3>
-                    {[
-                      'Be respectful and kind',
-                      'No hate speech or bullying',
-                      'No personal information',
-                      'Keep it relevant to campus life',
-                      'Confessions are 100% anonymous',
-                    ].map((rule, i) => (
-                      <div key={i} className="flex items-start gap-2.5 py-2.5 border-b border-slate-100 last:border-0">
-                        <ChevronRight className="w-3.5 h-3.5 text-slate-400 mt-0.5 shrink-0" />
-                        <span className="text-xs text-slate-650" style={{ fontFamily: 'Inter, sans-serif' }}>{rule}</span>
-                      </div>
-                    ))}
-                  </div>
-                </AnimatedContainer>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
     </div>
   );
