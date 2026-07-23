@@ -902,7 +902,6 @@ export const CAMPUS_LOCATIONS: CampusLocation[] = [
   { id: 'labs', name: 'Labs', icon: 'FlaskConical' },
   { id: 'hostel', name: 'Hostels', icon: 'Home' },
   { id: 'canteen', name: 'Canteen', icon: 'UtensilsCrossed' },
-  { id: 'busstop', name: 'Bus Stop', icon: 'Bus' },
   { id: 'auditorium', name: 'Auditorium', icon: 'Theater' },
   { id: 'sports', name: 'Sports Ground', icon: 'Trophy' },
 ];

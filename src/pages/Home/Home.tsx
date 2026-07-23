@@ -359,7 +359,7 @@ export default function Home() {
               </div>
 
               {/* Quick nav buttons */}
-              <div className="p-5 grid grid-cols-4 sm:grid-cols-8 gap-3">
+              <div className="p-5 grid grid-cols-3 sm:grid-cols-7 gap-3">
                 {CAMPUS_LOCATIONS.map((loc) => {
                   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[loc.icon];
                   return (

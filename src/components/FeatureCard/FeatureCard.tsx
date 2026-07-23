@@ -21,9 +21,9 @@ export default function FeatureCard({ feature }: FeatureCardProps) {
       {/* Icon */}
       <div
         className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-        style={{ backgroundColor: feature.bgColor }}
+        style={{ backgroundColor: feature.bgColor, color: feature.color }}
       >
-        {IconComponent && <IconComponent className="w-6 h-6" style={{ color: feature.color } as React.CSSProperties} />}
+        {IconComponent && <IconComponent className="w-6 h-6" />}
       </div>
 
       {/* Content */}
