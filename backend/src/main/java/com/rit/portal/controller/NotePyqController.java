@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/notes")
-@CrossOrigin(origins = "*") // CrossOrigin configured globally, but added here for safety
 public class NotePyqController {
 
     @Autowired
@@ -142,7 +141,7 @@ public class NotePyqController {
 
     // Increment downloads count
     @PostMapping("/{id}/download")
-    public ResponseEntity<Void> incrementDownloads(@PathVariable Long id) {
+    public ResponseEntity<Void> incrementDownloads(@PathVariable Integer id) {
         return noteRepository.findById(id).map(note -> {
             note.setDownloadsCount(note.getDownloadsCount() + 1);
             note.setFileType(note.getFileType()); // Keep dirty check
