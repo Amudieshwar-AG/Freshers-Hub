@@ -102,6 +102,16 @@ def send_telegram_message(chat_id: int, text: str, reply_to_message_id: int = No
 # Background Long Polling for Telegram Updates
 def telegram_polling_thread():
     logging.info("Starting Telegram long polling thread...")
+    try:
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/getMe"
+        res = requests.get(url, timeout=10).json()
+        if res.get("ok"):
+            logging.info(f"Successfully connected to Telegram Bot: @{res['result']['username']} ({res['result']['first_name']})")
+        else:
+            logging.error(f"Failed to connect to Telegram Bot. Check token: {res}")
+    except Exception as e:
+        logging.error(f"Failed to connect to Telegram API: {e}")
+
     offset = 0
     while True:
         # Re-load config dynamic updates
@@ -130,6 +140,8 @@ def telegram_polling_thread():
                     
                 chat_id = message["chat"]["id"]
                 text = message.get("text", "").strip()
+                
+                logging.info(f"Received message from chat {chat_id}: '{text}'")
                 
                 # Help helper find their Chat ID
                 if text == "/start":
@@ -179,6 +191,10 @@ def telegram_polling_thread():
                             send_telegram_message(chat_id, f"❌ *Connection error to backend.* ({e})", reply_to_message_id=message["message_id"])
                     else:
                         send_telegram_message(chat_id, "❓ This message does not correspond to any active question or the mapping has expired.", reply_to_message_id=message["message_id"])
+                else:
+                    # Not a reply message and not "/start"
+                    if not text.startswith("/"):
+                        send_telegram_message(chat_id, "💡 To submit an answer to a question, please **reply directly** to the question message sent by the bot.")
                         
         except Exception as e:
             logging.error(f"Error in long polling loop: {e}")
