@@ -484,7 +484,7 @@ export default function Community() {
 
                                         {/* Tags Inline */}
                                         <div className="flex items-center gap-1 flex-wrap pl-1 border-l border-slate-100">
-                                          {(q.tags || []).map((tag) => (
+                                          {(q.tags || []).map((tag: string) => (
                                             <span
                                               key={tag}
                                               onClick={(e) => { e.stopPropagation(); setSearchQuery(tag); }}
