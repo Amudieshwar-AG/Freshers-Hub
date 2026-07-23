@@ -1,11 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Download, Filter, BookOpen, FileText, ScrollText, BookMarked, ChevronRight } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { TOOLKIT_ITEMS, DEPARTMENTS } from '@/constants';
 
-const SEMESTERS = ['All', '1st Sem', '2nd Sem', '3rd Sem', '4th Sem', '5th Sem', '6th Sem', '7th Sem', '8th Sem'];
+const SEMESTERS = ['All', '1st Sem', '2nd Sem'];
+
+const SUBJECTS_BY_SEM: Record<number, string[]> = {
+  1: [
+    "Communicative English",
+    "Matrices and Calculus",
+    "Physics for Information Science",
+    "Problem Solving and C Programming",
+    "Basic Electrical and Electronics Engineering",
+    "Heritage of Tamils",
+    "Physics Laboratory",
+    "Problem Solving and C Programming Laboratory",
+    "Engineering Practices Laboratory"
+  ],
+  2: [
+    "Professional English",
+    "Engineering Chemistry",
+    "Statistics and Numerical Methods",
+    "Python for Data Science",
+    "Tamils and Technology",
+    "Engineering Graphics",
+    "Data Structures Design",
+    "Chemistry Laboratory",
+    "Python for Data Science Laboratory",
+    "Communication Laboratory"
+  ]
+};
 
 const TYPE_COLORS: Record<string, { bg: string; text: string; icon: React.ComponentType<{ className?: string }> }> = {
   notes: { bg: '#EFF6FF', text: '#3B82F6', icon: BookOpen },
@@ -14,30 +40,74 @@ const TYPE_COLORS: Record<string, { bg: string; text: string; icon: React.Compon
   assignment: { bg: '#FDF2F8', text: '#EC4899', icon: BookMarked },
 };
 
-const NOTES_DATA = [
-  { id: '1', title: 'Engineering Mathematics – Unit 1-5', subject: 'Mathematics', department: 'Computer Science & Engineering', semester: 1, type: 'notes', downloads: 348, fileSize: '4.2 MB', uploadedAt: '2025-06-01' },
-  { id: '2', title: 'Physics PYQ 2020-2024', subject: 'Physics', department: 'Computer Science & Engineering', semester: 1, type: 'pyq', downloads: 512, fileSize: '8.1 MB', uploadedAt: '2025-06-10' },
-  { id: '3', title: 'C Programming Complete Notes', subject: 'Programming', department: 'Computer Science & Engineering', semester: 1, type: 'notes', downloads: 734, fileSize: '6.3 MB', uploadedAt: '2025-06-15' },
-  { id: '4', title: 'Data Structures PYQ 2019-2024', subject: 'Data Structures', department: 'Computer Science & Engineering', semester: 3, type: 'pyq', downloads: 621, fileSize: '10.2 MB', uploadedAt: '2025-07-01' },
-  { id: '5', title: 'Circuit Theory Full Notes', subject: 'Circuit Theory', department: 'Electronics & Communication', semester: 2, type: 'notes', downloads: 289, fileSize: '5.7 MB', uploadedAt: '2025-06-20' },
-  { id: '6', title: 'Anna University Syllabus 2021', subject: 'Syllabus', department: 'All Departments', semester: 1, type: 'syllabus', downloads: 890, fileSize: '2.1 MB', uploadedAt: '2025-05-01' },
-  { id: '7', title: 'Thermodynamics Notes', subject: 'Thermodynamics', department: 'Mechanical Engineering', semester: 3, type: 'notes', downloads: 201, fileSize: '3.9 MB', uploadedAt: '2025-06-25' },
-  { id: '8', title: 'Digital Electronics PYQ', subject: 'Digital Electronics', department: 'Electronics & Communication', semester: 4, type: 'pyq', downloads: 445, fileSize: '7.3 MB', uploadedAt: '2025-07-05' },
-];
+interface NoteItem {
+  id: string;
+  title: string;
+  subject: string;
+  department: string;
+  semester: number;
+  type: string;
+  downloads: number;
+  fileSize: string;
+  uploadedAt: string;
+  downloadUrl: string;
+}
 
 export default function Notes() {
+  const [notes, setNotes] = useState<NoteItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSem, setSelectedSem] = useState('All');
   const [selectedDept, setSelectedDept] = useState('All Departments');
   const [selectedType, setSelectedType] = useState('all');
+  const [selectedSubject, setSelectedSubject] = useState('All Subjects');
 
-  const filtered = NOTES_DATA.filter((note) => {
+  useEffect(() => {
+    fetch('http://localhost:8080/api/notes')
+      .then((res) => res.json())
+      .then((data) => {
+        const mapped = data.map((item: any) => ({
+          id: item.id.toString(),
+          title: item.title,
+          subject: item.subject,
+          department: item.department,
+          semester: item.semester,
+          type: item.fileType,
+          downloads: item.downloadsCount,
+          fileSize: item.fileSize,
+          uploadedAt: item.uploadedAt ? item.uploadedAt.split('T')[0] : '',
+          downloadUrl: item.downloadUrl,
+        }));
+        setNotes(mapped);
+      })
+      .catch((err) => console.error('Error fetching notes:', err));
+  }, []);
+
+  const handleDownload = async (note: NoteItem) => {
+    // Open in new tab
+    window.open(note.downloadUrl, '_blank');
+    
+    // Call backend to increment download count
+    try {
+      await fetch(`http://localhost:8080/api/notes/${note.id}/download`, {
+        method: 'POST',
+      });
+      // Increment locally to update UI immediately
+      setNotes((prevNotes) =>
+        prevNotes.map((n) => (n.id === note.id ? { ...n, downloads: n.downloads + 1 } : n))
+      );
+    } catch (err) {
+      console.error('Error incrementing download count:', err);
+    }
+  };
+
+  const filtered = notes.filter((note) => {
     const matchSearch = note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       note.subject.toLowerCase().includes(searchQuery.toLowerCase());
     const matchSem = selectedSem === 'All' || note.semester === parseInt(selectedSem);
     const matchDept = selectedDept === 'All Departments' || note.department === selectedDept || note.department === 'All Departments';
     const matchType = selectedType === 'all' || note.type === selectedType;
-    return matchSearch && matchSem && matchDept && matchType;
+    const matchSubject = selectedSubject === 'All Subjects' || note.subject === selectedSubject;
+    return matchSearch && matchSem && matchDept && matchType && matchSubject;
   });
 
   return (
@@ -90,7 +160,7 @@ export default function Notes() {
             {/* Type Filter */}
             <div className="flex items-center gap-2 flex-wrap">
               <Filter className="w-4 h-4 text-[#94A3B8]" />
-              {['all', 'notes', 'pyq', 'syllabus'].map((type) => (
+              {['all', 'notes', 'pyq', 'syllabus', 'assignment'].map((type) => (
                 <button
                   key={type}
                   onClick={() => setSelectedType(type)}
@@ -109,10 +179,13 @@ export default function Notes() {
 
             {/* Semester Filter */}
             <div className="flex gap-2 flex-wrap">
-              {SEMESTERS.slice(0, 5).map((sem) => (
+              {SEMESTERS.map((sem) => (
                 <button
                   key={sem}
-                  onClick={() => setSelectedSem(sem)}
+                  onClick={() => {
+                    setSelectedSem(sem);
+                    setSelectedSubject('All Subjects');
+                  }}
                   className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                   style={{
                     fontFamily: 'Poppins, sans-serif',
@@ -125,11 +198,58 @@ export default function Notes() {
                 </button>
               ))}
             </div>
+
+            {/* Subject Dropdown */}
+            {selectedSem !== 'All' && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-[#64748B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Subject:</span>
+                <select
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F8FAFC] border border-[#E5E7EB] text-[#475569] focus:outline-none focus:border-[#F97316] transition-all cursor-pointer"
+                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                >
+                  <option value="All Subjects">All Subjects</option>
+                  {SUBJECTS_BY_SEM[parseInt(selectedSem)].map((sub) => (
+                    <option key={sub} value={sub}>
+                      {sub}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
         </motion.div>
 
+        {/* Stats Summary Banner */}
+        <div className="grid grid-cols-2 gap-4 bg-white border border-[#E5E7EB] rounded-2xl p-5 mb-8" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
+          {/* Stat 1: Notes */}
+          <div className="flex items-center justify-center gap-4">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#FFF7ED] shrink-0">
+              <FileText className="w-6 h-6 text-[#F97316]" />
+            </div>
+            <div className="text-left">
+              <div className="text-xl md:text-2xl font-bold text-[#1E293B]">{notes.length}+</div>
+              <div className="text-xs text-[#64748B] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Notes & Materials</div>
+            </div>
+          </div>
+          
+          {/* Stat 2: Subjects */}
+          <div className="flex items-center justify-center gap-4 border-l border-[#E5E7EB]">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#EFF6FF] shrink-0">
+              <BookOpen className="w-6 h-6 text-[#3B82F6]" />
+            </div>
+            <div className="text-left pl-4">
+              <div className="text-xl md:text-2xl font-bold text-[#1E293B]">
+                {Array.from(new Set(notes.map(n => n.subject))).length}
+              </div>
+              <div className="text-xs text-[#64748B] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Subjects</div>
+            </div>
+          </div>
+        </div>
+
         {/* Results */}
-        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
+        <StaggerContainer key={filtered.length} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
           {filtered.map((note) => {
             const typeConfig = TYPE_COLORS[note.type];
             const TypeIcon = typeConfig.icon;
@@ -137,35 +257,64 @@ export default function Notes() {
               <StaggerItem key={note.id}>
                 <motion.div
                   whileHover={{ y: -4 }}
-                  className="bg-white rounded-2xl border border-[#E5E7EB] p-5 flex flex-col gap-3"
-                  style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
+                  className="bg-white rounded-2xl border border-[#E5E7EB] p-5 flex flex-col justify-between gap-4"
+                  style={{
+                    borderLeft: `4px solid ${typeConfig.text}`,
+                    boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)'
+                  }}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: typeConfig.bg }}>
-                      <TypeIcon className="w-5 h-5" style={{ color: typeConfig.text } as React.CSSProperties} />
+                  <div className="flex gap-4">
+                    {/* Visual PDF Preview Icon */}
+                    <div className="w-14 h-20 border border-slate-200 rounded-xl p-2 flex flex-col justify-between bg-[#F8FAFC] shrink-0 shadow-sm">
+                      <div className="bg-[#EF4444] text-[8px] font-extrabold text-white px-1 py-0.5 rounded w-fit uppercase tracking-wider" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        PDF
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <div className="w-full h-1 bg-slate-200 rounded" />
+                        <div className="w-5/6 h-1 bg-slate-200 rounded" />
+                        <div className="w-2/3 h-1 bg-slate-200 rounded" />
+                      </div>
                     </div>
-                    <span
-                      className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase"
-                      style={{ backgroundColor: typeConfig.bg, color: typeConfig.text, fontFamily: 'Poppins, sans-serif' }}
-                    >
-                      {note.type}
-                    </span>
+
+                    {/* Text Details */}
+                    <div className="flex flex-col justify-between flex-1 min-w-0">
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: typeConfig.bg }}>
+                            <TypeIcon className="w-3.5 h-3.5" style={{ color: typeConfig.text }} />
+                          </div>
+                          <span
+                            className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider"
+                            style={{ backgroundColor: typeConfig.bg, color: typeConfig.text, fontFamily: 'Poppins, sans-serif' }}
+                          >
+                            {note.type}
+                          </span>
+                        </div>
+                        <h3 className="text-sm font-bold text-[#1E293B] line-clamp-2 leading-tight mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {note.title}
+                        </h3>
+                        <p className="text-[11px] text-[#64748B] font-medium truncate" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          {note.subject} • Sem {note.semester}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-[#1E293B] leading-snug mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      {note.title}
-                    </h3>
-                    <p className="text-xs text-[#94A3B8]" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      {note.subject} · Sem {note.semester}
-                    </p>
+
+                  {/* Metadata Line */}
+                  <div className="flex items-center justify-between border-t border-[#F1F5F9] pt-3 text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-slate-800">{note.fileSize}</span>
+                      <span className="px-1 py-0.2 bg-[#F1F5F9] rounded text-[9px] font-bold text-slate-600">PDF</span>
+                    </div>
+                    <span>{note.uploadedAt ? `Updated ${note.uploadedAt}` : 'Recently'}</span>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-[#94A3B8] pt-2 border-t border-[#E5E7EB]">
-                    <span style={{ fontFamily: 'Inter, sans-serif' }}>{note.downloads} downloads · {note.fileSize}</span>
-                  </div>
+
+                  {/* Download Button */}
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.97 }}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white"
+                    onClick={() => handleDownload(note)}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer"
                     style={{
                       fontFamily: 'Poppins, sans-serif',
                       background: 'linear-gradient(135deg, #F97316, #FB923C)',
