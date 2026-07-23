@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Download, Filter, BookOpen, FileText, ScrollText, BookMarked, ChevronRight, ArrowLeft, ExternalLink, Code, Globe, GitBranch, Cloud, Palette, Shield, DollarSign, BarChart3, Users, Megaphone, TrendingUp, UserCheck, ClipboardList, ShoppingCart, Cpu, Activity, LayoutGrid, Layers, Zap, Settings, Gauge, Radio, Wifi, Bot, Sun, Wrench, Binary, BatteryCharging, CircuitBoard, ShieldCheck, BrainCircuit, FlaskConical, Lock, Terminal, Dna, Microscope, Sparkles, Smartphone, Monitor, Server, CheckCircle2, Database, Briefcase } from 'lucide-react';
@@ -1300,6 +1300,50 @@ export default function Notes() {
   const [selectedLanguage, setSelectedLanguage] = useState<number | null>(null);
   const [selectedTool, setSelectedTool] = useState<{ name: string; desc: string; url: string; category: string; bg: string; color: string } | null>(null);
 
+  const [notes, setNotes] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/notes');
+        if (response.ok) {
+          const data = await response.json();
+          const mappedData = data.map((n: any) => ({
+            id: String(n.id),
+            title: n.title,
+            subject: n.subject,
+            department: n.department,
+            semester: n.semester,
+            type: n.fileType,
+            downloads: n.downloadsCount || 0,
+            fileSize: n.fileSize,
+            uploadedAt: n.uploadedAt ? n.uploadedAt.split('T')[0] : '',
+            downloadUrl: n.downloadUrl
+          }));
+          setNotes(mappedData);
+        } else {
+          setNotes(NOTES_DATA);
+        }
+      } catch (err) {
+        console.error('Error fetching notes:', err);
+        setNotes(NOTES_DATA);
+      }
+    };
+    fetchNotes();
+  }, []);
+
+  const handleDownload = async (noteId: string, downloadUrl: string) => {
+    try {
+      await fetch(`http://localhost:8080/api/notes/${noteId}/download`, { method: 'POST' });
+      setNotes(prev => prev.map(n => n.id === noteId ? { ...n, downloads: n.downloads + 1 } : n));
+    } catch (err) {
+      console.error('Error incrementing download count:', err);
+    }
+    if (downloadUrl) {
+      window.open(downloadUrl, '_blank');
+    }
+  };
+
   const setSelectedToolkit = (value: string | null) => {
     if (value) {
       setSearchParams({ toolkit: value });
@@ -1315,7 +1359,7 @@ export default function Notes() {
   };
   const toolkitRef = useRef<HTMLDivElement>(null);
 
-  const filtered = NOTES_DATA.filter((note) => {
+  const filtered = notes.filter((note) => {
     const matchSearch = note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       note.subject.toLowerCase().includes(searchQuery.toLowerCase());
     const matchSem = selectedSem === 'All' || note.semester === parseInt(selectedSem);
@@ -1933,7 +1977,8 @@ export default function Notes() {
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.97 }}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white"
+                        onClick={() => handleDownload(note.id, note.downloadUrl)}
+                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer"
                         style={{
                           fontFamily: 'Poppins, sans-serif',
                           background: 'linear-gradient(135deg, #F97316, #FB923C)',
