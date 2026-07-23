@@ -1,303 +1,215 @@
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, Sparkles, BookOpen, Bot, GraduationCap,
-  CheckCircle, Zap, Shield, Brain
+  CheckCircle, Zap, Shield, Brain, Trophy, Award, Cpu, Users
 } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
-import StatsCard from '@/components/StatsCard/StatsCard';
 import FeatureCard from '@/components/FeatureCard/FeatureCard';
 import FloatingCard from '@/components/FloatingCard/FloatingCard';
 import ChatPreview from '@/components/ChatPreview/ChatPreview';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
-import { STATS, FEATURES, CAMPUS_LOCATIONS } from '@/constants';
+import { FEATURES, CAMPUS_LOCATIONS } from '@/constants';
 import * as LucideIcons from 'lucide-react';
 
 export default function Home() {
+  const { scrollY } = useScroll();
+  const heroOpacity = useTransform(scrollY, [0, 450], [1, 0]);
+  const heroY = useTransform(scrollY, [0, 450], [0, -80]);
+
   return (
-    <div>
+    <div className="relative">
+      {/* Sticky Background Video */}
+      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className="w-full h-full object-cover"
+          style={{ 
+            filter: 'contrast(1.12) brightness(0.88) saturate(1.08)',
+            transform: 'translate3d(0, 0, 0)',
+            willChange: 'transform',
+            imageRendering: 'high-quality'
+          }}
+        >
+          <source src="/video/RIT Video.mp4" type="video/mp4" />
+        </video>
+        {/* Dark Overlay (40-50%) */}
+        <div 
+          className="absolute inset-0" 
+          style={{ background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.65))' }}
+        />
+      </div>
+
       {/* ─── Hero Section ─────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-12 pb-24" style={{ backgroundColor: '#FAFAFA' }}>
-        {/* Background Decoration */}
-        <div
-          className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-[0.04] -translate-y-1/2 translate-x-1/3 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #F97316, transparent)' }}
-        />
-        <div
-          className="absolute bottom-0 left-0 w-[350px] h-[350px] rounded-full opacity-[0.03] translate-y-1/2 -translate-x-1/3 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #F97316, transparent)' }}
-        />
+      <section className="relative overflow-hidden min-h-screen flex flex-col justify-center pt-24 pb-32 z-10 bg-transparent">
+        {/* Center Content */}
+        <motion.div 
+          className="container-custom relative z-20 flex flex-col items-center justify-center text-center px-4"
+          style={{ opacity: heroOpacity, y: heroY }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-3"
+          >
+            <span className="text-[#F97316] text-xs font-bold uppercase tracking-widest" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              OUR LEGACY & FUTURE
+            </span>
+          </motion.div>
 
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-            {/* Left – Visual Section (RIT Events Hub Style) */}
-            <div className="lg:col-span-6 relative flex justify-center">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.7 }}
-                className="relative w-full max-w-lg"
+          <motion.h1
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-white text-3xl md:text-4xl font-light mb-2"
+            style={{ fontFamily: 'Playfair Display, serif', color: '#FFFFFF', textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)' }}
+          >
+            Welcome to
+          </motion.h1>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="text-5xl md:text-7xl font-extrabold leading-tight mb-6 bg-gradient-to-r from-[#F97316] via-[#FB923C] to-[#F97316] bg-clip-text text-transparent"
+            style={{ fontFamily: 'Playfair Display, serif', color: 'transparent', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0 4px 12px rgba(249, 115, 22, 0.45))' }}
+          >
+            RIT Freshers Hub
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="max-w-2xl text-slate-200 text-sm md:text-base leading-relaxed mb-8"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
+            The RIT Freshers Hub is your centralized gateway to campus life, academic resources, AI assistance, clubs, events, bus routes, notes, and student services.
+          </motion.p>
+
+          {/* Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+            className="flex flex-wrap justify-center gap-4 mb-8"
+          >
+            <a href="#built-for-freshers">
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: '0 8px 25px rgba(249,115,22,0.4)' }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl text-white font-semibold text-sm cursor-pointer"
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  background: 'linear-gradient(135deg, #F97316, #FB923C)',
+                }}
               >
-                {/* Main campus image/graphic card */}
-                <div
-                  className="rounded-[24px] overflow-hidden bg-white border border-[#E5E7EB] relative aspect-[4/3] w-full"
-                  style={{ boxShadow: '0 24px 60px -12px rgba(0,0,0,0.15)' }}
-                >
-                  {/* Inline Premium Vector SVG Illustration of RIT Campus Building & Canopy */}
-                  <svg viewBox="0 0 800 600" className="w-full h-full select-none" preserveAspectRatio="xMidYMid slice">
-                    <defs>
-                      <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#1E3A8A" />
-                        <stop offset="40%" stopColor="#3B82F6" />
-                        <stop offset="100%" stopColor="#93C5FD" />
-                      </linearGradient>
-                      <linearGradient id="grassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#059669" />
-                        <stop offset="100%" stopColor="#065F46" />
-                      </linearGradient>
-                      <linearGradient id="pathGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#F1F5F9" />
-                        <stop offset="100%" stopColor="#CBD5E1" />
-                      </linearGradient>
-                      <linearGradient id="buildGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#E2E8F0" />
-                        <stop offset="100%" stopColor="#F8FAFC" />
-                      </linearGradient>
-                      <linearGradient id="canopyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#F97316" />
-                        <stop offset="100%" stopColor="#EA580C" />
-                      </linearGradient>
-                      <filter id="glow">
-                        <feGaussianBlur stdDeviation="15" result="coloredBlur"/>
-                        <feMerge>
-                          <feMergeNode in="coloredBlur"/>
-                          <feMergeNode in="SourceGraphic"/>
-                        </feMerge>
-                      </filter>
-                    </defs>
+                <BookOpen className="w-4 h-4" />
+                Explore Hub
+                <ArrowRight className="w-3.5 h-3.5" />
+              </motion.button>
+            </a>
 
-                    {/* Sky */}
-                    <rect width="800" height="600" fill="url(#skyGrad)" />
-
-                    {/* Glowing Sun */}
-                    <circle cx="700" cy="100" r="50" fill="#FEF08A" opacity="0.8" filter="url(#glow)" />
-
-                    {/* Distant Hills / Tree Line */}
-                    <path d="M0 450 Q150 420 300 440 T600 430 T800 450 L800 600 L0 600 Z" fill="#047857" opacity="0.7" />
-                    <path d="M0 460 Q200 440 400 455 T800 460 L800 600 L0 600 Z" fill="url(#grassGrad)" />
-
-                    {/* Academic Building Facade (Modern RIT Blocks) */}
-                    <rect x="50" y="200" width="300" height="260" fill="url(#buildGrad)" rx="8" />
-                    {/* Windows Grid */}
-                    <g fill="#475569" opacity="0.3">
-                      {/* Row 1 */}
-                      <rect x="75" y="230" width="35" height="40" rx="3" />
-                      <rect x="135" y="230" width="35" height="40" rx="3" />
-                      <rect x="195" y="230" width="35" height="40" rx="3" />
-                      <rect x="255" y="230" width="35" height="40" rx="3" />
-                      {/* Row 2 */}
-                      <rect x="75" y="300" width="35" height="40" rx="3" />
-                      <rect x="135" y="300" width="35" height="40" rx="3" />
-                      <rect x="195" y="300" width="35" height="40" rx="3" />
-                      <rect x="255" y="300" width="35" height="40" rx="3" />
-                      {/* Row 3 */}
-                      <rect x="75" y="370" width="35" height="40" rx="3" />
-                      <rect x="135" y="370" width="35" height="40" rx="3" />
-                      <rect x="195" y="370" width="35" height="40" rx="3" />
-                      <rect x="255" y="370" width="35" height="40" rx="3" />
-                    </g>
-
-                    {/* Main Entrance Pillars & Arch (RIT Architecture) */}
-                    <rect x="380" y="150" width="380" height="310" fill="#F1F5F9" rx="16" opacity="0.95" />
-                    <rect x="400" y="170" width="340" height="290" fill="#E2E8F0" rx="12" />
-
-                    {/* Premium Canopy Truss Structure (RIT Event Canopy Representation) */}
-                    <polygon points="360,150 780,120 780,180 360,210" fill="url(#canopyGrad)" opacity="0.9" />
-                    <g stroke="white" strokeWidth="3" opacity="0.8">
-                      <line x1="380" y1="155" x2="380" y2="200" />
-                      <line x1="450" y1="150" x2="450" y2="195" />
-                      <line x1="520" y1="145" x2="520" y2="190" />
-                      <line x1="590" y1="140" x2="590" y2="185" />
-                      <line x1="660" y1="135" x2="660" y2="180" />
-                      <line x1="730" y1="130" x2="730" y2="175" />
-                      
-                      {/* Cross trusses */}
-                      <line x1="380" y1="155" x2="450" y2="195" />
-                      <line x1="450" y1="150" x2="520" y2="190" />
-                      <line x1="520" y1="145" x2="590" y2="185" />
-                      <line x1="590" y1="140" x2="660" y2="180" />
-                      <line x1="660" y1="135" x2="730" y2="175" />
-                    </g>
-
-                    {/* Columns supporting Canopy */}
-                    <rect x="400" y="195" width="25" height="265" fill="#64748B" rx="4" />
-                    <rect x="520" y="190" width="25" height="270" fill="#64748B" rx="4" />
-                    <rect x="640" y="180" width="25" height="280" fill="#64748B" rx="4" />
-                    <rect x="730" y="175" width="25" height="285" fill="#64748B" rx="4" />
-
-                    {/* Campus Pathway leading to building */}
-                    <polygon points="350,460 550,460 700,600 100,600" fill="url(#pathGrad)" />
-                    <line x1="400" y1="460" x2="250" y2="600" stroke="#CBD5E1" strokeWidth="4" />
-                    <line x1="500" y1="460" x2="550" y2="600" stroke="#CBD5E1" strokeWidth="4" />
-
-                    {/* Trees & Foliage in Foreground */}
-                    <g fill="#059669">
-                      <circle cx="80" cy="480" r="45" />
-                      <circle cx="120" cy="510" r="35" />
-                      <circle cx="720" cy="500" r="50" />
-                      <circle cx="760" cy="480" r="40" />
-                    </g>
-                    <g fill="#10B981">
-                      <circle cx="75" cy="465" r="35" />
-                      <circle cx="715" cy="485" r="40" />
-                    </g>
-                  </svg>
-                  {/* Subtle dark gradient overlay to ensure text contrast */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 pointer-events-none" />
-                  
-                  {/* Text on top of the image (RIT Events Hub Style) */}
-                  <div className="absolute bottom-6 left-6 z-10 text-left pointer-events-none">
-                    <h2 className="text-white font-extrabold text-2xl tracking-wide leading-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
-                      Rajalakshmi Institute
-                    </h2>
-                    <p className="text-orange-400 font-bold text-sm mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      of Technology, Chennai
-                    </p>
-                    <div className="inline-flex items-center gap-1.5 mt-3.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Est. 2008 • NBA & NAAC A+</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Overlapping Dark Card (Innovation Card - Exact Match with Reference Image) */}
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3 }}
-                  className="absolute -bottom-6 -right-4 md:-right-8 bg-[#1E293B] text-white p-6 rounded-2xl border border-white/10 max-w-[240px] z-20"
-                  style={{ boxShadow: '0 12px 40px rgba(0,0,0,0.25)' }}
-                >
-                  <span className="text-[#F97316] text-[11px] font-bold tracking-wider uppercase mb-1.5 block" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    INNOVATION
-                  </span>
-                  <p className="text-[12px] text-slate-300 leading-relaxed font-semibold" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    Where engineering meets guidance. Fueling the academic journey of our freshers.
-                  </p>
-                </motion.div>
-              </motion.div>
-            </div>
-
-            {/* Right – Text Content */}
-            <div className="lg:col-span-6 flex flex-col justify-center">
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="mb-3"
+            <Link to="/ai-assistant">
+              <motion.button
+                whileHover={{ scale: 1.05, borderColor: '#F97316', backgroundColor: 'rgba(255,255,255,0.15)' }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm border-2 border-white/20 text-white bg-white/10 backdrop-blur-md transition-all cursor-pointer"
+                style={{ fontFamily: 'Poppins, sans-serif' }}
               >
-                <span className="text-[#F97316] text-xs font-bold uppercase tracking-widest" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  OUR LEGACY & FUTURE
-                </span>
-              </motion.div>
+                <Bot className="w-4 h-4" />
+                Ask AI Assistant
+              </motion.button>
+            </Link>
+          </motion.div>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-4xl md:text-5xl xl:text-6xl font-bold leading-[1.1] mb-6"
-                style={{ fontFamily: 'Playfair Display, serif', color: '#1E293B' }}
-              >
-                Welcome to <br />
-                <span className="font-serif italic text-[#F97316] font-medium block mt-1">
-                  RIT Freshers Hub
-                </span>
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-base text-[#475569] leading-relaxed mb-8"
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                The RIT Freshers Hub is your centralized gateway to campus life, designed to simplify how you discover and participate in academic and extracurricular activities. With seamless access to notes, PYQs, AI assistant, and bus routes, we ensure you have everything needed to succeed.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex flex-wrap gap-4 mb-8"
-              >
-                <Link to="/notes">
-                  <motion.button
-                    whileHover={{ scale: 1.03, boxShadow: '0 8px 25px rgba(249,115,22,0.3)' }}
-                    whileTap={{ scale: 0.97 }}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold text-sm cursor-pointer"
-                    style={{
-                      fontFamily: 'Poppins, sans-serif',
-                      background: 'linear-gradient(135deg, #F97316, #FB923C)',
-                    }}
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    Explore Hub
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </motion.button>
-                </Link>
-
-                <Link to="/ai-assistant">
-                  <motion.button
-                    whileHover={{ scale: 1.03, borderColor: '#F97316', color: '#F97316', backgroundColor: '#FFF7ED' }}
-                    whileTap={{ scale: 0.97 }}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm border-2 border-[#E5E7EB] text-[#1E293B] bg-white transition-all cursor-pointer"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
-                  >
-                    <Bot className="w-4 h-4" />
-                    Ask AI Assistant
-                  </motion.button>
-                </Link>
-              </motion.div>
-
-              {/* Badges positioned cleanly below buttons with more breathing room */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="flex flex-wrap gap-6 text-[#94A3B8] border-t border-[#E5E7EB] pt-6"
-              >
-                {[
-                  { icon: CheckCircle, text: 'Official Portal' },
-                  { icon: Zap, text: 'Instant AI Support' },
-                  { icon: Shield, text: 'Student Verified' },
-                ].map((badge, i) => (
-                  <div key={i} className="flex items-center gap-2 text-xs font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    <badge.icon className="w-4 h-4 text-[#F97316]/70" />
-                    <span>{badge.text}</span>
-                  </div>
-                ))}
-              </motion.div>
-            </div>
-          </div>
-        </div>
+          {/* Badges */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="flex flex-wrap justify-center gap-6 text-slate-300 border-t border-white/10 pt-6 max-w-lg w-full"
+          >
+            {[
+              { icon: CheckCircle, text: 'Official Portal' },
+              { icon: Zap, text: 'Instant AI Support' },
+              { icon: Shield, text: 'Student Verified' },
+            ].map((badge, i) => (
+              <div key={i} className="flex items-center gap-1.5 text-xs font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                <badge.icon className="w-4 h-4 text-[#F97316]" />
+                <span>{badge.text}</span>
+              </div>
+            ))}
+          </motion.div>
+        </motion.div>
       </section>
 
-      {/* ─── Stats Section ────────────────────────────────────────────────────── */}
-      <section className="py-16 bg-white">
-        <div className="container-custom">
-          <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {STATS.map((stat, i) => (
-              <StaggerItem key={i}>
-                <StatsCard stat={stat} delay={i * 0.05} />
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
+      {/* Floating Glassmorphic Stats Section */}
+      <section className="relative z-30 -mt-16 px-4">
+        <div className="container-custom max-w-5xl">
+          <style>{`
+            @keyframes float {
+              0%, 100% { transform: translateY(0px); }
+              50% { transform: translateY(-8px); }
+            }
+            .animate-float {
+              animation: float 6s ease-in-out infinite;
+            }
+          `}</style>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="animate-float rounded-[24px] border border-white/10 p-6 md:p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.4)]"
+            style={{
+              background: 'linear-gradient(135deg, rgba(11, 19, 43, 0.9) 0%, rgba(15, 23, 42, 0.8) 100%)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+            }}
+          >
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 text-center">
+              {[
+                { value: '20+', label: 'SPORTS', icon: Trophy },
+                { value: '100+', label: 'FACULTY', icon: GraduationCap },
+                { value: '18', label: 'CLUBS', icon: Award },
+                { value: '24/7', label: 'AI ASSISTANT', icon: Cpu },
+                { value: '5000+', label: 'STUDENTS', icon: Users },
+              ].map((stat, i) => (
+                <div key={i} className="flex flex-col items-center justify-center p-4">
+                  {/* Icon */}
+                  <div className="w-10 h-10 rounded-xl bg-[#F97316]/10 flex items-center justify-center mb-3">
+                    <stat.icon className="w-5 h-5 text-[#F97316]" />
+                  </div>
+                  {/* Value */}
+                  <div 
+                    className="text-2xl md:text-3xl font-extrabold text-white mb-1"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    {stat.value}
+                  </div>
+                  {/* Label */}
+                  <div 
+                    className="text-[10px] md:text-xs font-semibold tracking-wider text-slate-300 uppercase whitespace-nowrap"
+                    style={{ fontFamily: 'Inter, sans-serif' }}
+                  >
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ─── Features Section ─────────────────────────────────────────────────── */}
-      <section className="section-padding" style={{ backgroundColor: '#FAFAFA' }}>
+      <section id="built-for-freshers" className="section-padding relative z-20" style={{ backgroundColor: '#FAFAFA' }}>
         <div className="container-custom">
           <SectionTitle
             tag="Everything You Need"
@@ -317,7 +229,7 @@ export default function Home() {
       </section>
 
       {/* ─── AI Section ───────────────────────────────────────────────────────── */}
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-white relative z-20">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left – Text */}
@@ -346,11 +258,11 @@ export default function Home() {
                   { icon: 'Map', label: 'Campus Context', desc: 'RIT-specific answers' },
                   { icon: 'Zap', label: 'Instant Answers', desc: 'No wait time' },
                 ].map((item, i) => {
-                  const Icon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[item.icon];
+                  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>>)[item.icon];
                   return (
                     <div key={i} className="flex items-start gap-3 p-4 rounded-xl border border-[#E5E7EB] bg-[#FAFAFA]">
                       <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-[#FFF7ED] shrink-0">
-                        {Icon && <Icon className="w-4.5 h-4.5" style={{ color: '#F97316' } as React.CSSProperties} />}
+                        {Icon && <Icon className="w-4.5 h-4.5" style={{ color: '#F97316' }} />}
                       </div>
                       <div>
                         <div className="text-sm font-semibold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>{item.label}</div>
@@ -388,7 +300,7 @@ export default function Home() {
       </section>
 
       {/* ─── Campus Quick Nav ─────────────────────────────────────────────────── */}
-      <section className="section-padding" style={{ backgroundColor: '#FAFAFA' }}>
+      <section className="section-padding relative z-20" style={{ backgroundColor: '#FAFAFA' }}>
         <div className="container-custom">
           <SectionTitle
             tag="Navigate Campus"
@@ -450,7 +362,7 @@ export default function Home() {
               {/* Quick nav buttons */}
               <div className="p-5 grid grid-cols-4 sm:grid-cols-8 gap-3">
                 {CAMPUS_LOCATIONS.map((loc) => {
-                  const Icon = (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[loc.icon];
+                  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[loc.icon];
                   return (
                     <Link to="/campus" key={loc.id}>
                       <motion.div
@@ -474,7 +386,7 @@ export default function Home() {
       </section>
 
       {/* ─── Community Teaser ─────────────────────────────────────────────────── */}
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-white relative z-20">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Q&A teaser */}
