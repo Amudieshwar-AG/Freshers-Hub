@@ -515,7 +515,7 @@ export default function Community() {
                                         >
                                           <MessageCircle className="w-3.5 h-3.5" />
                                           <span style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                            {ansCount > 0 ? `${ansCount} ${ansCount === 1 ? 'reply' : 'replies'}` : 'No replies yet'}
+                                            {ansCount > 0 ? `${ansCount} ${ansCount === 1 ? 'reply' : 'replies'}` : '0 replies'}
                                           </span>
                                         </button>
 
