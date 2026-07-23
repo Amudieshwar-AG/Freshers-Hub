@@ -765,52 +765,64 @@ export default function Community() {
                   </div>
 
                   {/* Confessions Feed */}
-                  <StaggerContainer className="flex flex-col gap-4">
-                    {CONFESSIONS_DATA.map((conf) => (
-                      <StaggerItem key={conf.id}>
-                        <motion.div
-                          whileHover={{ y: -4, boxShadow: '0 20px 50px -12px rgba(0,0,0,0.12)', borderColor: '#CBD5E1' }}
-                          transition={{ duration: 0.25 }}
-                          className="bg-white rounded-2xl border border-[#E5E7EB] p-6 transition-all duration-300"
-                          style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
-                        >
-                          <div className="flex items-start justify-between mb-3">
-                            <div className="flex items-center gap-2.5">
-                              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-50 border border-slate-100">
-                                <Shield className="w-4 h-4 text-slate-500" />
-                              </div>
-                              <div>
-                                <span className="text-xs font-bold text-slate-800" style={{ fontFamily: 'Poppins, sans-serif' }}>Anonymous</span>
-                                <p className="text-[10px] text-slate-400 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>{getRelativeTime(conf.createdAt)}</p>
-                              </div>
-                            </div>
-                            {conf.category && (
-                              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-55 text-slate-650 border border-slate-200/40" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                {conf.category}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-[13px] text-slate-750 leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>{conf.content}</p>
-                          <div className="flex items-center justify-between">
-                            <button
-                              onClick={() => toggleLike(conf.id)}
-                              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all duration-200 cursor-pointer border text-[10px] font-bold ${likedIds.has(conf.id)
-                                  ? 'bg-rose-50 text-rose-600 border-rose-100/60 hover:bg-rose-100/60'
-                                  : 'bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 border-slate-200/30'
-                                }`}
-                            >
-                              <Heart
-                                className="w-3.5 h-3.5"
-                                fill={likedIds.has(conf.id) ? '#e11d48' : 'none'}
-                                color={likedIds.has(conf.id) ? '#e11d48' : 'currentColor'}
-                              />
-                              <span>{conf.reactions + (likedIds.has(conf.id) ? 1 : 0)}</span>
-                            </button>
-                          </div>
-                        </motion.div>
-                      </StaggerItem>
-                    ))}
-                  </StaggerContainer>
+                   {CONFESSIONS_DATA.length > 0 ? (
+                     <StaggerContainer className="flex flex-col gap-4">
+                       {CONFESSIONS_DATA.map((conf) => (
+                         <StaggerItem key={conf.id}>
+                           <motion.div
+                             whileHover={{ y: -4, boxShadow: '0 20px 50px -12px rgba(0,0,0,0.12)', borderColor: '#CBD5E1' }}
+                             transition={{ duration: 0.25 }}
+                             className="bg-white rounded-2xl border border-[#E5E7EB] p-6 transition-all duration-300"
+                             style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
+                           >
+                             <div className="flex items-start justify-between mb-3">
+                               <div className="flex items-center gap-2.5">
+                                 <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-50 border border-slate-100">
+                                   <Shield className="w-4 h-4 text-slate-500" />
+                                 </div>
+                                 <div>
+                                   <span className="text-xs font-bold text-slate-800" style={{ fontFamily: 'Poppins, sans-serif' }}>Anonymous</span>
+                                   <p className="text-[10px] text-slate-400 font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>{getRelativeTime(conf.createdAt)}</p>
+                                 </div>
+                               </div>
+                               {conf.category && (
+                                 <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-50 text-slate-600 border border-slate-200/40" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                   {conf.category}
+                                 </span>
+                               )}
+                             </div>
+                             <p className="text-[13px] text-slate-755 leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>{conf.content}</p>
+                             <div className="flex items-center justify-between">
+                               <button
+                                 onClick={() => toggleLike(conf.id)}
+                                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all duration-200 cursor-pointer border text-[10px] font-bold ${likedIds.has(conf.id)
+                                     ? 'bg-rose-50 text-rose-600 border-rose-100/60 hover:bg-rose-100/60'
+                                     : 'bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-700 border-slate-200/30'
+                                   }`}
+                               >
+                                 <Heart
+                                   className="w-3.5 h-3.5"
+                                   fill={likedIds.has(conf.id) ? '#e11d48' : 'none'}
+                                   color={likedIds.has(conf.id) ? '#e11d48' : 'currentColor'}
+                                 />
+                                 <span>{conf.reactions + (likedIds.has(conf.id) ? 1 : 0)}</span>
+                               </button>
+                             </div>
+                           </motion.div>
+                         </StaggerItem>
+                       ))}
+                     </StaggerContainer>
+                   ) : (
+                     <div className="bg-white rounded-2xl border border-[#E5E7EB] p-8 text-center" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
+                       <Shield className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                       <p className="text-sm font-semibold text-slate-700 mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                         No Confessions Yet
+                       </p>
+                       <p className="text-xs text-slate-400" style={{ fontFamily: 'Inter, sans-serif' }}>
+                         Be the first to post a confession anonymously!
+                       </p>
+                     </div>
+                   )}
                 </div>
 
                 {/* Sidebar */}
