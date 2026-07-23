@@ -23,10 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 *.db
-
-# Environments
-.env
-.env.local
-.env.*
-.env.development
-.env.production

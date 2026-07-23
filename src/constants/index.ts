@@ -861,29 +861,7 @@ export const QUESTIONS_DATA: Question[] = [
 ];
 
 // ─── Confessions ─────────────────────────────────────────────────────────────
-export const CONFESSIONS_DATA: Confession[] = [
-  {
-    id: '1',
-    content: 'I was so nervous on my first day that I went to the wrong department. A senior helped me out and became my best friend. RIT has such a warm community! 🧡',
-    createdAt: '2025-07-19T11:00:00Z',
-    reactions: 87,
-    category: 'Wholesome',
-  },
-  {
-    id: '2',
-    content: 'The library WiFi is actually faster than my home connection. No complaints from me 😂',
-    createdAt: '2025-07-18T15:30:00Z',
-    reactions: 134,
-    category: 'Funny',
-  },
-  {
-    id: '3',
-    content: 'I have a crush on someone in my class but I\'m too shy to talk. We have been in the same group project for 2 months now 😅',
-    createdAt: '2025-07-17T09:00:00Z',
-    reactions: 212,
-    category: 'Crush',
-  },
-];
+export const CONFESSIONS_DATA: Confession[] = [];
 
 // ─── Toolkit Items ───────────────────────────────────────────────────────────
 export const TOOLKIT_ITEMS: ToolkitItem[] = [

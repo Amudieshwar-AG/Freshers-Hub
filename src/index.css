@@ -84,7 +84,6 @@ h1, h2, h3, h4, h5, h6 {
 :focus-visible {
   outline: 2px solid #F97316;
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
 /* Animations */
@@ -293,4 +292,17 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 80%;
   align-self: flex-start;
   border: 1px solid #E5E7EB;
+}
+
+/* Verified card style input focus state */
+.verified-focus-input {
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  background-color: #FFFFFF;
+  border: 1.5px solid #E5E7EB !important;
+}
+
+.verified-focus-input:focus {
+  outline: none !important;
+  border-color: #F97316 !important;
+  box-shadow: none !important;
 }

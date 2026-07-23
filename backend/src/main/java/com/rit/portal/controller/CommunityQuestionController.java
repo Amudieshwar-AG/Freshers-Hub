@@ -31,19 +31,6 @@ public class CommunityQuestionController {
         return questionRepository.findAll();
     }
 
-    @GetMapping("/paged")
-    public org.springframework.data.domain.Page<CommunityQuestion> getPagedQuestions(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
-        return questionRepository.findAll(
-            org.springframework.data.domain.PageRequest.of(
-                page,
-                size,
-                org.springframework.data.domain.Sort.by("createdAt").descending()
-            )
-        );
-    }
-
     @PostMapping
     public CommunityQuestion createQuestion(@RequestBody CommunityQuestion question) {
         if (question.getUpvotes() == null) question.setUpvotes(0);
