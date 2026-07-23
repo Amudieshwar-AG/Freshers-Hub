@@ -11,7 +11,7 @@ import { CONFESSIONS_DATA } from '@/constants';
 
 type Tab = 'qa' | 'confession';
 
-const TRENDING_TAGS = ['hostel', 'academics', 'clubs', 'campus', 'canteen', 'sports', 'placement', 'library'];
+const TRENDING_TAGS = ['hostel', 'academics', 'clubs', 'campus', 'canteen', 'sports', 'placement', 'library', 'cat exam', 'semester', 'labs', 'exams'];
 
 const AVATARS: Record<string, string> = {
   'Priya S.': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&h=120&q=80',
@@ -234,11 +234,17 @@ export default function Community() {
     
     const displayAuthor = authorName.trim() || 'Anonymous';
     
+    // Auto-detect hashtags based on question text content
+    const detectedTags = TRENDING_TAGS.filter(tag => 
+      questionText.toLowerCase().includes(tag.toLowerCase())
+    );
+    const finalTags = detectedTags.length > 0 ? detectedTags : ['fresher', 'general'];
+
     const newQuestion = {
       title: questionText.split('\n')[0].substring(0, 100) || "Q&A Question",
       body: questionText,
       author: displayAuthor,
-      tags: ['fresher', 'general'],
+      tags: finalTags,
       upvotes: 0,
       isAnswered: false,
       createdAt: new Date().toISOString(),
