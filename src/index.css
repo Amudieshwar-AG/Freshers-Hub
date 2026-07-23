@@ -84,7 +84,6 @@ h1, h2, h3, h4, h5, h6 {
 :focus-visible {
   outline: 2px solid #F97316;
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
 /* Animations */
@@ -305,6 +304,5 @@ h1, h2, h3, h4, h5, h6 {
 .verified-focus-input:focus {
   outline: none !important;
   border-color: #F97316 !important;
-  background-image: linear-gradient(to bottom, #FFFFFF 0%, #FFF7ED 100%) !important;
   box-shadow: none !important;
 }
