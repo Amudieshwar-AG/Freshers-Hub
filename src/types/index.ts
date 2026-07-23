@@ -35,6 +35,16 @@ export interface Faculty {
   office?: string;
   avatar?: string;
   specialization?: string;
+  qualification?: string;
+  experience?: string;
+  subjectsHandling?: string;
+  researchAreas?: string;
+  officeHours?: string;
+  achievements?: string[];
+  publications?: string[];
+  studentsGuided?: { ug: number; pg: number; phd: number };
+  languagesKnown?: string[];
+  joinedInstitution?: string;
 }
 
 // ─── Bus Routes ──────────────────────────────────────────────────────────────
