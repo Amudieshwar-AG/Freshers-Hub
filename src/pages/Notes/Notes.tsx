@@ -1949,7 +1949,7 @@ export default function Notes() {
 
                 {/* Semester Filter */}
                 <div className="flex gap-2 flex-wrap items-center">
-                  {SEMESTERS.slice(0, 5).map((sem) => (
+                  {SEMESTERS.slice(0, 3).map((sem) => (
                     <button
                       key={sem}
                       onClick={() => { setSelectedSem(sem); setSelectedSubject('All Subjects'); }}
