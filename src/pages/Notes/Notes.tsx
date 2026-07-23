@@ -8,7 +8,33 @@ import { TOOLKIT_ITEMS, DEPARTMENTS } from '@/constants';
 
 const SEMESTERS = ['All', '1st Sem', '2nd Sem', '3rd Sem', '4th Sem', '5th Sem', '6th Sem', '7th Sem', '8th Sem'];
 
-const TYPE_COLORS: Record<string, { bg: string; text: string; icon: React.ComponentType<{ className?: string }> }> = {
+const SUBJECTS_BY_SEM: Record<number, string[]> = {
+  1: [
+    "Communicative English",
+    "Matrices and Calculus",
+    "Physics for Information Science",
+    "Problem Solving and C Programming",
+    "Basic Electrical and Electronics Engineering",
+    "Heritage of Tamils",
+    "Physics Laboratory",
+    "Problem Solving and C Programming Laboratory",
+    "Engineering Practices Laboratory"
+  ],
+  2: [
+    "Professional English",
+    "Engineering Chemistry",
+    "Statistics and Numerical Methods",
+    "Python for Data Science",
+    "Tamils and Technology",
+    "Engineering Graphics",
+    "Data Structures Design",
+    "Chemistry Laboratory",
+    "Python for Data Science Laboratory",
+    "Communication Laboratory"
+  ]
+};
+
+const TYPE_COLORS: Record<string, { bg: string; text: string; icon: React.ComponentType<any> }> = {
   notes: { bg: '#EFF6FF', text: '#3B82F6', icon: BookOpen },
   pyq: { bg: '#FFF7ED', text: '#F97316', icon: FileText },
   syllabus: { bg: '#ECFDF5', text: '#10B981', icon: ScrollText },
@@ -1294,6 +1320,7 @@ export default function Notes() {
   const [selectedSem, setSelectedSem] = useState('All');
   const [selectedDept, setSelectedDept] = useState('All Departments');
   const [selectedType, setSelectedType] = useState('all');
+  const [selectedSubject, setSelectedSubject] = useState('All Subjects');
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedToolkit = searchParams.get('toolkit');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -1365,7 +1392,8 @@ export default function Notes() {
     const matchSem = selectedSem === 'All' || note.semester === parseInt(selectedSem);
     const matchDept = selectedDept === 'All Departments' || note.department === selectedDept || note.department === 'All Departments';
     const matchType = selectedType === 'all' || note.type === selectedType;
-    return matchSearch && matchSem && matchDept && matchType;
+    const matchSubject = selectedSubject === 'All Subjects' || note.subject === selectedSubject;
+    return matchSearch && matchSem && matchDept && matchType && matchSubject;
   });
 
   return (
@@ -1920,12 +1948,12 @@ export default function Notes() {
                 </div>
 
                 {/* Semester Filter */}
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-2 flex-wrap items-center">
                   {SEMESTERS.slice(0, 5).map((sem) => (
                     <button
                       key={sem}
-                      onClick={() => setSelectedSem(sem)}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                      onClick={() => { setSelectedSem(sem); setSelectedSubject('All Subjects'); }}
+                      className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer"
                       style={{
                         fontFamily: 'Poppins, sans-serif',
                         backgroundColor: selectedSem === sem ? '#1E293B' : '#F8FAFC',
@@ -1937,43 +1965,91 @@ export default function Notes() {
                     </button>
                   ))}
                 </div>
+
+                {/* Subject Dropdown */}
+                {selectedSem !== 'All' && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-[#64748B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Subject:</span>
+                    <select
+                      value={selectedSubject}
+                      onChange={(e) => setSelectedSubject(e.target.value)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F8FAFC] border border-[#E5E7EB] text-[#475569] focus:outline-none focus:border-[#F97316] transition-all cursor-pointer"
+                      style={{ fontFamily: 'Poppins, sans-serif' }}
+                    >
+                      <option value="All Subjects">All Subjects</option>
+                      {(SUBJECTS_BY_SEM[parseInt(selectedSem)] || []).map((sub) => (
+                        <option key={sub} value={sub}>
+                          {sub}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             </motion.div>
 
             {/* Results */}
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
+            <StaggerContainer key={`${filtered.length}-${selectedSubject}`} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
               {filtered.map((note) => {
-                const typeConfig = TYPE_COLORS[note.type];
+                const typeConfig = TYPE_COLORS[note.type] || { bg: '#F1F5F9', text: '#475569', icon: BookOpen };
                 const TypeIcon = typeConfig.icon;
                 return (
                   <StaggerItem key={note.id}>
                     <motion.div
                       whileHover={{ y: -4 }}
-                      className="bg-white rounded-2xl border border-[#E5E7EB] p-5 flex flex-col gap-3"
-                      style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
+                      className="bg-white rounded-2xl border border-[#E5E7EB] p-5 flex flex-col justify-between gap-4 h-full"
+                      style={{
+                        borderLeft: `4px solid ${typeConfig.text}`,
+                        boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)'
+                      }}
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: typeConfig.bg }}>
-                          <TypeIcon className="w-5 h-5 text-orange-500" />
+                      <div className="flex gap-4">
+                        {/* Visual PDF Preview Icon */}
+                        <div className="w-14 h-20 border border-slate-200 rounded-xl p-2 flex flex-col justify-between bg-[#F8FAFC] shrink-0 shadow-sm">
+                          <div className="bg-[#EF4444] text-[8px] font-extrabold text-white px-1 py-0.5 rounded w-fit uppercase tracking-wider" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            PDF
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <div className="w-full h-1 bg-slate-200 rounded" />
+                            <div className="w-5/6 h-1 bg-slate-200 rounded" />
+                            <div className="w-2/3 h-1 bg-slate-200 rounded" />
+                          </div>
                         </div>
-                        <span
-                          className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase"
-                          style={{ backgroundColor: typeConfig.bg, color: typeConfig.text, fontFamily: 'Poppins, sans-serif' }}
-                        >
-                          {note.type}
-                        </span>
+
+                        {/* Text Details */}
+                        <div className="flex flex-col justify-between flex-1 min-w-0">
+                          <div>
+                            <div className="flex items-center justify-between mb-1.5">
+                              <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: typeConfig.bg }}>
+                                <TypeIcon className="w-3.5 h-3.5" style={{ color: typeConfig.text }} />
+                              </div>
+                              <span
+                                className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider"
+                                style={{ backgroundColor: typeConfig.bg, color: typeConfig.text, fontFamily: 'Poppins, sans-serif' }}
+                              >
+                                {note.type}
+                              </span>
+                            </div>
+                            <h3 className="text-sm font-bold text-[#1E293B] line-clamp-2 leading-tight mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                              {note.title}
+                            </h3>
+                            <p className="text-[11px] text-[#64748B] font-medium truncate" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              {note.subject} • Sem {note.semester}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-sm font-semibold text-[#1E293B] leading-snug mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {note.title}
-                        </h3>
-                        <p className="text-xs text-[#94A3B8]" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {note.subject} · Sem {note.semester}
-                        </p>
+
+                      {/* Metadata Line */}
+                      <div className="flex items-center justify-between border-t border-[#F1F5F9] pt-3 text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold text-slate-800">{note.downloads} downloads · {note.fileSize}</span>
+                          <span className="px-1 py-0.2 bg-[#F1F5F9] rounded text-[9px] font-bold text-slate-600">PDF</span>
+                        </div>
+                        <span>{note.uploadedAt ? `Updated ${note.uploadedAt}` : 'Recently'}</span>
                       </div>
-                      <div className="flex items-center justify-between text-xs text-[#94A3B8] pt-2 border-t border-[#E5E7EB]">
-                        <span style={{ fontFamily: 'Inter, sans-serif' }}>{note.downloads} downloads · {note.fileSize}</span>
-                      </div>
+
+                      {/* Download Button */}
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.97 }}
