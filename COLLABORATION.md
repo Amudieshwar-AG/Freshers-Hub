@@ -15,7 +15,9 @@ Welcome to the team! This guide explains how to get set up, which Git branch you
 2. **Select your module's branch**:
    Find your assigned module below, and check out your branch:
    ```bash
-    
+
+   # Checkout your module's branch
+   git checkout feature/<your-assigned-branch-name>
    ```
 
 3. **Install frontend dependencies**:
