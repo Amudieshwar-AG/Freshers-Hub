@@ -1,0 +1,2771 @@
+[
+  {
+    "number": "R01",
+    "name": "Ennore Route",
+    "from": "Lift Gate",
+    "to": "RIT Campus",
+    "departureTime": "05:50 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#F97316",
+    "stops": [
+      {
+        "name": "Lift Gate",
+        "time": "05:50 AM"
+      },
+      {
+        "name": "Wimco Market",
+        "time": "05:55 AM"
+      },
+      {
+        "name": "Ajax",
+        "time": "06:00 AM"
+      },
+      {
+        "name": "Periyar Nagar",
+        "time": "06:03 AM"
+      },
+      {
+        "name": "Thiruvortiyur Market",
+        "time": "06:08 AM"
+      },
+      {
+        "name": "Theradi",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Ellaimman Koil",
+        "time": "06:12 AM"
+      },
+      {
+        "name": "Raja Kadai",
+        "time": "06:14 AM"
+      },
+      {
+        "name": "Toll Gate",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R01A",
+    "name": "Tondiarpet Route",
+    "from": "New vannarpettai",
+    "to": "RIT Campus",
+    "departureTime": "06:17 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#3B82F6",
+    "stops": [
+      {
+        "name": "New vannarpettai",
+        "time": "06:17 AM"
+      },
+      {
+        "name": "Apollo",
+        "time": "06:18 AM"
+      },
+      {
+        "name": "Tondiarpet",
+        "time": "06:19 AM"
+      },
+      {
+        "name": "Maharani",
+        "time": "06:21 AM"
+      },
+      {
+        "name": "Mint",
+        "time": "06:22 AM"
+      },
+      {
+        "name": "New Bus Stand Mint",
+        "time": "06:27 AM"
+      },
+      {
+        "name": "Thirupalli street",
+        "time": "06:33 AM"
+      },
+      {
+        "name": "Aminijkarai",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "Skywalk",
+        "time": "07:02 AM"
+      },
+      {
+        "name": "Arumbakkam",
+        "time": "07:07 AM"
+      },
+      {
+        "name": "Koyambedu Metro",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "Vengaya mandi",
+        "time": "07:16 AM"
+      },
+      {
+        "name": "Ration stop (Nerkundram)",
+        "time": "07:20 AM"
+      },
+      {
+        "name": "Maduravoyal",
+        "time": "07:21 AM"
+      },
+      {
+        "name": "Maduravoyal Erikarai",
+        "time": "07:25 AM"
+      },
+      {
+        "name": "Vanagaram",
+        "time": "07:29 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R01B",
+    "name": "Kasimedu Route",
+    "from": "Kasimedu",
+    "to": "RIT Campus",
+    "departureTime": "06:15 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#10B981",
+    "stops": [
+      {
+        "name": "Kasimedu",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "Kalmandapam",
+        "time": "06:21 AM"
+      },
+      {
+        "name": "Royapuram Bridge",
+        "time": "06:27 AM"
+      },
+      {
+        "name": "Beach Station",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Parry's",
+        "time": "06:34 AM"
+      },
+      {
+        "name": "Central",
+        "time": "06:37 AM"
+      },
+      {
+        "name": "Egmore",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Dasprakash",
+        "time": "06:44 AM"
+      },
+      {
+        "name": "Eaga Theatre",
+        "time": "06:48 AM"
+      },
+      {
+        "name": "Amjikarai Market",
+        "time": "06:51 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R02",
+    "name": "Triplicane Route",
+    "from": "Chintadripet (Post Offiec)",
+    "to": "RIT Campus",
+    "departureTime": "06:20 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#8B5CF6",
+    "stops": [
+      {
+        "name": "Chintadripet (Post Offiec)",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "D1 Police Station",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "Triplicane -High Way",
+        "time": "06:29 AM"
+      },
+      {
+        "name": "Ice House Police Station",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "Meersahibpet-Market",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Royapettah New College",
+        "time": "06:39 AM"
+      },
+      {
+        "name": "Sterling Road (Bharath Petrol Bunk)",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Choolaimedu Subway",
+        "time": "06:43 AM"
+      },
+      {
+        "name": "Choolaimedu bus stop",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Anna Arch",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Arumbakkam Panchaliamman Koil",
+        "time": "06:53 AM"
+      },
+      {
+        "name": "NSK",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Maduravoyal- Murugan Store",
+        "time": "06:58 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R03",
+    "name": "Choolai Route",
+    "from": "Pulianthope",
+    "to": "RIT Campus",
+    "departureTime": "06:20 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#EF4444",
+    "stops": [
+      {
+        "name": "Pulianthope",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Choolai Post Office",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "Purasaivakkam Doveton",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Kellys Signal",
+        "time": "06:33 AM"
+      },
+      {
+        "name": "Water tank road signal",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Kilpauk Garden",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Chinthamani",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Anna Nagar Roundtana",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Thirumangalam Blue star",
+        "time": "06:57 AM"
+      },
+      {
+        "name": "VR Mall",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "Maduravoyal Ration Shop",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R03A",
+    "name": "Collector Nagar Route",
+    "from": "Collector nagar",
+    "to": "RIT Campus",
+    "departureTime": "06:50 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#EC4899",
+    "stops": [
+      {
+        "name": "Collector nagar",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Golden flat",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Mogappair West depot",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "Nolambur",
+        "time": "07:03 AM"
+      },
+      {
+        "name": "MGR University",
+        "time": "07:08 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R03B",
+    "name": "Water Tank Route",
+    "from": "Gangaiamman koil",
+    "to": "RIT Campus",
+    "departureTime": "06:40 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#06B6D4",
+    "stops": [
+      {
+        "name": "Gangaiamman koil",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Madina masjid",
+        "time": "06:43 AM"
+      },
+      {
+        "name": "New Avadi Road",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Chintamani",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Nalli Store",
+        "time": "06:58 AM"
+      },
+      {
+        "name": "Anna Nagar Metro",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "Thirumangalam Metro",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "Nerkundram",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "Maduravaoyal Ration Shop",
+        "time": "07:25 AM"
+      },
+      {
+        "name": "Maduravoyal Erikarai",
+        "time": "07:27 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R04",
+    "name": "East Mogappair Route",
+    "from": "JJ Nagar Police Station",
+    "to": "RIT Campus",
+    "departureTime": "06:30 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#F59E0B",
+    "stops": [
+      {
+        "name": "JJ Nagar Police Station",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "HDFC Bank",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "IOB Bank",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "7 H Bus Depot",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Amutha School",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "D.R.Super Market",
+        "time": "06:52 AM"
+      },
+      {
+        "name": "Nolambur",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Meadows Apprtment",
+        "time": "06:57 AM"
+      },
+      {
+        "name": "MGR University",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R05",
+    "name": "CIT Nagar Route",
+    "from": "CIT Nagar",
+    "to": "RIT Campus",
+    "departureTime": "06:10 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#14B8A6",
+    "stops": [
+      {
+        "name": "CIT Nagar",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Aranganathan Subway",
+        "time": "06:12 AM"
+      },
+      {
+        "name": "Srinivasa Theatre",
+        "time": "06:14 AM"
+      },
+      {
+        "name": "Metupalayam",
+        "time": "06:16 AM"
+      },
+      {
+        "name": "Sangamam Hotel",
+        "time": "06:19 AM"
+      },
+      {
+        "name": "Aryagowda Road",
+        "time": "06:24 AM"
+      },
+      {
+        "name": "Vivek",
+        "time": "06:29 AM"
+      },
+      {
+        "name": "Usman Road",
+        "time": "06:34 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R05A",
+    "name": "Loyola College Route",
+    "from": "Loyola College",
+    "to": "RIT Campus",
+    "departureTime": "06:40 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#6366F1",
+    "stops": [
+      {
+        "name": "Loyola College",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Choolaimedu",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Metha Nagar",
+        "time": "06:49 AM"
+      },
+      {
+        "name": "NSK Nagar",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Arumbakkam (SBI Bank)",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "MMDA Cholan Street",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "MMDA Vallavan Hotel",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "CMBT (Koyambedu)",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "Rohini (Theatre)",
+        "time": "07:18 AM"
+      },
+      {
+        "name": "Nerkundram Vengaya Mandi",
+        "time": "07:22 AM"
+      },
+      {
+        "name": "Maduravoyal Erikarai",
+        "time": "07:25 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R06",
+    "name": "Chinmayanagar Route",
+    "from": "Chinmaiya Nagar",
+    "to": "RIT Campus",
+    "departureTime": "06:10 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#F97316",
+    "stops": [
+      {
+        "name": "Chinmaiya Nagar",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Sai Nagar",
+        "time": "06:12 AM"
+      },
+      {
+        "name": "Natesan Nagar",
+        "time": "06:13 AM"
+      },
+      {
+        "name": "Elango Nagar",
+        "time": "06:14 AM"
+      },
+      {
+        "name": "Virugampakkam",
+        "time": "06:17 AM"
+      },
+      {
+        "name": "KK Nagar",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "KK Nagar ESI",
+        "time": "06:27 AM"
+      },
+      {
+        "name": "Ashok Pillar",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "Kasi Theatre",
+        "time": "06:37 AM"
+      },
+      {
+        "name": "Ekkatuthangal",
+        "time": "06:42 AM"
+      },
+      {
+        "name": "Olympia",
+        "time": "06:43 AM"
+      },
+      {
+        "name": "Porur Saravana Store",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R07",
+    "name": "Santhome Route",
+    "from": "Mandaveli Bus Depot",
+    "to": "RIT Campus",
+    "departureTime": "06:10 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#3B82F6",
+    "stops": [
+      {
+        "name": "Mandaveli Bus Depot",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Pattinapakkam",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "Kutchery Road",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Luz Corner",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "P.S.Sivasamy Road",
+        "time": "06:27 AM"
+      },
+      {
+        "name": "SIET College",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "Nanthanam Signal",
+        "time": "06:37 AM"
+      },
+      {
+        "name": "Saidapet Vetrinary Hospital",
+        "time": "06:42 AM"
+      },
+      {
+        "name": "Saidapet Bus Stop",
+        "time": "06:47 AM"
+      },
+      {
+        "name": "Guindy",
+        "time": "06:49 AM"
+      },
+      {
+        "name": "Butt Road",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Chennai Trade Centre",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "Porur",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "Ayyapanthangal",
+        "time": "07:18 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R08",
+    "name": "Kovilambakkam Route",
+    "from": "Kovilampakkam",
+    "to": "RIT Campus",
+    "departureTime": "06:10 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#10B981",
+    "stops": [
+      {
+        "name": "Kovilampakkam",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Keelkattalai Bus Stop",
+        "time": "06:12 AM"
+      },
+      {
+        "name": "Madipakkam UTI Bank",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "Madipakkam Koot Road Bus stop",
+        "time": "06:16 AM"
+      },
+      {
+        "name": "Ranga Theatre",
+        "time": "06:18 AM"
+      },
+      {
+        "name": "Nanganallur Chidambaram Stores",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Nanganallur Saravana Hotel",
+        "time": "06:22 AM"
+      },
+      {
+        "name": "Vanuvampet Church",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "Surendhar Nagar Bus Stop",
+        "time": "06:27 AM"
+      },
+      {
+        "name": "Jayalakshmi Theatre",
+        "time": "06:29 AM"
+      },
+      {
+        "name": "Thillai Ganga Nagar Sub Way",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "Aazar Khana Bus Stop",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Butt Road",
+        "time": "06:37 AM"
+      },
+      {
+        "name": "Ramavaram",
+        "time": "06:39 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R08A",
+    "name": "Adambakkam Route",
+    "from": "Seasons",
+    "to": "RIT Campus",
+    "departureTime": "06:30 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#8B5CF6",
+    "stops": [
+      {
+        "name": "Seasons",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Kakkan Bridge",
+        "time": "06:33 AM"
+      },
+      {
+        "name": "Adambakkam Bus Depot",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "St Thomas Mount",
+        "time": "06:38 AM"
+      },
+      {
+        "name": "Deepam Foods",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Maharaja traders",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Vanuvampet church",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Thilaiganga nagar subway",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Butt road",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "Poonamallee",
+        "time": "07:35 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R09",
+    "name": "MKB Nagar Route",
+    "from": "Vyasarpadi",
+    "to": "RIT Campus",
+    "departureTime": "06:00 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#EF4444",
+    "stops": [
+      {
+        "name": "Vyasarpadi",
+        "time": "06:00 AM"
+      },
+      {
+        "name": "MKB Nagar",
+        "time": "06:05 AM"
+      },
+      {
+        "name": "E.B. Stop",
+        "time": "06:08 AM"
+      },
+      {
+        "name": "Kannadhasan Nagar",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "M.R.Nagar",
+        "time": "06:13 AM"
+      },
+      {
+        "name": "lakshmi Amman Nagar",
+        "time": "06:22 AM"
+      },
+      {
+        "name": "B.B.Road",
+        "time": "06:26 AM"
+      },
+      {
+        "name": "Perumbur Market",
+        "time": "06:34 AM"
+      },
+      {
+        "name": "Agaram",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Peravalur Road",
+        "time": "06:42 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R10",
+    "name": "Thachoor Route",
+    "from": "Thachoor",
+    "to": "RIT Campus",
+    "departureTime": "05:50 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#EC4899",
+    "stops": [
+      {
+        "name": "Thachoor",
+        "time": "05:50 AM"
+      },
+      {
+        "name": "Panjetty",
+        "time": "05:52 AM"
+      },
+      {
+        "name": "Janappanchatram Bypass",
+        "time": "05:55 AM"
+      },
+      {
+        "name": "Karanodai Bypass",
+        "time": "05:58 AM"
+      },
+      {
+        "name": "Vijaya Nallur",
+        "time": "06:03 AM"
+      },
+      {
+        "name": "Toll Gate",
+        "time": "06:05 AM"
+      },
+      {
+        "name": "Padianallur",
+        "time": "06:07 AM"
+      },
+      {
+        "name": "Red Hills (GRT)",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Red Hills Market",
+        "time": "06:12 AM"
+      },
+      {
+        "name": "Kavangarai",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "Puzhal Jail",
+        "time": "06:17 AM"
+      },
+      {
+        "name": "Puzhal Camp",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Velammal college",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R11",
+    "name": "Chengalpattu Route",
+    "from": "Chengalpattu Rattinakinaru",
+    "to": "RIT Campus",
+    "departureTime": "06:00 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#06B6D4",
+    "stops": [
+      {
+        "name": "Chengalpattu Rattinakinaru",
+        "time": "06:00 AM"
+      },
+      {
+        "name": "New Bus Stand",
+        "time": "06:02 AM"
+      },
+      {
+        "name": "Old Bus Stand",
+        "time": "06:04 AM"
+      },
+      {
+        "name": "Chengalpattu Bypass",
+        "time": "06:07 AM"
+      },
+      {
+        "name": "SP Kovil",
+        "time": "06:18 AM"
+      },
+      {
+        "name": "MM Nagar Samiyar Gate",
+        "time": "06:23 AM"
+      },
+      {
+        "name": "MM Nagar Bus Stand",
+        "time": "06:28 AM"
+      },
+      {
+        "name": "KattanKulathur",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R11A",
+    "name": "Guduvanchery Route",
+    "from": "Guduvanchery",
+    "to": "RIT Campus",
+    "departureTime": "06:30 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#F59E0B",
+    "stops": [
+      {
+        "name": "Guduvanchery",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Urapakkam",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Vandalur",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Perungalathur",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Vandalur Bridge",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Mannivakkam",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R12",
+    "name": "Minjur Route",
+    "from": "Minjur Bus Stand",
+    "to": "RIT Campus",
+    "departureTime": "05:45 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#14B8A6",
+    "stops": [
+      {
+        "name": "Minjur Bus Stand",
+        "time": "05:45 AM"
+      },
+      {
+        "name": "Minjur Railway Station",
+        "time": "05:50 AM"
+      },
+      {
+        "name": "BDO Office",
+        "time": "05:52 AM"
+      },
+      {
+        "name": "Nandiyambakkam",
+        "time": "05:54 AM"
+      },
+      {
+        "name": "Pattamandiri",
+        "time": "06:00 AM"
+      },
+      {
+        "name": "Napalayam",
+        "time": "06:05 AM"
+      },
+      {
+        "name": "Manali Pudhu nagar",
+        "time": "06:08 AM"
+      },
+      {
+        "name": "Manali Market",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "MMDA 3rd Main Road",
+        "time": "06:18 AM"
+      },
+      {
+        "name": "Mathur",
+        "time": "06:22 AM"
+      },
+      {
+        "name": "Veterinary Hospital",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "Madhavaram Milk Colony",
+        "time": "06:28 AM"
+      },
+      {
+        "name": "Arul Nagar",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Thapalpetti",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "Moolakadai",
+        "time": "06:38 AM"
+      },
+      {
+        "name": "Kalpana Lamp",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Madhavaram Roundana",
+        "time": "06:47 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R13",
+    "name": "Vyasarpadi Route",
+    "from": "Ganeshapuram",
+    "to": "RIT Campus",
+    "departureTime": "06:10 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#6366F1",
+    "stops": [
+      {
+        "name": "Ganeshapuram",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "G3 Police Station",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "Pattalam",
+        "time": "06:18 AM"
+      },
+      {
+        "name": "Otteri",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Podi Kadai",
+        "time": "06:23 AM"
+      },
+      {
+        "name": "T.B.Hospital",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "Ayanawaram Signal",
+        "time": "06:27 AM"
+      },
+      {
+        "name": "Sayyani",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Ayanawaram Noor Hotel",
+        "time": "06:33 AM"
+      },
+      {
+        "name": "Joint Office",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Ayanawaram Railway Quarters",
+        "time": "06:37 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R13A",
+    "name": "ICF Route",
+    "from": "ICF Signal",
+    "to": "RIT Campus",
+    "departureTime": "06:45 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#F97316",
+    "stops": [
+      {
+        "name": "ICF Signal",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Villivakkam Bus Stand",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Korattur Signal",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Nolambur Signal",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "Vanagaram",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "Velappanchavadi",
+        "time": "07:23 AM"
+      },
+      {
+        "name": "Poonamallee Bypass",
+        "time": "07:30 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R14",
+    "name": "Thiruvallur Route",
+    "from": "Sevapetai",
+    "to": "RIT Campus",
+    "departureTime": "06:25 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#3B82F6",
+    "stops": [
+      {
+        "name": "Sevapetai",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "Kakkalur",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Poonga Nagar",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "GRT",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Manavalanagar Signal",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Manavalanagar Railway Station",
+        "time": "06:57 AM"
+      },
+      {
+        "name": "Putlur",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "Aranvoyal",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "Puthuchatram (India Jappan Company)",
+        "time": "07:20 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R14B",
+    "name": "Kakkalur Route",
+    "from": "Kakkalur Signal",
+    "to": "RIT Campus",
+    "departureTime": "06:55 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#10B981",
+    "stops": [
+      {
+        "name": "Kakkalur Signal",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "SBI Bank",
+        "time": "06:58 AM"
+      },
+      {
+        "name": "Vellavedu",
+        "time": "07:20 AM"
+      },
+      {
+        "name": "Thirumazhisai",
+        "time": "07:25 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R15",
+    "name": "Cheyyar Route",
+    "from": "Cheyyar-SBI",
+    "to": "RIT Campus",
+    "departureTime": "05:30 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#8B5CF6",
+    "stops": [
+      {
+        "name": "Cheyyar-SBI",
+        "time": "05:30 AM"
+      },
+      {
+        "name": "Soundarya Theatre",
+        "time": "05:31 AM"
+      },
+      {
+        "name": "Mangal X Road",
+        "time": "05:55 AM"
+      },
+      {
+        "name": "Ayyangarkulam",
+        "time": "06:05 AM"
+      },
+      {
+        "name": "Punjarasanthangal",
+        "time": "06:07 AM"
+      },
+      {
+        "name": "Sevlimedu",
+        "time": "06:07 AM"
+      },
+      {
+        "name": "Housing Board",
+        "time": "06:12 AM"
+      },
+      {
+        "name": "Collector Office",
+        "time": "06:18 AM"
+      },
+      {
+        "name": "Mettu street Signal",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R15A",
+    "name": "Orikkai Route",
+    "from": "Orikkai",
+    "to": "RIT Campus",
+    "departureTime": "06:15 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#EF4444",
+    "stops": [
+      {
+        "name": "Orikkai",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "JJ Nagar",
+        "time": "06:17 AM"
+      },
+      {
+        "name": "Keerai Mandapam",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Tollgate",
+        "time": "06:23 AM"
+      },
+      {
+        "name": "Pachaiyappa's College",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Ayyampettai",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "Rajampettai",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Walajabad",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Natha nallur",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "Panrutti",
+        "time": "07:03 AM"
+      },
+      {
+        "name": "Oragadam",
+        "time": "07:12 AM"
+      },
+      {
+        "name": "Arun Excello",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "Sriperumbudur High School",
+        "time": "07:20 AM"
+      },
+      {
+        "name": "Sriperumbudur Tollgate",
+        "time": "07:25 AM"
+      },
+      {
+        "name": "Irungattukottai bus stand",
+        "time": "07:30 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R15B",
+    "name": "Kancheepuram Route",
+    "from": "Shri Chitragupta Temple",
+    "to": "RIT Campus",
+    "departureTime": "06:30 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#EC4899",
+    "stops": [
+      {
+        "name": "Shri Chitragupta Temple",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Pookadai Chatram",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Kammala street",
+        "time": "06:38 AM"
+      },
+      {
+        "name": "Railway Station",
+        "time": "06:41 AM"
+      },
+      {
+        "name": "Ponnerikarai",
+        "time": "06:46 AM"
+      },
+      {
+        "name": "Senthamangalam",
+        "time": "07:01 AM"
+      },
+      {
+        "name": "Santhavellore",
+        "time": "07:03 AM"
+      },
+      {
+        "name": "Sunguvarchatram",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "Nokia Gate",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "Sathya Grand Resorts",
+        "time": "07:12 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R16",
+    "name": "Neelangkarai Route",
+    "from": "Prathana Theatre",
+    "to": "RIT Campus",
+    "departureTime": "06:10 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#06B6D4",
+    "stops": [
+      {
+        "name": "Prathana Theatre",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Vetuvankeni",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "Thiruvanmiyur RTO Office",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Adyar Depot",
+        "time": "06:29 AM"
+      },
+      {
+        "name": "Madyakailash",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Guindy",
+        "time": "06:42 AM"
+      },
+      {
+        "name": "Mugalivakkam",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Karayanchavadi",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "Poonamallee Bus Stand",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R16B",
+    "name": "Sholinganallur Route",
+    "from": "Sholinganallur",
+    "to": "RIT Campus",
+    "departureTime": "06:10 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#F59E0B",
+    "stops": [
+      {
+        "name": "Sholinganallur",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Karapakkam",
+        "time": "06:16 AM"
+      },
+      {
+        "name": "Karapakkam - TCS",
+        "time": "06:19 AM"
+      },
+      {
+        "name": "PTC (KFC)",
+        "time": "06:24 AM"
+      },
+      {
+        "name": "Mettukuppam",
+        "time": "06:26 AM"
+      },
+      {
+        "name": "Medavakkam nilgiris",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Santhoshpuram",
+        "time": "06:37 AM"
+      },
+      {
+        "name": "Sembakkam",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Tambaram Railway Station",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Krishna nagar bridge",
+        "time": "06:48 AM"
+      },
+      {
+        "name": "Kulakarai street",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Padmavathy Kalyana Mandapam",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Joshua School",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R17",
+    "name": "Valluvarkottam Route",
+    "from": "Valluvarkottam",
+    "to": "RIT Campus",
+    "departureTime": "06:15 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#14B8A6",
+    "stops": [
+      {
+        "name": "Valluvarkottam",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "Liberty",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Power House",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "Lakshman Sruthi",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Thai Sathya",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Virugambakkam",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Alwar Thirunagar",
+        "time": "06:42 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R17A",
+    "name": "Valasaravakkam Route",
+    "from": "Valasaravakkam Shivan Koil",
+    "to": "RIT Campus",
+    "departureTime": "06:45 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#6366F1",
+    "stops": [
+      {
+        "name": "Valasaravakkam Shivan Koil",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Valasaravakkam",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Saravana Bhavan Hotel",
+        "time": "06:53 AM"
+      },
+      {
+        "name": "Lakshmi Nagar",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Porur Bridge",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "Iyyappanthangal",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "Kattupakkam",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "Kumanachavadi",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R18",
+    "name": "Velachery Route",
+    "from": "Murugan Kalyana mandapam",
+    "to": "RIT Campus",
+    "departureTime": "06:10 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#F97316",
+    "stops": [
+      {
+        "name": "Murugan Kalyana mandapam",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Velachery Bus Stand",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "Kaiveli",
+        "time": "06:18 AM"
+      },
+      {
+        "name": "Balaji Dental College",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Pallikaranai",
+        "time": "06:23 AM"
+      },
+      {
+        "name": "Jeyachandran",
+        "time": "06:27 AM"
+      },
+      {
+        "name": "Rajakilpakam Signal",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Camp Road ICICI Bank",
+        "time": "06:38 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R18A",
+    "name": "Sembakkam Route",
+    "from": "Sembakkam",
+    "to": "RIT Campus",
+    "departureTime": "06:25 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#3B82F6",
+    "stops": [
+      {
+        "name": "Sembakkam",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "Poondi Bazaar",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Tambaram Sanatorium",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Chrompet",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Nagalkeni (nayara Petrol Bunk)",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "Thiruneermalai",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "Thirumudivakkam",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R18B",
+    "name": "Kelambakkam Route",
+    "from": "Kelambakkam - GH",
+    "to": "RIT Campus",
+    "departureTime": "06:00 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#10B981",
+    "stops": [
+      {
+        "name": "Kelambakkam - GH",
+        "time": "06:00 AM"
+      },
+      {
+        "name": "Pudupakkam",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Mambakkam (Samathuvapuram)",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "Mambakkam Kulam",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Sithalapakkam",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Medavakkam Koot Road",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Kamarajapuram",
+        "time": "06:43 AM"
+      },
+      {
+        "name": "Tambaram Airforce signal",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Krishna nagar",
+        "time": "06:52 AM"
+      },
+      {
+        "name": "Bharathi nagar",
+        "time": "06:54 AM"
+      },
+      {
+        "name": "old Perungalathur",
+        "time": "06:57 AM"
+      },
+      {
+        "name": "mathanapuram",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R19",
+    "name": "Poombukar Route",
+    "from": "Poombukar",
+    "to": "RIT Campus",
+    "departureTime": "06:10 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#8B5CF6",
+    "stops": [
+      {
+        "name": "Poombukar",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Ganga Cinima",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "Donbosco",
+        "time": "06:28 AM"
+      },
+      {
+        "name": "Poombukar",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Korattur Bus Stop",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Padi Britania",
+        "time": "06:58 AM"
+      },
+      {
+        "name": "TVS Show Room",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "Ambattur",
+        "time": "07:12 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R19A",
+    "name": "Vinayagapuram Route",
+    "from": "Vinayagapuram Bus Stand",
+    "to": "RIT Campus",
+    "departureTime": "06:45 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#EF4444",
+    "stops": [
+      {
+        "name": "Vinayagapuram Bus Stand",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Retteri RTO Office",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Retteri",
+        "time": "06:58 AM"
+      },
+      {
+        "name": "Senthil Nagar",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R20",
+    "name": "Vepampattu Route",
+    "from": "Vepampattu Railway Station",
+    "to": "RIT Campus",
+    "departureTime": "06:30 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#EC4899",
+    "stops": [
+      {
+        "name": "Vepampattu Railway Station",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Madha Kovil",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "Eswar Nagar",
+        "time": "06:33 AM"
+      },
+      {
+        "name": "Indian Bank Thiruvninravur",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Thiruninravur Railway Station",
+        "time": "06:36 AM"
+      },
+      {
+        "name": "Thiruninravur Bridge",
+        "time": "06:37 AM"
+      },
+      {
+        "name": "Jaya College",
+        "time": "06:39 AM"
+      },
+      {
+        "name": "Nemilicherri Road",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R20A",
+    "name": "Pattabiram Route",
+    "from": "Pattabiram Gandhi Nagar",
+    "to": "RIT Campus",
+    "departureTime": "06:45 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#06B6D4",
+    "stops": [
+      {
+        "name": "Pattabiram Gandhi Nagar",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Pattabiram Vasantha Mandapam",
+        "time": "06:46 AM"
+      },
+      {
+        "name": "Sekkadu Bus Stand",
+        "time": "06:49 AM"
+      },
+      {
+        "name": "Avadi Ponnu Store",
+        "time": "06:54 AM"
+      },
+      {
+        "name": "Avadi J.P.Garden",
+        "time": "06:56 AM"
+      },
+      {
+        "name": "Govarthanagiri Bus Stand",
+        "time": "06:59 AM"
+      },
+      {
+        "name": "Chennirkuppam",
+        "time": "07:09 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R21",
+    "name": "Ayyapakkam Route",
+    "from": "Ayappakkam Parking",
+    "to": "RIT Campus",
+    "departureTime": "06:15 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#F59E0B",
+    "stops": [
+      {
+        "name": "Ayappakkam Parking",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "Ayappakkam SBI ATM",
+        "time": "06:17 AM"
+      },
+      {
+        "name": "Ayappakkam Petrol Bunk",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "ICF Church",
+        "time": "06:22 AM"
+      },
+      {
+        "name": "Canara Bank",
+        "time": "06:27 AM"
+      },
+      {
+        "name": "Singapore Shopping",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "Senneerkuppam",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R22",
+    "name": "Thiruthani Route",
+    "from": "Thiruthani Bypass",
+    "to": "RIT Campus",
+    "departureTime": "05:55 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#14B8A6",
+    "stops": [
+      {
+        "name": "Thiruthani Bypass",
+        "time": "05:55 AM"
+      },
+      {
+        "name": "Thiruvallur Bypass X Road",
+        "time": "06:00 AM"
+      },
+      {
+        "name": "Nagalamman Nagar",
+        "time": "06:08 AM"
+      },
+      {
+        "name": "Krishna Poly",
+        "time": "06:10 AM"
+      },
+      {
+        "name": "Jothi Nagar",
+        "time": "06:12 AM"
+      },
+      {
+        "name": "Indira Gandhi Nagar",
+        "time": "06:15 AM"
+      },
+      {
+        "name": "Swalpetaih",
+        "time": "06:16 AM"
+      },
+      {
+        "name": "Government Hospital",
+        "time": "06:17 AM"
+      },
+      {
+        "name": "Old Bus stand",
+        "time": "06:18 AM"
+      },
+      {
+        "name": "Railway Station",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "New Bus Stand",
+        "time": "06:22 AM"
+      },
+      {
+        "name": "Navy Gate",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Venkatesapuram",
+        "time": "06:31 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R22A",
+    "name": "Sholinghur Route",
+    "from": "Sholinghur",
+    "to": "RIT Campus",
+    "departureTime": "05:35 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#6366F1",
+    "stops": [
+      {
+        "name": "Sholinghur",
+        "time": "05:35 AM"
+      },
+      {
+        "name": "Banavaram koot",
+        "time": "05:40 AM"
+      },
+      {
+        "name": "Gudalore",
+        "time": "05:55 AM"
+      },
+      {
+        "name": "Salai",
+        "time": "06:00 AM"
+      },
+      {
+        "name": "Chitteri",
+        "time": "06:05 AM"
+      },
+      {
+        "name": "SR Gate",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "Thakkolam Koot Road",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Thakkolam",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Narasimapuram",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Perambakkam",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "Koovam Bus Stop",
+        "time": "07:02 AM"
+      },
+      {
+        "name": "Valarpuram",
+        "time": "07:30 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R23",
+    "name": "K4 Police Station Route",
+    "from": "Nathamuni Theatre",
+    "to": "RIT Campus",
+    "departureTime": "` 6:35 am",
+    "arrivalTime": "07:40 AM",
+    "color": "#F97316",
+    "stops": [
+      {
+        "name": "Nathamuni Theatre",
+        "time": "` 6:35 am"
+      },
+      {
+        "name": "K4 Police Station",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Labour officers Quarters",
+        "time": "06:52 AM"
+      },
+      {
+        "name": "Vijaya Maruthi (Nuts & Spices)",
+        "time": "06:44 AM"
+      },
+      {
+        "name": "Udayam colony",
+        "time": "06:46 AM"
+      },
+      {
+        "name": "Kambar Colony",
+        "time": "06:48 AM"
+      },
+      {
+        "name": "Anna Nagar West Depot",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Thirumangalam Bridge",
+        "time": "06:52 AM"
+      },
+      {
+        "name": "Thirumangalam Waves",
+        "time": "06:56 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R24",
+    "name": "Arcot Route",
+    "from": "Arcot Bus Stand",
+    "to": "RIT Campus",
+    "departureTime": "05:25 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#3B82F6",
+    "stops": [
+      {
+        "name": "Arcot Bus Stand",
+        "time": "05:25 AM"
+      },
+      {
+        "name": "Muthukadai",
+        "time": "05:30 AM"
+      },
+      {
+        "name": "VC Motor",
+        "time": "05:33 AM"
+      },
+      {
+        "name": "Walajapettai",
+        "time": "05:35 AM"
+      },
+      {
+        "name": "Arignar Anna Gov College",
+        "time": "05:37 AM"
+      },
+      {
+        "name": "Walajapettai Toll gate",
+        "time": "05:40 AM"
+      },
+      {
+        "name": "Kaveripakkam",
+        "time": "05:45 AM"
+      },
+      {
+        "name": "Perumpullipakkam",
+        "time": "06:00 AM"
+      },
+      {
+        "name": "Vinayagapuram (KPM)",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Olimugamathu Pettai(Gori)",
+        "time": "06:22 AM"
+      },
+      {
+        "name": "Egambaranathar Koil",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "Kachapeswarar Koil",
+        "time": "06:28 AM"
+      },
+      {
+        "name": "Pookadai chatram",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "Kammal Street",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Indra Nagar (KPM Railwaygate)",
+        "time": "06:37 AM"
+      },
+      {
+        "name": "Ponnerikarai",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Santhavellore",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "Sungawarchthram",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "Vadamangalam",
+        "time": "07:20 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R25",
+    "name": "Kallikuppam Route",
+    "from": "Kallikuppam",
+    "to": "RIT Campus",
+    "departureTime": "06:45 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#10B981",
+    "stops": [
+      {
+        "name": "Kallikuppam",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Stedford Hospital",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Saraswathy Nagar Indian oil petrol bunk",
+        "time": "06:54 AM"
+      },
+      {
+        "name": "Manigandapuram",
+        "time": "06:56 AM"
+      },
+      {
+        "name": "Thirumullaivoyal Junction",
+        "time": "06:58 AM"
+      },
+      {
+        "name": "Vaishnavi Nagar",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "Murugappa Polytechnic",
+        "time": "07:02 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R25A",
+    "name": "Pudur Route",
+    "from": "Pudur",
+    "to": "RIT Campus",
+    "departureTime": "06:45 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#8B5CF6",
+    "stops": [
+      {
+        "name": "Pudur",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Oragadam HP Pump",
+        "time": "06:47 AM"
+      },
+      {
+        "name": "PTR Mahal",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Ponnu Supermarket",
+        "time": "06:53 AM"
+      },
+      {
+        "name": "Govardhanagari",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R26",
+    "name": "Andarkuppam Route",
+    "from": "Andarkuppam",
+    "to": "RIT Campus",
+    "departureTime": "06:35 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#EF4444",
+    "stops": [
+      {
+        "name": "Andarkuppam",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Kundrathur",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Kundrathur Thandalam",
+        "time": "06:43 AM"
+      },
+      {
+        "name": "Kovur",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Gerugambakkam",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Bai Kadai",
+        "time": "06:53 AM"
+      },
+      {
+        "name": "Mathanandapuram",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Venkateswara Nagar",
+        "time": "06:58 AM"
+      },
+      {
+        "name": "Porur",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R27",
+    "name": "Avadi Route",
+    "from": "Ajeya Stadium",
+    "to": "RIT Campus",
+    "departureTime": "06:25 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#EC4899",
+    "stops": [
+      {
+        "name": "Ajeya Stadium",
+        "time": "06:25 AM"
+      },
+      {
+        "name": "HVF",
+        "time": "06:28 AM"
+      },
+      {
+        "name": "CRP",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "Mitnamalli",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Muthapudupet",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Sasthri Nagar",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Avadi Checkpost",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Rama Rathna Theatre",
+        "time": "07:06 AM"
+      },
+      {
+        "name": "Avadi mankoil",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "Vasantham Nagar",
+        "time": "07:12 AM"
+      },
+      {
+        "name": "Kovarthanagiri",
+        "time": "07:14 AM"
+      },
+      {
+        "name": "Kendra vihar",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "Kaduveti",
+        "time": "07:17 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R27A",
+    "name": "Kollumedu Route",
+    "from": "Kollumedu",
+    "to": "RIT Campus",
+    "departureTime": "06:20 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#06B6D4",
+    "stops": [
+      {
+        "name": "Kollumedu",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Vel Tech College",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Kovilpathagai",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Ajeya Stadium",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "CRPF",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Mittanemili",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "Palavedu Service Road",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "Nemilichery Tollgate",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "Chithukadu Blue",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "Panimalar Tollgate",
+        "time": "07:20 AM"
+      },
+      {
+        "name": "Chembarambakkam",
+        "time": "07:27 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R28",
+    "name": "Agaram Route",
+    "from": "Agaram",
+    "to": "RIT Campus",
+    "departureTime": "06:20 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#F59E0B",
+    "stops": [
+      {
+        "name": "Agaram",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Periyar Nagar",
+        "time": "06:22 AM"
+      },
+      {
+        "name": "Thiruvalluvar Thirumanamandapam",
+        "time": "06:24 AM"
+      },
+      {
+        "name": "Permal Koil",
+        "time": "06:26 AM"
+      },
+      {
+        "name": "Kamban Nagar",
+        "time": "06:28 AM"
+      },
+      {
+        "name": "E.B",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Shanmugam Mahal",
+        "time": "06:32 AM"
+      },
+      {
+        "name": "Senthil Nagar",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Thathankuppam",
+        "time": "06:38 AM"
+      },
+      {
+        "name": "Kalyan Jewalrs",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Collector Nagar",
+        "time": "06:47 AM"
+      },
+      {
+        "name": "Cheriyan Hospital",
+        "time": "06:48 AM"
+      },
+      {
+        "name": "Golden Flats",
+        "time": "06:50 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R29",
+    "name": "Medavakkam Koot Road Route",
+    "from": "Vellakal",
+    "to": "RIT Campus",
+    "departureTime": "06:20 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#14B8A6",
+    "stops": [
+      {
+        "name": "Vellakal",
+        "time": "06:20 AM"
+      },
+      {
+        "name": "Rajakilpakkam Bus Stand",
+        "time": "06:30 AM"
+      },
+      {
+        "name": "Kozhi Pannai",
+        "time": "06:33 AM"
+      },
+      {
+        "name": "Bharath College",
+        "time": "06:40 AM"
+      },
+      {
+        "name": "Camp Road Singal",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Kishkintha Road",
+        "time": "06:55 AM"
+      },
+      {
+        "name": "Erumaiyur",
+        "time": "07:00 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R29A",
+    "name": "Pammal Route",
+    "from": "Pammal",
+    "to": "RIT Campus",
+    "departureTime": "06:35 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#6366F1",
+    "stops": [
+      {
+        "name": "Pammal",
+        "time": "06:35 AM"
+      },
+      {
+        "name": "Arunmathi theatre",
+        "time": "06:37 AM"
+      },
+      {
+        "name": "Anagaputhur",
+        "time": "06:39 AM"
+      },
+      {
+        "name": "Manikandan Nagar",
+        "time": "06:41 AM"
+      },
+      {
+        "name": "Karima Nagar",
+        "time": "06:45 AM"
+      },
+      {
+        "name": "Kundrathur (theradi)",
+        "time": "06:48 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  },
+  {
+    "number": "R29B",
+    "name": "Sivanthangal Route",
+    "from": "Sivanthangal",
+    "to": "RIT Campus",
+    "departureTime": "07:05 AM",
+    "arrivalTime": "07:40 AM",
+    "color": "#F97316",
+    "stops": [
+      {
+        "name": "Sivanthangal",
+        "time": "07:05 AM"
+      },
+      {
+        "name": "Muthukumaran College",
+        "time": "07:10 AM"
+      },
+      {
+        "name": "Pattu Koot Road",
+        "time": "07:13 AM"
+      },
+      {
+        "name": "Mangadu",
+        "time": "07:15 AM"
+      },
+      {
+        "name": "Kankaiyamman Kovil",
+        "time": "07:20 AM"
+      },
+      {
+        "name": "MGR Nagar",
+        "time": "07:23 AM"
+      },
+      {
+        "name": "Kumananchavadi",
+        "time": "07:25 AM"
+      },
+      {
+        "name": "Aravind Hospital",
+        "time": "07:30 AM"
+      },
+      {
+        "name": "RIT Campus",
+        "time": "07:40 AM"
+      }
+    ]
+  }
+]
