@@ -456,14 +456,10 @@ export default function Community() {
                       return (
                         <StaggerItem key={q.id}>
                           <motion.div
-                            whileHover={{ y: -2, boxShadow: '0 8px 30px -4px rgba(0,0,0,0.08)', borderColor: '#CBD5E1' }}
+                            whileHover={{ y: -2, boxShadow: '0 12px 30px -4px rgba(249,115,22,0.08)' }}
                             onClick={() => handleCardClick(q.id)}
                             transition={{ duration: 0.2 }}
-                            className={`bg-white border rounded-2xl p-4 transition-all duration-300 cursor-pointer ${
-                              isFeatured
-                                ? 'border-l-4 border-l-[#F97316] border-[#E5E7EB]'
-                                : 'border-[#E5E7EB]'
-                            }`}
+                            className="bg-white border border-[#E5E7EB] border-l-4 border-l-transparent rounded-2xl p-4 transition-all duration-300 cursor-pointer hover:border-l-[#F97316]"
                             style={{ boxShadow: '0 2px 12px -3px rgba(0,0,0,0.05)' }}
                           >
                             <div className="flex items-start gap-3">
