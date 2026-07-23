@@ -141,8 +141,8 @@ export default function Notes() {
                   style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: typeConfig.bg }}>
-                      <TypeIcon className="w-5 h-5" style={{ color: typeConfig.text } as React.CSSProperties} />
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: typeConfig.bg, color: typeConfig.text }}>
+                      <TypeIcon className="w-5 h-5" />
                     </div>
                     <span
                       className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase"
