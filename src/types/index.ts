@@ -35,6 +35,16 @@ export interface Faculty {
   office?: string;
   avatar?: string;
   specialization?: string;
+  qualification?: string;
+  experience?: string;
+  subjectsHandling?: string;
+  researchAreas?: string;
+  officeHours?: string;
+  achievements?: string[];
+  publications?: string[];
+  studentsGuided?: { ug: number; pg: number; phd: number };
+  languagesKnown?: string[];
+  joinedInstitution?: string;
 }
 
 // ─── Bus Routes ──────────────────────────────────────────────────────────────
@@ -85,14 +95,31 @@ export interface Event {
 }
 
 // ─── Clubs ───────────────────────────────────────────────────────────────────
+export interface ClubSocialLinks {
+  instagram?: string;
+  linkedin?: string;
+  whatsapp?: string;
+  youtube?: string;
+  github?: string;
+  website?: string;
+}
+
 export interface Club {
   id: string;
   name: string;
   description: string;
+  details?: string;
   category: string;
   members: number;
-  logo?: string;
+  presidentName?: string;
+  year?: string;
   contactEmail?: string;
+  contactPhone?: string;
+  logo?: string;
+  logoUrl?: string;
+  icon?: string;
+  defaultRank?: number;
+  socialLinks?: ClubSocialLinks;
 }
 
 // ─── Community / Q&A ─────────────────────────────────────────────────────────

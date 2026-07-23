@@ -9,6 +9,15 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    watch: {
+      ignored: [
+        '**/backend/**',
+        '**/telegram-bot/**',
+        '**/.git/**'
+      ]
+    }
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
