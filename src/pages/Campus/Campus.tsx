@@ -7,18 +7,31 @@ import FacultyCard from '@/components/FacultyCard/FacultyCard';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { FACULTY_DATA, CAMPUS_LOCATIONS, DEPARTMENTS } from '@/constants';
 import * as LucideIcons from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import type { BusRoute } from '@/types';
 
 type Tab = 'map' | 'bus' | 'faculty';
 
 export default function Campus() {
-  const [activeTab, setActiveTab] = useState<Tab>('map');
+  const location = useLocation();
+  const queryTab = new URLSearchParams(location.search).get('tab') as Tab;
+  const [activeTab, setActiveTab] = useState<Tab>(
+    queryTab === 'map' || queryTab === 'bus' || queryTab === 'faculty' ? queryTab : 'map'
+  );
   const [searchFaculty, setSearchFaculty] = useState('');
   const [selectedDept, setSelectedDept] = useState('All Departments');
   const [sortBy, setSortBy] = useState('Name A-Z');
   const [busSearch, setBusSearch] = useState('');
   const [busRoutes, setBusRoutes] = useState<BusRoute[]>([]);
   const [loadingBus, setLoadingBus] = useState(true);
+
+  // Sync tab state when URL query parameter changes
+  useEffect(() => {
+    const qTab = new URLSearchParams(location.search).get('tab') as Tab;
+    if (qTab === 'map' || qTab === 'bus' || qTab === 'faculty') {
+      setActiveTab(qTab);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     if (activeTab === 'bus' && busRoutes.length === 0) {
