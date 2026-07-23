@@ -32,8 +32,7 @@ export default function Home() {
           style={{ 
             filter: 'contrast(1.12) brightness(0.88) saturate(1.08)',
             transform: 'translate3d(0, 0, 0)',
-            willChange: 'transform',
-            imageRendering: 'high-quality'
+            willChange: 'transform'
           }}
         >
           <source src="/video/RIT Video.mp4" type="video/mp4" />
