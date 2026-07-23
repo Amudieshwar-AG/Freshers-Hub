@@ -1,184 +1,215 @@
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, Sparkles, BookOpen, Bot, GraduationCap,
-  CheckCircle, Zap, Shield, Brain
+  CheckCircle, Zap, Shield, Brain, Trophy, Award, Cpu, Users
 } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
-import StatsCard from '@/components/StatsCard/StatsCard';
 import FeatureCard from '@/components/FeatureCard/FeatureCard';
 import FloatingCard from '@/components/FloatingCard/FloatingCard';
 import ChatPreview from '@/components/ChatPreview/ChatPreview';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
-import { STATS, FEATURES, CAMPUS_LOCATIONS } from '@/constants';
+import { FEATURES, CAMPUS_LOCATIONS } from '@/constants';
 import * as LucideIcons from 'lucide-react';
 
 export default function Home() {
+  const { scrollY } = useScroll();
+  const heroOpacity = useTransform(scrollY, [0, 450], [1, 0]);
+  const heroY = useTransform(scrollY, [0, 450], [0, -80]);
+
   return (
-    <div>
+    <div className="relative">
+      {/* Sticky Background Video */}
+      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          className="w-full h-full object-cover"
+          style={{ 
+            filter: 'contrast(1.12) brightness(0.88) saturate(1.08)',
+            transform: 'translate3d(0, 0, 0)',
+            willChange: 'transform',
+            imageRendering: 'high-quality'
+          }}
+        >
+          <source src="/video/RIT Video.mp4" type="video/mp4" />
+        </video>
+        {/* Dark Overlay (40-50%) */}
+        <div 
+          className="absolute inset-0" 
+          style={{ background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.65))' }}
+        />
+      </div>
+
       {/* ─── Hero Section ─────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden pt-12 pb-24" style={{ backgroundColor: '#FAFAFA' }}>
-        {/* Background Decoration */}
-        <div
-          className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full opacity-[0.04] -translate-y-1/2 translate-x-1/3 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #F97316, transparent)' }}
-        />
-        <div
-          className="absolute bottom-0 left-0 w-[350px] h-[350px] rounded-full opacity-[0.03] translate-y-1/2 -translate-x-1/3 pointer-events-none"
-          style={{ background: 'radial-gradient(circle, #F97316, transparent)' }}
-        />
+      <section className="relative overflow-hidden min-h-screen flex flex-col justify-center pt-24 pb-32 z-10 bg-transparent">
+        {/* Center Content */}
+        <motion.div 
+          className="container-custom relative z-20 flex flex-col items-center justify-center text-center px-4"
+          style={{ opacity: heroOpacity, y: heroY }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-3"
+          >
+            <span className="text-[#F97316] text-xs font-bold uppercase tracking-widest" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              OUR LEGACY & FUTURE
+            </span>
+          </motion.div>
 
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-            {/* Left – Visual Section (RIT Events Hub Style) */}
-            <div className="lg:col-span-6 relative flex justify-center">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.7 }}
-                className="relative w-full max-w-lg"
+          <motion.h1
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-white text-3xl md:text-4xl font-light mb-2"
+            style={{ fontFamily: 'Playfair Display, serif', color: '#FFFFFF', textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)' }}
+          >
+            Welcome to
+          </motion.h1>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="text-5xl md:text-7xl font-extrabold leading-tight mb-6 bg-gradient-to-r from-[#F97316] via-[#FB923C] to-[#F97316] bg-clip-text text-transparent"
+            style={{ fontFamily: 'Playfair Display, serif', color: 'transparent', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0 4px 12px rgba(249, 115, 22, 0.45))' }}
+          >
+            RIT Freshers Hub
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="max-w-2xl text-slate-200 text-sm md:text-base leading-relaxed mb-8"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
+            The RIT Freshers Hub is your centralized gateway to campus life, academic resources, AI assistance, clubs, events, bus routes, notes, and student services.
+          </motion.p>
+
+          {/* Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+            className="flex flex-wrap justify-center gap-4 mb-8"
+          >
+            <a href="#built-for-freshers">
+              <motion.button
+                whileHover={{ scale: 1.05, boxShadow: '0 8px 25px rgba(249,115,22,0.4)' }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl text-white font-semibold text-sm cursor-pointer"
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  background: 'linear-gradient(135deg, #F97316, #FB923C)',
+                }}
               >
-                {/* Main campus image/graphic card with soft blurry drop shadow */}
-                <div
-                  className="rounded-[24px] overflow-hidden bg-white border border-[#E5E7EB]/50 relative aspect-[4/3] w-full"
-                  style={{ boxShadow: '0 30px 70px -15px rgba(0, 0, 0, 0.12), 0 15px 35px -20px rgba(0, 0, 0, 0.08)' }}
-                >
-                  <img 
-                    src="/images.jpg" 
-                    alt="Rajalakshmi Institute of Technology Campus" 
-                    className="w-full h-full object-cover select-none"
-                  />
-                  
-                  {/* Subtle dark gradient overlay to ensure text contrast */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 pointer-events-none" />
-                    
-                    {/* Text on top of the image (RIT Events Hub Style) */}
-                    <div className="absolute bottom-6 left-6 z-10 text-left pointer-events-none">
-                      <h2 className="text-white font-extrabold text-2xl tracking-wide leading-tight" style={{ fontFamily: 'Playfair Display, serif', color: '#FFFFFF' }}>
-                        Rajalakshmi Institute
-                      </h2>
-                      <p className="text-orange-400 font-bold text-sm mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        of Technology, Chennai
-                      </p>
-                      <div className="inline-flex items-center gap-1.5 mt-3.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="text-[10px] text-slate-300 font-bold uppercase tracking-wider">Est. 2008 • NBA & NAAC A+</span>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-            </div>
+                <BookOpen className="w-4 h-4" />
+                Explore Hub
+                <ArrowRight className="w-3.5 h-3.5" />
+              </motion.button>
+            </a>
 
-            {/* Right – Text Content */}
-            <div className="lg:col-span-6 flex flex-col justify-center">
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="mb-3"
+            <Link to="/ai-assistant">
+              <motion.button
+                whileHover={{ scale: 1.05, borderColor: '#F97316', backgroundColor: 'rgba(255,255,255,0.15)' }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm border-2 border-white/20 text-white bg-white/10 backdrop-blur-md transition-all cursor-pointer"
+                style={{ fontFamily: 'Poppins, sans-serif' }}
               >
-                <span className="text-[#F97316] text-xs font-bold uppercase tracking-widest" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  OUR LEGACY & FUTURE
-                </span>
-              </motion.div>
+                <Bot className="w-4 h-4" />
+                Ask AI Assistant
+              </motion.button>
+            </Link>
+          </motion.div>
 
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-4xl md:text-5xl xl:text-6xl font-bold leading-[1.1] mb-6"
-                style={{ fontFamily: 'Playfair Display, serif', color: '#1E293B' }}
-              >
-                Welcome to <br />
-                <span className="font-serif italic text-[#F97316] font-medium block mt-1">
-                  RIT Freshers Hub
-                </span>
-              </motion.h1>
-
-              <motion.p
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-base text-[#475569] leading-relaxed mb-8"
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
-                The RIT Freshers Hub is your centralized gateway to campus life, designed to simplify how you discover and participate in academic and extracurricular activities. With seamless access to notes, PYQs, AI assistant, and bus routes, we ensure you have everything needed to succeed.
-              </motion.p>
-
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex flex-wrap gap-4 mb-8"
-              >
-                <a href="#built-for-freshers">
-                  <motion.button
-                    whileHover={{ scale: 1.03, boxShadow: '0 8px 25px rgba(249,115,22,0.3)' }}
-                    whileTap={{ scale: 0.97 }}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold text-sm cursor-pointer"
-                    style={{
-                      fontFamily: 'Poppins, sans-serif',
-                      background: 'linear-gradient(135deg, #F97316, #FB923C)',
-                    }}
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    Explore Hub
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </motion.button>
-                </a>
-
-                <Link to="/ai-assistant">
-                  <motion.button
-                    whileHover={{ scale: 1.03, borderColor: '#F97316', color: '#F97316', backgroundColor: '#FFF7ED' }}
-                    whileTap={{ scale: 0.97 }}
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm border-2 border-[#E5E7EB] text-[#1E293B] bg-white transition-all cursor-pointer"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
-                  >
-                    <Bot className="w-4 h-4" />
-                    Ask AI Assistant
-                  </motion.button>
-                </Link>
-              </motion.div>
-
-              {/* Badges positioned cleanly below buttons with more breathing room */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-                className="flex flex-wrap gap-6 text-[#94A3B8] border-t border-[#E5E7EB] pt-6"
-              >
-                {[
-                  { icon: CheckCircle, text: 'Official Portal' },
-                  { icon: Zap, text: 'Instant AI Support' },
-                  { icon: Shield, text: 'Student Verified' },
-                ].map((badge, i) => (
-                  <div key={i} className="flex items-center gap-2 text-xs font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    <badge.icon className="w-4 h-4 text-[#F97316]/70" />
-                    <span>{badge.text}</span>
-                  </div>
-                ))}
-              </motion.div>
-            </div>
-          </div>
-        </div>
+          {/* Badges */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="flex flex-wrap justify-center gap-6 text-slate-300 border-t border-white/10 pt-6 max-w-lg w-full"
+          >
+            {[
+              { icon: CheckCircle, text: 'Official Portal' },
+              { icon: Zap, text: 'Instant AI Support' },
+              { icon: Shield, text: 'Student Verified' },
+            ].map((badge, i) => (
+              <div key={i} className="flex items-center gap-1.5 text-xs font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
+                <badge.icon className="w-4 h-4 text-[#F97316]" />
+                <span>{badge.text}</span>
+              </div>
+            ))}
+          </motion.div>
+        </motion.div>
       </section>
 
-      {/* ─── Stats Section ────────────────────────────────────────────────────── */}
-      <section className="py-16 bg-white">
-        <div className="container-custom">
-          <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {STATS.map((stat, i) => (
-              <StaggerItem key={i}>
-                <StatsCard stat={stat} delay={i * 0.05} />
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
+      {/* Floating Glassmorphic Stats Section */}
+      <section className="relative z-30 -mt-16 px-4">
+        <div className="container-custom max-w-5xl">
+          <style>{`
+            @keyframes float {
+              0%, 100% { transform: translateY(0px); }
+              50% { transform: translateY(-8px); }
+            }
+            .animate-float {
+              animation: float 6s ease-in-out infinite;
+            }
+          `}</style>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="animate-float rounded-[24px] border border-white/10 p-6 md:p-8 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.4)]"
+            style={{
+              background: 'linear-gradient(135deg, rgba(11, 19, 43, 0.9) 0%, rgba(15, 23, 42, 0.8) 100%)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+            }}
+          >
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 text-center">
+              {[
+                { value: '20+', label: 'SPORTS', icon: Trophy },
+                { value: '100+', label: 'FACULTY', icon: GraduationCap },
+                { value: '18', label: 'CLUBS', icon: Award },
+                { value: '24/7', label: 'AI ASSISTANT', icon: Cpu },
+                { value: '5000+', label: 'STUDENTS', icon: Users },
+              ].map((stat, i) => (
+                <div key={i} className="flex flex-col items-center justify-center p-4">
+                  {/* Icon */}
+                  <div className="w-10 h-10 rounded-xl bg-[#F97316]/10 flex items-center justify-center mb-3">
+                    <stat.icon className="w-5 h-5 text-[#F97316]" />
+                  </div>
+                  {/* Value */}
+                  <div 
+                    className="text-2xl md:text-3xl font-extrabold text-white mb-1"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    {stat.value}
+                  </div>
+                  {/* Label */}
+                  <div 
+                    className="text-[10px] md:text-xs font-semibold tracking-wider text-slate-300 uppercase whitespace-nowrap"
+                    style={{ fontFamily: 'Inter, sans-serif' }}
+                  >
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
       {/* ─── Features Section ─────────────────────────────────────────────────── */}
-      <section id="built-for-freshers" className="section-padding" style={{ backgroundColor: '#FAFAFA' }}>
+      <section id="built-for-freshers" className="section-padding relative z-20" style={{ backgroundColor: '#FAFAFA' }}>
         <div className="container-custom">
           <SectionTitle
             tag="Everything You Need"
@@ -198,7 +229,7 @@ export default function Home() {
       </section>
 
       {/* ─── AI Section ───────────────────────────────────────────────────────── */}
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-white relative z-20">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left – Text */}
@@ -269,7 +300,7 @@ export default function Home() {
       </section>
 
       {/* ─── Campus Quick Nav ─────────────────────────────────────────────────── */}
-      <section className="section-padding" style={{ backgroundColor: '#FAFAFA' }}>
+      <section className="section-padding relative z-20" style={{ backgroundColor: '#FAFAFA' }}>
         <div className="container-custom">
           <SectionTitle
             tag="Navigate Campus"
@@ -355,7 +386,7 @@ export default function Home() {
       </section>
 
       {/* ─── Community Teaser ─────────────────────────────────────────────────── */}
-      <section className="section-padding bg-white">
+      <section className="section-padding bg-white relative z-20">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Q&A teaser */}
