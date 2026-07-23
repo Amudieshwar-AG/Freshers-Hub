@@ -297,7 +297,7 @@ export default function Community() {
                       onChange={(e) => setQuestionText(e.target.value)}
                       placeholder="What's on your mind? Ask your seniors anything about RIT..."
                       rows={3}
-                      className="w-full border border-[#E5E7EB] rounded-2xl p-3.5 text-[13px] text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#F97316] focus:ring-4 focus:ring-orange-500/10 focus:bg-white bg-slate-50/30 resize-none transition-all mb-3.5"
+                      className="w-full border border-[#E5E7EB] rounded-2xl p-3.5 text-[13px] text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#F97316] focus:ring-0 focus:bg-white bg-slate-50/30 resize-none transition-all mb-3.5"
                       style={{ fontFamily: 'Inter, sans-serif' }}
                     />
                     <input
@@ -305,7 +305,7 @@ export default function Community() {
                       value={authorName}
                       onChange={(e) => setAuthorName(e.target.value)}
                       placeholder="Your Name (optional)"
-                      className="w-full md:w-64 border border-[#E5E7EB] rounded-2xl px-4 py-2.5 text-[13px] text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#F97316] focus:ring-4 focus:ring-orange-500/10 focus:bg-white bg-slate-50/30 transition-all mb-4"
+                      className="w-full md:w-64 border border-[#E5E7EB] rounded-2xl px-4 py-2.5 text-[13px] text-slate-800 placeholder-slate-400 focus:outline-none focus:border-[#F97316] focus:ring-0 focus:bg-white bg-slate-50/30 transition-all mb-4"
                       style={{ fontFamily: 'Inter, sans-serif' }}
                     />
                     <div className="flex items-center justify-between">
