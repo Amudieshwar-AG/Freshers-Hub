@@ -495,10 +495,12 @@ export default function Community() {
                                       {q.title}
                                     </h3>
 
-                                    <p className={`text-[12.5px] text-slate-500 mb-3.5 leading-relaxed transition-all duration-300 ${isBodyExpanded ? '' : 'line-clamp-1'
-                                      }`} style={{ fontFamily: 'Inter, sans-serif' }}>
-                                      {q.body}
-                                    </p>
+                                    {q.body && q.body.trim() !== q.title.trim() && (
+                                      <p className={`text-[12.5px] text-slate-500 mb-3.5 leading-relaxed transition-all duration-300 ${isBodyExpanded ? '' : 'line-clamp-1'
+                                        }`} style={{ fontFamily: 'Inter, sans-serif' }}>
+                                        {q.body}
+                                      </p>
+                                    )}
 
                                     <div className="flex items-center justify-between flex-wrap gap-3 pt-2.5 border-t border-slate-100/60">
                                       {/* Left side: Replies & Likes & Tags inline */}
