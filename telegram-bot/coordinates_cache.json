@@ -642,5 +642,489 @@
   "Kasimedu": {
     "lat": 13.1364038,
     "lng": 80.2958012
-  }
+  },
+  "KattanKulathur": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Kattupakkam": {
+    "lat": 13.0419785,
+    "lng": 80.1253816
+  },
+  "Kavangarai": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Kaveripakkam": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Keelkattalai Bus Stop": {
+    "lat": 12.9687,
+    "lng": 80.2014
+  },
+  "Keerai Mandapam": {
+    "lat": 12.82417,
+    "lng": 79.70369
+  },
+  "Kelambakkam - GH": {
+    "lat": 12.7871437,
+    "lng": 80.219987
+  },
+  "Kellys Signal": {
+    "lat": 13.082,
+    "lng": 80.2435
+  },
+  "Kendra vihar": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Kilpauk Garden": {
+    "lat": 13.0845407,
+    "lng": 80.2311064
+  },
+  "Kishkintha Road": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Kollumedu": {
+    "lat": 13.1634237,
+    "lng": 80.1154064
+  },
+  "Koovam Bus Stop": {
+    "lat": 13.0209313,
+    "lng": 79.8264196
+  },
+  "Korattur Bus Stop": {
+    "lat": 13.1103434,
+    "lng": 80.180364
+  },
+  "Korattur Signal": {
+    "lat": 13.1115484,
+    "lng": 80.1846272
+  },
+  "Kovarthanagiri": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Kovilampakkam": {
+    "lat": 12.951,
+    "lng": 80.1874
+  },
+  "Kovilpathagai": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Kovur": {
+    "lat": 13.0125315,
+    "lng": 80.1211467
+  },
+  "Koyambedu Metro": {
+    "lat": 13.0728,
+    "lng": 80.2019
+  },
+  "Kozhi Pannai": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Krishna Poly": {
+    "lat": 13.0838165,
+    "lng": 80.236031
+  },
+  "Krishna nagar": {
+    "lat": 13.0152993,
+    "lng": 80.1717656
+  },
+  "Krishna nagar bridge": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Kulakarai street": {
+    "lat": 13.1047947,
+    "lng": 80.207129
+  },
+  "Kumanachavadi": {
+    "lat": 13.1166,
+    "lng": 80.1013
+  },
+  "Kumananchavadi": {
+    "lat": 13.0446829,
+    "lng": 80.1189086
+  },
+  "Kundrathur": {
+    "lat": 13.0306501,
+    "lng": 80.1529176
+  },
+  "Kundrathur (theradi)": {
+    "lat": 13.0306501,
+    "lng": 80.1529176
+  },
+  "Kundrathur Thandalam": {
+    "lat": 12.9859139,
+    "lng": 80.1200716
+  },
+  "Kutchery Road": {
+    "lat": 13.0363893,
+    "lng": 80.2687004
+  },
+  "Labour officers Quarters": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Lakshman Sruthi": {
+    "lat": 13.0445465,
+    "lng": 80.2125402
+  },
+  "Lakshmi Nagar": {
+    "lat": 13.1278684,
+    "lng": 80.1987111
+  },
+  "Liberty": {
+    "lat": 13.0327786,
+    "lng": 80.2526813
+  },
+  "Lift Gate": {
+    "lat": 13.161,
+    "lng": 80.3015
+  },
+  "Loyola College": {
+    "lat": 13.0617032,
+    "lng": 80.2346118
+  },
+  "Luz Corner": {
+    "lat": 13.0376266,
+    "lng": 80.2677461
+  },
+  "M.R.Nagar": {
+    "lat": 13.0681064,
+    "lng": 80.2128066
+  },
+  "MGR Nagar": {
+    "lat": 12.9795827,
+    "lng": 80.2494441
+  },
+  "MGR University": {
+    "lat": 13.0337,
+    "lng": 80.2014
+  },
+  "MKB Nagar": {
+    "lat": 13.1225331,
+    "lng": 80.2631374
+  },
+  "MM Nagar Bus Stand": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "MM Nagar Samiyar Gate": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "MMDA 3rd Main Road": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "MMDA Cholan Street": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "MMDA Vallavan Hotel": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Madha Kovil": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Madhavaram Milk Colony": {
+    "lat": 13.1554081,
+    "lng": 80.2425246
+  },
+  "Madhavaram Roundana": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Madina masjid": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Madipakkam Koot Road Bus stop": {
+    "lat": 12.9738,
+    "lng": 80.2087
+  },
+  "Madipakkam UTI Bank": {
+    "lat": 12.9738,
+    "lng": 80.2087
+  },
+  "Maduravaoyal Ration Shop": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Maduravoyal": {
+    "lat": 13.0673,
+    "lng": 80.1627
+  },
+  "Maduravoyal Erikarai": {
+    "lat": 13.0673,
+    "lng": 80.1627
+  },
+  "Maduravoyal Ration Shop": {
+    "lat": 13.0665327,
+    "lng": 80.1748903
+  },
+  "Maduravoyal- Murugan Store": {
+    "lat": 13.0673,
+    "lng": 80.1627
+  },
+  "Madyakailash": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Maharaja traders": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Maharani": {
+    "lat": 13.0393037,
+    "lng": 80.2524686
+  },
+  "Mambakkam (Samathuvapuram)": {
+    "lat": 12.903574,
+    "lng": 80.1845624
+  },
+  "Mambakkam Kulam": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Manali Market": {
+    "lat": 13.1672275,
+    "lng": 80.2598107
+  },
+  "Manali Pudhu nagar": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Manavalanagar Railway Station": {
+    "lat": 13.1068902,
+    "lng": 79.9097083
+  },
+  "Manavalanagar Signal": {
+    "lat": 13.1068902,
+    "lng": 79.9097083
+  },
+  "Mandaveli Bus Depot": {
+    "lat": 13.0265149,
+    "lng": 80.2663081
+  },
+  "Mangadu": {
+    "lat": 13.0209113,
+    "lng": 80.1259365
+  },
+  "Mangal X Road": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Manigandapuram": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Manikandan Nagar": {
+    "lat": 12.9066621,
+    "lng": 80.1523203
+  },
+  "Mannivakkam": {
+    "lat": 12.8943694,
+    "lng": 80.0652271
+  },
+  "Mathanandapuram": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Mathur": {
+    "lat": 13.1678641,
+    "lng": 80.2436918
+  },
+  "Meadows Apprtment": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Medavakkam Koot Road": {
+    "lat": 12.9228538,
+    "lng": 80.1831282
+  },
+  "Medavakkam nilgiris": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Meersahibpet-Market": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Metha Nagar": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Mettu street Signal": {
+    "lat": 13.0977884,
+    "lng": 80.2335806
+  },
+  "Mettukuppam": {
+    "lat": 13.0592324,
+    "lng": 80.1746118
+  },
+  "Metupalayam": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Minjur Bus Stand": {
+    "lat": 13.2820098,
+    "lng": 80.2537109
+  },
+  "Minjur Railway Station": {
+    "lat": 13.2878195,
+    "lng": 80.2558605
+  },
+  "Mint": {
+    "lat": 13.1075,
+    "lng": 80.2785
+  },
+  "Mitnamalli": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Mittanemili": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Mogappair West depot": {
+    "lat": 13.0805,
+    "lng": 80.1654
+  },
+  "Moolakadai": {
+    "lat": 13.1291684,
+    "lng": 80.2416991
+  },
+  "Mugalivakkam": {
+    "lat": 13.0205798,
+    "lng": 80.1685163
+  },
+  "Murugan Kalyana mandapam": {
+    "lat": 12.984051,
+    "lng": 80.2175088
+  },
+  "Murugappa Polytechnic": {
+    "lat": 13.12573,
+    "lng": 80.1162051
+  },
+  "Muthapudupet": {
+    "lat": 13.1479522,
+    "lng": 80.0622889
+  },
+  "Muthukadai": {
+    "lat": 13.0118,
+    "lng": 80.0214
+  },
+  "Muthukumaran College": {
+    "lat": 13.0181602,
+    "lng": 80.1090485
+  },
+  "NSK": {
+    "lat": 13.0777508,
+    "lng": 80.2167134
+  },
+  "NSK Nagar": {
+    "lat": 13.0777508,
+    "lng": 80.2167134
+  },
+  "new vannarpettai": null,
+  "pulianthope": {
+    "lat": 13.0998019,
+    "lng": 80.2641571
+  },
+  "water tank road": {
+    "lat": 13.0687674,
+    "lng": 80.2134301
+  },
+  "thirumangalam blue star": null,
+  "vr mall": {
+    "lat": 13.079402,
+    "lng": 80.1978426
+  },
+  "golden flat": null,
+  "nolambur": {
+    "lat": 13.0747182,
+    "lng": 80.1682206
+  },
+  "madina masjid": null,
+  "nalli": {
+    "lat": 13.040472,
+    "lng": 80.2315653
+  },
+  "thirumangalam metro": {
+    "lat": 13.0853785,
+    "lng": 80.2013107
+  },
+  "nerkundram": {
+    "lat": 13.0688386,
+    "lng": 80.1838987
+  },
+  "olympia": {
+    "lat": 13.0102511,
+    "lng": 80.2109388
+  },
+  "porur saravana": null,
+  "porur saravana store": null,
+  "seasons": {
+    "lat": 13.0366716,
+    "lng": 80.2169684
+  },
+  "kakkan bridge": null,
+  "st thomas mount": {
+    "lat": 12.9947654,
+    "lng": 80.1993715
+  },
+  "maharaja traders": null,
+  "poonamallee": {
+    "lat": 13.0403526,
+    "lng": 80.129575
+  },
+  "thachoor": null,
+  "panjetty": null,
+  "janappanchatram bypass": null,
+  "karanodai bypass": null,
+  "vijaya nallur": null,
+  "toll": {
+    "lat": 13.1365596,
+    "lng": 80.1817536
+  },
+  "padianallur": {
+    "lat": 13.2032865,
+    "lng": 80.1730356
+  },
+  "chengalpattu rattinakinaru": null,
+  "new bus stand": {
+    "lat": 12.9063467,
+    "lng": 80.0965776
+  },
+  "old bus stand": null,
+  "sp kovil": null,
+  "mm nagar samiyar": null,
+  "mm nagar samiyar gate": null,
+  "mm nagar bus stand": null,
+  "thai sathya": null,
+  "porur bridge": {
+    "lat": 13.0343343,
+    "lng": 80.1490465
+  },
+  "iyyappanthangal": null,
+  "vel tech college": {
+    "lat": 13.18822,
+    "lng": 80.1061083
+  },
+  "palavedu service road": {
+    "lat": 13.1401135,
+    "lng": 80.0531019
+  },
+  "nemilichery tollgate": null,
+  "chithukadu blue": null,
+  "panimalar tollgate": null
 }

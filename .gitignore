@@ -26,3 +26,16 @@ dist-ssr
 *.sw?
 *.db
 *.exe
+
+# Maven & Java
+target/
+.mvn/
+
+# Android & Gradle
+.gradle/
+build/
+app/build/
+*.apk
+*.aar
+*.log
+__pycache__/

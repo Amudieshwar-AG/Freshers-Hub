@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Download, Filter, BookOpen, FileText, ScrollText, BookMarked, ChevronRight, ArrowLeft, ExternalLink, Code, Globe, GitBranch, Cloud, Palette, Shield, DollarSign, BarChart3, Users, Megaphone, TrendingUp, UserCheck, ClipboardList, ShoppingCart, Cpu, Activity, LayoutGrid, Layers, Zap, Settings, Gauge, Radio, Wifi, Bot, Sun, Wrench, Binary, BatteryCharging, CircuitBoard, ShieldCheck, BrainCircuit, FlaskConical, Lock, Terminal, Dna, Microscope, Sparkles, Smartphone, Monitor, Server, CheckCircle2, Database, Briefcase } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
+import { getBackendUrl } from '@/lib/utils';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { TOOLKIT_ITEMS, DEPARTMENTS } from '@/constants';
 
@@ -1332,7 +1333,7 @@ export default function Notes() {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/notes');
+        const response = await fetch(getBackendUrl('/api/notes'));
         if (response.ok) {
           const data = await response.json();
           const mappedData = data.map((n: any) => ({
@@ -1361,7 +1362,7 @@ export default function Notes() {
 
   const handleDownload = async (noteId: string, downloadUrl: string) => {
     try {
-      await fetch(`http://localhost:8080/api/notes/${noteId}/download`, { method: 'POST' });
+      await fetch(getBackendUrl(`/api/notes/${noteId}/download`), { method: 'POST' });
       setNotes(prev => prev.map(n => n.id === noteId ? { ...n, downloads: n.downloads + 1 } : n));
     } catch (err) {
       console.error('Error incrementing download count:', err);

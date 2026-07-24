@@ -1,0 +1,755 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"> 
+<head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252"> 
+ 
+ 
+<title>RIT New Routes from 24 Aug 2011</title> 
+<!-- //Change the following line to use your own key available from http://www.google.com/apis/maps/signup.html --> 
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key=AIzaSyB8Ojz11pTXQZX4TnDxsmQ_tZax3APVG9Y" type="text/javascript"></script> 
+ 
+<script type="text/javascript"> 
+//<![CDATA[
+// Google Map Maker script v.1.1
+// (c) 2006 Richard Stephenson http://www.donkeymagic.co.uk
+// Email: donkeymagic@gmail.com
+// http://mapmaker.donkeymagic.co.uk
+var map;
+var icon0;
+var newpoints =new Array();
+ 
+function addLoadEvent(func) { 
+var oldonload = window.onload; 
+if (typeof window.onload != 'function'){ 
+window.onload = func
+} else { 
+window.onload = function() {
+oldonload();
+func();
+}
+}
+}
+ 
+addLoadEvent(loadMap);
+addLoadEvent(addPoints);
+ 
+function loadMap() {
+map =new GMap2(document.getElementById("map"));
+map.setUIToDefault();
+map.setCenter(new GLatLng(13.12080,79.935138), 14);
+map.setMapType(G_NORMAL_MAP);
+ 
+ //13.0828430,80.198565
+
+
+px1 =new GIcon();
+px1.image = "1px.png";
+px1.shadow = "http://www.google.com/mapfiles/shadow50.png";
+px1.iconSize =new GSize(1, 1);
+px1.shadowSize =new GSize(1, 1);
+px1.iconAnchor =new GPoint(1, 1);
+px1.infoWindowAnchor =new GPoint(1, 1);
+px1.infoShadowAnchor =new GPoint(1, 1);
+ 
+ 
+rmark1 =new GIcon();
+rmark1.image= "ricon01.png";
+rmark1.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark1.iconSize =new GSize(20, 34);
+rmark1.shadowSize =new GSize(37, 34);
+rmark1.iconAnchor =new GPoint(9, 34);
+rmark1.infoWindowAnchor =new GPoint(9, 2);
+rmark1.infoShadowAnchor =new GPoint(18, 25); 
+ 
+rmark2 =new GIcon();
+rmark2.image= "ricon02.png";
+rmark2.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark2.iconSize =new GSize(20, 34);
+rmark2.shadowSize =new GSize(37, 34);
+rmark2.iconAnchor =new GPoint(9, 34);
+rmark2.infoWindowAnchor =new GPoint(9, 2);
+rmark2.infoShadowAnchor =new GPoint(18, 25);  
+ 
+rmark3 =new GIcon();
+rmark3.image= "ricon03.png";
+rmark3.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark3.iconSize =new GSize(20, 34);
+rmark3.shadowSize =new GSize(37, 34);
+rmark3.iconAnchor =new GPoint(9, 34);
+rmark3.infoWindowAnchor =new GPoint(9, 2);
+rmark3.infoShadowAnchor =new GPoint(18, 25);  
+
+rmark4 =new GIcon();
+rmark4.image= "ricon04.png";
+rmark4.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark4.iconSize =new GSize(20, 34);
+rmark4.shadowSize =new GSize(37, 34);
+rmark4.iconAnchor =new GPoint(9, 34);
+rmark4.infoWindowAnchor =new GPoint(9, 2);
+rmark4.infoShadowAnchor =new GPoint(18, 25);
+
+rmark5 =new GIcon();
+rmark5.image= "ricon05.png";
+rmark5.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark5.iconSize =new GSize(20, 34);
+rmark5.shadowSize =new GSize(37, 34);
+rmark5.iconAnchor =new GPoint(9, 34);
+rmark5.infoWindowAnchor =new GPoint(9, 2);
+rmark5.infoShadowAnchor =new GPoint(18, 25);
+
+rmark6 =new GIcon();
+rmark6.image= "ricon06.png";
+rmark6.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark6.iconSize =new GSize(20, 34);
+rmark6.shadowSize =new GSize(37, 34);
+rmark6.iconAnchor =new GPoint(9, 34);
+rmark6.infoWindowAnchor =new GPoint(9, 2);
+rmark6.infoShadowAnchor =new GPoint(18, 25);
+
+rmark7 =new GIcon();
+rmark7.image= "ricon07.png";
+rmark7.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark7.iconSize =new GSize(20, 34);
+rmark7.shadowSize =new GSize(37, 34);
+rmark7.iconAnchor =new GPoint(9, 34);
+rmark7.infoWindowAnchor =new GPoint(9, 2);
+rmark7.infoShadowAnchor =new GPoint(18, 25);
+
+rmark8 =new GIcon();
+rmark8.image= "ricon08.png";
+rmark8.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark8.iconSize =new GSize(20, 34);
+rmark8.shadowSize =new GSize(37, 34);
+rmark8.iconAnchor =new GPoint(9, 34);
+rmark8.infoWindowAnchor =new GPoint(9, 2);
+rmark8.infoShadowAnchor =new GPoint(18, 25);
+
+
+rmark9 =new GIcon();
+rmark9.image= "ricon09.png";
+rmark9.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark9.iconSize =new GSize(20, 34);
+rmark9.shadowSize =new GSize(37, 34);
+rmark9.iconAnchor =new GPoint(9, 34);
+rmark9.infoWindowAnchor =new GPoint(9, 2);
+rmark9.infoShadowAnchor =new GPoint(18, 25);
+
+rmark10 =new GIcon();
+rmark10.image= "ricon10.png";
+rmark10.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark10.iconSize =new GSize(24, 34);
+rmark10.shadowSize =new GSize(37, 34);
+rmark10.iconAnchor =new GPoint(12, 34);
+rmark10.infoWindowAnchor =new GPoint(9, 2);
+rmark10.infoShadowAnchor =new GPoint(18, 25);
+
+rmark11 =new GIcon();
+rmark11.image= "ricon11.png";
+rmark11.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark11.iconSize =new GSize(24, 34);
+rmark11.shadowSize =new GSize(37, 34);
+rmark11.iconAnchor =new GPoint(12, 34);
+rmark11.infoWindowAnchor =new GPoint(9, 2);
+rmark11.infoShadowAnchor =new GPoint(18, 25);
+
+rmark12 =new GIcon();
+rmark12.image= "ricon12.png";
+rmark12.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark12.iconSize =new GSize(24, 34);
+rmark12.shadowSize =new GSize(37, 34);
+rmark12.iconAnchor =new GPoint(12, 34);
+rmark12.infoWindowAnchor =new GPoint(9, 2);
+rmark12.infoShadowAnchor =new GPoint(18, 25);
+
+rmark13 =new GIcon();
+rmark13.image= "ricon13.png";
+rmark13.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark13.iconSize =new GSize(24, 34);
+rmark13.shadowSize =new GSize(37, 34);
+rmark13.iconAnchor =new GPoint(12, 34);
+rmark13.infoWindowAnchor =new GPoint(9, 2);
+rmark13.infoShadowAnchor =new GPoint(18, 25);
+
+rmark14 =new GIcon();
+rmark14.image= "ricon14.png";
+rmark14.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark14.iconSize =new GSize(24, 34);
+rmark14.shadowSize =new GSize(37, 34);
+rmark14.iconAnchor =new GPoint(12, 34);
+rmark14.infoWindowAnchor =new GPoint(9, 2);
+rmark14.infoShadowAnchor =new GPoint(18, 25);
+
+rmark15 =new GIcon();
+rmark15.image= "ricon15.png";
+rmark15.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark15.iconSize =new GSize(24, 34);
+rmark15.shadowSize =new GSize(37, 34);
+rmark15.iconAnchor =new GPoint(12, 34);
+rmark15.infoWindowAnchor =new GPoint(9, 2);
+rmark15.infoShadowAnchor =new GPoint(18, 25);
+
+rmark16 =new GIcon();
+rmark16.image= "ricon16.png";
+rmark16.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark16.iconSize =new GSize(24, 34);
+rmark16.shadowSize =new GSize(37, 34);
+rmark16.iconAnchor =new GPoint(12, 34);
+rmark16.infoWindowAnchor =new GPoint(9, 2);
+rmark16.infoShadowAnchor =new GPoint(18, 25);
+
+rmark17 =new GIcon();
+rmark17.image= "ricon17.png";
+rmark17.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark17.iconSize =new GSize(24, 34);
+rmark17.shadowSize =new GSize(37, 34);
+rmark17.iconAnchor =new GPoint(12, 34);
+rmark17.infoWindowAnchor =new GPoint(9, 2);
+rmark17.infoShadowAnchor =new GPoint(18, 25);
+
+rmark18 =new GIcon();
+rmark18.image= "ricon18.png";
+rmark18.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark18.iconSize =new GSize(24, 34);
+rmark18.shadowSize =new GSize(37, 34);
+rmark18.iconAnchor =new GPoint(12, 34);
+rmark18.infoWindowAnchor =new GPoint(9, 2);
+rmark18.infoShadowAnchor =new GPoint(18, 25);
+
+
+rmark19 =new GIcon();
+rmark19.image= "ricon19.png";
+rmark19.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark19.iconSize =new GSize(24, 34);
+rmark19.shadowSize =new GSize(37, 34);
+rmark19.iconAnchor =new GPoint(19, 34);
+rmark19.infoWindowAnchor =new GPoint(19, 2);
+rmark19.infoShadowAnchor =new GPoint(18, 25);
+
+rmark20 =new GIcon();
+rmark20.image= "ricon20.png";
+rmark20.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark20.iconSize =new GSize(24, 34);
+rmark20.shadowSize =new GSize(37, 34);
+rmark20.iconAnchor =new GPoint(12, 34);
+rmark20.infoWindowAnchor =new GPoint(9, 2);
+rmark20.infoShadowAnchor =new GPoint(18, 25);
+
+rmark21 =new GIcon();
+rmark21.image= "ricon21.png";
+rmark21.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark21.iconSize =new GSize(24, 34);
+rmark21.shadowSize =new GSize(37, 34);
+rmark21.iconAnchor =new GPoint(12, 34);
+rmark21.infoWindowAnchor =new GPoint(9, 2);
+rmark21.infoShadowAnchor =new GPoint(18, 25);
+
+rmark22 =new GIcon();
+rmark22.image= "ricon22.png";
+rmark22.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark22.iconSize =new GSize(24, 34);
+rmark22.shadowSize =new GSize(37, 34);
+rmark22.iconAnchor =new GPoint(12, 34);
+rmark22.infoWindowAnchor =new GPoint(9, 2);
+rmark22.infoShadowAnchor =new GPoint(18, 25);
+
+rmark23 =new GIcon();
+rmark23.image= "ricon23.png";
+rmark23.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark23.iconSize =new GSize(24, 34);
+rmark23.shadowSize =new GSize(37, 34);
+rmark23.iconAnchor =new GPoint(12, 34);
+rmark23.infoWindowAnchor =new GPoint(9, 2);
+rmark23.infoShadowAnchor =new GPoint(18, 25);
+
+rmark24 =new GIcon();
+rmark24.image= "ricon24.png";
+rmark24.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark24.iconSize =new GSize(24, 34);
+rmark24.shadowSize =new GSize(37, 34);
+rmark24.iconAnchor =new GPoint(12, 34);
+rmark24.infoWindowAnchor =new GPoint(9, 2);
+rmark24.infoShadowAnchor =new GPoint(18, 25);
+
+rmark25 =new GIcon();
+rmark25.image= "ricon25.png";
+rmark25.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark25.iconSize =new GSize(24, 34);
+rmark25.shadowSize =new GSize(37, 34);
+rmark25.iconAnchor =new GPoint(12, 34);
+rmark25.infoWindowAnchor =new GPoint(9, 2);
+rmark25.infoShadowAnchor =new GPoint(18, 25);
+
+rmark26 =new GIcon();
+rmark26.image= "ricon26.png";
+rmark26.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark26.iconSize =new GSize(24, 34);
+rmark26.shadowSize =new GSize(37, 34);
+rmark26.iconAnchor =new GPoint(12, 34);
+rmark26.infoWindowAnchor =new GPoint(9, 2);
+rmark26.infoShadowAnchor =new GPoint(18, 25);
+
+rmark27 =new GIcon();
+rmark27.image= "ricon27.png";
+rmark27.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark27.iconSize =new GSize(24, 34);
+rmark27.shadowSize =new GSize(37, 34);
+rmark27.iconAnchor =new GPoint(12, 34);
+rmark27.infoWindowAnchor =new GPoint(9, 2);
+rmark27.infoShadowAnchor =new GPoint(18, 25);
+
+rmark28 =new GIcon();
+rmark28.image= "ricon28.png";
+rmark28.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark28.iconSize =new GSize(24, 34);
+rmark28.shadowSize =new GSize(37, 34);
+rmark28.iconAnchor =new GPoint(12, 34);
+rmark28.infoWindowAnchor =new GPoint(9, 2);
+rmark28.infoShadowAnchor =new GPoint(18, 25);
+
+
+rmark29 =new GIcon();
+rmark29.image= "ricon29.png";
+rmark29.shadow = "http://www.google.com/mapfiles/shadow50.png";
+rmark29.iconSize =new GSize(24, 34);
+rmark29.shadowSize =new GSize(37, 34);
+rmark29.iconAnchor =new GPoint(19, 34);
+rmark29.infoWindowAnchor =new GPoint(19, 2);
+rmark29.infoShadowAnchor =new GPoint(18, 25);
+
+
+
+route1 =new GIcon();
+route1.image = "1.png";
+route1.shadow = "shadow-flag.png";
+route1.iconSize =new GSize(80, 16);
+route1.shadowSize =new GSize(80, 10);
+route1.iconAnchor =new GPoint(0, 42);
+route1.infoWindowAnchor =new GPoint(9, 2);
+route1.infoShadowAnchor =new GPoint(18, 25);
+ 
+route2 =new GIcon();
+route2.image = "2.png";
+route2.shadow = "shadow-flag.png";
+route2.iconSize =new GSize(80, 16);
+route2.shadowSize =new GSize(80, 10);
+route2.iconAnchor =new GPoint(0, 42);
+route2.infoWindowAnchor =new GPoint(9, 2);
+route2.infoShadowAnchor =new GPoint(18, 25);
+ 
+route3 =new GIcon();
+route3.image = "3.png";
+route3.shadow = "shadow-flag.png";
+route3.iconSize =new GSize(80, 16);
+route3.shadowSize =new GSize(80, 10);
+route3.iconAnchor =new GPoint(0, 42);
+route3.infoWindowAnchor =new GPoint(9, 2);
+route3.infoShadowAnchor =new GPoint(18, 25);
+ 
+ 
+route4 =new GIcon();
+route4.image = "4.png";
+route4.shadow = "shadow-flag.png";
+route4.iconSize =new GSize(80, 16);
+route4.shadowSize =new GSize(80, 10);
+route4.iconAnchor =new GPoint(0, 42);
+route4.infoWindowAnchor =new GPoint(9, 2);
+route4.infoShadowAnchor =new GPoint(18, 25);
+ 
+route5 =new GIcon();
+route5.image = "5.png";
+route5.shadow = "shadow-flag.png";
+route5.iconSize =new GSize(80, 16);
+route5.shadowSize =new GSize(80, 10);
+route5.iconAnchor =new GPoint(0, 42);
+route5.infoWindowAnchor =new GPoint(9, 2);
+route5.infoShadowAnchor =new GPoint(18, 25);
+
+
+route6 =new GIcon();
+route6.image = "6.png";
+route6.shadow = "shadow-flag.png";
+route6.iconSize =new GSize(80, 16);
+route6.shadowSize =new GSize(10, 80);
+route6.iconAnchor =new GPoint(81, 42);
+route6.infoWindowAnchor =new GPoint(9, 2);
+route6.infoShadowAnchor =new GPoint(18, 25);
+ 
+ 
+route7 =new GIcon();
+route7.image = "7.png";
+route7.shadow = "shadow-flag.png";
+route7.iconSize =new GSize(80, 16);
+route7.shadowSize =new GSize(80, 10);
+route7.iconAnchor =new GPoint(0, 42);
+route7.infoWindowAnchor =new GPoint(9, 2);
+route7.infoShadowAnchor =new GPoint(18, 25);
+ 
+ 
+route8 =new GIcon();
+route8.image = "8.png";
+route8.shadow = "shadow-flag.png";
+route8.iconSize =new GSize(80, 16);
+route8.shadowSize =new GSize(10, 80);
+route8.iconAnchor =new GPoint(81, 42);
+route8.infoWindowAnchor =new GPoint(9, 2);
+route8.infoShadowAnchor =new GPoint(18, 25);
+ 
+ 
+route9 =new GIcon();
+route9.image = "9.png";
+route9.shadow = "shadow-flag.png";
+route9.iconSize =new GSize(80, 16);
+route9.shadowSize =new GSize(80, 10);
+route9.iconAnchor =new GPoint(0, 42);
+route9.infoWindowAnchor =new GPoint(9, 2);
+route9.infoShadowAnchor =new GPoint(18, 25);
+ 
+
+ 
+route10 =new GIcon();
+route10.image = "10.png";
+route10.shadow = "shadow-flag.png";
+route10.iconSize =new GSize(80, 16);
+route10.shadowSize =new GSize(80, 10);
+route10.iconAnchor =new GPoint(0, 42);
+route10.infoWindowAnchor =new GPoint(9, 2);
+route10.infoShadowAnchor =new GPoint(18, 25);
+ 
+route11 =new GIcon();
+route11.image = "11.png";
+route11.shadow = "shadow-flag.png";
+route11.iconSize =new GSize(80, 16);
+route11.shadowSize =new GSize(80, 10);
+route11.iconAnchor =new GPoint(0, 42);
+route11.infoWindowAnchor =new GPoint(9, 2);
+route11.infoShadowAnchor =new GPoint(18, 25);
+ 
+route12 =new GIcon();
+route12.image = "12.png";
+route12.shadow = "shadow-flag.png";
+route12.iconSize =new GSize(80, 16);
+route12.shadowSize =new GSize(80, 10);
+route12.iconAnchor =new GPoint(0, 42);
+route12.infoWindowAnchor =new GPoint(9, 2);
+route12.infoShadowAnchor =new GPoint(18, 25);
+
+route13 =new GIcon();
+route13.image = "13.png";
+route13.shadow = "shadow-flag.png";
+route13.iconSize =new GSize(80, 16);
+route13.shadowSize =new GSize(80, 10);
+route13.iconAnchor =new GPoint(0, 42);
+route13.infoWindowAnchor =new GPoint(9, 2);
+route13.infoShadowAnchor =new GPoint(18, 25);
+
+
+route14 =new GIcon();
+route14.image = "14.png";
+route14.shadow = "shadow-flag.png";
+route14.iconSize =new GSize(80, 16);
+route14.shadowSize =new GSize(80, 10);
+route14.iconAnchor =new GPoint(0, 42);
+route14.infoWindowAnchor =new GPoint(9, 2);
+route14.infoShadowAnchor =new GPoint(18, 25);
+
+
+
+route15 =new GIcon();
+route15.image = "15.png";
+route15.shadow = "shadow-flag.png";
+route15.iconSize =new GSize(80, 16);
+route15.shadowSize =new GSize(80, 10);
+route15.iconAnchor =new GPoint(0, 42);
+route15.infoWindowAnchor =new GPoint(9, 2);
+route15.infoShadowAnchor =new GPoint(18, 25);
+
+
+route16 =new GIcon();
+route16.image = "16.png";
+route16.shadow = "shadow-flag.png";
+route16.iconSize =new GSize(80, 16);
+route16.shadowSize =new GSize(10, 80);
+route16.iconAnchor =new GPoint(81, 42);
+route16.infoWindowAnchor =new GPoint(9, 2);
+route16.infoShadowAnchor =new GPoint(18, 25);
+
+
+
+iconpost =new GIcon();
+iconpost.image = "0post.png";
+iconpost.shadow = "shadow-flag.png";
+iconpost.iconSize =new GSize(3, 42);
+iconpost.shadowSize =new GSize(3, 42);
+iconpost.iconAnchor =new GPoint(2, 42);
+iconpost.infoWindowAnchor =new GPoint(9, 2);
+iconpost.infoShadowAnchor =new GPoint(2, 60);
+ 
+ritwflag= new GIcon(); 
+ritwflag.image = "RITFlagFlag.gif"; 
+ritwflag.shadow = ""; 
+ritwflag.iconSize = new GSize(400,300); 
+ritwflag.shadowSize = new GSize(0,0); 
+ritwflag.iconAnchor = new GPoint(143,400) 
+ritwflag.infoWindowAnchor = new GPoint(9, 2); 
+ritwflag.infoShadowAnchor = new GPoint(18, 25);  
+
+pole= new GIcon();
+pole.image = "pole1.png";
+pole.shadow = "";
+pole.iconSize = new GSize(7, 300);
+pole.shadowSize = new GSize(4, 300);
+pole.iconAnchor = new GPoint(4, 300);
+pole.infoWindowAnchor = new GPoint(9, 2);
+pole.infoShadowAnchor = new GPoint(2, 60);
+ 
+}
+ 
+
+ 
+ 
+function addPoints() {
+    
+    
+newpoints[0] =  new Array(13.129220,79.972072,        rmark14,           '1.0',            'Route no:14 Sevapetai  ');
+newpoints[1] =  new Array(13.134092,79.933230,        rmark14,           '1.0',            'Route no:14 Kakkalur Industrial Estate  ');
+newpoints[2] =  new Array(13.136713,79.925149,        rmark14,           '1.0',            'Route no:14 Poonka Nagar  ');
+newpoints[3] =  new Array(13.137362,79.908197,        rmark14,           '1.0',            'Route no:14 Kakkalur Signal  ');
+newpoints[4] =  new Array(13.135235,79.908646,        rmark14,           '1.0',            'Route no:14 SBI   ');
+newpoints[5] =  new Array(13.131839,79.909390,        rmark14,           '1.0',            'Route no:14 Head Post Office Tiruvallur  ');
+newpoints[6] =  new Array(13.127569,79.910464,        rmark14,           '1.0',            'Route no:14 Goverment Hospital - Tiruvallur  ');
+newpoints[7] =  new Array(13.109454,79.921183,        rmark14,           '1.0',            'Route no:14 LIC Tiruvallur  ');
+newpoints[8] =  new Array(13.123847,79.911316,        rmark14,           '1.0',            'Route no:14 GRT Tiruvallur  ');
+newpoints[9] =  new Array(13.122694,79.911757,        rmark14,           '1.0',            'Route no:14 Thiruvallur Oil Mill  ');
+newpoints[10]=  new Array(13.110735,79.910600,        rmark14,           '1.0',            'Route no:14 Manavala Nagar Junction  ');
+newpoints[11]=  new Array(13.112786,79.912033,        rmark14,           '1.0',            'Route no:14 Manavalanagar Railway Station  ');
+newpoints[12]=  new Array(13.112443,79.913156,        rmark14,           '1.0',            'Route no:14 Manavalanagar Bus stop  ');
+newpoints[13]=  new Array(13.110374,79.918061,        rmark14,           '1.0',            'Route no:14 Ondikuppam  ');
+newpoints[14]=  new Array(13.108266,79.925113,        rmark14,           '1.0',            'Route no:14 A P Star Marriage Hall  ');
+newpoints[15]=  new Array(13.107425,79.930100,        rmark14,           '1.0',            'Route no:14 Venkathur  ');
+newpoints[16]=  new Array(13.107655,79.937880,        rmark14,           '1.0',            'Route no:14 Putlur  ');
+newpoints[17]=  new Array(13.106579,79.958749,        rmark14,           '1.0',            'Route no:14 Tirur  ');
+newpoints[18]=  new Array(13.100749,79.967010,        rmark14,           '1.0',            'Route no:14 Aranvoyal  ');
+newpoints[19]=  new Array(13.098865,79.976646,        rmark14,           '1.0',            'Route no:14 Aranvoyal Kuppam  ');
+newpoints[20]=  new Array(13.098091,79.979089,        rmark14,           '1.0',            'Route no:14 Murukanchery  ');
+newpoints[21]=  new Array(13.067901,80.036978,        rmark14,           '1.0',            'Route no:14 Vellavedu  ');
+newpoints[22]=  new Array(13.055285,80.056526,        rmark14,           '1.0',            'Route no:14 Thirumazhisai Bus Stand  ');
+newpoints[23]=  new Array(13.054492,80.061494,        rmark14,           '1.0',            'Route no:14 Thirumazhisai Sivan Koil  ');
+newpoints[24]=  new Array(13.038680,80.045138,        ritwflag,          '1.0',            'Route no:14 RIT Flag            ');
+newpoints[25]=  new Array(13.038680,80.045138,        pole,              '1.0',            'Route no:14 RIT Pole            ');
+
+
+
+//Route 14  Sevvapet- kkalur-Thiruvallur-Manavalanagar-kakkalur
+ 
+var poly =new GPolyline([new GLatLng(13.129220, 79.972072),
+new GLatLng(13.129188,79.969757),
+new GLatLng(13.129585,79.967034),
+new GLatLng(13.129930,79.966025),
+new GLatLng(13.130524,79.964809),
+new GLatLng(13.130712,79.964545),
+new GLatLng(13.130963,79.964411),
+new GLatLng(13.131679,79.964009),
+new GLatLng(13.132034,79.963666),
+new GLatLng(13.132619,79.962529),
+new GLatLng(13.132588,79.962239),
+new GLatLng(13.132212,79.961096),
+new GLatLng(13.131946,79.959932),
+new GLatLng(13.132009,79.959294),
+new GLatLng(13.132166,79.958736),
+new GLatLng(13.132422,79.958468),
+new GLatLng(13.133237,79.957937),
+new GLatLng(13.133467,79.957632),
+new GLatLng(13.133446,79.955669),
+new GLatLng(13.133488,79.954784),
+new GLatLng(13.133572,79.954017),
+new GLatLng(13.133889,79.952746),
+new GLatLng(13.134077,79.949693),
+new GLatLng(13.133419,79.946957),
+new GLatLng(13.132907,79.946431),
+new GLatLng(13.132792,79.946174),
+new GLatLng(13.133502,79.940112),
+new GLatLng(13.133732,79.936926),
+new GLatLng(13.133972,79.933686),
+new GLatLng(13.134092,79.933230),
+new GLatLng(13.134740,79.931343),
+new GLatLng(13.135009,79.929192),
+new GLatLng(13.135004,79.928391),
+new GLatLng(13.135219,79.927550),
+new GLatLng(13.135720,79.926329),
+new GLatLng(13.136891,79.920986),
+new GLatLng(13.137006,79.916812),
+new GLatLng(13.137184,79.912424),
+new GLatLng(13.137362,79.908197),
+new GLatLng(13.135235,79.908646),
+new GLatLng(13.134415,79.908756),
+new GLatLng(13.131839,79.909396),
+new GLatLng(13.129837,79.909874),
+new GLatLng(13.127569,79.910464),
+new GLatLng(13.125714,79.910899),
+new GLatLng(13.124622,79.911076),
+new GLatLng(13.124058,79.911253),
+new GLatLng(13.123847,79.911316),
+new GLatLng(13.122694,79.911757),
+new GLatLng(13.120870,79.910459),
+new GLatLng(13.119595,79.909794),
+new GLatLng(13.118174,79.909354),
+new GLatLng(13.116283,79.909043),
+new GLatLng(13.114026,79.908818),
+new GLatLng(13.111079,79.910084),
+new GLatLng(13.111016,79.910095),
+new GLatLng(13.110735,79.910600),
+new GLatLng(13.112095,79.911277),
+new GLatLng(13.112786,79.912033),
+new GLatLng(13.111729,79.913728),
+new GLatLng(13.111550,79.914059),
+new GLatLng(13.111393,79.914370),
+new GLatLng(13.109653,79.920512),
+new GLatLng(13.108266,79.925113),
+new GLatLng(13.107388,79.928819),
+new GLatLng(13.107425,79.930100),
+new GLatLng(13.107624,79.934983),
+new GLatLng(13.107655,79.937880),
+new GLatLng(13.107749,79.941260),
+new GLatLng(13.108114,79.943570),
+new GLatLng(13.108229,79.944750),
+new GLatLng(13.108344,79.947776),
+new GLatLng(13.108490,79.949857),
+new GLatLng(13.108009,79.954953),
+new GLatLng(13.107509,79.957590),
+new GLatLng(13.106579,79.958749),
+new GLatLng(13.103988,79.962300),
+new GLatLng(13.101804,79.965411),
+new GLatLng(13.100749,79.967010),
+new GLatLng(13.100329,79.968005),
+new GLatLng(13.099646,79.971699),
+new GLatLng(13.099291,79.974823),
+new GLatLng(13.098865,79.976646),
+new GLatLng(13.098116,79.978953),
+new GLatLng(13.098105,79.979124),
+new GLatLng(13.098091,79.979089),
+new GLatLng(13.097756,79.985395),
+new GLatLng(13.096732,79.989493),
+new GLatLng(13.094851,79.994332),
+new GLatLng(13.092866,79.999192),
+new GLatLng(13.091359,80.003007),
+new GLatLng(13.090430,80.005496),
+new GLatLng(13.089734,80.007469),
+new GLatLng(13.089306,80.009336),
+new GLatLng(13.088629,80.012522),
+new GLatLng(13.087148,80.016310),
+new GLatLng(13.086475,80.017798),
+new GLatLng(13.084583,80.019482),
+new GLatLng(13.083862,80.019793),
+new GLatLng(13.081533,80.022110),
+new GLatLng(13.079201,80.024442),
+new GLatLng(13.077874,80.026234),
+new GLatLng(13.076097,80.028451),
+new GLatLng(13.075721,80.028934),
+new GLatLng(13.071206,80.033131),
+new GLatLng(13.069019,80.035259),
+new GLatLng(13.067901,80.036978),
+new GLatLng(13.067880,80.037763),
+new GLatLng(13.066814,80.039249),
+new GLatLng(13.066673,80.039539),
+new GLatLng(13.065549,80.042597),
+new GLatLng(13.065319,80.043107),
+new GLatLng(13.063901,80.045301),
+new GLatLng(13.061926,80.048337),
+new GLatLng(13.061539,80.048772),
+new GLatLng(13.061116,80.049201),
+new GLatLng(13.059935,80.050156),
+new GLatLng(13.058017,80.053198),
+new GLatLng(13.057160,80.054319),
+new GLatLng(13.055575,80.056116),
+new GLatLng(13.055285,80.056526),
+new GLatLng(13.055066,80.057239),
+new GLatLng(13.054862,80.058001),
+new GLatLng(13.054492,80.061494),
+new GLatLng(13.054773,80.060512),
+new GLatLng(13.054162,80.062105),
+new GLatLng(13.054144,80.062193),
+new GLatLng(13.053891,80.063149),
+new GLatLng(13.051592,80.065009),
+new GLatLng(13.050163,80.065856),
+new GLatLng(13.048030,80.067756),
+new GLatLng(13.045948,80.069627),
+new GLatLng(13.045572,80.069970),
+
+], "#9900ff" ,3,1.0, 100);map.addOverlay(poly);
+ 
+
+
+
+// ORR junction to college
+// maduravoil New5C
+var poly = new GPolyline([
+
+new GLatLng(13.045572,80.069970),
+new GLatLng(13.043554,80.063719), 
+new GLatLng(13.042158,80.060838), 
+new GLatLng(13.041944,80.060447), 
+new GLatLng(13.040120,80.056069), 
+new GLatLng(13.039796,80.055479), 
+new GLatLng(13.038625,80.052652), 
+new GLatLng(13.037606,80.049793), 
+new GLatLng(13.035944,80.043705), 
+
+
+], "#9900ff" , 3 ,0.8, 80); map.addOverlay(poly);
+
+// Poonamalle High Road to RIT
+// 
+var poly = new GPolyline([
+new GLatLng(13.035942,80.043670),
+new GLatLng(13.036249,80.043609),
+new GLatLng(13.036645,80.043639),
+new GLatLng(13.036896,80.043730),
+new GLatLng(13.037868,80.044148),
+new GLatLng(13.037560,80.044867),
+new GLatLng(13.037524,80.045127),
+new GLatLng(13.037578,80.045164),
+new GLatLng(13.037907,80.045167),
+new GLatLng(13.038589,80.045140),
+new GLatLng(13.038680,80.045138),
+], "#9900ff" , 3 ,0.8, 80); map.addOverlay(poly);
+ 
+ 
+for(var i = 0; i < newpoints.length; i++) {
+var point =new GPoint(newpoints[i][1],newpoints[i][0]);
+var popuphtml =newpoints[i][4] ;
+var marker = createMarker(point,newpoints[i][2],popuphtml);
+map.addOverlay(marker);
+}
+}
+ 
+function createMarker(point, icon, popuphtml) {
+var popuphtml = "<div id=\"popup\">" + popuphtml + "<\/div>";
+var marker =new GMarker(point, icon);
+GEvent.addListener(marker, "click", function() {
+marker.openInfoWindowHtml(popuphtml);
+});
+return marker;
+}
+ 
+//mouseover
+  
+//]]>
+</script> 
+ 
+ 
+ 
+ 
+<style type="text/css"> 
+div#popup {
+background:#EFEFEF;
+border:1px solid #999999;
+margin:0px;
+padding:7px;
+width:270px;
+}
+</style> 
+</head> 
+<body> 
+<div id="map" style="width:100%;height:850px"></div> 
+ 
+</body> 
+</html> 

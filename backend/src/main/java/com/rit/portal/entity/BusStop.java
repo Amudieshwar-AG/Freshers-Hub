@@ -28,6 +28,12 @@ public class BusStop {
     @Column(name = "arrival_time", nullable = false)
     private String time;
 
+    @Column(name = "latitude")
+    private Double lat;
+
+    @Column(name = "longitude")
+    private Double lng;
+
     @Column(name = "stop_order", nullable = false)
     private Integer stopOrder;
 }

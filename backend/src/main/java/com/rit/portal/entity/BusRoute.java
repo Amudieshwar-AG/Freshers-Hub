@@ -39,6 +39,22 @@ public class BusRoute {
     @Column(name = "color_code")
     private String color;
 
+    @Column(name = "from_lat")
+    private Double fromLat;
+
+    @Column(name = "from_lng")
+    private Double fromLng;
+
+    @Column(name = "to_lat")
+    private Double toLat;
+
+    @Column(name = "to_lng")
+    private Double toLng;
+
+    @Column(name = "polyline_data", columnDefinition = "TEXT")
+    @com.fasterxml.jackson.annotation.JsonRawValue
+    private String polyline;
+
     @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @OrderBy("stopOrder ASC")
     @Builder.Default

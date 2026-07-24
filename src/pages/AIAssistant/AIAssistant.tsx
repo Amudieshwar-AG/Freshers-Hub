@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bot, Send, Sparkles, RefreshCw, Mic, X, ChevronRight } from 'lucide-react';
 import { AI_SUGGESTED_PROMPTS } from '@/constants';
 import type { ChatMessage } from '@/types';
+import { getChatbotUrl } from '@/lib/utils';
 
 const INITIAL_MESSAGES: ChatMessage[] = [
   {
@@ -44,7 +45,7 @@ export default function AIAssistant() {
     setIsTyping(true);    // Call the Go chatbot microservice
     let responseText = '';
     try {
-      const res = await fetch('http://localhost:8081/api/chat', {
+      const res = await fetch(getChatbotUrl('/api/chat'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text }),
@@ -72,7 +73,7 @@ export default function AIAssistant() {
       } else if (lower.includes('library')) {
         responseText = responses.library;
       } else {
-        responseText = `Thank you for your question about **"${text}"**!\n\nI couldn't reach the chatbot API server. Please make sure the Go service is running on http://localhost:8081.`;
+        responseText = `Thank you for your question about **"${text}"**!\n\nI couldn't reach the chatbot API server. Please make sure the Go service is running on ${getChatbotUrl()}.`;
       }
     }
 

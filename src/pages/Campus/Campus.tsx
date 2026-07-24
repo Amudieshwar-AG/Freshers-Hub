@@ -31,6 +31,7 @@ import { FACULTY_DATA, CAMPUS_LOCATIONS, DEPARTMENTS } from '@/constants';
 import * as LucideIcons from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import type { BusRoute } from '@/types';
+import { getBackendUrl } from '@/lib/utils';
 
 interface LocationSpot {
   name: string;
@@ -101,6 +102,7 @@ export default function Campus() {
   const [busRoutes, setBusRoutes] = useState<BusRoute[]>([]);
   const [loadingBus, setLoadingBus] = useState(true);
   const [selectedBusRoute, setSelectedBusRoute] = useState<BusRoute | null>(null);
+  const [hasFetchedBus, setHasFetchedBus] = useState(false);
 
   // Interactive Map State
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -178,23 +180,38 @@ export default function Campus() {
   }, [location.search]);
 
   useEffect(() => {
-    if (activeTab === 'bus' && busRoutes.length === 0) {
+    if (activeTab === 'bus' && !hasFetchedBus) {
       setLoadingBus(true);
-      fetch('http://localhost:8080/api/bus-routes')
+      fetch(getBackendUrl('/api/bus-routes'))
         .then((res) => {
-          if (!res.ok) throw new Error('Failed to fetch');
+          if (!res.ok) throw new Error('Backend offline');
           return res.json();
         })
         .then((data) => {
-          setBusRoutes(data);
+          if (data && data.length > 0) {
+            setBusRoutes(data);
+            setSelectedBusRoute(prev => prev || data[0]);
+          } else {
+            throw new Error('Empty data');
+          }
           setLoadingBus(false);
+          setHasFetchedBus(true);
         })
-        .catch((err) => {
-          console.error('Error fetching bus routes:', err);
-          setLoadingBus(false);
+        .catch(() => {
+          fetch('/bus_routes.json')
+            .then((res) => res.json())
+            .then((data) => {
+              setBusRoutes(data);
+              setSelectedBusRoute(prev => prev || data[0]);
+            })
+            .catch((err) => console.error('Fallback fetch error:', err))
+            .finally(() => {
+              setLoadingBus(false);
+              setHasFetchedBus(true);
+            });
         });
     }
-  }, [activeTab, busRoutes.length]);
+  }, [activeTab, hasFetchedBus]);
 
   const filteredAndSortedFaculty = useMemo(() => {
     const filtered = FACULTY_DATA.filter((f) => {

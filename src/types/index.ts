@@ -69,6 +69,7 @@ export interface BusRoute {
   from_lng?: number;
   to_lat?: number;
   to_lng?: number;
+  polyline?: [number, number][];
 }
 
 // ─── Notes / PYQs ────────────────────────────────────────────────────────────

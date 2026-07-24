@@ -20,3 +20,13 @@ export function formatTime(timeStr: string): string {
 export function truncate(str: string, n: number): string {
   return str.length > n ? str.substring(0, n - 1) + '…' : str;
 }
+
+export const getBackendUrl = (path: string = ''): string => {
+  const host = window.location.hostname;
+  return `http://${host}:8085${path}`;
+};
+
+export const getChatbotUrl = (path: string = ''): string => {
+  const host = window.location.hostname;
+  return `http://${host}:8081${path}`;
+};

@@ -21,6 +21,16 @@ logging.basicConfig(
     ]
 )
 
+# Load env variables from .env if present
+env_path = os.path.join(os.path.dirname(__file__), ".env")
+if os.path.exists(env_path):
+    with open(env_path, "r", encoding="utf-8") as env_file:
+        for line in env_file:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, val = line.split("=", 1)
+                os.environ[key.strip()] = val.strip()
+
 # Load Configuration
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
 
@@ -122,8 +132,8 @@ def telegram_polling_thread():
         # Re-load config dynamic updates
         current_config = load_config()
         helpers = current_config.get("helper_chat_ids", [])
-        backend_url = current_config.get("spring_backend_url")
-        bot_token = current_config.get("telegram_bot_token")
+        backend_url = os.environ.get("SPRING_BACKEND_URL") or current_config.get("spring_backend_url")
+        bot_token = os.environ.get("TELEGRAM_BOT_TOKEN") or current_config.get("telegram_bot_token")
 
         url = f"https://api.telegram.org/bot{bot_token}/getUpdates"
         params = {"offset": offset, "timeout": 20}

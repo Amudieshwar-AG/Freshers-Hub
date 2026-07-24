@@ -1,8 +1,9 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { BusRoute } from '@/types';
+import { getBackendUrl } from '@/lib/utils';
 
 // Standard Leaflet Icon fix for Vite
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -27,6 +28,24 @@ const isValidCoordinate = (lat?: number, lng?: number): boolean => {
   return lat >= MIN_LAT && lat <= MAX_LAT && lng >= MIN_LNG && lng <= MAX_LNG;
 };
 
+const isRealStopCoordinate = (stop: { name: string; lat?: number; lng?: number }): boolean => {
+  if (stop.lat === undefined || stop.lng === undefined) return false;
+  if (!isValidCoordinate(stop.lat, stop.lng)) return false;
+  
+  // Check for RIT Campus coordinate fallback (13.0118, 80.0214)
+  const isRITCoord = Math.abs(stop.lat - 13.0118) < 0.001 && Math.abs(stop.lng - 80.0214) < 0.001;
+  const isRITName = stop.name.toLowerCase().includes("rit") || 
+                    stop.name.toLowerCase().includes("campus") || 
+                    stop.name.toLowerCase().includes("college") ||
+                    stop.name.toLowerCase().includes("rajalakshmi");
+  
+  if (isRITCoord && !isRITName) {
+    return false; // Exclude defaulted RIT Campus coordinates
+  }
+  
+  return true;
+};
+
 // Custom Premium DivIcons using Tailwind CSS
 const getStartIcon = (label: string = "1") => L.divIcon({
   html: `<div class="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500 border-2 border-white shadow-md text-white text-[10px] font-extrabold hover:scale-110 transition-transform">${label}</div>`,
@@ -44,6 +63,13 @@ const getStopIcon = (num: number) => L.divIcon({
 
 const campusIcon = L.divIcon({
   html: `<div class="flex items-center justify-center w-9 h-9 rounded-full bg-gradient-to-tr from-orange-500 to-amber-500 border-2 border-white shadow-lg text-white text-sm font-bold animate-pulse hover:scale-110 transition-transform">🏫</div>`,
+  className: '',
+  iconSize: [36, 36],
+  iconAnchor: [18, 18],
+});
+
+const liveBusIcon = L.divIcon({
+  html: `<div class="relative flex items-center justify-center w-9 h-9 rounded-full bg-emerald-500 border-2 border-white shadow-lg text-white text-sm font-bold"><span class="absolute inset-0 rounded-full bg-emerald-500/40 animate-ping"></span>🚌</div>`,
   className: '',
   iconSize: [36, 36],
   iconAnchor: [18, 18],
@@ -68,27 +94,76 @@ interface BusRouteMapProps {
 const DEFAULT_CENTER = [13.0118, 80.0214]; // RIT Campus default
 
 export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapProps) {
+  const [allLiveLocations, setAllLiveLocations] = useState<Record<String, { latitude: number; longitude: number }>>({});
+
+  useEffect(() => {
+    const fetchLiveLocations = () => {
+      fetch(getBackendUrl('/api/bus-locations'))
+        .then((res) => {
+          if (res.ok) return res.json();
+          return [];
+        })
+        .then((data: Array<{ routeNumber: string; latitude: number; longitude: number }>) => {
+          if (Array.isArray(data)) {
+            const locMap: Record<string, { latitude: number; longitude: number }> = {};
+            data.forEach((item) => {
+              if (item.routeNumber && item.latitude && item.longitude) {
+                locMap[item.routeNumber] = { latitude: item.latitude, longitude: item.longitude };
+              }
+            });
+            setAllLiveLocations(locMap);
+          }
+        })
+        .catch(() => {
+          setAllLiveLocations({});
+        });
+    };
+
+    // Initial fetch
+    fetchLiveLocations();
+
+    // Poll every 3 seconds
+    const interval = setInterval(fetchLiveLocations, 3000);
+    return () => clearInterval(interval);
+  }, []);
   // Collect coordinates for the polyline path, filtering out any invalid outliers
   const pathCoordinates = useMemo(() => {
     if (!selectedRoute) return [];
     
-    const coords: [number, number][] = [];
-    
-    // Add start stop coords if valid
-    if (isValidCoordinate(selectedRoute.from_lat, selectedRoute.from_lng)) {
-      coords.push([selectedRoute.from_lat!, selectedRoute.from_lng!]);
+    // If route has pre-scraped polyline road path, use it!
+    if (selectedRoute.polyline && selectedRoute.polyline.length > 0) {
+      return selectedRoute.polyline;
     }
     
-    // Add all intermediary stop coords that are valid
+    const coords: [number, number][] = [];
+    
+    // Add start stop coords if valid and real
+    if (isValidCoordinate(selectedRoute.from_lat, selectedRoute.from_lng)) {
+      const isStartRIT = Math.abs(selectedRoute.from_lat! - 13.0118) < 0.001 && Math.abs(selectedRoute.from_lng! - 80.0214) < 0.001;
+      const isStartRITName = selectedRoute.from.toLowerCase().includes("rit") || 
+                             selectedRoute.from.toLowerCase().includes("campus") || 
+                             selectedRoute.from.toLowerCase().includes("college");
+      if (!isStartRIT || isStartRITName) {
+        coords.push([selectedRoute.from_lat!, selectedRoute.from_lng!]);
+      }
+    }
+    
+    // Add all intermediary stop coords that are valid and real
     selectedRoute.stops.forEach(stop => {
-      if (isValidCoordinate(stop.lat, stop.lng)) {
+      if (isRealStopCoordinate(stop)) {
         coords.push([stop.lat!, stop.lng!]);
       }
     });
 
-    // Add end stop coords if valid
+    // Add end stop coords if valid and real
     if (isValidCoordinate(selectedRoute.to_lat, selectedRoute.to_lng)) {
-      coords.push([selectedRoute.to_lat!, selectedRoute.to_lng!]);
+      const isEndRIT = Math.abs(selectedRoute.to_lat! - 13.0118) < 0.001 && Math.abs(selectedRoute.to_lng! - 80.0214) < 0.001;
+      const isEndRITName = selectedRoute.to.toLowerCase().includes("rit") || 
+                           selectedRoute.to.toLowerCase().includes("campus") || 
+                           selectedRoute.to.toLowerCase().includes("college");
+      if (!isEndRIT || isEndRITName) {
+        coords.push([selectedRoute.to_lat!, selectedRoute.to_lng!]);
+      }
     }
 
     return coords;
@@ -103,8 +178,8 @@ export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapPro
   // Determine which markers to display
   const renderMarkers = () => {
     if (selectedRoute) {
-      // Filter out stops that do not have valid coordinates
-      const validStops = selectedRoute.stops.filter(stop => isValidCoordinate(stop.lat, stop.lng));
+      // Filter out stops that do not have valid/real coordinates
+      const validStops = selectedRoute.stops.filter(stop => isRealStopCoordinate(stop));
 
       return (
         <>
@@ -192,6 +267,27 @@ export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapPro
         />
         
         {renderMarkers()}
+
+        {Object.entries(allLiveLocations).map(([rNum, loc]) => {
+          if (selectedRoute && selectedRoute.number !== rNum) return null;
+          return (
+            <Marker 
+              key={`live-bus-${rNum}`}
+              position={[loc.latitude, loc.longitude]} 
+              icon={liveBusIcon}
+            >
+              <Popup>
+                <div className="p-1 font-sans text-center">
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>LIVE TRACKING
+                  </span>
+                  <h4 className="font-bold text-slate-800 text-xs mt-1">Bus {rNum}</h4>
+                  <p className="text-[10px] text-slate-500 mt-0.5">Broadcasting live coordinates</p>
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
         
         {selectedRoute && pathCoordinates.length > 1 && (
           <Polyline 

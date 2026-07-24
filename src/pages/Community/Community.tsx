@@ -5,6 +5,7 @@ import {
   Shield, Lock, Smile, ChevronRight, Search, Plus, User
 } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
+import { getBackendUrl } from '@/lib/utils';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
 import { CONFESSIONS_DATA } from '@/constants';
@@ -91,7 +92,7 @@ export default function Community() {
   const fetchQuestions = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:8080/api/questions`);
+      const response = await fetch(getBackendUrl('/api/questions'));
       if (response.ok) {
         const data = await response.json();
         // Backend returns oldest-first, reverse to show newest first
@@ -193,7 +194,7 @@ export default function Community() {
 
     try {
       if (isLikedNow) {
-        await fetch(`http://localhost:8080/api/questions/${id}/upvote`, {
+        await fetch(getBackendUrl(`/api/questions/${id}/upvote`), {
           method: 'POST'
         });
         fetchQuestions();
@@ -240,7 +241,7 @@ export default function Community() {
     };
 
     try {
-      const response = await fetch('http://localhost:8080/api/questions', {
+      const response = await fetch(getBackendUrl('/api/questions'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
