@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import BusCard from '@/components/BusCard/BusCard';
+import BusRouteMap from '@/components/BusRouteMap/BusRouteMap';
 import FacultyCard from '@/components/FacultyCard/FacultyCard';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { FACULTY_DATA, CAMPUS_LOCATIONS, DEPARTMENTS } from '@/constants';
@@ -99,6 +100,7 @@ export default function Campus() {
   const [busSearch, setBusSearch] = useState('');
   const [busRoutes, setBusRoutes] = useState<BusRoute[]>([]);
   const [loadingBus, setLoadingBus] = useState(true);
+  const [selectedBusRoute, setSelectedBusRoute] = useState<BusRoute | null>(null);
 
   // Interactive Map State
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -757,13 +759,30 @@ export default function Campus() {
                 </p>
               </div>
             ) : (
-              <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {filteredRoutes.map((route) => (
-                  <StaggerItem key={route.id}>
-                    <BusCard route={route} />
-                  </StaggerItem>
-                ))}
-              </StaggerContainer>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                {/* Routes List */}
+                <div className="lg:col-span-5 max-h-[650px] overflow-y-auto pr-2 space-y-4 scrollbar-thin">
+                  <StaggerContainer>
+                    {filteredRoutes.map((route) => (
+                      <StaggerItem key={route.id} className="mb-4">
+                        <BusCard 
+                          route={route} 
+                          isSelected={selectedBusRoute?.number === route.number}
+                          onSelect={() => setSelectedBusRoute(route)}
+                        />
+                      </StaggerItem>
+                    ))}
+                  </StaggerContainer>
+                </div>
+                
+                {/* Interactive Map */}
+                <div className="lg:col-span-7 h-[450px] lg:h-[650px] sticky top-24">
+                  <BusRouteMap 
+                    selectedRoute={selectedBusRoute} 
+                    allRoutes={filteredRoutes} 
+                  />
+                </div>
+              </div>
             )}
           </motion.div>
         )}

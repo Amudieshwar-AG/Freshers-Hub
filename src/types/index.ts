@@ -51,6 +51,8 @@ export interface Faculty {
 export interface BusStop {
   name: string;
   time: string;
+  lat?: number;
+  lng?: number;
 }
 
 export interface BusRoute {
@@ -63,6 +65,10 @@ export interface BusRoute {
   arrivalTime: string;
   stops: BusStop[];
   color: string;
+  from_lat?: number;
+  from_lng?: number;
+  to_lat?: number;
+  to_lng?: number;
 }
 
 // ─── Notes / PYQs ────────────────────────────────────────────────────────────

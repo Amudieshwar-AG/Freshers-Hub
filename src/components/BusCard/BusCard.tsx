@@ -5,9 +5,11 @@ import type { BusRoute } from '@/types';
 
 interface BusCardProps {
   route: BusRoute;
+  isSelected?: boolean;
+  onSelect?: () => void;
 }
 
-export default function BusCard({ route }: BusCardProps) {
+export default function BusCard({ route, isSelected, onSelect }: BusCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -15,8 +17,14 @@ export default function BusCard({ route }: BusCardProps) {
       layout
       whileHover={{ y: -3 }}
       transition={{ duration: 0.2 }}
-      className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden"
-      style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
+      onClick={onSelect}
+      className={`bg-white border rounded-2xl overflow-hidden cursor-pointer transition-all ${
+        isSelected ? 'border-transparent shadow-lg scale-[1.01]' : 'border-[#E5E7EB]'
+      }`}
+      style={{ 
+        boxShadow: isSelected ? `0 10px 25px -5px ${route.color}25, 0 8px 10px -6px ${route.color}25` : '0 2px 15px -3px rgba(0,0,0,0.07)',
+        outline: isSelected ? `2px solid ${route.color}` : 'none'
+      }}
     >
       {/* Color Strip */}
       <div className="h-1.5" style={{ backgroundColor: route.color }} />
@@ -71,7 +79,10 @@ export default function BusCard({ route }: BusCardProps) {
 
         {/* Toggle Stops */}
         <button
-          onClick={() => setExpanded(!expanded)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded(!expanded);
+          }}
           className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium transition-all"
           style={{
             fontFamily: 'Poppins, sans-serif',
