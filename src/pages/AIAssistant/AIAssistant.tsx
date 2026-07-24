@@ -41,27 +41,42 @@ export default function AIAssistant() {
     };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
-    setIsTyping(true);
-
-    // Simulate AI response
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsTyping(false);
-
-    const responses: Record<string, string> = {
-      hostel: "**RIT Hostel Facilities:**\n\n• Separate hostels for boys and girls\n• Wi-Fi connectivity in all rooms\n• 24/7 security and CCTV\n• Hygienic canteen with vegetarian & non-vegetarian options\n• Common rooms with TV and recreation\n• In-house medical facility\n\nFor hostel admission, contact the hostel office with your Aadhaar card, medical certificate, and filled hostel application form.",
-      bus: "**RIT Bus Routes:**\n\nRIT operates **15+ bus routes** covering major areas of Chennai:\n\n• Route 01: Chennai Central → Koyambedu → Porur → RIT (7:00 AM)\n• Route 02: Tambaram → Chrompet → Pallavaram → RIT (7:15 AM)\n• Route 03: Anna Nagar → Vadapalani → RIT (7:20 AM)\n\nAll buses depart from respective stops by 7:30 AM. Return buses leave RIT at 4:30 PM and 6:00 PM.",
-      library: "**RIT Library Information:**\n\n• **Timings:** Mon-Sat 8:00 AM – 8:00 PM, Sunday 10:00 AM – 5:00 PM\n• **Collection:** Over 50,000 books, 200+ journals\n• **Digital Access:** IEEE Xplore, ACM Digital Library, Scopus\n• **Services:** Book borrowing (4 books, 14 days), Reference, Photocopying\n• **Wi-Fi:** Available throughout the library\n\nYou'll need your student ID card to access the library.",
-    };
-
-    const lower = text.toLowerCase();
+    setIsTyping(true);    // Call the Go chatbot microservice
     let responseText = '';
+    try {
+      const res = await fetch('http://localhost:8081/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        responseText = data.answer;
+      } else {
+        throw new Error('API server returned error status');
+      }
+    } catch (error) {
+      console.warn('Could not connect to Go chatbot service, using local mock responses:', error);
+      
+      const responses: Record<string, string> = {
+        hostel: "**RIT Hostel Facilities:**\n\n• Separate hostels for boys and girls\n• Wi-Fi connectivity in all rooms\n• 24/7 security and CCTV\n• Hygienic canteen with vegetarian & non-vegetarian options\n• Common rooms with TV and recreation\n• In-house medical facility\n\nFor hostel admission, contact the hostel office.",
+        bus: "**RIT Bus Routes:**\n\nRIT operates **29 bus routes** covering major areas of Chennai. For queries, contact Mr. Venkatesan at +91 63807 51700 or visit http://www.rittransport.com/.",
+        library: "**RIT Library Information:**\n\n• **Timings:** Mon-Fri 8:00 AM – 5:00 PM, Saturday 10:00 AM – 2:00 PM\n• **Collection:** Over 18,328 volumes of textbooks and reference books\n• **Digital Access:** Computerized OPAC, 25 computer systems in Digital Library, and Wi-Fi enabled online access.",
+      };
 
-    if (lower.includes('hostel')) responseText = responses.hostel;
-    else if (lower.includes('bus') || lower.includes('route')) responseText = responses.bus;
-    else if (lower.includes('library')) responseText = responses.library;
-    else {
-      responseText = `Thank you for your question about **"${text}"**!\n\nI'm connected to RIT's knowledge base and can help you with:\n\n• 📚 Academic information & syllabus\n• 🏠 Hostel & accommodation\n• 🚌 Bus routes & timings\n• 📋 Admission procedures\n• 🏛️ Campus facilities\n• 👩‍🏫 Faculty information\n• 🎉 Events & clubs\n\nCould you be more specific about what you'd like to know? I'll give you the most accurate information!`;
+      const lower = text.toLowerCase();
+      if (lower.includes('hostel')) {
+        responseText = responses.hostel;
+      } else if (lower.includes('bus') || lower.includes('route')) {
+        responseText = responses.bus;
+      } else if (lower.includes('library')) {
+        responseText = responses.library;
+      } else {
+        responseText = `Thank you for your question about **"${text}"**!\n\nI couldn't reach the chatbot API server. Please make sure the Go service is running on http://localhost:8081.`;
+      }
     }
+
+    setIsTyping(false);
 
     const aiMsg: ChatMessage = {
       id: (Date.now() + 1).toString(),
@@ -100,12 +115,38 @@ export default function AIAssistant() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <a
+              href="https://t.me/Ritchatbot_bot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-white transition-all shadow-sm hover:brightness-105 active:scale-95"
+              style={{
+                background: 'linear-gradient(135deg, #0088cc, #24A1DE)',
+                fontFamily: 'Inter, sans-serif'
+              }}
+            >
+              <Send className="w-3.5 h-3.5" />
+              Use on Telegram
+            </a>
+            <a
+              href="https://discord.com/api/oauth2/authorize?client_id=1476942599167414506&permissions=8&scope=bot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-white transition-all shadow-sm hover:brightness-105 active:scale-95"
+              style={{
+                background: 'linear-gradient(135deg, #5865F2, #7289DA)',
+                fontFamily: 'Inter, sans-serif'
+              }}
+            >
+              <Bot className="w-3.5 h-3.5" />
+              Use on Discord
+            </a>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={clearChat}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-[#94A3B8] hover:text-[#475569] hover:bg-gray-100 transition-all"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs text-[#94A3B8] hover:text-[#475569] hover:bg-gray-100 transition-all border border-[#E5E7EB] bg-white"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               New Chat
