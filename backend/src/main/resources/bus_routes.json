@@ -10,45 +10,69 @@
     "stops": [
       {
         "name": "Lift Gate",
-        "time": "05:50 AM"
+        "time": "05:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Wimco Market",
-        "time": "05:55 AM"
+        "time": "05:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ajax",
-        "time": "06:00 AM"
+        "time": "06:00 AM",
+        "lat": 13.1685,
+        "lng": 80.3005
       },
       {
         "name": "Periyar Nagar",
-        "time": "06:03 AM"
+        "time": "06:03 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thiruvortiyur Market",
-        "time": "06:08 AM"
+        "time": "06:08 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Theradi",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ellaimman Koil",
-        "time": "06:12 AM"
+        "time": "06:12 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Raja Kadai",
-        "time": "06:14 AM"
+        "time": "06:14 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Toll Gate",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R01A",
@@ -61,73 +85,111 @@
     "stops": [
       {
         "name": "New vannarpettai",
-        "time": "06:17 AM"
+        "time": "06:17 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Apollo",
-        "time": "06:18 AM"
+        "time": "06:18 AM",
+        "lat": 13.1189,
+        "lng": 80.2874
       },
       {
         "name": "Tondiarpet",
-        "time": "06:19 AM"
+        "time": "06:19 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Maharani",
-        "time": "06:21 AM"
+        "time": "06:21 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Mint",
-        "time": "06:22 AM"
+        "time": "06:22 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "New Bus Stand Mint",
-        "time": "06:27 AM"
+        "time": "06:27 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thirupalli street",
-        "time": "06:33 AM"
+        "time": "06:33 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Aminijkarai",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Skywalk",
-        "time": "07:02 AM"
+        "time": "07:02 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Arumbakkam",
-        "time": "07:07 AM"
+        "time": "07:07 AM",
+        "lat": 13.074371,
+        "lng": 80.2081312
       },
       {
         "name": "Koyambedu Metro",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vengaya mandi",
-        "time": "07:16 AM"
+        "time": "07:16 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ration stop (Nerkundram)",
-        "time": "07:20 AM"
+        "time": "07:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Maduravoyal",
-        "time": "07:21 AM"
+        "time": "07:21 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Maduravoyal Erikarai",
-        "time": "07:25 AM"
+        "time": "07:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vanagaram",
-        "time": "07:29 AM"
+        "time": "07:29 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R01B",
@@ -140,49 +202,75 @@
     "stops": [
       {
         "name": "Kasimedu",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.1364038,
+        "lng": 80.2958012
       },
       {
         "name": "Kalmandapam",
-        "time": "06:21 AM"
+        "time": "06:21 AM",
+        "lat": 13.1153712,
+        "lng": 80.2905548
       },
       {
         "name": "Royapuram Bridge",
-        "time": "06:27 AM"
+        "time": "06:27 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Beach Station",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0942257,
+        "lng": 80.2921033
       },
       {
         "name": "Parry's",
-        "time": "06:34 AM"
+        "time": "06:34 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Central",
-        "time": "06:37 AM"
+        "time": "06:37 AM",
+        "lat": 13.0827,
+        "lng": 80.2707
       },
       {
         "name": "Egmore",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0792,
+        "lng": 80.2598
       },
       {
         "name": "Dasprakash",
-        "time": "06:44 AM"
+        "time": "06:44 AM",
+        "lat": 13.0811,
+        "lng": 80.2524
       },
       {
         "name": "Eaga Theatre",
-        "time": "06:48 AM"
+        "time": "06:48 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Amjikarai Market",
-        "time": "06:51 AM"
+        "time": "06:51 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.1364038,
+    "from_lng": 80.2958012,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R02",
@@ -195,61 +283,93 @@
     "stops": [
       {
         "name": "Chintadripet (Post Offiec)",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0761258,
+        "lng": 80.270781
       },
       {
         "name": "D1 Police Station",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0683459,
+        "lng": 80.2135958
       },
       {
         "name": "Triplicane -High Way",
-        "time": "06:29 AM"
+        "time": "06:29 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ice House Police Station",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.052,
+        "lng": 80.2762
       },
       {
         "name": "Meersahibpet-Market",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Royapettah New College",
-        "time": "06:39 AM"
+        "time": "06:39 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sterling Road (Bharath Petrol Bunk)",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Choolaimedu Subway",
-        "time": "06:43 AM"
+        "time": "06:43 AM",
+        "lat": 13.0645,
+        "lng": 80.2224
       },
       {
         "name": "Choolaimedu bus stop",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0666287,
+        "lng": 80.2305198
       },
       {
         "name": "Anna Arch",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.075358,
+        "lng": 80.2176034
       },
       {
         "name": "Arumbakkam Panchaliamman Koil",
-        "time": "06:53 AM"
+        "time": "06:53 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "NSK",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Maduravoyal- Murugan Store",
-        "time": "06:58 AM"
+        "time": "06:58 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0761258,
+    "from_lng": 80.270781,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R03",
@@ -262,53 +382,81 @@
     "stops": [
       {
         "name": "Pulianthope",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Choolai Post Office",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Purasaivakkam Doveton",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kellys Signal",
-        "time": "06:33 AM"
+        "time": "06:33 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Water tank road signal",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kilpauk Garden",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Chinthamani",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0410061,
+        "lng": 80.2373742
       },
       {
         "name": "Anna Nagar Roundtana",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.085,
+        "lng": 80.2101
       },
       {
         "name": "Thirumangalam Blue star",
-        "time": "06:57 AM"
+        "time": "06:57 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "VR Mall",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Maduravoyal Ration Shop",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R03A",
@@ -321,29 +469,45 @@
     "stops": [
       {
         "name": "Collector nagar",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0884944,
+        "lng": 80.1909707
       },
       {
         "name": "Golden flat",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Mogappair West depot",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Nolambur",
-        "time": "07:03 AM"
+        "time": "07:03 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "MGR University",
-        "time": "07:08 AM"
+        "time": "07:08 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0884944,
+    "from_lng": 80.1909707,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R03B",
@@ -356,49 +520,75 @@
     "stops": [
       {
         "name": "Gangaiamman koil",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0551756,
+        "lng": 80.1913579
       },
       {
         "name": "Madina masjid",
-        "time": "06:43 AM"
+        "time": "06:43 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "New Avadi Road",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Chintamani",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0472403,
+        "lng": 80.1853252
       },
       {
         "name": "Nalli Store",
-        "time": "06:58 AM"
+        "time": "06:58 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Anna Nagar Metro",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0961458,
+        "lng": 80.1986901
       },
       {
         "name": "Thirumangalam Metro",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Nerkundram",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Maduravaoyal Ration Shop",
-        "time": "07:25 AM"
+        "time": "07:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Maduravoyal Erikarai",
-        "time": "07:27 AM"
+        "time": "07:27 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0551756,
+    "from_lng": 80.1913579,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R04",
@@ -411,45 +601,69 @@
     "stops": [
       {
         "name": "JJ Nagar Police Station",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "HDFC Bank",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.0308653,
+        "lng": 80.2455467
       },
       {
         "name": "IOB Bank",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0224668,
+        "lng": 80.2230059
       },
       {
         "name": "7 H Bus Depot",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0347162,
+        "lng": 80.2054383
       },
       {
         "name": "Amutha School",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0822304,
+        "lng": 80.1694593
       },
       {
         "name": "D.R.Super Market",
-        "time": "06:52 AM"
+        "time": "06:52 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Nolambur",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Meadows Apprtment",
-        "time": "06:57 AM"
+        "time": "06:57 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "MGR University",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R05",
@@ -462,41 +676,63 @@
     "stops": [
       {
         "name": "CIT Nagar",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0293843,
+        "lng": 80.2342825
       },
       {
         "name": "Aranganathan Subway",
-        "time": "06:12 AM"
+        "time": "06:12 AM",
+        "lat": 13.0282195,
+        "lng": 80.2252655
       },
       {
         "name": "Srinivasa Theatre",
-        "time": "06:14 AM"
+        "time": "06:14 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Metupalayam",
-        "time": "06:16 AM"
+        "time": "06:16 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sangamam Hotel",
-        "time": "06:19 AM"
+        "time": "06:19 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Aryagowda Road",
-        "time": "06:24 AM"
+        "time": "06:24 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vivek",
-        "time": "06:29 AM"
+        "time": "06:29 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Usman Road",
-        "time": "06:34 AM"
+        "time": "06:34 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0293843,
+    "from_lng": 80.2342825,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R05A",
@@ -509,53 +745,81 @@
     "stops": [
       {
         "name": "Loyola College",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Choolaimedu",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0666515,
+        "lng": 80.230974
       },
       {
         "name": "Metha Nagar",
-        "time": "06:49 AM"
+        "time": "06:49 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "NSK Nagar",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Arumbakkam (SBI Bank)",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.074371,
+        "lng": 80.2081312
       },
       {
         "name": "MMDA Cholan Street",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "MMDA Vallavan Hotel",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "CMBT (Koyambedu)",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 13.0678,
+        "lng": 80.2054
       },
       {
         "name": "Rohini (Theatre)",
-        "time": "07:18 AM"
+        "time": "07:18 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Nerkundram Vengaya Mandi",
-        "time": "07:22 AM"
+        "time": "07:22 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Maduravoyal Erikarai",
-        "time": "07:25 AM"
+        "time": "07:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R06",
@@ -568,57 +832,87 @@
     "stops": [
       {
         "name": "Chinmaiya Nagar",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sai Nagar",
-        "time": "06:12 AM"
+        "time": "06:12 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Natesan Nagar",
-        "time": "06:13 AM"
+        "time": "06:13 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Elango Nagar",
-        "time": "06:14 AM"
+        "time": "06:14 AM",
+        "lat": 12.9715538,
+        "lng": 80.2523792
       },
       {
         "name": "Virugampakkam",
-        "time": "06:17 AM"
+        "time": "06:17 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "KK Nagar",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0373,
+        "lng": 80.2045
       },
       {
         "name": "KK Nagar ESI",
-        "time": "06:27 AM"
+        "time": "06:27 AM",
+        "lat": 13.0373,
+        "lng": 80.2045
       },
       {
         "name": "Ashok Pillar",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.0336,
+        "lng": 80.2114
       },
       {
         "name": "Kasi Theatre",
-        "time": "06:37 AM"
+        "time": "06:37 AM",
+        "lat": 13.0305,
+        "lng": 80.2132
       },
       {
         "name": "Ekkatuthangal",
-        "time": "06:42 AM"
+        "time": "06:42 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Olympia",
-        "time": "06:43 AM"
+        "time": "06:43 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Porur Saravana Store",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R07",
@@ -631,65 +925,99 @@
     "stops": [
       {
         "name": "Mandaveli Bus Depot",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Pattinapakkam",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kutchery Road",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Luz Corner",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "P.S.Sivasamy Road",
-        "time": "06:27 AM"
+        "time": "06:27 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "SIET College",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Nanthanam Signal",
-        "time": "06:37 AM"
+        "time": "06:37 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Saidapet Vetrinary Hospital",
-        "time": "06:42 AM"
+        "time": "06:42 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Saidapet Bus Stop",
-        "time": "06:47 AM"
+        "time": "06:47 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Guindy",
-        "time": "06:49 AM"
+        "time": "06:49 AM",
+        "lat": 13.0067,
+        "lng": 80.2206
       },
       {
         "name": "Butt Road",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0084,
+        "lng": 80.1987
       },
       {
         "name": "Chennai Trade Centre",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0142534,
+        "lng": 80.1905788
       },
       {
         "name": "Porur",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ayyapanthangal",
-        "time": "07:18 AM"
+        "time": "07:18 AM",
+        "lat": 13.041,
+        "lng": 80.1412
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R08",
@@ -702,65 +1030,99 @@
     "stops": [
       {
         "name": "Kovilampakkam",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Keelkattalai Bus Stop",
-        "time": "06:12 AM"
+        "time": "06:12 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Madipakkam UTI Bank",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Madipakkam Koot Road Bus stop",
-        "time": "06:16 AM"
+        "time": "06:16 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ranga Theatre",
-        "time": "06:18 AM"
+        "time": "06:18 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Nanganallur Chidambaram Stores",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Nanganallur Saravana Hotel",
-        "time": "06:22 AM"
+        "time": "06:22 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vanuvampet Church",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Surendhar Nagar Bus Stop",
-        "time": "06:27 AM"
+        "time": "06:27 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Jayalakshmi Theatre",
-        "time": "06:29 AM"
+        "time": "06:29 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thillai Ganga Nagar Sub Way",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Aazar Khana Bus Stop",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Butt Road",
-        "time": "06:37 AM"
+        "time": "06:37 AM",
+        "lat": 13.0084,
+        "lng": 80.1987
       },
       {
         "name": "Ramavaram",
-        "time": "06:39 AM"
+        "time": "06:39 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R08A",
@@ -773,49 +1135,75 @@
     "stops": [
       {
         "name": "Seasons",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kakkan Bridge",
-        "time": "06:33 AM"
+        "time": "06:33 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Adambakkam Bus Depot",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "St Thomas Mount",
-        "time": "06:38 AM"
+        "time": "06:38 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Deepam Foods",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Maharaja traders",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vanuvampet church",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thilaiganga nagar subway",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Butt road",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0084,
+        "lng": 80.1987
       },
       {
         "name": "Poonamallee",
-        "time": "07:35 AM"
+        "time": "07:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R09",
@@ -828,49 +1216,75 @@
     "stops": [
       {
         "name": "Vyasarpadi",
-        "time": "06:00 AM"
+        "time": "06:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "MKB Nagar",
-        "time": "06:05 AM"
+        "time": "06:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "E.B. Stop",
-        "time": "06:08 AM"
+        "time": "06:08 AM",
+        "lat": 13.0869258,
+        "lng": 80.2194441
       },
       {
         "name": "Kannadhasan Nagar",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "M.R.Nagar",
-        "time": "06:13 AM"
+        "time": "06:13 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "lakshmi Amman Nagar",
-        "time": "06:22 AM"
+        "time": "06:22 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "B.B.Road",
-        "time": "06:26 AM"
+        "time": "06:26 AM",
+        "lat": 13.0095255,
+        "lng": 80.2537619
       },
       {
         "name": "Perumbur Market",
-        "time": "06:34 AM"
+        "time": "06:34 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Agaram",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.1158603,
+        "lng": 80.2300407
       },
       {
         "name": "Peravalur Road",
-        "time": "06:42 AM"
+        "time": "06:42 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R10",
@@ -883,61 +1297,93 @@
     "stops": [
       {
         "name": "Thachoor",
-        "time": "05:50 AM"
+        "time": "05:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Panjetty",
-        "time": "05:52 AM"
+        "time": "05:52 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Janappanchatram Bypass",
-        "time": "05:55 AM"
+        "time": "05:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Karanodai Bypass",
-        "time": "05:58 AM"
+        "time": "05:58 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vijaya Nallur",
-        "time": "06:03 AM"
+        "time": "06:03 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Toll Gate",
-        "time": "06:05 AM"
+        "time": "06:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Padianallur",
-        "time": "06:07 AM"
+        "time": "06:07 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Red Hills (GRT)",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Red Hills Market",
-        "time": "06:12 AM"
+        "time": "06:12 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kavangarai",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Puzhal Jail",
-        "time": "06:17 AM"
+        "time": "06:17 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Puzhal Camp",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Velammal college",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R11",
@@ -950,41 +1396,63 @@
     "stops": [
       {
         "name": "Chengalpattu Rattinakinaru",
-        "time": "06:00 AM"
+        "time": "06:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "New Bus Stand",
-        "time": "06:02 AM"
+        "time": "06:02 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Old Bus Stand",
-        "time": "06:04 AM"
+        "time": "06:04 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Chengalpattu Bypass",
-        "time": "06:07 AM"
+        "time": "06:07 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "SP Kovil",
-        "time": "06:18 AM"
+        "time": "06:18 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "MM Nagar Samiyar Gate",
-        "time": "06:23 AM"
+        "time": "06:23 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "MM Nagar Bus Stand",
-        "time": "06:28 AM"
+        "time": "06:28 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "KattanKulathur",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R11A",
@@ -997,33 +1465,51 @@
     "stops": [
       {
         "name": "Guduvanchery",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Urapakkam",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vandalur",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Perungalathur",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vandalur Bridge",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Mannivakkam",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R12",
@@ -1036,77 +1522,117 @@
     "stops": [
       {
         "name": "Minjur Bus Stand",
-        "time": "05:45 AM"
+        "time": "05:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Minjur Railway Station",
-        "time": "05:50 AM"
+        "time": "05:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "BDO Office",
-        "time": "05:52 AM"
+        "time": "05:52 AM",
+        "lat": 12.9022177,
+        "lng": 80.0257182
       },
       {
         "name": "Nandiyambakkam",
-        "time": "05:54 AM"
+        "time": "05:54 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Pattamandiri",
-        "time": "06:00 AM"
+        "time": "06:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Napalayam",
-        "time": "06:05 AM"
+        "time": "06:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Manali Pudhu nagar",
-        "time": "06:08 AM"
+        "time": "06:08 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Manali Market",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "MMDA 3rd Main Road",
-        "time": "06:18 AM"
+        "time": "06:18 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Mathur",
-        "time": "06:22 AM"
+        "time": "06:22 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Veterinary Hospital",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Madhavaram Milk Colony",
-        "time": "06:28 AM"
+        "time": "06:28 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Arul Nagar",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 12.9542167,
+        "lng": 80.1933583
       },
       {
         "name": "Thapalpetti",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Moolakadai",
-        "time": "06:38 AM"
+        "time": "06:38 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kalpana Lamp",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Madhavaram Roundana",
-        "time": "06:47 AM"
+        "time": "06:47 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R13",
@@ -1119,53 +1645,81 @@
     "stops": [
       {
         "name": "Ganeshapuram",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "G3 Police Station",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0683459,
+        "lng": 80.2135958
       },
       {
         "name": "Pattalam",
-        "time": "06:18 AM"
+        "time": "06:18 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Otteri",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Podi Kadai",
-        "time": "06:23 AM"
+        "time": "06:23 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "T.B.Hospital",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ayanawaram Signal",
-        "time": "06:27 AM"
+        "time": "06:27 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sayyani",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ayanawaram Noor Hotel",
-        "time": "06:33 AM"
+        "time": "06:33 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Joint Office",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.101916,
+        "lng": 80.230392
       },
       {
         "name": "Ayanawaram Railway Quarters",
-        "time": "06:37 AM"
+        "time": "06:37 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R13A",
@@ -1178,37 +1732,57 @@
     "stops": [
       {
         "name": "ICF Signal",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.1001091,
+        "lng": 80.2145485
       },
       {
         "name": "Villivakkam Bus Stand",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Korattur Signal",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Nolambur Signal",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vanagaram",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Velappanchavadi",
-        "time": "07:23 AM"
+        "time": "07:23 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Poonamallee Bypass",
-        "time": "07:30 AM"
+        "time": "07:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.1001091,
+    "from_lng": 80.2145485,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R14",
@@ -1221,45 +1795,69 @@
     "stops": [
       {
         "name": "Sevapetai",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kakkalur",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.1305159,
+        "lng": 79.9243758
       },
       {
         "name": "Poonga Nagar",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "GRT",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 12.9826003,
+        "lng": 80.2181059
       },
       {
         "name": "Manavalanagar Signal",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Manavalanagar Railway Station",
-        "time": "06:57 AM"
+        "time": "06:57 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Putlur",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Aranvoyal",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 13.1024693,
+        "lng": 79.9540238
       },
       {
         "name": "Puthuchatram (India Jappan Company)",
-        "time": "07:20 AM"
+        "time": "07:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R14B",
@@ -1272,25 +1870,39 @@
     "stops": [
       {
         "name": "Kakkalur Signal",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.1305159,
+        "lng": 79.9243758
       },
       {
         "name": "SBI Bank",
-        "time": "06:58 AM"
+        "time": "06:58 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vellavedu",
-        "time": "07:20 AM"
+        "time": "07:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thirumazhisai",
-        "time": "07:25 AM"
+        "time": "07:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.1305159,
+    "from_lng": 79.9243758,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R15",
@@ -1303,45 +1915,69 @@
     "stops": [
       {
         "name": "Cheyyar-SBI",
-        "time": "05:30 AM"
+        "time": "05:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Soundarya Theatre",
-        "time": "05:31 AM"
+        "time": "05:31 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Mangal X Road",
-        "time": "05:55 AM"
+        "time": "05:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ayyangarkulam",
-        "time": "06:05 AM"
+        "time": "06:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Punjarasanthangal",
-        "time": "06:07 AM"
+        "time": "06:07 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sevlimedu",
-        "time": "06:07 AM"
+        "time": "06:07 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Housing Board",
-        "time": "06:12 AM"
+        "time": "06:12 AM",
+        "lat": 13.0084674,
+        "lng": 80.2475552
       },
       {
         "name": "Collector Office",
-        "time": "06:18 AM"
+        "time": "06:18 AM",
+        "lat": 13.0959177,
+        "lng": 80.2922668
       },
       {
         "name": "Mettu street Signal",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R15A",
@@ -1354,69 +1990,105 @@
     "stops": [
       {
         "name": "Orikkai",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "JJ Nagar",
-        "time": "06:17 AM"
+        "time": "06:17 AM",
+        "lat": 13.0790498,
+        "lng": 80.1719442
       },
       {
         "name": "Keerai Mandapam",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Tollgate",
-        "time": "06:23 AM"
+        "time": "06:23 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Pachaiyappa's College",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ayyampettai",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Rajampettai",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Walajabad",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Natha nallur",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Panrutti",
-        "time": "07:03 AM"
+        "time": "07:03 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Oragadam",
-        "time": "07:12 AM"
+        "time": "07:12 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Arun Excello",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 12.8173765,
+        "lng": 80.1626599
       },
       {
         "name": "Sriperumbudur High School",
-        "time": "07:20 AM"
+        "time": "07:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sriperumbudur Tollgate",
-        "time": "07:25 AM"
+        "time": "07:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Irungattukottai bus stand",
-        "time": "07:30 AM"
+        "time": "07:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R15B",
@@ -1429,49 +2101,75 @@
     "stops": [
       {
         "name": "Shri Chitragupta Temple",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Pookadai Chatram",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kammala street",
-        "time": "06:38 AM"
+        "time": "06:38 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Railway Station",
-        "time": "06:41 AM"
+        "time": "06:41 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ponnerikarai",
-        "time": "06:46 AM"
+        "time": "06:46 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Senthamangalam",
-        "time": "07:01 AM"
+        "time": "07:01 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Santhavellore",
-        "time": "07:03 AM"
+        "time": "07:03 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sunguvarchatram",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Nokia Gate",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sathya Grand Resorts",
-        "time": "07:12 AM"
+        "time": "07:12 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R16",
@@ -1484,45 +2182,69 @@
     "stops": [
       {
         "name": "Prathana Theatre",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vetuvankeni",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thiruvanmiyur RTO Office",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Adyar Depot",
-        "time": "06:29 AM"
+        "time": "06:29 AM",
+        "lat": 12.9984686,
+        "lng": 80.2561546
       },
       {
         "name": "Madyakailash",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Guindy",
-        "time": "06:42 AM"
+        "time": "06:42 AM",
+        "lat": 13.0067,
+        "lng": 80.2206
       },
       {
         "name": "Mugalivakkam",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Karayanchavadi",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0467114,
+        "lng": 80.1109051
       },
       {
         "name": "Poonamallee Bus Stand",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R16B",
@@ -1535,61 +2257,93 @@
     "stops": [
       {
         "name": "Sholinganallur",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Karapakkam",
-        "time": "06:16 AM"
+        "time": "06:16 AM",
+        "lat": 12.9117073,
+        "lng": 80.2277203
       },
       {
         "name": "Karapakkam - TCS",
-        "time": "06:19 AM"
+        "time": "06:19 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "PTC (KFC)",
-        "time": "06:24 AM"
+        "time": "06:24 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Mettukuppam",
-        "time": "06:26 AM"
+        "time": "06:26 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Medavakkam nilgiris",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Santhoshpuram",
-        "time": "06:37 AM"
+        "time": "06:37 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sembakkam",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Tambaram Railway Station",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Krishna nagar bridge",
-        "time": "06:48 AM"
+        "time": "06:48 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kulakarai street",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Padmavathy Kalyana Mandapam",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Joshua School",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R17",
@@ -1602,37 +2356,57 @@
     "stops": [
       {
         "name": "Valluvarkottam",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Liberty",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Power House",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Lakshman Sruthi",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thai Sathya",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Virugambakkam",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Alwar Thirunagar",
-        "time": "06:42 AM"
+        "time": "06:42 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R17A",
@@ -1645,41 +2419,63 @@
     "stops": [
       {
         "name": "Valasaravakkam Shivan Koil",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Valasaravakkam",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Saravana Bhavan Hotel",
-        "time": "06:53 AM"
+        "time": "06:53 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Lakshmi Nagar",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Porur Bridge",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Iyyappanthangal",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kattupakkam",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kumanachavadi",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R18",
@@ -1692,41 +2488,63 @@
     "stops": [
       {
         "name": "Murugan Kalyana mandapam",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Velachery Bus Stand",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kaiveli",
-        "time": "06:18 AM"
+        "time": "06:18 AM",
+        "lat": 12.9633783,
+        "lng": 80.2160859
       },
       {
         "name": "Balaji Dental College",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 12.9441308,
+        "lng": 80.208506
       },
       {
         "name": "Pallikaranai",
-        "time": "06:23 AM"
+        "time": "06:23 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Jeyachandran",
-        "time": "06:27 AM"
+        "time": "06:27 AM",
+        "lat": 12.9211296,
+        "lng": 80.1968403
       },
       {
         "name": "Rajakilpakam Signal",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Camp Road ICICI Bank",
-        "time": "06:38 AM"
+        "time": "06:38 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R18A",
@@ -1739,37 +2557,57 @@
     "stops": [
       {
         "name": "Sembakkam",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Poondi Bazaar",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Tambaram Sanatorium",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Chrompet",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 12.961,
+        "lng": 80.1462
       },
       {
         "name": "Nagalkeni (nayara Petrol Bunk)",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thiruneermalai",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thirumudivakkam",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R18B",
@@ -1782,57 +2620,87 @@
     "stops": [
       {
         "name": "Kelambakkam - GH",
-        "time": "06:00 AM"
+        "time": "06:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Pudupakkam",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Mambakkam (Samathuvapuram)",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Mambakkam Kulam",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sithalapakkam",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Medavakkam Koot Road",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kamarajapuram",
-        "time": "06:43 AM"
+        "time": "06:43 AM",
+        "lat": 13.1933419,
+        "lng": 80.2612852
       },
       {
         "name": "Tambaram Airforce signal",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Krishna nagar",
-        "time": "06:52 AM"
+        "time": "06:52 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Bharathi nagar",
-        "time": "06:54 AM"
+        "time": "06:54 AM",
+        "lat": 13.1226511,
+        "lng": 80.2237949
       },
       {
         "name": "old Perungalathur",
-        "time": "06:57 AM"
+        "time": "06:57 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "mathanapuram",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R19",
@@ -1845,41 +2713,63 @@
     "stops": [
       {
         "name": "Poombukar",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ganga Cinima",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Donbosco",
-        "time": "06:28 AM"
+        "time": "06:28 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Poombukar",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Korattur Bus Stop",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Padi Britania",
-        "time": "06:58 AM"
+        "time": "06:58 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "TVS Show Room",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ambattur",
-        "time": "07:12 AM"
+        "time": "07:12 AM",
+        "lat": 13.1196788,
+        "lng": 80.1496969
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R19A",
@@ -1892,25 +2782,39 @@
     "stops": [
       {
         "name": "Vinayagapuram Bus Stand",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Retteri RTO Office",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Retteri",
-        "time": "06:58 AM"
+        "time": "06:58 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Senthil Nagar",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R20",
@@ -1923,41 +2827,63 @@
     "stops": [
       {
         "name": "Vepampattu Railway Station",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Madha Kovil",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Eswar Nagar",
-        "time": "06:33 AM"
+        "time": "06:33 AM",
+        "lat": 13.0577106,
+        "lng": 80.2190678
       },
       {
         "name": "Indian Bank Thiruvninravur",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thiruninravur Railway Station",
-        "time": "06:36 AM"
+        "time": "06:36 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thiruninravur Bridge",
-        "time": "06:37 AM"
+        "time": "06:37 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Jaya College",
-        "time": "06:39 AM"
+        "time": "06:39 AM",
+        "lat": 13.1225267,
+        "lng": 80.0454078
       },
       {
         "name": "Nemilicherri Road",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R20A",
@@ -1970,37 +2896,57 @@
     "stops": [
       {
         "name": "Pattabiram Gandhi Nagar",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Pattabiram Vasantha Mandapam",
-        "time": "06:46 AM"
+        "time": "06:46 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sekkadu Bus Stand",
-        "time": "06:49 AM"
+        "time": "06:49 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Avadi Ponnu Store",
-        "time": "06:54 AM"
+        "time": "06:54 AM",
+        "lat": 13.1166,
+        "lng": 80.1013
       },
       {
         "name": "Avadi J.P.Garden",
-        "time": "06:56 AM"
+        "time": "06:56 AM",
+        "lat": 13.1166,
+        "lng": 80.1013
       },
       {
         "name": "Govarthanagiri Bus Stand",
-        "time": "06:59 AM"
+        "time": "06:59 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Chennirkuppam",
-        "time": "07:09 AM"
+        "time": "07:09 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R21",
@@ -2013,37 +2959,57 @@
     "stops": [
       {
         "name": "Ayappakkam Parking",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ayappakkam SBI ATM",
-        "time": "06:17 AM"
+        "time": "06:17 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ayappakkam Petrol Bunk",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "ICF Church",
-        "time": "06:22 AM"
+        "time": "06:22 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Canara Bank",
-        "time": "06:27 AM"
+        "time": "06:27 AM",
+        "lat": 12.9764294,
+        "lng": 80.2224084
       },
       {
         "name": "Singapore Shopping",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Senneerkuppam",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R22",
@@ -2056,61 +3022,93 @@
     "stops": [
       {
         "name": "Thiruthani Bypass",
-        "time": "05:55 AM"
+        "time": "05:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thiruvallur Bypass X Road",
-        "time": "06:00 AM"
+        "time": "06:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Nagalamman Nagar",
-        "time": "06:08 AM"
+        "time": "06:08 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Krishna Poly",
-        "time": "06:10 AM"
+        "time": "06:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Jothi Nagar",
-        "time": "06:12 AM"
+        "time": "06:12 AM",
+        "lat": 12.9459767,
+        "lng": 80.239775
       },
       {
         "name": "Indira Gandhi Nagar",
-        "time": "06:15 AM"
+        "time": "06:15 AM",
+        "lat": 13.0914233,
+        "lng": 80.2541906
       },
       {
         "name": "Swalpetaih",
-        "time": "06:16 AM"
+        "time": "06:16 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Government Hospital",
-        "time": "06:17 AM"
+        "time": "06:17 AM",
+        "lat": 13.1093369,
+        "lng": 80.2312849
       },
       {
         "name": "Old Bus stand",
-        "time": "06:18 AM"
+        "time": "06:18 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Railway Station",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "New Bus Stand",
-        "time": "06:22 AM"
+        "time": "06:22 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Navy Gate",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Venkatesapuram",
-        "time": "06:31 AM"
+        "time": "06:31 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R22A",
@@ -2123,57 +3121,87 @@
     "stops": [
       {
         "name": "Sholinghur",
-        "time": "05:35 AM"
+        "time": "05:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Banavaram koot",
-        "time": "05:40 AM"
+        "time": "05:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Gudalore",
-        "time": "05:55 AM"
+        "time": "05:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Salai",
-        "time": "06:00 AM"
+        "time": "06:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Chitteri",
-        "time": "06:05 AM"
+        "time": "06:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "SR Gate",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thakkolam Koot Road",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thakkolam",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Narasimapuram",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Perambakkam",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Koovam Bus Stop",
-        "time": "07:02 AM"
+        "time": "07:02 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Valarpuram",
-        "time": "07:30 AM"
+        "time": "07:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R23",
@@ -2186,45 +3214,69 @@
     "stops": [
       {
         "name": "Nathamuni Theatre",
-        "time": "` 6:35 am"
+        "time": "` 6:35 am",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "K4 Police Station",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0925413,
+        "lng": 80.2179712
       },
       {
         "name": "Labour officers Quarters",
-        "time": "06:52 AM"
+        "time": "06:52 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vijaya Maruthi (Nuts & Spices)",
-        "time": "06:44 AM"
+        "time": "06:44 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Udayam colony",
-        "time": "06:46 AM"
+        "time": "06:46 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kambar Colony",
-        "time": "06:48 AM"
+        "time": "06:48 AM",
+        "lat": 12.9755337,
+        "lng": 80.2296597
       },
       {
         "name": "Anna Nagar West Depot",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0939332,
+        "lng": 80.1980855
       },
       {
         "name": "Thirumangalam Bridge",
-        "time": "06:52 AM"
+        "time": "06:52 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thirumangalam Waves",
-        "time": "06:56 AM"
+        "time": "06:56 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R24",
@@ -2237,85 +3289,129 @@
     "stops": [
       {
         "name": "Arcot Bus Stand",
-        "time": "05:25 AM"
+        "time": "05:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Muthukadai",
-        "time": "05:30 AM"
+        "time": "05:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "VC Motor",
-        "time": "05:33 AM"
+        "time": "05:33 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Walajapettai",
-        "time": "05:35 AM"
+        "time": "05:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Arignar Anna Gov College",
-        "time": "05:37 AM"
+        "time": "05:37 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Walajapettai Toll gate",
-        "time": "05:40 AM"
+        "time": "05:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kaveripakkam",
-        "time": "05:45 AM"
+        "time": "05:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Perumpullipakkam",
-        "time": "06:00 AM"
+        "time": "06:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vinayagapuram (KPM)",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Olimugamathu Pettai(Gori)",
-        "time": "06:22 AM"
+        "time": "06:22 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Egambaranathar Koil",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kachapeswarar Koil",
-        "time": "06:28 AM"
+        "time": "06:28 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Pookadai chatram",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kammal Street",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0903441,
+        "lng": 80.2791264
       },
       {
         "name": "Indra Nagar (KPM Railwaygate)",
-        "time": "06:37 AM"
+        "time": "06:37 AM",
+        "lat": 13.0370804,
+        "lng": 80.1887213
       },
       {
         "name": "Ponnerikarai",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Santhavellore",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sungawarchthram",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vadamangalam",
-        "time": "07:20 AM"
+        "time": "07:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R25",
@@ -2328,37 +3424,57 @@
     "stops": [
       {
         "name": "Kallikuppam",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.1331405,
+        "lng": 80.1701786
       },
       {
         "name": "Stedford Hospital",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Saraswathy Nagar Indian oil petrol bunk",
-        "time": "06:54 AM"
+        "time": "06:54 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Manigandapuram",
-        "time": "06:56 AM"
+        "time": "06:56 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thirumullaivoyal Junction",
-        "time": "06:58 AM"
+        "time": "06:58 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vaishnavi Nagar",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Murugappa Polytechnic",
-        "time": "07:02 AM"
+        "time": "07:02 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.1331405,
+    "from_lng": 80.1701786,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R25A",
@@ -2371,29 +3487,45 @@
     "stops": [
       {
         "name": "Pudur",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Oragadam HP Pump",
-        "time": "06:47 AM"
+        "time": "06:47 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "PTR Mahal",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ponnu Supermarket",
-        "time": "06:53 AM"
+        "time": "06:53 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Govardhanagari",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R26",
@@ -2406,45 +3538,69 @@
     "stops": [
       {
         "name": "Andarkuppam",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.1938755,
+        "lng": 80.2685646
       },
       {
         "name": "Kundrathur",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kundrathur Thandalam",
-        "time": "06:43 AM"
+        "time": "06:43 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kovur",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Gerugambakkam",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0152345,
+        "lng": 80.1368538
       },
       {
         "name": "Bai Kadai",
-        "time": "06:53 AM"
+        "time": "06:53 AM",
+        "lat": 13.0198261,
+        "lng": 80.1430544
       },
       {
         "name": "Mathanandapuram",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Venkateswara Nagar",
-        "time": "06:58 AM"
+        "time": "06:58 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Porur",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.1938755,
+    "from_lng": 80.2685646,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R27",
@@ -2457,61 +3613,93 @@
     "stops": [
       {
         "name": "Ajeya Stadium",
-        "time": "06:25 AM"
+        "time": "06:25 AM",
+        "lat": 13.1327901,
+        "lng": 80.1021537
       },
       {
         "name": "HVF",
-        "time": "06:28 AM"
+        "time": "06:28 AM",
+        "lat": 13.0293266,
+        "lng": 80.1667524
       },
       {
         "name": "CRP",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Mitnamalli",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Muthapudupet",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Sasthri Nagar",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Avadi Checkpost",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.1166,
+        "lng": 80.1013
       },
       {
         "name": "Rama Rathna Theatre",
-        "time": "07:06 AM"
+        "time": "07:06 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Avadi mankoil",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.1166,
+        "lng": 80.1013
       },
       {
         "name": "Vasantham Nagar",
-        "time": "07:12 AM"
+        "time": "07:12 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kovarthanagiri",
-        "time": "07:14 AM"
+        "time": "07:14 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kendra vihar",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kaduveti",
-        "time": "07:17 AM"
+        "time": "07:17 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.1327901,
+    "from_lng": 80.1021537,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R27A",
@@ -2524,53 +3712,81 @@
     "stops": [
       {
         "name": "Kollumedu",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Vel Tech College",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kovilpathagai",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Ajeya Stadium",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 13.1327901,
+        "lng": 80.1021537
       },
       {
         "name": "CRPF",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 12.9912054,
+        "lng": 80.1881366
       },
       {
         "name": "Mittanemili",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Palavedu Service Road",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Nemilichery Tollgate",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Chithukadu Blue",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Panimalar Tollgate",
-        "time": "07:20 AM"
+        "time": "07:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Chembarambakkam",
-        "time": "07:27 AM"
+        "time": "07:27 AM",
+        "lat": 13.016769,
+        "lng": 80.1367942
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R28",
@@ -2583,61 +3799,93 @@
     "stops": [
       {
         "name": "Agaram",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.1158603,
+        "lng": 80.2300407
       },
       {
         "name": "Periyar Nagar",
-        "time": "06:22 AM"
+        "time": "06:22 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thiruvalluvar Thirumanamandapam",
-        "time": "06:24 AM"
+        "time": "06:24 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Permal Koil",
-        "time": "06:26 AM"
+        "time": "06:26 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kamban Nagar",
-        "time": "06:28 AM"
+        "time": "06:28 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "E.B",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0869258,
+        "lng": 80.2194441
       },
       {
         "name": "Shanmugam Mahal",
-        "time": "06:32 AM"
+        "time": "06:32 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Senthil Nagar",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Thathankuppam",
-        "time": "06:38 AM"
+        "time": "06:38 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kalyan Jewalrs",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Collector Nagar",
-        "time": "06:47 AM"
+        "time": "06:47 AM",
+        "lat": 13.0884944,
+        "lng": 80.1909707
       },
       {
         "name": "Cheriyan Hospital",
-        "time": "06:48 AM"
+        "time": "06:48 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Golden Flats",
-        "time": "06:50 AM"
+        "time": "06:50 AM",
+        "lat": 13.0883017,
+        "lng": 80.1784121
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.1158603,
+    "from_lng": 80.2300407,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R29",
@@ -2650,37 +3898,57 @@
     "stops": [
       {
         "name": "Vellakal",
-        "time": "06:20 AM"
+        "time": "06:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Rajakilpakkam Bus Stand",
-        "time": "06:30 AM"
+        "time": "06:30 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kozhi Pannai",
-        "time": "06:33 AM"
+        "time": "06:33 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Bharath College",
-        "time": "06:40 AM"
+        "time": "06:40 AM",
+        "lat": 12.9079915,
+        "lng": 80.1394791
       },
       {
         "name": "Camp Road Singal",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kishkintha Road",
-        "time": "06:55 AM"
+        "time": "06:55 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Erumaiyur",
-        "time": "07:00 AM"
+        "time": "07:00 AM",
+        "lat": 12.9547388,
+        "lng": 80.0815988
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R29A",
@@ -2693,33 +3961,51 @@
     "stops": [
       {
         "name": "Pammal",
-        "time": "06:35 AM"
+        "time": "06:35 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Arunmathi theatre",
-        "time": "06:37 AM"
+        "time": "06:37 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Anagaputhur",
-        "time": "06:39 AM"
+        "time": "06:39 AM",
+        "lat": 12.974841,
+        "lng": 80.1270021
       },
       {
         "name": "Manikandan Nagar",
-        "time": "06:41 AM"
+        "time": "06:41 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Karima Nagar",
-        "time": "06:45 AM"
+        "time": "06:45 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kundrathur (theradi)",
-        "time": "06:48 AM"
+        "time": "06:48 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   },
   {
     "number": "R29B",
@@ -2732,40 +4018,62 @@
     "stops": [
       {
         "name": "Sivanthangal",
-        "time": "07:05 AM"
+        "time": "07:05 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Muthukumaran College",
-        "time": "07:10 AM"
+        "time": "07:10 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Pattu Koot Road",
-        "time": "07:13 AM"
+        "time": "07:13 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Mangadu",
-        "time": "07:15 AM"
+        "time": "07:15 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kankaiyamman Kovil",
-        "time": "07:20 AM"
+        "time": "07:20 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "MGR Nagar",
-        "time": "07:23 AM"
+        "time": "07:23 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Kumananchavadi",
-        "time": "07:25 AM"
+        "time": "07:25 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       },
       {
         "name": "Aravind Hospital",
-        "time": "07:30 AM"
+        "time": "07:30 AM",
+        "lat": 13.0532913,
+        "lng": 80.1249542
       },
       {
         "name": "RIT Campus",
-        "time": "07:40 AM"
+        "time": "07:40 AM",
+        "lat": 13.0118,
+        "lng": 80.0214
       }
-    ]
+    ],
+    "from_lat": 13.0118,
+    "from_lng": 80.0214,
+    "to_lat": 13.0118,
+    "to_lng": 80.0214
   }
 ]

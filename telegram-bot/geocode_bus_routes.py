@@ -9,6 +9,13 @@ CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 BUS_ROUTES_PATH = os.path.abspath(os.path.join(CURRENT_DIR, "..", "backend", "src", "main", "resources", "bus_routes.json"))
 CACHE_PATH = os.path.join(CURRENT_DIR, "coordinates_cache.json")
 
+# Domain restriction (Chennai, Tiruvallur, Kanchipuram districts)
+MIN_LAT, MAX_LAT = 12.7, 13.4
+MIN_LNG, MAX_LNG = 79.6, 80.4
+
+def is_valid_coordinate(lat, lng):
+    return MIN_LAT <= lat <= MAX_LAT and MIN_LNG <= lng <= MAX_LNG
+
 # Predefined coordinates for hard-to-geocode stops or fallback landmarks in Chennai
 STATIC_COORDINATES = {
     "RIT Campus": {"lat": 13.0118, "lng": 80.0214},
@@ -68,7 +75,15 @@ def load_cache():
     if os.path.exists(CACHE_PATH):
         try:
             with open(CACHE_PATH, "r", encoding="utf-8") as f:
-                return json.load(f)
+                data = json.load(f)
+                # Clean coordinates that are outside the map route domain
+                cleaned = {}
+                for name, coords in data.items():
+                    if is_valid_coordinate(coords["lat"], coords["lng"]):
+                        cleaned[name] = coords
+                    else:
+                        print(f"Removing invalid cache entry for '{name}': {coords}")
+                return cleaned
         except Exception:
             pass
     return {}
@@ -114,8 +129,11 @@ def geocode_nominatim(name):
                 if data:
                     lat = float(data[0]["lat"])
                     lng = float(data[0]["lon"])
-                    print(f"-> Found: {lat}, {lng}")
-                    return {"lat": lat, "lng": lng}
+                    if is_valid_coordinate(lat, lng):
+                        print(f"-> Found within domain: {lat}, {lng}")
+                        return {"lat": lat, "lng": lng}
+                    else:
+                        print(f"-> Found but DISCARDED (outside domain): {lat}, {lng}")
             # Rest to respect API limit
             time.sleep(1.2)
         except Exception as e:
@@ -132,39 +150,7 @@ def geocode_nominatim(name):
     print(f"-> No match found for '{name}'. Defaulting to RIT Campus.")
     return STATIC_COORDINATES["RIT Campus"]
 
-def geocode_routes():
-    if not os.path.exists(BUS_ROUTES_PATH):
-        print(f"Error: {BUS_ROUTES_PATH} does not exist.")
-        return
-
-    with open(BUS_ROUTES_PATH, "r", encoding="utf-8") as f:
-        routes = json.load(f)
-
-    cache = load_cache()
-    modified = False
-
-    # Collect all unique stop names
-    unique_names = set()
-    for r in routes:
-        unique_names.add(r["from"])
-        unique_names.add(r["to"])
-        for stop in r.get("stops", []):
-            unique_names.add(stop["name"])
-
-    print(f"Total unique stops to geocode: {len(unique_names)}")
-
-    # Geocode each stop
-    count = 0
-    for name in sorted(unique_names):
-        if name not in cache:
-            coords = geocode_nominatim(name)
-            cache[name] = coords
-            count += 1
-            # Save cache incrementally
-            if count % 5 == 0:
-                save_cache(cache)
-    save_cache(cache)
-
+def update_bus_routes_json(routes, cache):
     # Enrich bus_routes.json
     for r in routes:
         from_coords = cache.get(r["from"], STATIC_COORDINATES["RIT Campus"])
@@ -183,7 +169,49 @@ def geocode_routes():
     with open(BUS_ROUTES_PATH, "w", encoding="utf-8") as f:
         json.dump(routes, f, indent=2)
 
-    print("Geocoding process complete! bus_routes.json updated with coordinates.")
+def geocode_routes():
+    if not os.path.exists(BUS_ROUTES_PATH):
+        print(f"Error: {BUS_ROUTES_PATH} does not exist.")
+        return
+
+    with open(BUS_ROUTES_PATH, "r", encoding="utf-8") as f:
+        routes = json.load(f)
+
+    cache = load_cache()
+    
+    # Save the cleaned cache to start
+    save_cache(cache)
+    
+    # Write coordinates to the JSON immediately for any stops that are already in the cache!
+    update_bus_routes_json(routes, cache)
+    print("Initial cache applied to bus_routes.json.")
+
+    # Collect all unique stop names
+    unique_names = set()
+    for r in routes:
+        unique_names.add(r["from"])
+        unique_names.add(r["to"])
+        for stop in r.get("stops", []):
+            unique_names.add(stop["name"])
+
+    print(f"Total unique stops to geocode: {len(unique_names)}")
+
+    # Geocode each stop
+    count = 0
+    for name in sorted(unique_names):
+        if name not in cache:
+            coords = geocode_nominatim(name)
+            cache[name] = coords
+            count += 1
+            # Save cache and update JSON incrementally
+            save_cache(cache)
+            update_bus_routes_json(routes, cache)
+            print(f"Updated routes JSON with '{name}' ({coords['lat']}, {coords['lng']})")
+
+    # Final save
+    save_cache(cache)
+    update_bus_routes_json(routes, cache)
+    print("Geocoding process complete! bus_routes.json fully synchronized.")
 
 if __name__ == "__main__":
     geocode_routes()
