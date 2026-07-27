@@ -22,11 +22,19 @@ export function truncate(str: string, n: number): string {
 }
 
 export const getBackendUrl = (path: string = ''): string => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl) {
+    return `${envUrl.endsWith('/') ? envUrl.slice(0, -1) : envUrl}${path}`;
+  }
   const host = window.location.hostname;
   return `http://${host}:8085${path}`;
 };
 
 export const getChatbotUrl = (path: string = ''): string => {
+  const envUrl = import.meta.env.VITE_CHATBOT_URL;
+  if (envUrl) {
+    return `${envUrl.endsWith('/') ? envUrl.slice(0, -1) : envUrl}${path}`;
+  }
   const host = window.location.hostname;
   return `http://${host}:8081${path}`;
 };
