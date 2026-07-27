@@ -37,6 +37,20 @@ public class BusLocationController {
         return ResponseEntity.ok(Map.of("status", "success", "message", "Location updated successfully"));
     }
 
+    @PostMapping("/{routeNumber}/stop")
+    public ResponseEntity<Map<String, String>> stopLocation(
+            @PathVariable String routeNumber,
+            @RequestBody Map<String, String> body) {
+        
+        String pin = body != null ? body.get("pin") : null;
+        if (!REQUIRED_PIN.equals(pin)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid driver PIN"));
+        }
+
+        busLocationService.stopLocation(routeNumber);
+        return ResponseEntity.ok(Map.of("status", "success", "message", "Location sharing stopped"));
+    }
+
     @GetMapping
     public ResponseEntity<List<BusLocation>> getActiveLocations() {
         return ResponseEntity.ok(busLocationService.getActiveLocations());

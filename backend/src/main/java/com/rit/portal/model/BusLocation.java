@@ -13,4 +13,5 @@ public class BusLocation {
     private Double latitude;
     private Double longitude;
     private Instant lastUpdated;
+    private boolean stopped = false;
 }

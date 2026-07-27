@@ -56,7 +56,7 @@ const liveBusIcon = L.divIcon({
 });
 
 const stoppedBusIcon = L.divIcon({
-  html: `<div class="relative flex items-center justify-center w-9 h-9 rounded-full bg-slate-500 border-2 border-white shadow-lg text-white text-sm font-bold">🚌</div>`,
+  html: `<div class="relative flex items-center justify-center w-9 h-9 rounded-full bg-red-500 border-2 border-white shadow-lg text-white text-sm font-bold">🚌</div>`,
   className: '',
   iconSize: [36, 36],
   iconAnchor: [18, 18],
@@ -81,7 +81,7 @@ interface BusRouteMapProps {
 const DEFAULT_CENTER = [13.0118, 80.0214]; // RIT Campus default
 
 export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapProps) {
-  const [allLiveLocations, setAllLiveLocations] = useState<Record<string, { latitude: number; longitude: number; lastUpdated: string }>>({});
+  const [allLiveLocations, setAllLiveLocations] = useState<Record<string, { latitude: number; longitude: number; lastUpdated: string; stopped: boolean }>>({});
 
   useEffect(() => {
     const fetchLiveLocations = () => {
@@ -90,12 +90,17 @@ export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapPro
           if (res.ok) return res.json();
           return [];
         })
-        .then((data: Array<{ routeNumber: string; latitude: number; longitude: number; lastUpdated: string }>) => {
+        .then((data: Array<{ routeNumber: string; latitude: number; longitude: number; lastUpdated: string; stopped: boolean }>) => {
           if (Array.isArray(data)) {
-            const locMap: Record<string, { latitude: number; longitude: number; lastUpdated: string }> = {};
+            const locMap: Record<string, { latitude: number; longitude: number; lastUpdated: string; stopped: boolean }> = {};
             data.forEach((item) => {
               if (item.routeNumber && item.latitude && item.longitude) {
-                locMap[item.routeNumber] = { latitude: item.latitude, longitude: item.longitude, lastUpdated: item.lastUpdated };
+                locMap[item.routeNumber] = { 
+                  latitude: item.latitude, 
+                  longitude: item.longitude, 
+                  lastUpdated: item.lastUpdated,
+                  stopped: item.stopped
+                };
               }
             });
             setAllLiveLocations(locMap);
@@ -180,7 +185,7 @@ export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapPro
         {Object.entries(allLiveLocations).map(([rNum, loc]) => {
           if (selectedRoute && selectedRoute.number !== rNum) return null;
           
-          const isStale = loc.lastUpdated ? (new Date().getTime() - new Date(loc.lastUpdated).getTime() > 120000) : false;
+          const isStale = loc.stopped || (loc.lastUpdated ? (new Date().getTime() - new Date(loc.lastUpdated).getTime() > 120000) : false);
           
           return (
             <Marker 
@@ -190,7 +195,11 @@ export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapPro
             >
               <Popup>
                 <div className="p-1 font-sans text-center">
-                  {isStale ? (
+                  {loc.stopped ? (
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-100 text-red-800 text-[10px] font-bold">
+                      LOCATION SHARING ENDED
+                    </span>
+                  ) : isStale ? (
                     <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 text-[10px] font-bold">
                       LOCATION SHARING STOPPED
                     </span>
@@ -201,7 +210,7 @@ export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapPro
                   )}
                   <h4 className="font-bold text-slate-800 text-xs mt-1">Bus {rNum}</h4>
                   <p className="text-[10px] text-slate-500 mt-0.5">
-                    {isStale ? "Last known location" : "Broadcasting live coordinates"}
+                    {loc.stopped ? "Sharing ended by driver" : isStale ? "Last known location" : "Broadcasting live coordinates"}
                   </p>
                 </div>
               </Popup>

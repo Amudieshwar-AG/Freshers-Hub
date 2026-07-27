@@ -19,8 +19,17 @@ public class BusLocationService {
             routeNumber,
             latitude,
             longitude,
-            Instant.now()
+            Instant.now(),
+            false
         ));
+    }
+
+    public void stopLocation(String routeNumber) {
+        BusLocation loc = locationCache.get(routeNumber);
+        if (loc != null) {
+            loc.setStopped(true);
+            loc.setLastUpdated(Instant.now());
+        }
     }
 
     public BusLocation getLocation(String routeNumber) {
