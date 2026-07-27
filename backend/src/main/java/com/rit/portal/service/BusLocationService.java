@@ -12,7 +12,7 @@ import java.util.List;
 public class BusLocationService {
 
     private final Map<String, BusLocation> locationCache = new ConcurrentHashMap<>();
-    private static final Duration STALE_DURATION = Duration.ofMinutes(2);
+    private static final Duration STALE_DURATION = Duration.ofMinutes(20);
 
     public void updateLocation(String routeNumber, Double latitude, Double longitude) {
         locationCache.put(routeNumber, new BusLocation(
