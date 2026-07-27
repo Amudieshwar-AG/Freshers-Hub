@@ -174,6 +174,10 @@ export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapPro
       <MapContainer 
         center={DEFAULT_CENTER as L.LatLngExpression} 
         zoom={11} 
+        minZoom={10}
+        maxZoom={18}
+        maxBounds={[[12.7, 79.6], [13.4, 80.4]] as L.LatLngBoundsExpression}
+        maxBoundsViscosity={1.0}
         className="h-full w-full z-10"
         style={{ height: "100%", width: "100%" }}
       >
