@@ -144,55 +144,6 @@ func getBigrams(tokens []string) []string {
 	return bigrams
 }
 
-func soundex(word string) string {
-	if len(word) == 0 {
-		return ""
-	}
-	word = strings.ToLower(word)
-	first := string(word[0])
-
-	mappings := map[rune]rune{
-		'b': '1', 'f': '1', 'p': '1', 'v': '1',
-		'c': '2', 'g': '2', 'j': '2', 'k': '2', 'q': '2', 's': '2', 'x': '2', 'z': '2',
-		'd': '3', 't': '3',
-		'l': '4',
-		'm': '5', 'n': '5',
-		'r': '6',
-	}
-
-	var code []rune
-	code = append(code, rune(first[0]))
-
-	prevCode := '0'
-	if c, exists := mappings[rune(word[0])]; exists {
-		prevCode = c
-	}
-
-	for i := 1; i < len(word); i++ {
-		r := rune(word[i])
-		if r == 'a' || r == 'e' || r == 'i' || r == 'o' || r == 'u' || r == 'y' || r == 'h' || r == 'w' {
-			continue
-		}
-		if c, exists := mappings[r]; exists {
-			if c != prevCode {
-				code = append(code, c)
-				prevCode = c
-			}
-		} else {
-			prevCode = '0'
-		}
-		if len(code) == 4 {
-			break
-		}
-	}
-
-	for len(code) < 4 {
-		code = append(code, '0')
-	}
-
-	return string(code)
-}
-
 func tokenize(text string) []string {
 	text = strings.ToLower(text)
 	text = cleanRegex.ReplaceAllString(text, " ")
@@ -258,15 +209,7 @@ func correctToken(token string) string {
 		return token
 	}
 
-	// Try Soundex first (phonetic correction)
-	tokenSx := soundex(token)
-	for vocabWord := range vocabSet {
-		if soundex(vocabWord) == tokenSx {
-			return vocabWord
-		}
-	}
-
-	// Fallback to Levenshtein distance
+	// Levenshtein distance
 	bestWord := token
 	bestDist := 999
 
