@@ -28,7 +28,7 @@ public class CommunityQuestionController {
 
     @GetMapping
     public List<CommunityQuestion> getAllQuestions() {
-        return questionRepository.findAll();
+        return questionRepository.findByIsAnsweredTrue();
     }
 
     @PostMapping

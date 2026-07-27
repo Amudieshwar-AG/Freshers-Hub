@@ -76,6 +76,8 @@ export default function Community() {
   const [currentPage, setCurrentPage] = useState(0);
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
+  const [postError, setPostError] = useState<string | null>(null);
 
   const toggleAnswers = (id: string) => {
     setExpandedQuestionIds((prev) => {
@@ -229,48 +231,33 @@ export default function Community() {
     );
     const finalTags = detectedTags.length > 0 ? detectedTags : ['fresher', 'general'];
 
-    const newQuestion = {
-      title: questionText.split('\n')[0].substring(0, 100) || "Q&A Question",
-      body: questionText,
-      author: displayAuthor,
-      tags: finalTags,
-      upvotes: 0,
-      isAnswered: false,
-      createdAt: new Date().toISOString(),
-      answers: []
-    };
+    setPostError(null);
+    setShowSuccessBanner(false);
 
     try {
       const response = await fetch(getBackendUrl('/api/questions'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: newQuestion.title,
-          body: newQuestion.body,
-          author: newQuestion.author,
-          tags: newQuestion.tags
+          title: questionText.split('\n')[0].substring(0, 100) || "Q&A Question",
+          body: questionText,
+          author: displayAuthor,
+          tags: finalTags
         })
       });
 
       if (response.ok) {
-        const saved = await response.json();
-        setQuestions(prev => {
-          // Prepend saved question and filter out duplicate placeholders
-          const filtered = prev.filter(q => q.id.toString() !== saved.id.toString());
-          return [saved, ...filtered];
-        });
+        setShowSuccessBanner(true);
         setQuestionText('');
         setAuthorName('');
+        // Hide success banner after 6 seconds
+        setTimeout(() => setShowSuccessBanner(false), 6000);
       } else {
-        setQuestions(prev => [{ ...newQuestion, id: String(Date.now()) }, ...prev]);
-        setQuestionText('');
-        setAuthorName('');
+        setPostError("Failed to submit your question. Please try again later.");
       }
     } catch (error) {
       console.error("Error saving question:", error);
-      setQuestions(prev => [{ ...newQuestion, id: String(Date.now()) }, ...prev]);
-      setQuestionText('');
-      setAuthorName('');
+      setPostError("Unable to connect to the server. Please check your connection.");
     }
   };
 
@@ -293,6 +280,29 @@ export default function Community() {
                 <div className="lg:col-span-2">                  {/* Ask Question Box */}
                   <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 mb-8" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
                     <h3 className="text-base font-semibold text-[#1E293B] mb-3 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>Ask a Question</h3>
+                    
+                    {showSuccessBanner && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -10 }} 
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-4 p-4.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-medium leading-relaxed"
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                      >
+                        🎉 <strong>Question submitted!</strong> Your question has been forwarded to senior volunteers. Once they review and answer it, it will be published here on the community Q&A board.
+                      </motion.div>
+                    )}
+
+                    {postError && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -10 }} 
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-4 p-4 bg-rose-50 border border-rose-200 text-rose-850 rounded-xl text-xs font-semibold"
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                      >
+                        ⚠️ {postError}
+                      </motion.div>
+                    )}
+
                     <textarea
                       value={questionText}
                       onChange={(e) => setQuestionText(e.target.value)}
@@ -310,8 +320,8 @@ export default function Community() {
                       style={{ fontFamily: 'Inter, sans-serif' }}
                     />
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-slate-400" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        Your question will be visible to all students
+                      <span className="text-[11px] text-slate-400 max-w-[70%] leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        Your question will be sent to the senior helpers and published once answered.
                       </span>
                       <motion.button
                         whileHover={{ scale: 1.01 }}
