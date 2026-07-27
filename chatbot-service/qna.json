@@ -2,49 +2,91 @@
   {
     "keywords": ["about", "established", "history", "rit", "rajalakshmi", "autonomous", "sabari"],
     "question": "What is Rajalakshmi Institute of Technology?",
+    "questions": [
+      "tell me about rit chennai",
+      "what is the history of rit",
+      "when was rajalakshmi institute of technology founded",
+      "who established rit chennai"
+    ],
     "answer": "Rajalakshmi Institute of Technology (RIT Chennai) is a premier Autonomous engineering institution established in 2008 by the Sabari Foundation. It is a part of the Rajalakshmi Institutions group, affiliated with Anna University, Chennai, and approved by the AICTE, New Delhi."
   },
   {
     "keywords": ["accreditation", "naac", "nba", "grade", "rank"],
     "question": "What is the NAAC accreditation and academic standing of RIT Chennai?",
+    "questions": [
+      "what is the naac grade of rit",
+      "is rit nba accredited",
+      "academic standing of rit chennai"
+    ],
     "answer": "RIT Chennai holds the highest accreditation grade of 'A++' from the National Assessment and Accreditation Council (NAAC) and offers NBA-approved undergraduate engineering courses."
   },
   {
     "keywords": ["location", "address", "where", "campus", "poonamallee", "kuthambakkam"],
     "question": "Where is the RIT Chennai campus located?",
+    "questions": [
+      "where is rit college located",
+      "what is the address of rit chennai",
+      "how to reach rit campus"
+    ],
     "answer": "The main campus is located at Bangalore Highway Road, Kuthambakkam, Poonamallee, Chennai - 600124. The administrative office is located at #69, New Avadi Road, Kilpauk, Chennai - 600010."
   },
   {
     "keywords": ["contact", "phone", "number", "call", "office", "admission number", "admissions phone"],
     "question": "What are the contact numbers for the campus and the administrative office?",
+    "questions": [
+      "what is the phone number of rit chennai",
+      "admission cell contact number",
+      "how can i call rit office"
+    ],
     "answer": "The main campus can be reached at 044-6718 1600 / 01 or +91 8925977445. The administrative office in Kilpauk can be reached at 044-26460124, 26442472, or 26461316 (Fax: 044-26445151)."
   },
   {
     "keywords": ["email", "mail", "contact email", "support email"],
     "question": "What is the official email address for RIT Chennai queries?",
+    "questions": [
+      "what is the email of rit",
+      "how can i mail rit admissions",
+      "support email address of the college"
+    ],
     "answer": "The official contact email is mail@ritchennai.edu.in for both general queries and admissions."
   },
   {
     "keywords": ["courses", "departments", "branches", "programs", "ug", "undergraduate"],
     "question": "What undergraduate (UG) engineering programs are offered at RIT?",
+    "questions": [
+      "what ug courses are available at rit",
+      "which engineering branches are offered",
+      "list of undergraduate departments in rit"
+    ],
     "answer": "RIT offers BE in Computer Science and Engineering, Computer and Communication Engineering, CSE (Artificial Intelligence and Machine Learning), Electronics and Communication Engineering, Mechanical Engineering, CSE (Cyber Security), and Electronics Engineering (VLSI Design and Technology). It also offers BTech in Artificial Intelligence and Data Science, Computer Science and Business Systems, and BioTechnology."
   },
   {
     "keywords": ["pg", "postgraduate", "master", "mtech", "me"],
     "question": "What postgraduate (PG) and research programs are offered?",
+    "questions": [
+      "are there any post graduate courses in rit",
+      "mtech and me departments list",
+      "does rit offer research or phd programs"
+    ],
     "answer": "RIT offers ME in Electronics and Communication (VLSI Design) and MTech in Data Science. It is also an Anna University Approved Research Institute offering Ph.D. programs across all Engineering, Technology, Science & Humanities disciplines."
   },
   {
     "keywords": ["admissions", "apply", "enquiry", "join", "registration"],
     "question": "How can I apply for admissions or make an admission enquiry?",
+    "questions": [
+      "how to apply for admission in rit",
+      "where is the registration link for admission",
+      "admission process for engineering"
+    ],
     "answer": "You can register, make enquiries, and submit applications online through the official RIT admission portal at https://apply.ritchennai.org/."
   },
   {
     "keywords": ["fees", "payment", "online fees", "pay", "worldline"],
     "question": "How do I pay my college fees online?",
     "questions": [
-      "where can I make online payment for college tuition?",
-      "how to pay tuition fees online?"
+      "where can i pay my tuition fees online",
+      "worldline payment portal link",
+      "how to pay registration fees"
     ],
     "answer": "You can make secure online fee payments through the Worldline portal at: https://epayments.in.worldline.com/rajalakshmi?swith=rollnumber."
   },
@@ -52,8 +94,8 @@
     "keywords": ["library", "books", "hours", "timing", "saturday"],
     "question": "What are the timings and opening hours of the central library?",
     "questions": [
-      "when is the library open?",
-      "is library open on saturdays?",
+      "when is the library open",
+      "is library open on saturdays",
       "library working hours"
     ],
     "answer": "The central library is open from 8:00 AM to 5:00 PM on all working days, and from 10:00 AM to 2:00 PM on Saturdays."
@@ -61,141 +103,501 @@
   {
     "keywords": ["library size", "volumes", "capacity", "journals", "magazines"],
     "question": "What is the size and collection capacity of the RIT central library?",
+    "questions": [
+      "how many books are there in the library",
+      "what is the capacity of central library",
+      "does library subscribe to journals"
+    ],
     "answer": "The library occupies 607 Sq.m. and houses over 18,328 volumes of textbooks and reference books. The college subscribes to 24 printed national journals, 26 magazines, and offers online access to IEEE resources."
   },
   {
     "keywords": ["digital library", "computers", "wifi", "cd", "dvd"],
     "question": "Does the library have digital resources or Wi-Fi?",
+    "questions": [
+      "is there a digital library section",
+      "are computers available in the library",
+      "can i access library wifi"
+    ],
     "answer": "Yes, the digital library is equipped with 25 computers for accessing online journals and e-resources. Wi-Fi is enabled throughout the library. Additionally, the electronic library contains a collection of more than 900 CD-ROMs."
   },
   {
     "keywords": ["british council", "bcl", "membership"],
     "question": "Does RIT have institutional memberships with other libraries?",
+    "questions": [
+      "is there a british council library membership",
+      "bcl institutional card details",
+      "external library tie ups"
+    ],
     "answer": "Yes, RIT has an institutional membership with the British Council Library (BCL), Chennai. Students and faculty can borrow books, journals, CDs, and DVDs using the BCL institutional card."
   },
   {
     "keywords": ["opac", "catalog", "search books", "barcode"],
     "question": "How do students search for books in the library?",
+    "questions": [
+      "what is library opac",
+      "how to search for books in the catalog",
+      "is there a barcode system for library books"
+    ],
     "answer": "The library is equipped with a computerized Online Public Access Catalogue (OPAC) to search for books and CD-ROMs. All books are bar-coded, and a barcode system is used for all transactions."
   },
   {
     "keywords": ["hostel", "accommodation", "stay", "rooms", "amenities"],
     "question": "What hostel facilities and room amenities are provided at RIT?",
+    "questions": [
+      "what facilities are in the hostel",
+      "is there wifi in hostel rooms",
+      "accommodation and hostel amenities"
+    ],
     "answer": "RIT offers separate, spacious hostels for boys and girls. Each student is provided with a cot, cupboard, study table, and chair. The hostels feature dining halls, uninterrupted water supply, reading halls, internet connection, TV, and RO drinking water on each floor."
   },
   {
     "keywords": ["hostel warden", "guardian", "supervision", "medical"],
     "question": "How are the hostels supervised and are there medical facilities?",
+    "questions": [
+      "who supervises the hostel",
+      "is there medical help in the hostel 24/7",
+      "wardens and resident faculty details"
+    ],
     "answer": "Each hostel is supervised by a resident warden. Senior faculty members also stay as academic guardians to assist students after class hours. Hostels have access to a 24/7 medical facility."
   },
   {
     "keywords": ["canteen", "food", "dining", "mess"],
     "question": "Is there a canteen on campus?",
+    "questions": [
+      "what food is served in the canteen",
+      "canteen and dining facility on campus",
+      "is non veg food available in college"
+    ],
     "answer": "Yes, a well-maintained canteen operates inside the campus, serving hygienic vegetarian and non-vegetarian food options for students and staff."
   },
   {
     "keywords": ["transport", "bus", "routes", "city"],
     "question": "What transport and college bus facilities are available?",
+    "questions": [
+      "how many buses does rit operate",
+      "is there transport facility for students",
+      "bus facilities in chennai city"
+    ],
     "answer": "RIT operates a fleet of 29 buses covering various routes across Chennai city to ensure safe and hassle-free transportation for students and staff."
   },
   {
     "keywords": ["transport contact", "bus manager", "venkatesan"],
     "question": "Who should I contact for transport and bus route queries?",
+    "questions": [
+      "who is transport coordinator",
+      "what is the phone number of bus manager",
+      "contact details of mr venkatesan"
+    ],
     "answer": "For transport-related queries, you can contact the Transport Coordinator, Mr. Venkatesan.M, at +91 63807 51700."
   },
   {
     "keywords": ["bus routes website", "routes list"],
     "question": "Where can I view the detailed list of bus routes?",
+    "questions": [
+      "where can i check bus routes schedule",
+      "list of all bus routes website link",
+      "rittransport portal link"
+    ],
     "answer": "The detailed bus routes and schedule can be viewed at the dedicated transport portal: http://www.rittransport.com/."
   },
   {
     "keywords": ["sports", "games", "indoor", "outdoor", "gym"],
     "question": "What indoor and outdoor sports facilities are available on campus?",
+    "questions": [
+      "what sports facilities does rit have",
+      "is there a playground for football and cricket",
+      "indoor games available in college"
+    ],
     "answer": "RIT provides indoor facilities for Chess, Carrom, Table Tennis, and Badminton, and outdoor facilities for Volleyball, Football, Cricket, Kho-Kho, and Kabaddi."
   },
   {
     "keywords": ["physical director", "sports coach", "sports training"],
     "question": "Is there professional sports training or coaching available?",
+    "questions": [
+      "who coaches for sports in rit",
+      "is there a physical education director",
+      "sports training for tournaments"
+    ],
     "answer": "Yes, the college has a qualified Physical Education staff member who trains students for inter-collegiate tournaments and sports events."
   },
   {
     "keywords": ["atm", "cash", "bank"],
     "question": "Is there an ATM facility on the RIT campus?",
+    "questions": [
+      "where can i withdraw money inside campus",
+      "is there an atm in college campus",
+      "atm opening hours"
+    ],
     "answer": "Yes, there is an in-campus 24-hour ATM facility available for students and staff to withdraw cash safely."
   },
   {
     "keywords": ["health care", "doctor", "medical center", "inpatient", "hospital"],
     "question": "What medical and healthcare facilities are available at RIT?",
+    "questions": [
+      "is there a medical room in college",
+      "on campus doctor availability",
+      "free healthcare for students"
+    ],
     "answer": "RIT has a well-equipped on-campus Health Centre with separate inpatient facilities for male and female students. It is manned by a Medical Officer and a Healthcare Assistant, providing medical care to all students and staff at no cost."
   },
   {
     "keywords": ["counselling", "mentor", "counselor", "academic progress"],
     "question": "How does the student mentoring and counseling system work?",
+    "questions": [
+      "what is the mentoring system",
+      "how many students are assigned per mentor",
+      "academic counseling details"
+    ],
     "answer": "Every faculty member acts as a student counselor. Each counselor is assigned around 15 students for periodic counseling to monitor academic progress, extracurricular activities, and address personal/academic concerns."
   },
   {
     "keywords": ["expert counselling", "psychologist", "specialized counselling"],
     "question": "Is specialized counseling available for students?",
+    "questions": [
+      "is there a student psychologist",
+      "counseling by external experts",
+      "mental wellness support on campus"
+    ],
     "answer": "Yes, specialized counseling sessions by external experts are arranged by the college as and when required to support student well-being."
   },
   {
     "keywords": ["cells", "committees", "student support"],
     "question": "What student welfare cells and committees exist at RIT?",
+    "questions": [
+      "list of welfare cells in rit",
+      "student support committees list",
+      "what is grievance redressal cell"
+    ],
     "answer": "RIT maintains several active cells: the Antiragging Cell, Internal Complaints Committee (ICC), Grievance and Redressal Cell, Women Empowerment Cell (WEC), Institution's Innovation Council (IIC) Cell, and SC/ST Cell."
   },
   {
     "keywords": ["antiragging", "ragging", "complaint", "policy"],
     "question": "What is the college policy on ragging?",
+    "questions": [
+      "how does the antiragging cell work",
+      "complaints regarding ragging",
+      "zero tolerance ragging policy"
+    ],
     "answer": "RIT has a strict zero-tolerance policy towards ragging. The Antiragging Cell ensures absolute compliance with anti-ragging regulations to maintain a safe campus environment for freshers."
   },
   {
     "keywords": ["women cell", "icc", "wec", "harassment"],
     "question": "What are the roles of the ICC and the Women Empowerment Cell?",
+    "questions": [
+      "women empowerment cell roles",
+      "internal complaints committee functions",
+      "harassment prevention cell"
+    ],
     "answer": "The Internal Complaints Committee (ICC) and Women Empowerment Cell (WEC) promote a gender-sensitive campus, organizing awareness programs and addressing any grievances related to gender discrimination or harassment."
   },
   {
     "keywords": ["grievance", "redressal", "complaints", "academic issues"],
     "question": "How can students submit academic or administrative complaints?",
+    "questions": [
+      "where can i lodge an academic complaint",
+      "grievance redressal procedure",
+      "how are administrative complaints handled"
+    ],
     "answer": "Students can approach the Grievances and Redressal Cell to submit formal complaints. The cell reviews all matters promptly to ensure fair resolutions."
   },
   {
     "keywords": ["sc/st cell", "scholarships", "welfare"],
     "question": "What assistance does the SC/ST Cell provide?",
+    "questions": [
+      "sc st cell benefits and assistance",
+      "government scholarships details",
+      "welfare support for sc st students"
+    ],
     "answer": "The SC/ST Cell assists students from scheduled castes and scheduled tribes in obtaining government scholarships, academic counseling, and general welfare support."
   },
   {
     "keywords": ["code of conduct", "rules", "regulations", "discipline"],
     "question": "Where can I read the official student code of conduct?",
+    "questions": [
+      "what are the college discipline rules",
+      "student code of conduct pdf link",
+      "official regulations guidelines download"
+    ],
     "answer": "The official Student Code of Conduct PDF can be accessed directly at: https://ritchennai.org/downloads/CODE%20OF%20CONDUCT%20FOR%20STUDENTS.pdf."
   },
   {
     "keywords": ["curriculum", "syllabus", "regulations", "academic calendar"],
     "question": "Where can I find academic regulations, syllabus, and curriculum details?",
+    "questions": [
+      "where can i download my syllabus",
+      "regulations details pdf download",
+      "curriculum structure link"
+    ],
     "answer": "Regulations and syllabus files are published under the Academics section at: https://ritchennai.org/Regulations.php and https://ritchennai.org/Curriculum.php."
   },
   {
     "keywords": ["alumni", "registration", "network"],
     "question": "How can RIT graduates register with the alumni network?",
+    "questions": [
+      "alumni association registration link",
+      "how can i join rit alumni network",
+      "graduates portal registration"
+    ],
     "answer": "Alumni can register and join the official network online at the alumni registration portal: https://ritchennai.org/alumni-reg.php."
   },
   {
     "keywords": ["placement", "training", "jobs", "placements", "recruiters"],
     "question": "What placement training and assistance does RIT offer?",
+    "questions": [
+      "placement statistics and cell details",
+      "training for campus placements",
+      "recruiters list for college"
+    ],
     "answer": "RIT's Training and Placement Cell organizes structured training starting from the first year. It includes aptitude training, soft skills, coding bootcamps, and mock interviews. Prominent recruiters include top-tier IT and core engineering companies."
   },
   {
     "keywords": ["clubs", "activities", "extra-curricular", "nss", "yrc", "rotaract"],
     "question": "What extra-curricular clubs can students join at RIT?",
+    "questions": [
+      "what clubs are active in college",
+      "extra curricular activities list",
+      "nss rotaract yrc details"
+    ],
     "answer": "Students can join various clubs including YUVA, UBA (Unnat Bharat Abhiyan), National Service Scheme (NSS), Youth Red Cross (YRC), Rotaract Club, Women Empowerment Club, Techsparks, STEAM, Fusion Language, Vaarithi Muthamizh Mandram, Artist League, Photography, Nippon, Telugu, and Podcast clubs."
   },
   {
     "keywords": ["uba", "unnat bharat abhiyan", "rural"],
     "question": "What is the UBA (Unnat Bharat Abhiyan) at RIT?",
+    "questions": [
+      "unnat bharat abhiyan rural projects",
+      "uba village adoption program",
+      "rural welfare activities"
+    ],
     "answer": "Unnat Bharat Abhiyan (UBA) is a flagship national program. RIT is a participating institution, engaging students in rural development, village adoption, and community welfare programs."
   },
   {
     "keywords": ["iic", "incubation", "innovation", "startups", "edc"],
     "question": "Does RIT support student startups, entrepreneurship, and innovation?",
+    "questions": [
+      "entrepreneurship cell details",
+      "does college support start up ideas",
+      "innovation council cell and projects incubation"
+    ],
     "answer": "Yes, RIT supports innovation through the Institution's Innovation Council (IIC) Cell and the EDC/TBI Cell (Entrepreneurship Development Cell), facilitating student project incubations and startup activities (Details: https://ritchennai.org/downloads/EDC.pdf)."
+  },
+  {
+    "keywords": ["highest package", "highest salary", "highest placement", "maximum package", "44 lpa"],
+    "question": "What is the highest package offered at RIT placements?",
+    "questions": [
+      "what is the highest salary offered in campus placements",
+      "highest placement package details",
+      "maximum salary package details"
+    ],
+    "answer": "The highest salary package offered to an RIT graduate has reached up to INR 44 Lakhs Per Annum (LPA) in recent placement drives."
+  },
+  {
+    "keywords": ["average package", "average salary", "average placement", "median package", "salary range", "5.35 lpa"],
+    "question": "What is the average and median placement package at RIT Chennai?",
+    "questions": [
+      "average package range in placements",
+      "what is the average salary offered",
+      "median placement salary packages"
+    ],
+    "answer": "The average package at RIT ranges between INR 4.0 and 6.0 Lakhs Per Annum (LPA). The NIRF reported median package is INR 5.35 LPA."
+  },
+  {
+    "keywords": ["placement rate", "placement percentage", "placement statistics", "96.31%"],
+    "question": "What is the overall placement percentage/rate of RIT Chennai?",
+    "questions": [
+      "what is the placement rate of rit",
+      "placement percentages statistics",
+      "how many students get placed in college"
+    ],
+    "answer": "RIT Chennai has recorded a high placement rate, reaching up to 96.31% for the 2024-2025 batch, placing 601 out of 624 eligible candidates."
+  },
+  {
+    "keywords": ["recruiters", "companies", "placement companies", "amazon", "microsoft", "tcs", "wipro", "infosys"],
+    "question": "Which top companies recruit from RIT Chennai?",
+    "questions": [
+      "list of top recruiters participating in campus drive",
+      "what companies hire from rit",
+      "recruiters list placements"
+    ],
+    "answer": "Major recruiters at RIT include Amazon, Microsoft, IBM, Oracle, TCS, Wipro, Infosys, Capgemini, Hexaware Technologies, Altair, Altimetrik, MRF, and Huawei."
+  },
+  {
+    "keywords": ["tnea code", "tnea", "counselling code", "1432"],
+    "question": "What is the TNEA counseling code for Rajalakshmi Institute of Technology?",
+    "questions": [
+      "tnea code of rit college",
+      "counselling code for admissions",
+      "what is the registration college code"
+    ],
+    "answer": "The official TNEA counseling code for RIT Chennai is 1432."
+  },
+  {
+    "keywords": ["eligibility", "admission criteria", "aggregate", "cut off", "tnea requirements"],
+    "question": "What is the academic eligibility criteria for B.E. / B.Tech admissions at RIT?",
+    "questions": [
+      "what is the eligibility criteria for engineering admission",
+      "minimum marks required in 12th for rit admission",
+      "physics chemistry maths pcm aggregate cut off"
+    ],
+    "answer": "Candidates must have completed 10+2 (Higher Secondary) with a minimum aggregate of 50% in Physics, Chemistry, and Mathematics (PCM). Relaxation in minimum marks applies to reserved categories as per TNEA guidelines."
+  },
+  {
+    "keywords": ["admission quota", "seats distribution", "government quota", "management quota"],
+    "question": "How are seats distributed between government and management quotas at RIT?",
+    "questions": [
+      "seats quota allocation details",
+      "what percentage of seats are management quota",
+      "government quota percentage in admissions"
+    ],
+    "answer": "The seats are split into Government Quota (65% filled via state TNEA counseling) and Management Quota (35% filled directly by the college based on merit)."
+  },
+  {
+    "keywords": ["autonomous status", "autonomous", "affiliation", "university"],
+    "question": "Is RIT Chennai affiliated or autonomous?",
+    "questions": [
+      "is rit an autonomous college",
+      "which university is college affiliated with",
+      "is rit approved by aicte"
+    ],
+    "answer": "RIT Chennai is an Autonomous institution affiliated with Anna University, Chennai, approved by the AICTE, New Delhi, and recognized with NAAC 'A++' status."
+  },
+  {
+    "keywords": ["gym", "gymnasium", "fitness center", "workout"],
+    "question": "Does the RIT campus have a gymnasium or fitness center?",
+    "questions": [
+      "is there a gym in college",
+      "fitness center availability on campus",
+      "workout equipment facilities"
+    ],
+    "answer": "Yes, RIT features a fully equipped on-campus gymnasium with modern fitness and weight-training equipment for both students and staff."
+  },
+  {
+    "keywords": ["fee structure", "tuition fees", "how much fee", "hostel fee"],
+    "question": "How can I obtain the current fee structure for courses?",
+    "questions": [
+      "what is the fee structure for engineering departments",
+      "tuition fees per year",
+      "hostel fees details"
+    ],
+    "answer": "The fee structure varies by department and admission quota (government vs. management). For up-to-date fees, please visit the campus administrative office, call +91 8925977445, or visit the portal at https://www.ritchennai.edu.in."
+  },
+  {
+    "keywords": ["transport fees", "bus fees", "payment transport"],
+    "question": "What is the fee for utilizing the college bus/transport?",
+    "questions": [
+      "how much does college transport cost",
+      "bus fees structure",
+      "where to pay transport fees"
+    ],
+    "answer": "Transport fees depend on the student's boarding point and distance. Payment can be made online via the Worldline payment portal or at the administrative cash counter. For detailed route rates, contact Mr. Venkatesan at +91 63807 51700."
+  },
+  {
+    "keywords": ["aids", "data science", "btech aids", "artificial intelligence"],
+    "question": "Does RIT offer B.Tech in Artificial Intelligence and Data Science?",
+    "questions": [
+      "is btech aids available in college",
+      "artificial intelligence and data science branch",
+      "what is the syllabus of aids"
+    ],
+    "answer": "Yes, RIT offers a 4-year B.Tech program in Artificial Intelligence and Data Science (AIDS), which integrates machine learning, data engineering, and data science principles."
+  },
+  {
+    "keywords": ["csbs", "business systems", "btech csbs"],
+    "question": "What is B.Tech Computer Science and Business Systems (CSBS)?",
+    "questions": [
+      "is csbs branch offered in rit",
+      "computer science and business systems course details",
+      "what do we study in csbs"
+    ],
+    "answer": "B.Tech Computer Science and Business Systems (CSBS) is a specialized program designed in partnership with TCS to train students in computer science along with business management, finance, and marketing."
+  },
+  {
+    "keywords": ["cyber security", "cybersecurity", "cse cyber"],
+    "question": "Does RIT offer specialization in Cyber Security?",
+    "questions": [
+      "is there a cyber security engineering department",
+      "cse cyber security course details",
+      "cybersecurity ug program"
+    ],
+    "answer": "Yes, RIT offers a B.E. in Computer Science and Engineering (Cyber Security), focusing on digital forensics, cryptography, network security, and ethical hacking."
+  },
+  {
+    "keywords": ["vlsi design", "vlsi", "electronics vlsi"],
+    "question": "What is the B.E. program in VLSI Design and Technology?",
+    "questions": [
+      "is there a vlsi technology department",
+      "be electronics in vlsi design",
+      "semiconductor design courses"
+    ],
+    "answer": "RIT offers a B.E. in Electronics Engineering (VLSI Design and Technology), preparing students for careers in microelectronics, semiconductor manufacturing, and integrated circuit design."
+  },
+  {
+    "keywords": ["biotechnology", "btech biotechnology", "biotech"],
+    "question": "What is the B.Tech program in BioTechnology?",
+    "questions": [
+      "is biotechnology offered in college",
+      "btech biotech course details",
+      "bioprocess engineering courses"
+    ],
+    "answer": "RIT offers a B.Tech in BioTechnology, which combines biological sciences with engineering concepts, covering genetics, microbiology, bioinformatics, and bioprocess engineering."
+  },
+  {
+    "keywords": ["scholarships", "concessions", "merit scholarship", "sports quota"],
+    "question": "Are scholarships or fee concessions available at RIT?",
+    "questions": [
+      "does rit offer merit scholarships",
+      "sports quota fee concessions details",
+      "tuition fee waivers for toppers"
+    ],
+    "answer": "Yes, RIT offers merit scholarships for academic toppers, tuition fee concessions for outstanding achievements in sports, and helps students process government scholarships (SC/ST, First Graduate, and BC/MBC/DNC schemes)."
+  },
+  {
+    "keywords": ["dress code", "uniform", "college dress rules", "casuals"],
+    "question": "What is the college dress code and uniform policy?",
+    "questions": [
+      "what should students wear to college",
+      "dress code rules for boys and girls",
+      "are jeans allowed in college campus"
+    ],
+    "answer": "Students are expected to dress in formal, neat attire on all working days. Boys should wear formal shirts and trousers with closed shoes. Girls should wear formal salwars/churidars. Casual wear like T-shirts, torn jeans, and floaters are not permitted during class hours."
+  },
+  {
+    "keywords": ["mobile phones", "phone policy", "smartphones classroom"],
+    "question": "Are mobile phones allowed in classes?",
+    "questions": [
+      "can students use smartphones in class",
+      "mobile phone rules on campus",
+      "classroom mobile phone policy"
+    ],
+    "answer": "Mobile phones are permitted on campus but must be switched off or kept on silent mode inside classrooms, labs, and the library. Unauthorized use in instructional areas may lead to confiscation by authorities."
+  },
+  {
+    "keywords": ["wifi password", "campus wifi", "internet access student"],
+    "question": "How can students access the campus Wi-Fi network?",
+    "questions": [
+      "what is the wifi password of college",
+      "how to register device for campus wifi",
+      "student internet access registration"
+    ],
+    "answer": "Students can register their devices (laptops/mobiles) at the college IT support center to receive unique login credentials for the high-speed campus Wi-Fi network."
+  },
+  {
+    "keywords": ["timings college", "college hours", "working hours class"],
+    "question": "What are the daily working hours and class timings of the college?",
+    "questions": [
+      "what time do classes start and end",
+      "rit daily class timings",
+      "college opening hours daily"
+    ],
+    "answer": "RIT classes typically run from 8:00 AM to 3:00 PM. Buses arrive by 7:45 AM, and students are expected to be in their respective classrooms by 7:55 AM."
+  },
+  {
+    "keywords": ["holidays", "academic calendar", "semester break"],
+    "question": "Where can I view the academic calendar and lists of holidays?",
+    "questions": [
+      "when is semester break starting",
+      "list of academic holidays",
+      "where to check college calendar online"
+    ],
+    "answer": "The official academic calendar, detailing exam dates, semester schedules, and holidays, is published at the beginning of each semester on the student portal and circular boards."
   }
 ]

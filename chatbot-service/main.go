@@ -469,10 +469,16 @@ func handleChat(w http.ResponseWriter, r *http.Request) {
 			MatchedQuestion: matchedQuestion,
 			Confidence:      score,
 		}
+		log.Printf("[CHATBOT] Query: %q | MATCHED: %q (Score: %.4f)", req.Message, matchedQuestion, score)
 	} else {
 		resp = ChatResponse{
 			Answer:     "I'm sorry, I couldn't find an answer to your question about RIT Chennai. Please try rephrasing your question or contact our administrative office at +91 8925977445 or mail@ritchennai.edu.in.",
 			Confidence: score,
+		}
+		if bestIdx != -1 {
+			log.Printf("[CHATBOT] Query: %q | FALLBACK (Close Match: %q, Score: %.4f < %.2f)", req.Message, matchedQuestion, score, threshold)
+		} else {
+			log.Printf("[CHATBOT] Query: %q | FALLBACK (No matches found)", req.Message)
 		}
 	}
 
