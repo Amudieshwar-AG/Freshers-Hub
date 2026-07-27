@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { BusRoute } from '@/types';
@@ -289,14 +289,6 @@ export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapPro
           );
         })}
         
-        {selectedRoute && pathCoordinates.length > 1 && (
-          <Polyline 
-            positions={pathCoordinates} 
-            color={selectedRoute.color || "#F97316"}
-            weight={4}
-            opacity={0.8}
-          />
-        )}
 
         <MapUpdater bounds={mapBounds} />
       </MapContainer>

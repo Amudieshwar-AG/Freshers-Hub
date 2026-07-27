@@ -133,18 +133,37 @@ public class TrackingService extends Service {
             Log.d(TAG, "WakeLock acquired successfully");
         }
 
-        // 3. Register GPS location listener
+        // 3. Register Location Listeners (both GPS and Network for indoors/outdoors)
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         try {
             if (locationManager != null) {
-                // Request updates every 5 seconds (5000ms) or 2 meters
-                locationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
-                        5000,
-                        2.0f,
-                        locationListener
-                );
-                Log.d(TAG, "GPS Listener registered successfully");
+                // Request GPS updates
+                if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            5000,
+                            0.0f,
+                            locationListener
+                    );
+                }
+                // Request Network/Wi-Fi location updates (essential indoors)
+                if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                    locationManager.requestLocationUpdates(
+                            LocationManager.NETWORK_PROVIDER,
+                            5000,
+                            0.0f,
+                            locationListener
+                    );
+                }
+
+                // Immediately trigger initial fix if available
+                Location lastGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                Location lastNet = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                Location bestLocation = (lastGps != null) ? lastGps : lastNet;
+                if (bestLocation != null) {
+                    locationListener.onLocationChanged(bestLocation);
+                }
+                Log.d(TAG, "Location Listeners registered successfully");
             }
         } catch (SecurityException e) {
             Log.e(TAG, "SecurityException: Location permissions not granted", e);
