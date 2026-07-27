@@ -18,10 +18,10 @@ L.Icon.Default.mergeOptions({
 });
 
 // Domain Boundary validation (Chennai and surrounding route regions)
-const MIN_LAT = 12.7;
-const MAX_LAT = 13.4;
-const MIN_LNG = 79.6;
-const MAX_LNG = 80.4;
+const MIN_LAT = 12.65;
+const MAX_LAT = 13.35;
+const MIN_LNG = 79.25;
+const MAX_LNG = 80.45;
 
 const isValidCoordinate = (lat?: number, lng?: number): boolean => {
   if (lat === undefined || lng === undefined) return false;
@@ -176,7 +176,7 @@ export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapPro
         zoom={11} 
         minZoom={10}
         maxZoom={18}
-        maxBounds={[[12.7, 79.6], [13.4, 80.4]] as L.LatLngBoundsExpression}
+        maxBounds={[[12.65, 79.25], [13.35, 80.45]] as L.LatLngBoundsExpression}
         maxBoundsViscosity={1.0}
         className="h-full w-full z-10"
         style={{ height: "100%", width: "100%" }}
