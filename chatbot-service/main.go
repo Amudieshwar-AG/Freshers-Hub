@@ -34,12 +34,13 @@ type ChatResponse struct {
 }
 
 var (
-	faqs        []FAQ
-	indexedDocs []IndexedDoc
-	idf         map[string]float64
-	docVectors  []map[string]float64
-	docNorms    []float64
-	vocabSet    map[string]bool
+	faqs         []FAQ
+	indexedDocs  []IndexedDoc
+	idf          map[string]float64
+	docTerms     []map[string]float64 // term frequency for each document
+	docLengths   []float64             // length of each document
+	avgDocLength float64
+	vocabSet     map[string]bool
 )
 
 var synonymMap = map[string]string{
@@ -97,6 +98,101 @@ var stopwords = map[string]bool{
 
 var cleanRegex = regexp.MustCompile(`[^a-z0-9\s]`)
 
+func stem(word string) string {
+	if strings.HasSuffix(word, "sses") {
+		return word[:len(word)-2]
+	}
+	if strings.HasSuffix(word, "ies") {
+		return word[:len(word)-3] + "y"
+	}
+	if strings.HasSuffix(word, "ss") {
+		return word
+	}
+	if strings.HasSuffix(word, "s") && !strings.HasSuffix(word, "us") && !strings.HasSuffix(word, "as") && !strings.HasSuffix(word, "is") {
+		return word[:len(word)-1]
+	}
+	if strings.HasSuffix(word, "eed") {
+		return word[:len(word)-1]
+	}
+	if strings.HasSuffix(word, "ing") {
+		w := word[:len(word)-3]
+		if len(w) > 3 && w[len(w)-1] == w[len(w)-2] {
+			c := w[len(w)-1]
+			if c == 'n' || c == 't' || c == 'p' || c == 'd' || c == 'g' {
+				w = w[:len(w)-1]
+			}
+		}
+		return w
+	}
+	if strings.HasSuffix(word, "ed") {
+		return word[:len(word)-2]
+	}
+	if strings.HasSuffix(word, "ly") {
+		return word[:len(word)-2]
+	}
+	if strings.HasSuffix(word, "tional") {
+		return word[:len(word)-6] + "tion"
+	}
+	return word
+}
+
+func getBigrams(tokens []string) []string {
+	var bigrams []string
+	for i := 0; i < len(tokens)-1; i++ {
+		bigrams = append(bigrams, tokens[i]+"_"+tokens[i+1])
+	}
+	return bigrams
+}
+
+func soundex(word string) string {
+	if len(word) == 0 {
+		return ""
+	}
+	word = strings.ToLower(word)
+	first := string(word[0])
+
+	mappings := map[rune]rune{
+		'b': '1', 'f': '1', 'p': '1', 'v': '1',
+		'c': '2', 'g': '2', 'j': '2', 'k': '2', 'q': '2', 's': '2', 'x': '2', 'z': '2',
+		'd': '3', 't': '3',
+		'l': '4',
+		'm': '5', 'n': '5',
+		'r': '6',
+	}
+
+	var code []rune
+	code = append(code, rune(first[0]))
+
+	prevCode := '0'
+	if c, exists := mappings[rune(word[0])]; exists {
+		prevCode = c
+	}
+
+	for i := 1; i < len(word); i++ {
+		r := rune(word[i])
+		if r == 'a' || r == 'e' || r == 'i' || r == 'o' || r == 'u' || r == 'y' || r == 'h' || r == 'w' {
+			continue
+		}
+		if c, exists := mappings[r]; exists {
+			if c != prevCode {
+				code = append(code, c)
+				prevCode = c
+			}
+		} else {
+			prevCode = '0'
+		}
+		if len(code) == 4 {
+			break
+		}
+	}
+
+	for len(code) < 4 {
+		code = append(code, '0')
+	}
+
+	return string(code)
+}
+
 func tokenize(text string) []string {
 	text = strings.ToLower(text)
 	text = cleanRegex.ReplaceAllString(text, " ")
@@ -107,6 +203,8 @@ func tokenize(text string) []string {
 		if syn, exists := synonymMap[word]; exists {
 			word = syn
 		}
+		// Apply stemming
+		word = stem(word)
 		if !stopwords[word] && len(word) > 1 {
 			tokens = append(tokens, word)
 		}
@@ -160,6 +258,15 @@ func correctToken(token string) string {
 		return token
 	}
 
+	// Try Soundex first (phonetic correction)
+	tokenSx := soundex(token)
+	for vocabWord := range vocabSet {
+		if soundex(vocabWord) == tokenSx {
+			return vocabWord
+		}
+	}
+
+	// Fallback to Levenshtein distance
 	bestWord := token
 	bestDist := 999
 
@@ -199,7 +306,7 @@ func tokenizeQuery(query string) []string {
 	return corrected
 }
 
-func initTFIDF() {
+func initTFIDF() { // keeping name initTFIDF for backwards compatibility
 	// Build indexedDocs
 	indexedDocs = nil
 	for i, faq := range faqs {
@@ -213,20 +320,37 @@ func initTFIDF() {
 		}
 	}
 
-	docFrequencies := make(map[string]int)
 	allTokens := make([][]string, len(indexedDocs))
+	var totalLength float64
 
 	for i, doc := range indexedDocs {
 		faq := faqs[doc.FAQIndex]
 		docText := doc.Question + " " + strings.Join(faq.Keywords, " ")
 		tokens := tokenize(docText)
+		bigrams := getBigrams(tokens)
+		tokens = append(tokens, bigrams...)
 		allTokens[i] = tokens
+		totalLength += float64(len(tokens))
+	}
+
+	avgDocLength = totalLength / float64(len(indexedDocs))
+
+	docFrequencies := make(map[string]int)
+	docTerms = make([]map[string]float64, len(indexedDocs))
+	docLengths = make([]float64, len(indexedDocs))
+
+	for i, tokens := range allTokens {
+		docLengths[i] = float64(len(tokens))
+		tfMap := make(map[string]float64)
+		for _, token := range tokens {
+			tfMap[token]++
+		}
+		docTerms[i] = tfMap
 
 		uniqueTokens := make(map[string]bool)
 		for _, token := range tokens {
 			uniqueTokens[token] = true
 		}
-
 		for token := range uniqueTokens {
 			docFrequencies[token]++
 		}
@@ -240,37 +364,18 @@ func initTFIDF() {
 		}
 	}
 
-	// Calculate IDF for each term
+	// Calculate BM25 IDF for each term
 	idf = make(map[string]float64)
 	numDocs := float64(len(indexedDocs))
 	for token, df := range docFrequencies {
-		idf[token] = math.Log(1.0 + (numDocs / float64(df)))
+		val := (numDocs - float64(df) + 0.5) / (float64(df) + 0.5)
+		if val < 0 {
+			val = 0.0001
+		}
+		idf[token] = math.Log(val + 1.0)
 	}
 
-	// Compute TF-IDF vectors for indexed docs
-	docVectors = make([]map[string]float64, len(indexedDocs))
-	docNorms = make([]float64, len(indexedDocs))
-
-	for i, tokens := range allTokens {
-		tfMap := make(map[string]float64)
-		for _, token := range tokens {
-			tfMap[token]++
-		}
-
-		vector := make(map[string]float64)
-		var sqSum float64
-
-		for token, tf := range tfMap {
-			tfidfVal := tf * idf[token]
-			vector[token] = tfidfVal
-			sqSum += tfidfVal * tfidfVal
-		}
-
-		docVectors[i] = vector
-		docNorms[i] = math.Sqrt(sqSum)
-	}
-
-	log.Printf("TF-IDF Chatbot engine initialized successfully with %d Q&As (%d indexed question variants).", len(faqs), len(indexedDocs))
+	log.Printf("BM25 Chatbot engine initialized successfully with %d Q&As (%d indexed question variants, avg doc length: %.2f).", len(faqs), len(indexedDocs), avgDocLength)
 }
 
 func getBestMatch(query string) (int, float64, string) {
@@ -279,61 +384,47 @@ func getBestMatch(query string) (int, float64, string) {
 		return -1, 0.0, ""
 	}
 
-	// Compute TF for query
-	queryTF := make(map[string]float64)
-	for _, token := range queryTokens {
-		queryTF[token]++
-	}
-
-	// Compute TF-IDF vector for query
-	queryVector := make(map[string]float64)
-	var querySqSum float64
-	for token, tf := range queryTF {
-		if idfVal, exists := idf[token]; exists {
-			tfidfVal := tf * idfVal
-			queryVector[token] = tfidfVal
-			querySqSum += tfidfVal * tfidfVal
-		}
-	}
-
-	queryNorm := math.Sqrt(querySqSum)
-	if queryNorm == 0 {
-		return -1, 0.0, ""
-	}
+	qBigrams := getBigrams(queryTokens)
+	queryTokens = append(queryTokens, qBigrams...)
 
 	bestFAQIdx := -1
 	bestScore := -1.0
 	var bestMatchedQuestion string
 
-	for i, docVector := range docVectors {
-		doc := indexedDocs[i]
-		faq := faqs[doc.FAQIndex]
+	k1 := 1.2
+	b := 0.75
 
-		var dotProduct float64
-		for token, qVal := range queryVector {
-			if dVal, exists := docVector[token]; exists {
-				dotProduct += qVal * dVal
+	for i, doc := range indexedDocs {
+		faq := faqs[doc.FAQIndex]
+		var bm25Score float64
+
+		tfMap := docTerms[i]
+		docLen := docLengths[i]
+
+		for _, token := range queryTokens {
+			tf := tfMap[token]
+			if tf > 0 {
+				idfVal := idf[token]
+				numerator := tf * (k1 + 1.0)
+				denominator := tf + k1*(1.0-b+b*(docLen/avgDocLength))
+				bm25Score += idfVal * (numerator / denominator)
 			}
 		}
 
-		var cosineSim float64
-		if docNorms[i] > 0 {
-			cosineSim = dotProduct / (queryNorm * docNorms[i])
-		}
-
-		// Apply exact keyword boosting
+		// Apply exact keyword boosting (only on original tokens)
+		originalQueryLen := len(queryTokens) - len(qBigrams)
 		keywordMatches := 0
 		for _, kw := range faq.Keywords {
-			for _, qTok := range queryTokens {
+			for j := 0; j < originalQueryLen; j++ {
+				qTok := queryTokens[j]
 				if strings.ToLower(kw) == qTok {
 					keywordMatches++
 				}
 			}
 		}
 
-		// A boost of 0.15 for each exact keyword match
 		boost := float64(keywordMatches) * 0.15
-		score := cosineSim + boost
+		score := bm25Score + boost
 
 		if score > bestScore {
 			bestScore = score
