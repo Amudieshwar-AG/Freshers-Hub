@@ -42,11 +42,20 @@
   {
     "keywords": ["fees", "payment", "online fees", "pay", "worldline"],
     "question": "How do I pay my college fees online?",
+    "questions": [
+      "where can I make online payment for college tuition?",
+      "how to pay tuition fees online?"
+    ],
     "answer": "You can make secure online fee payments through the Worldline portal at: https://epayments.in.worldline.com/rajalakshmi?swith=rollnumber."
   },
   {
     "keywords": ["library", "books", "hours", "timing", "saturday"],
     "question": "What are the timings and opening hours of the central library?",
+    "questions": [
+      "when is the library open?",
+      "is library open on saturdays?",
+      "library working hours"
+    ],
     "answer": "The central library is open from 8:00 AM to 5:00 PM on all working days, and from 10:00 AM to 2:00 PM on Saturdays."
   },
   {

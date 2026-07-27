@@ -12,9 +12,15 @@ import (
 )
 
 type FAQ struct {
-	Keywords []string `json:"keywords"`
-	Question string   `json:"question"`
-	Answer   string   `json:"answer"`
+	Keywords  []string `json:"keywords"`
+	Question  string   `json:"question"`
+	Questions []string `json:"questions"`
+	Answer    string   `json:"answer"`
+}
+
+type IndexedDoc struct {
+	FAQIndex int
+	Question string
 }
 
 type ChatRequest struct {
@@ -28,11 +34,46 @@ type ChatResponse struct {
 }
 
 var (
-	faqs       []FAQ
-	idf        map[string]float64
-	docVectors []map[string]float64
-	docNorms   []float64
+	faqs        []FAQ
+	indexedDocs []IndexedDoc
+	idf         map[string]float64
+	docVectors  []map[string]float64
+	docNorms    []float64
+	vocabSet    map[string]bool
 )
+
+var synonymMap = map[string]string{
+	"timings":       "hours",
+	"timing":        "hours",
+	"schedule":      "hours",
+	"time":          "hours",
+	"fees":          "fee",
+	"payment":       "fee",
+	"pay":           "fee",
+	"canteen":       "cafeteria",
+	"mess":          "cafeteria",
+	"food":          "cafeteria",
+	"bus":           "transport",
+	"buses":         "transport",
+	"route":         "transport",
+	"routes":        "transport",
+	"admission":     "admissions",
+	"enroll":        "admissions",
+	"join":          "admissions",
+	"phone":         "contact",
+	"number":        "contact",
+	"call":          "contact",
+	"email":         "mail",
+	"emailaddress":  "mail",
+	"course":        "courses",
+	"departments":   "courses",
+	"branches":      "courses",
+	"programs":      "courses",
+	"hostels":       "hostel",
+	"rooms":         "hostel",
+	"stay":          "hostel",
+	"accommodation": "hostel",
+}
 
 // Stopwords set to filter out noise
 var stopwords = map[string]bool{
@@ -62,6 +103,10 @@ func tokenize(text string) []string {
 	words := strings.Fields(text)
 	var tokens []string
 	for _, word := range words {
+		// Resolve synonyms
+		if syn, exists := synonymMap[word]; exists {
+			word = syn
+		}
 		if !stopwords[word] && len(word) > 1 {
 			tokens = append(tokens, word)
 		}
@@ -69,13 +114,111 @@ func tokenize(text string) []string {
 	return tokens
 }
 
-func initTFIDF() {
-	docFrequencies := make(map[string]int)
-	allTokens := make([][]string, len(faqs))
+func levenshtein(s, t string) int {
+	sLen := len(s)
+	tLen := len(t)
+	if sLen == 0 {
+		return tLen
+	}
+	if tLen == 0 {
+		return sLen
+	}
 
+	d := make([][]int, sLen+1)
+	for i := range d {
+		d[i] = make([]int, tLen+1)
+		d[i][0] = i
+	}
+	for j := range d[0] {
+		d[0][j] = j
+	}
+
+	for i := 1; i <= sLen; i++ {
+		for j := 1; j <= tLen; j++ {
+			cost := 1
+			if s[i-1] == t[j-1] {
+				cost = 0
+			}
+			d[i][j] = minInt(d[i-1][j]+1, minInt(d[i][j-1]+1, d[i-1][j-1]+cost))
+		}
+	}
+	return d[sLen][tLen]
+}
+
+func minInt(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func correctToken(token string) string {
+	if vocabSet[token] {
+		return token
+	}
+	if len(token) < 4 {
+		return token
+	}
+
+	bestWord := token
+	bestDist := 999
+
+	for vocabWord := range vocabSet {
+		diff := len(vocabWord) - len(token)
+		if diff < 0 {
+			diff = -diff
+		}
+		if diff > 2 {
+			continue
+		}
+
+		dist := levenshtein(token, vocabWord)
+		if dist < bestDist {
+			bestDist = dist
+			bestWord = vocabWord
+		}
+	}
+
+	maxAllowedDist := 1
+	if len(token) >= 6 {
+		maxAllowedDist = 2
+	}
+
+	if bestDist <= maxAllowedDist {
+		return bestWord
+	}
+	return token
+}
+
+func tokenizeQuery(query string) []string {
+	tokens := tokenize(query)
+	var corrected []string
+	for _, token := range tokens {
+		corrected = append(corrected, correctToken(token))
+	}
+	return corrected
+}
+
+func initTFIDF() {
+	// Build indexedDocs
+	indexedDocs = nil
 	for i, faq := range faqs {
-		// Combine question and keywords to form the index document
-		docText := faq.Question + " " + strings.Join(faq.Keywords, " ")
+		if faq.Question != "" {
+			indexedDocs = append(indexedDocs, IndexedDoc{FAQIndex: i, Question: faq.Question})
+		}
+		for _, q := range faq.Questions {
+			if q != "" {
+				indexedDocs = append(indexedDocs, IndexedDoc{FAQIndex: i, Question: q})
+			}
+		}
+	}
+
+	docFrequencies := make(map[string]int)
+	allTokens := make([][]string, len(indexedDocs))
+
+	for i, doc := range indexedDocs {
+		faq := faqs[doc.FAQIndex]
+		docText := doc.Question + " " + strings.Join(faq.Keywords, " ")
 		tokens := tokenize(docText)
 		allTokens[i] = tokens
 
@@ -89,16 +232,24 @@ func initTFIDF() {
 		}
 	}
 
+	// Populate vocabSet
+	vocabSet = make(map[string]bool)
+	for _, tokens := range allTokens {
+		for _, token := range tokens {
+			vocabSet[token] = true
+		}
+	}
+
 	// Calculate IDF for each term
 	idf = make(map[string]float64)
-	numDocs := float64(len(faqs))
+	numDocs := float64(len(indexedDocs))
 	for token, df := range docFrequencies {
 		idf[token] = math.Log(1.0 + (numDocs / float64(df)))
 	}
 
-	// Compute TF-IDF vectors for FAQs
-	docVectors = make([]map[string]float64, len(faqs))
-	docNorms = make([]float64, len(faqs))
+	// Compute TF-IDF vectors for indexed docs
+	docVectors = make([]map[string]float64, len(indexedDocs))
+	docNorms = make([]float64, len(indexedDocs))
 
 	for i, tokens := range allTokens {
 		tfMap := make(map[string]float64)
@@ -119,13 +270,13 @@ func initTFIDF() {
 		docNorms[i] = math.Sqrt(sqSum)
 	}
 
-	log.Printf("TF-IDF Chatbot engine initialized successfully with %d Q&As.", len(faqs))
+	log.Printf("TF-IDF Chatbot engine initialized successfully with %d Q&As (%d indexed question variants).", len(faqs), len(indexedDocs))
 }
 
-func getBestMatch(query string) (int, float64) {
-	queryTokens := tokenize(query)
+func getBestMatch(query string) (int, float64, string) {
+	queryTokens := tokenizeQuery(query)
 	if len(queryTokens) == 0 {
-		return -1, 0.0
+		return -1, 0.0, ""
 	}
 
 	// Compute TF for query
@@ -147,13 +298,17 @@ func getBestMatch(query string) (int, float64) {
 
 	queryNorm := math.Sqrt(querySqSum)
 	if queryNorm == 0 {
-		return -1, 0.0
+		return -1, 0.0, ""
 	}
 
-	bestIdx := -1
+	bestFAQIdx := -1
 	bestScore := -1.0
+	var bestMatchedQuestion string
 
 	for i, docVector := range docVectors {
+		doc := indexedDocs[i]
+		faq := faqs[doc.FAQIndex]
+
 		var dotProduct float64
 		for token, qVal := range queryVector {
 			if dVal, exists := docVector[token]; exists {
@@ -168,7 +323,7 @@ func getBestMatch(query string) (int, float64) {
 
 		// Apply exact keyword boosting
 		keywordMatches := 0
-		for _, kw := range faqs[i].Keywords {
+		for _, kw := range faq.Keywords {
 			for _, qTok := range queryTokens {
 				if strings.ToLower(kw) == qTok {
 					keywordMatches++
@@ -182,11 +337,12 @@ func getBestMatch(query string) (int, float64) {
 
 		if score > bestScore {
 			bestScore = score
-			bestIdx = i
+			bestFAQIdx = doc.FAQIndex
+			bestMatchedQuestion = doc.Question
 		}
 	}
 
-	return bestIdx, bestScore
+	return bestFAQIdx, bestScore, bestMatchedQuestion
 }
 
 func handleChat(w http.ResponseWriter, r *http.Request) {
@@ -212,14 +368,14 @@ func handleChat(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bestIdx, score := getBestMatch(req.Message)
+	bestIdx, score, matchedQuestion := getBestMatch(req.Message)
 	threshold := 0.18
 
 	var resp ChatResponse
 	if bestIdx != -1 && score >= threshold {
 		resp = ChatResponse{
 			Answer:          faqs[bestIdx].Answer,
-			MatchedQuestion: faqs[bestIdx].Question,
+			MatchedQuestion: matchedQuestion,
 			Confidence:      score,
 		}
 	} else {
