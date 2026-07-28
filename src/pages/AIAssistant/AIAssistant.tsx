@@ -9,7 +9,7 @@ const INITIAL_MESSAGES: ChatMessage[] = [
   {
     id: '1',
     role: 'assistant',
-    content: "👋 Hi there! I'm your **RIT AI Assistant**, powered by Google Gemini. I have comprehensive knowledge about Rajalakshmi Institute of Technology — from admission procedures to campus facilities.\n\nHow can I help you today?",
+    content: "👋 Hi there! I'm your **RIT Chatbot**. I have comprehensive knowledge about Rajalakshmi Institute of Technology — from admission procedures to campus facilities.\n\nHow can I help you today?",
     timestamp: new Date().toISOString(),
   },
 ];
@@ -109,10 +109,10 @@ export default function AIAssistant() {
               <Bot className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="font-semibold text-[#1E293B] text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>RIT AI Assistant</h1>
+              <h1 className="font-semibold text-[#1E293B] text-sm" style={{ fontFamily: 'Poppins, sans-serif' }}>RIT Chatbot</h1>
               <div className="flex items-center gap-1.5 text-xs text-[#94A3B8]">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                Powered by Gemini AI · Campus Knowledge Enabled
+                Campus Knowledge Enabled
               </div>
             </div>
           </div>
@@ -288,6 +288,9 @@ export default function AIAssistant() {
             <Send className="w-4 h-4" />
           </motion.button>
         </div>
+        <p className="text-[11px] text-center text-[#94A3B8] mt-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+          ⚠️ Chatbot responses may not always be accurate. Please cross-reference critical academic or administrative details with official sources.
+        </p>
       </div>
     </div>
   );

@@ -1,11 +1,13 @@
-import type { Feature, Stat, BusRoute, Faculty, Event, Club, Question, Confession, ToolkitItem, CampusLocation } from '@/types';
+import type { Feature, Stat, BusRoute, Faculty, Event, Club, Question, ToolkitItem, CampusLocation } from '@/types';
 
 // ─── Navigation ──────────────────────────────────────────────────────────────
 export const NAV_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'Notes', path: '/notes' },
-  { label: 'AI Assistant', path: '/ai-assistant' },
-  { label: 'Campus', path: '/campus' },
+  { label: 'Chatbot', path: '/ai-assistant' },
+  { label: 'Campus Map', path: '/campus' },
+  { label: 'Bus Routes', path: '/bus-routes' },
+  { label: 'Faculty Directory', path: '/faculty' },
   { label: 'Clubs', path: '/events' },
   { label: 'Community', path: '/community' },
 ];
@@ -15,7 +17,7 @@ export const STATS: Stat[] = [
   { value: 20, suffix: '+', label: 'Sports', icon: 'Trophy' },
   { value: 100, suffix: '+', label: 'Faculty', icon: 'Users' },
   { value: 18, suffix: '', label: 'Clubs', icon: 'Star' },
-  { value: 24, suffix: '/7', label: 'AI Assistant', icon: 'Bot' },
+  { value: 24, suffix: '/7', label: 'Chatbot', icon: 'Bot' },
   { value: 5000, suffix: '+', label: 'Students', icon: 'GraduationCap' },
 ];
 
@@ -33,8 +35,8 @@ export const FEATURES: Feature[] = [
   {
     id: 'ai',
     icon: 'Bot',
-    title: 'AI Fresher Assistant',
-    description: 'Get instant answers about campus life, academics, rules, and everything RIT – powered by Gemini AI.',
+    title: 'RIT Chatbot',
+    description: 'Get instant answers about campus life, academics, rules, and everything RIT.',
     path: '/ai-assistant',
     color: '#8B5CF6',
     bgColor: '#F5F3FF',
@@ -44,7 +46,7 @@ export const FEATURES: Feature[] = [
     icon: 'Map',
     title: 'Campus Map',
     description: 'Explore RIT campus interactively – find departments, labs, library, canteen, and facilities.',
-    path: '/campus?tab=map',
+    path: '/campus',
     color: '#10B981',
     bgColor: '#ECFDF5',
   },
@@ -53,7 +55,7 @@ export const FEATURES: Feature[] = [
     icon: 'Bus',
     title: 'Bus Routes',
     description: 'View all campus bus routes, timings, and pickup locations at a glance.',
-    path: '/campus?tab=bus',
+    path: '/bus-routes',
     color: '#3B82F6',
     bgColor: '#EFF6FF',
   },
@@ -62,7 +64,7 @@ export const FEATURES: Feature[] = [
     icon: 'UserCheck',
     title: 'Faculty Directory',
     description: 'Find faculty contact details, department, designation, and office hours.',
-    path: '/campus?tab=faculty',
+    path: '/faculty',
     color: '#EC4899',
     bgColor: '#FDF2F8',
   },
@@ -92,15 +94,6 @@ export const FEATURES: Feature[] = [
     path: '/notes',
     color: '#06B6D4',
     bgColor: '#ECFEFF',
-  },
-  {
-    id: 'confession',
-    icon: 'Heart',
-    title: 'Anonymous Confession',
-    description: 'Share your thoughts, feelings, and confessions anonymously with the RIT community.',
-    path: '/community',
-    color: '#F97316',
-    bgColor: '#FFF7ED',
   },
 ];
 
@@ -859,9 +852,6 @@ export const QUESTIONS_DATA: Question[] = [
     isAnswered: false,
   },
 ];
-
-// ─── Confessions ─────────────────────────────────────────────────────────────
-export const CONFESSIONS_DATA: Confession[] = [];
 
 // ─── Toolkit Items ───────────────────────────────────────────────────────────
 export const TOOLKIT_ITEMS: ToolkitItem[] = [

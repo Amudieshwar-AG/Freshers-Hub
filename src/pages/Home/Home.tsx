@@ -7,7 +7,6 @@ import {
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import FeatureCard from '@/components/FeatureCard/FeatureCard';
 import FloatingCard from '@/components/FloatingCard/FloatingCard';
-import ChatPreview from '@/components/ChatPreview/ChatPreview';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
 import { FEATURES, CAMPUS_LOCATIONS } from '@/constants';
@@ -123,7 +122,7 @@ export default function Home() {
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
                 <Bot className="w-4 h-4" />
-                Ask AI Assistant
+                Ask Chatbot
               </motion.button>
             </Link>
           </motion.div>
@@ -178,7 +177,7 @@ export default function Home() {
                 { value: '20+', label: 'SPORTS', icon: Trophy },
                 { value: '100+', label: 'FACULTY', icon: GraduationCap },
                 { value: '18', label: 'CLUBS', icon: Award },
-                { value: '24/7', label: 'AI ASSISTANT', icon: Cpu },
+                { value: '24/7', label: 'CHATBOT', icon: Cpu },
                 { value: '5000+', label: 'STUDENTS', icon: Users },
               ].map((stat, i) => (
                 <div key={i} className="flex flex-col items-center justify-center p-4">
@@ -227,76 +226,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── AI Section ───────────────────────────────────────────────────────── */}
-      <section className="section-padding bg-white relative z-20">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left – Text */}
-            <AnimatedContainer direction="left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-5"
-                style={{ backgroundColor: '#F5F3FF', border: '1px solid #DDD6FE' }}>
-                <Sparkles className="w-4 h-4 text-[#8B5CF6]" />
-                <span className="text-xs font-semibold text-[#8B5CF6] uppercase tracking-wider" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  AI-Powered
-                </span>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ fontFamily: 'Playfair Display, serif', color: '#1E293B' }}>
-                Your 24/7{' '}
-                <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  Campus Guide
-                </span>
-              </h2>
-              <p className="text-[#475569] leading-relaxed mb-8" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Ask anything about RIT — from admission documents to canteen timings. Our AI assistant, powered by Google Gemini with campus-specific knowledge, gives you instant, accurate answers.
-              </p>
 
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                {[
-                  { icon: 'Brain', label: 'Gemini AI', desc: 'State-of-the-art AI' },
-                  { icon: 'Database', label: 'RAG System', desc: 'Campus knowledge base' },
-                  { icon: 'Map', label: 'Campus Context', desc: 'RIT-specific answers' },
-                  { icon: 'Zap', label: 'Instant Answers', desc: 'No wait time' },
-                ].map((item, i) => {
-                  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>>)[item.icon];
-                  return (
-                    <div key={i} className="flex items-start gap-3 p-4 rounded-xl border border-[#E5E7EB] bg-[#FAFAFA]">
-                      <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-[#FFF7ED] shrink-0">
-                        {Icon && <Icon className="w-4.5 h-4.5" style={{ color: '#F97316' }} />}
-                      </div>
-                      <div>
-                        <div className="text-sm font-semibold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>{item.label}</div>
-                        <div className="text-xs text-[#94A3B8]" style={{ fontFamily: 'Inter, sans-serif' }}>{item.desc}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <Link to="/ai-assistant">
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold"
-                  style={{
-                    fontFamily: 'Poppins, sans-serif',
-                    background: 'linear-gradient(135deg, #F97316, #FB923C)',
-                    boxShadow: '0 6px 20px rgba(249,115,22,0.35)',
-                  }}
-                >
-                  <Bot className="w-4.5 h-4.5" />
-                  Try AI Assistant
-                  <ArrowRight className="w-4 h-4" />
-                </motion.button>
-              </Link>
-            </AnimatedContainer>
-
-            {/* Right – Chat Preview */}
-            <AnimatedContainer direction="right" delay={0.2}>
-              <ChatPreview />
-            </AnimatedContainer>
-          </div>
-        </div>
-      </section>
 
       {/* ─── Campus Quick Nav ─────────────────────────────────────────────────── */}
       <section className="section-padding relative z-20" style={{ backgroundColor: '#FAFAFA' }}>
@@ -386,86 +316,39 @@ export default function Home() {
 
       {/* ─── Community Teaser ─────────────────────────────────────────────────── */}
       <section className="section-padding bg-white relative z-20">
-        <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Q&A teaser */}
-            <AnimatedContainer direction="left">
-              <div className="rounded-3xl p-7 h-full border border-[#E5E7EB]"
-                style={{ background: 'linear-gradient(135deg, #FAFAFA, #FFF7ED)', boxShadow: '0 4px 20px -4px rgba(0,0,0,0.07)' }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#FFF7ED]">
-                    <LucideIcons.MessageCircle className="w-5 h-5 text-[#F97316]" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Freshers Q&A</h3>
-                    <p className="text-xs text-[#94A3B8]">Get answers from seniors</p>
-                  </div>
+        <div className="container-custom max-w-2xl">
+          {/* Q&A teaser */}
+          <AnimatedContainer>
+            <div className="rounded-3xl p-7 border border-[#E5E7EB]"
+              style={{ background: 'linear-gradient(135deg, #FAFAFA, #FFF7ED)', boxShadow: '0 4px 20px -4px rgba(0,0,0,0.07)' }}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-[#FFF7ED]">
+                  <LucideIcons.MessageCircle className="w-5 h-5 text-[#F97316]" />
                 </div>
-                <div className="space-y-3 mb-5">
-                  {['How is hostel life at RIT?', 'Best clubs to join as a fresher?', 'Tips for first semester survival'].map((q, i) => (
-                    <div key={i} className="flex items-start gap-2.5 p-3 bg-white rounded-xl border border-[#E5E7EB]">
-                      <span className="text-[#F97316] text-xs font-bold mt-0.5">Q</span>
-                      <span className="text-xs text-[#475569]" style={{ fontFamily: 'Inter, sans-serif' }}>{q}</span>
-                    </div>
-                  ))}
+                <div>
+                  <h3 className="font-semibold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Freshers Q&A</h3>
+                  <p className="text-xs text-[#94A3B8]">Get answers from seniors</p>
                 </div>
-                <Link to="/community">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    className="w-full py-2.5 rounded-xl text-sm font-semibold text-[#F97316] border-2 border-[#F97316] hover:bg-[#FFF7ED] transition-all"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
-                  >
-                    Join the Discussion
-                  </motion.button>
-                </Link>
               </div>
-            </AnimatedContainer>
-
-            {/* Anonymous Confession Teaser */}
-            <AnimatedContainer direction="right" delay={0.1}>
-              <div className="rounded-3xl p-7 h-full border border-[#E5E7EB]"
-                style={{ background: 'linear-gradient(135deg, #1E293B, #334155)', boxShadow: '0 4px 20px -4px rgba(0,0,0,0.15)' }}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'rgba(249,115,22,0.2)' }}>
-                    <LucideIcons.Heart className="w-5 h-5 text-[#F97316]" />
+              <div className="space-y-3 mb-5">
+                {['How is hostel life at RIT?', 'Best clubs to join as a fresher?', 'Tips for first semester survival'].map((q, i) => (
+                  <div key={i} className="flex items-start gap-2.5 p-3 bg-white rounded-xl border border-[#E5E7EB]">
+                    <span className="text-[#F97316] text-xs font-bold mt-0.5">Q</span>
+                    <span className="text-xs text-[#475569]" style={{ fontFamily: 'Inter, sans-serif' }}>{q}</span>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>Anonymous Confessions</h3>
-                    <p className="text-xs text-slate-400">Share without revealing identity</p>
-                  </div>
-                </div>
-                <div className="space-y-3 mb-5">
-                  {[
-                    { text: "I went to the wrong department on my first day 😅", reactions: 87 },
-                    { text: "The library WiFi is faster than my home connection 😂", reactions: 134 },
-                  ].map((c, i) => (
-                    <div key={i} className="p-3 rounded-xl" style={{ backgroundColor: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.1)' }}>
-                      <p className="text-xs text-slate-300 mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>{c.text}</p>
-                      <div className="flex items-center gap-1 text-xs text-slate-500">
-                        <LucideIcons.Heart className="w-3 h-3 text-[#F97316]" />
-                        <span>{c.reactions}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center gap-2 p-3 rounded-xl mb-4" style={{ backgroundColor: 'rgba(249,115,22,0.1)', border: '1px solid rgba(249,115,22,0.2)' }}>
-                  <LucideIcons.Shield className="w-4 h-4 text-[#F97316] shrink-0" />
-                  <span className="text-xs text-slate-400" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    100% Anonymous. No tracking. No identity revealed.
-                  </span>
-                </div>
-                <Link to="/community">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    className="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-                    style={{ fontFamily: 'Poppins, sans-serif', background: 'linear-gradient(135deg, #F97316, #FB923C)' }}
-                  >
-                    Confess Anonymously
-                  </motion.button>
-                </Link>
+                ))}
               </div>
-            </AnimatedContainer>
-          </div>
+              <Link to="/community">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  className="w-full py-2.5 rounded-xl text-sm font-semibold text-[#F97316] border-2 border-[#F97316] hover:bg-[#FFF7ED] transition-all"
+                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                >
+                  Join the Discussion
+                </motion.button>
+              </Link>
+            </div>
+          </AnimatedContainer>
         </div>
       </section>
     </div>

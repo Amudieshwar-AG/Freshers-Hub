@@ -8,7 +8,8 @@ import AIAssistant from '@/pages/AIAssistant/AIAssistant';
 import Campus from '@/pages/Campus/Campus';
 import Events from '@/pages/Events/Events';
 import Community from '@/pages/Community/Community';
-import Profile from '@/pages/Profile/Profile';
+import BusRoutes from '@/pages/BusRoutes/BusRoutes';
+import Faculty from '@/pages/Faculty/Faculty';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -40,9 +41,10 @@ function App() {
             <Route path="/notes" element={<Notes />} />
             <Route path="/ai-assistant" element={<AIAssistant />} />
             <Route path="/campus" element={<Campus />} />
+            <Route path="/bus-routes" element={<BusRoutes />} />
+            <Route path="/faculty" element={<Faculty />} />
             <Route path="/events" element={<Events />} />
             <Route path="/community" element={<Community />} />
-            <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>
       </BrowserRouter>

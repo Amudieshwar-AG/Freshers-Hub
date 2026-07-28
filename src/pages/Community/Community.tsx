@@ -8,7 +8,6 @@ import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import { getBackendUrl } from '@/lib/utils';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
-import { CONFESSIONS_DATA } from '@/constants';
 
 const TRENDING_TAGS = ['hostel', 'academics', 'clubs', 'campus', 'canteen', 'sports', 'placement', 'library', 'cat exam', 'semester', 'labs', 'exams'];
 
@@ -270,7 +269,7 @@ export default function Community() {
             RIT Community
           </h1>
           <p className="text-slate-500 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
-            Ask questions, share confessions, and connect with fellow RIT students.
+            Ask questions and connect with fellow RIT students.
           </p>
         </div>
       </div>

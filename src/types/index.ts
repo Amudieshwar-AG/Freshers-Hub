@@ -142,14 +142,6 @@ export interface Question {
   isAnswered: boolean;
 }
 
-export interface Confession {
-  id: string;
-  content: string;
-  createdAt: string;
-  reactions: number;
-  category?: string;
-}
-
 // ─── AI Chat ─────────────────────────────────────────────────────────────────
 export interface ChatMessage {
   id: string;

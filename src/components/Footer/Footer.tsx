@@ -4,8 +4,10 @@ import { GraduationCap, MapPin, Phone, Mail, Camera, Send, Globe, Play, ArrowRig
 const quickLinks = [
   { label: 'Home', path: '/' },
   { label: 'Notes & PYQs', path: '/notes' },
-  { label: 'AI Assistant', path: '/ai-assistant' },
+  { label: 'Chatbot', path: '/ai-assistant' },
   { label: 'Campus Map', path: '/campus' },
+  { label: 'Bus Routes', path: '/bus-routes' },
+  { label: 'Faculty Directory', path: '/faculty' },
   { label: 'Events', path: '/events' },
   { label: 'Community', path: '/community' },
 ];
@@ -38,7 +40,7 @@ export default function Footer() {
             className="flex items-center gap-2 bg-white text-[#F97316] px-6 py-3 rounded-xl font-semibold transition-all hover:shadow-lg hover:-translate-y-0.5"
             style={{ fontFamily: 'Poppins, sans-serif' }}
           >
-            Ask AI Assistant
+            Ask Chatbot
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
@@ -62,7 +64,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-5" style={{ fontFamily: 'Inter, sans-serif' }}>
-              Your all-in-one guide to campus life at RIT. Notes, AI assistant, events, faculty, and more — made for freshers.
+              Your all-in-one guide to campus life at RIT. Notes, chatbot, events, faculty, and more — made for freshers.
             </p>
             <div className="flex items-center gap-3">
               {[Camera, Send, Globe, Play].map((Icon, i) => (
