@@ -1,8 +1,4 @@
-# 🤖 RIT Freshers Hub - Telegram Q&A Intermediary Bot
-
 This is a lightweight Python microservice that acts as an intermediary between the student Q&A forum and registered helper accounts (Seniors/Staff) on Telegram.
-
----
 
 ## 🚀 How It Works
 1. **Student submits a question** on the web portal.
@@ -11,7 +7,7 @@ This is a lightweight Python microservice that acts as an intermediary between t
 4. **Helpers reply** directly to the Telegram message.
 5. **Telegram Bot** captures the reply, maps it back to the original question ID, and pushes the answer back to the Spring Boot REST endpoint (`POST /api/questions/{id}/answers`).
 
----
+
 
 ## 🛠️ Installation & Setup
 

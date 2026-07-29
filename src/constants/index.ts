@@ -10,6 +10,7 @@ export const NAV_LINKS = [
   { label: 'Faculty Directory', path: '/faculty' },
   { label: 'Clubs', path: '/events' },
   { label: 'Community', path: '/community' },
+  { label: 'Dev Collab', path: '/collab' },
 ];
 
 // ─── Stats ────────────────────────────────────────────────────────────────────

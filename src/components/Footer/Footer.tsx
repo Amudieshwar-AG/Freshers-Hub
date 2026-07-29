@@ -10,6 +10,7 @@ const quickLinks = [
   { label: 'Faculty Directory', path: '/faculty' },
   { label: 'Events', path: '/events' },
   { label: 'Community', path: '/community' },
+  { label: 'Dev Collab', path: '/collab' },
 ];
 
 const resources = [

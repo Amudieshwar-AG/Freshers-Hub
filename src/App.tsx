@@ -10,6 +10,7 @@ import Events from '@/pages/Events/Events';
 import Community from '@/pages/Community/Community';
 import BusRoutes from '@/pages/BusRoutes/BusRoutes';
 import Faculty from '@/pages/Faculty/Faculty';
+import DevCollab from '@/pages/DevCollab/DevCollab';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,6 +46,7 @@ function App() {
             <Route path="/faculty" element={<Faculty />} />
             <Route path="/events" element={<Events />} />
             <Route path="/community" element={<Community />} />
+            <Route path="/collab" element={<DevCollab />} />
           </Route>
         </Routes>
       </BrowserRouter>
