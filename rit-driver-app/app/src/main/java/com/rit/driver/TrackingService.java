@@ -97,6 +97,35 @@ public class TrackingService extends Service {
         createNotificationChannel();
     }
 
+    private android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private Runnable periodicUploader = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                Location loc = null;
+                if (locationManager != null) {
+                    try {
+                        Location gpsLoc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                        Location netLoc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                        loc = (gpsLoc != null) ? gpsLoc : netLoc;
+                    } catch (SecurityException ignored) {}
+                }
+                
+                if (loc != null) {
+                    locationListener.onLocationChanged(loc);
+                } else {
+                    Intent statusIntent = new Intent(ACTION_LOCATION_BROADCAST);
+                    statusIntent.putExtra(EXTRA_STATUS, "Waiting for initial GPS location fix...");
+                    sendBroadcast(statusIntent);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error in periodic uploader: " + e.getMessage());
+            } finally {
+                handler.postDelayed(this, 5000);
+            }
+        }
+    };
+
     @SuppressLint("InvalidWakeLockTag")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -137,38 +166,21 @@ public class TrackingService extends Service {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         try {
             if (locationManager != null) {
-                // Request GPS updates
                 if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER,
-                            5000,
-                            0.0f,
-                            locationListener
-                    );
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0.0f, locationListener);
                 }
-                // Request Network/Wi-Fi location updates (essential indoors)
                 if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                    locationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
-                            5000,
-                            0.0f,
-                            locationListener
-                    );
+                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 0.0f, locationListener);
                 }
-
-                // Immediately trigger initial fix if available
-                Location lastGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                Location lastNet = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                Location bestLocation = (lastGps != null) ? lastGps : lastNet;
-                if (bestLocation != null) {
-                    locationListener.onLocationChanged(bestLocation);
-                }
-                Log.d(TAG, "Location Listeners registered successfully");
             }
         } catch (SecurityException e) {
             Log.e(TAG, "SecurityException: Location permissions not granted", e);
             stopSelf();
         }
+
+        // 4. Start periodic 5-second uploader
+        handler.removeCallbacks(periodicUploader);
+        handler.post(periodicUploader);
 
         return START_REDELIVER_INTENT;
     }
@@ -176,6 +188,11 @@ public class TrackingService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy: Stopping service cleanups");
+
+        // Stop periodic uploader timer
+        if (handler != null && periodicUploader != null) {
+            handler.removeCallbacks(periodicUploader);
+        }
 
         // 1. Remove GPS Listener
         if (locationManager != null) {
