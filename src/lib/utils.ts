@@ -27,6 +27,11 @@ export const getBackendUrl = (path: string = ''): string => {
     return `${envUrl.endsWith('/') ? envUrl.slice(0, -1) : envUrl}${path}`;
   }
   const host = window.location.hostname;
+  const port = window.location.port;
+  // If running in production behind Nginx reverse proxy (standard port 80/443 or empty)
+  if (!port || port === '80' || port === '443') {
+    return path;
+  }
   return `http://${host}:8085${path}`;
 };
 
@@ -36,5 +41,10 @@ export const getChatbotUrl = (path: string = ''): string => {
     return `${envUrl.endsWith('/') ? envUrl.slice(0, -1) : envUrl}${path}`;
   }
   const host = window.location.hostname;
+  const port = window.location.port;
+  // If running in production behind Nginx reverse proxy (standard port 80/443 or empty)
+  if (!port || port === '80' || port === '443') {
+    return path.startsWith('/api/chat') ? path : `/api/chat${path}`;
+  }
   return `http://${host}:8081${path}`;
 };

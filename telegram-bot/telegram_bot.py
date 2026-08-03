@@ -315,8 +315,13 @@ def telegram_polling_thread():
             response = requests.get(url, params=params, timeout=25)
             data = response.json()
             if not data.get("ok"):
-                logging.error(f"Telegram API getUpdates error: {data}")
-                time.sleep(5)
+                error_code = data.get("error_code")
+                if error_code == 409:
+                    logging.warning("Telegram API 409 Conflict: Another bot instance is active. Sleeping 10s before retrying...")
+                    time.sleep(10)
+                else:
+                    logging.error(f"Telegram API getUpdates error: {data}")
+                    time.sleep(5)
                 continue
                 
             updates = data.get("result", [])
