@@ -187,7 +187,8 @@ export default function BusRouteMap({ selectedRoute, allRoutes }: BusRouteMapPro
         />
         
         {Object.entries(allLiveLocations).map(([rNum, loc]) => {
-          if (selectedRoute && selectedRoute.number !== rNum) return null;
+          const normalizeRouteNum = (str: string) => (str || '').replace(/^[Rr]0*/, '').trim().toUpperCase();
+          if (selectedRoute && normalizeRouteNum(selectedRoute.number) !== normalizeRouteNum(rNum)) return null;
           
           const isStale = loc.stopped || (loc.lastUpdated ? (new Date().getTime() - new Date(loc.lastUpdated).getTime() > 120000) : false);
           
