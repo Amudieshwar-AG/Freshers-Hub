@@ -16,8 +16,11 @@ export interface CollabRequestItem {
   projectIdea: string;
   githubLink?: string;
   tag: string;
+  collaboratorsNeeded?: number;
+  acceptedCount?: number;
   contactInfo?: string;
   telegramChatId?: number;
+  discordUserId?: string;
   status: string;
   applicationsCount: number;
   createdAt: string;
@@ -41,6 +44,8 @@ const INITIAL_MOCK_REQUESTS: CollabRequestItem[] = [
     projectIdea: 'Building an automated AI Attendance & Proxy Detection system using OpenCV and Python for college labs.',
     githubLink: 'https://github.com/example/rit-ai-attendance',
     tag: 'looking for co-developing a project from scratch',
+    collaboratorsNeeded: 2,
+    acceptedCount: 0,
     contactInfo: '@rohan_sharma_rit',
     status: 'OPEN',
     applicationsCount: 3,
@@ -54,6 +59,8 @@ const INITIAL_MOCK_REQUESTS: CollabRequestItem[] = [
     projectIdea: 'Need beta testers for our web-based RIT Bus Tracking & Live ETA PWA before publishing to campus app store.',
     githubLink: 'https://github.com/example/rit-bus-live',
     tag: 'looking for beta testers',
+    collaboratorsNeeded: 5,
+    acceptedCount: 2,
     contactInfo: '@ananya_rit_dev',
     status: 'OPEN',
     applicationsCount: 7,
@@ -67,6 +74,8 @@ const INITIAL_MOCK_REQUESTS: CollabRequestItem[] = [
     projectIdea: 'Open-source IoT Smart Canteen Pre-order Hardware & Mobile App. Looking for React Native & ESP32 contributors!',
     githubLink: 'https://github.com/example/rit-smart-canteen',
     tag: 'looking for Open-source Collaborators/Contributers',
+    collaboratorsNeeded: 3,
+    acceptedCount: 1,
     contactInfo: '@karthik_ece_rit',
     status: 'OPEN',
     applicationsCount: 5,
@@ -90,6 +99,7 @@ export default function DevCollab() {
   const [newDept, setNewDept] = useState('CSE');
   const [newYear, setNewYear] = useState('1st Year');
   const [newTag, setNewTag] = useState(TAG_OPTIONS[0]);
+  const [newCollaboratorsNeeded, setNewCollaboratorsNeeded] = useState(1);
   const [newIdea, setNewIdea] = useState('');
   const [newGithub, setNewGithub] = useState('');
   const [newContact, setNewContact] = useState('');
@@ -140,6 +150,7 @@ export default function DevCollab() {
       department: newDept,
       year: newYear,
       tag: newTag,
+      collaboratorsNeeded: Number(newCollaboratorsNeeded) || 1,
       projectIdea: newIdea.trim(),
       githubLink: newGithub.trim() || null,
       contactInfo: newContact.trim() || undefined,
@@ -159,6 +170,7 @@ export default function DevCollab() {
         setNewIdea('');
         setNewGithub('');
         setNewContact('');
+        setNewCollaboratorsNeeded(1);
       })
       .catch(() => {
         // Local state fallback
@@ -168,6 +180,8 @@ export default function DevCollab() {
           department: payload.department,
           year: payload.year,
           tag: payload.tag,
+          collaboratorsNeeded: payload.collaboratorsNeeded,
+          acceptedCount: 0,
           projectIdea: payload.projectIdea,
           githubLink: payload.githubLink || undefined,
           contactInfo: payload.contactInfo || '@student_rit',
@@ -202,8 +216,7 @@ export default function DevCollab() {
     })
       .then((res) => res.json())
       .then(() => {
-        showToast(`🚀 Collaboration request sent to ${selectedCollab.authorName} via Telegram!`);
-        // Increment count locally
+        showToast(`🚀 Collaboration request sent to ${selectedCollab.authorName}!`);
         setRequests((prev) =>
           prev.map((item) =>
             item.id === selectedCollab.id ? { ...item, applicationsCount: item.applicationsCount + 1 } : item
@@ -226,7 +239,6 @@ export default function DevCollab() {
       .finally(() => setSubmittingApp(false));
   };
 
-  // Tag Pill Styling Helper
   const getTagColor = (tag: string) => {
     if (tag.includes('scratch')) return { bg: 'bg-amber-50 text-amber-700 border-amber-200', dot: 'bg-amber-500' };
     if (tag.includes('beta')) return { bg: 'bg-[#F5F3FF] text-[#8B5CF6] border-[#DDD6FE]', dot: 'bg-[#8B5CF6]' };
@@ -315,10 +327,10 @@ export default function DevCollab() {
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  🤖 Post directly via Telegram or Discord Bot!
+                  🤖 Post or remove requests via Telegram or Discord!
                 </h3>
                 <p className="text-xs text-slate-300 max-w-xl leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  Send <code className="px-2 py-0.5 rounded bg-slate-800 text-orange-400 font-mono border border-slate-700">/collab</code> to our 24/7 Telegram bot or Discord bot to submit project requests directly from your chat!
+                  Send <code className="px-2 py-0.5 rounded bg-slate-800 text-orange-400 font-mono border border-slate-700">/collab</code> to post requests or <code className="px-2 py-0.5 rounded bg-slate-800 text-orange-400 font-mono border border-slate-700">/remove</code> to cancel active requests anytime!
                 </p>
               </div>
             </div>
@@ -377,23 +389,37 @@ export default function DevCollab() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
               {filteredRequests.map((item) => {
                 const tagStyle = getTagColor(item.tag);
+                const needed = item.collaboratorsNeeded || 1;
+                const accepted = item.acceptedCount || 0;
+                const isClosed = item.status === 'CLOSED' || item.status === 'CANCELLED' || accepted >= needed;
+
                 return (
                   <motion.div
                     key={item.id}
                     whileHover={{ y: -4, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.08)' }}
-                    className="bg-white rounded-3xl border border-[#E8ECF4] p-6 flex flex-col justify-between relative shadow-xs transition-all"
+                    className={`bg-white rounded-3xl border ${isClosed ? 'border-red-200 bg-slate-50/50' : 'border-[#E8ECF4]'} p-6 flex flex-col justify-between relative shadow-xs transition-all`}
                   >
                     <div>
-                      {/* Top Bar: Tag Badge */}
-                      <div className="flex items-start justify-between gap-2 mb-4">
+                      {/* Top Bar: Tag Badge & Status */}
+                      <div className="flex items-center justify-between gap-2 mb-4">
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold border ${tagStyle.bg}`}>
                           <span className={`w-1.5 h-1.5 rounded-full ${tagStyle.dot}`} />
                           {item.tag}
                         </span>
+
+                        {isClosed ? (
+                          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-50 text-red-600 border border-red-200 shadow-xs">
+                            CLOSED • SPOTS FILLED
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                            {accepted} / {needed} Spots Filled
+                          </span>
+                        )}
                       </div>
 
                       {/* Project Idea */}
-                      <h3 className="text-base font-bold text-[#1E293B] leading-snug mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <h3 className={`text-base font-bold leading-snug mb-3 ${isClosed ? 'text-slate-600' : 'text-[#1E293B]'}`} style={{ fontFamily: 'Poppins, sans-serif' }}>
                         {item.projectIdea}
                       </h3>
                     </div>
@@ -429,20 +455,30 @@ export default function DevCollab() {
 
                         <div className="text-right">
                           <div className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                            {item.applicationsCount} Requests
+                            {item.applicationsCount} Applications
                           </div>
                         </div>
                       </div>
 
                       {/* Primary Action Button */}
-                      <button
-                        onClick={() => setSelectedCollab(item)}
-                        className="w-full py-2.5 rounded-xl bg-[#FFF7ED] hover:bg-[#F97316] text-[#F97316] hover:text-white border border-[#FED7AA] hover:border-transparent text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-                        style={{ fontFamily: 'Poppins, sans-serif' }}
-                      >
-                        <MessageSquare className="w-3.5 h-3.5" />
-                        Send Collaboration Request
-                      </button>
+                      {isClosed ? (
+                        <button
+                          disabled
+                          className="w-full py-2.5 rounded-xl bg-slate-100 text-slate-400 text-xs font-semibold cursor-not-allowed border border-slate-200 flex items-center justify-center gap-2"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          Collaborations Closed (Full)
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => setSelectedCollab(item)}
+                          className="w-full py-2.5 rounded-xl bg-[#FFF7ED] hover:bg-[#F97316] text-[#F97316] hover:text-white border border-[#FED7AA] hover:border-transparent text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                          style={{ fontFamily: 'Poppins, sans-serif' }}
+                        >
+                          <MessageSquare className="w-3.5 h-3.5" />
+                          Send Collaboration Request
+                        </button>
+                      )}
                     </div>
                   </motion.div>
                 );
@@ -576,10 +612,26 @@ export default function DevCollab() {
                   </div>
                 </div>
 
-                {/* 5. Project Idea */}
+                {/* 5. Collaborators Needed */}
                 <div>
                   <label className="block text-xs font-semibold text-[#1E293B] mb-1">
-                    5) Project Idea <span className="text-red-500">*</span>
+                    5) Number of Collaborators Needed <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={20}
+                    required
+                    value={newCollaboratorsNeeded}
+                    onChange={(e) => setNewCollaboratorsNeeded(Math.max(1, parseInt(e.target.value) || 1))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-[#E5E7EB] bg-[#F8FAFC] text-sm text-[#1E293B] focus:bg-white focus:border-[#F97316] focus:outline-none transition-all"
+                  />
+                </div>
+
+                {/* 6. Project Idea */}
+                <div>
+                  <label className="block text-xs font-semibold text-[#1E293B] mb-1">
+                    6) Project Idea <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     required
@@ -656,7 +708,7 @@ export default function DevCollab() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 sm:p-8 z-10"
+              className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto z-10"
             >
               <div className="flex items-center justify-between mb-4">
                 <div>

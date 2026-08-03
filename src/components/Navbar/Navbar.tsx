@@ -92,10 +92,10 @@ export default function Navbar() {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className="md:hidden w-9 h-9 rounded-xl flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-all"
+              className="md:hidden w-11 h-11 rounded-xl flex items-center justify-center text-slate-200 hover:text-white bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/50 transition-all active:scale-95"
               aria-label="Toggle menu"
             >
-              {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isMobileOpen ? <X className="w-5 h-5 stroke-[2.5]" /> : <Menu className="w-5 h-5 stroke-[2.5]" />}
             </motion.button>
           </div>
         </div>
@@ -108,20 +108,22 @@ export default function Navbar() {
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="overflow-hidden md:hidden"
+              className="overflow-hidden md:hidden max-h-[80vh] overflow-y-auto"
             >
-              <div className="px-4 pb-4 pt-2 flex flex-col gap-1 border-t border-white/10">
+              <div className="px-4 pb-5 pt-3 grid grid-cols-2 gap-2 border-t border-white/10 bg-slate-950/90 backdrop-blur-2xl rounded-b-2xl">
                 {NAV_LINKS.map((link) => {
                   const isActive = location.pathname === link.path;
                   return (
                     <Link
                       key={link.path}
                       to={link.path}
-                      className="px-4 py-3 rounded-xl text-sm font-medium transition-all"
+                      onClick={() => setIsMobileOpen(false)}
+                      className="px-3.5 py-3 rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center text-center transition-all min-h-[44px]"
                       style={{
-                        fontFamily: 'Inter, sans-serif',
+                        fontFamily: 'Poppins, sans-serif',
                         color: isActive ? '#FFFFFF' : '#CBD5E1',
-                        backgroundColor: isActive ? '#F97316' : 'transparent',
+                        backgroundColor: isActive ? '#F97316' : 'rgba(255, 255, 255, 0.05)',
+                        border: isActive ? '1px solid #FB923C' : '1px solid rgba(255, 255, 255, 0.08)',
                       }}
                     >
                       {link.label}

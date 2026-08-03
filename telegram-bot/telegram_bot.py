@@ -41,7 +41,7 @@ def load_config():
             "community_bot_token": "8859374355:AAH0dhwstkTBhRerRTjzmb2RG2fjPbigzvo",
             "telegram_bot_token": "8913773505:AAHASuKLLOto3Ax573_dxg8bnvQy2ML6yLk",
             "helper_chat_ids": [],
-            "spring_backend_url": "http://localhost:8080"
+            "spring_backend_url": "http://localhost:8085"
         }
         with open(CONFIG_PATH, "w") as f:
             json.dump(default_config, f, indent=2)
@@ -54,7 +54,7 @@ config = load_config()
 COMMUNITY_BOT_TOKEN = os.environ.get("COMMUNITY_BOT_TOKEN") or config.get("community_bot_token", "8859374355:AAH0dhwstkTBhRerRTjzmb2RG2fjPbigzvo")
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN") or config.get("telegram_bot_token")
 DISCORD_TOKEN = os.environ.get("DISCORD_BOT_TOKEN") or config.get("discord_bot_token")
-BACKEND_URL = os.environ.get("SPRING_BACKEND_URL") or config.get("spring_backend_url", "http://localhost:8080")
+BACKEND_URL = os.environ.get("SPRING_BACKEND_URL") or config.get("spring_backend_url", "http://localhost:8085")
 
 # Database Setup
 DB_PATH = os.path.join(os.path.dirname(__file__), "bot_mappings.db")
@@ -161,7 +161,8 @@ def parse_collab_text(text: str):
         "year": None,
         "tag": None,
         "projectIdea": None,
-        "githubLink": None
+        "githubLink": None,
+        "collaboratorsNeeded": None
     }
     
     lines = text.splitlines()
@@ -178,6 +179,7 @@ def parse_collab_text(text: str):
                 data["tag"] = TAG_MAP.get(t, t)
             if len(parts) >= 5: data["projectIdea"] = parts[4]
             if len(parts) >= 6: data["githubLink"] = parts[5]
+            if len(parts) >= 7 and parts[6].isdigit(): data["collaboratorsNeeded"] = int(parts[6])
             return data
         lines = lines[1:]
 
@@ -199,6 +201,9 @@ def parse_collab_text(text: str):
                 data["projectIdea"] = v
             elif k in ["github", "github link", "link"]:
                 data["githubLink"] = v
+            elif k in ["collaborators", "collaborators needed", "needed"]:
+                if v.isdigit():
+                    data["collaboratorsNeeded"] = int(v)
         else:
             if not data["projectIdea"]:
                 data["projectIdea"] = line_str
@@ -247,7 +252,6 @@ def community_bot_polling_thread():
                     send_telegram_message(chat_id, welcome_text, force_reply=False, token=comm_token)
                     continue
 
-                # Handle senior helper replies to questions
                 reply_to = message.get("reply_to_message")
                 if reply_to:
                     if chat_id not in helpers:
@@ -359,6 +363,19 @@ def telegram_polling_thread():
                             token=bot_token
                         )
                         continue
+                    elif cb_data.startswith("collab_rm_"):
+                        req_id = cb_data.replace("collab_rm_", "")
+                        try:
+                            requests.delete(f"{backend_url}/api/collab/{req_id}", timeout=5)
+                            answer_telegram_callback(cb_id, "Request Removed!", token=bot_token)
+                            edit_telegram_message(
+                                cb_chat_id, cb_msg_id,
+                                "✅ *Collaboration Request cancelled and removed from RIT Dev Hub.*",
+                                token=bot_token
+                            )
+                        except Exception as e:
+                            logging.error(f"Error removing collab request: {e}")
+                        continue
                     
                     # Interactive Collab Wizard Callbacks
                     if cb_data.startswith("cflow_tag_"):
@@ -368,6 +385,7 @@ def telegram_polling_thread():
                             "tag": selected_tag,
                             "dept": "CSE",
                             "year": "1st Year",
+                            "collaboratorsNeeded": 1,
                             "step": "dept"
                         }
                         answer_telegram_callback(cb_id, "Tag Selected!", token=bot_token)
@@ -380,7 +398,7 @@ def telegram_polling_thread():
                         }
                         edit_telegram_message(
                             cb_chat_id, cb_msg_id,
-                            f"📌 *Step 2 of 4: Select your Department*\n\nTag: `{selected_tag}`",
+                            f"📌 *Step 2 of 5: Select your Department*\n\nTag: `{selected_tag}`",
                             reply_markup=dept_keyboard,
                             token=bot_token
                         )
@@ -401,7 +419,7 @@ def telegram_polling_thread():
                         }
                         edit_telegram_message(
                             cb_chat_id, cb_msg_id,
-                            f"📌 *Step 3 of 4: Select your Year*\n\nDepartment: `{dept_val}`",
+                            f"📌 *Step 3 of 5: Select your Year*\n\nDepartment: `{dept_val}`",
                             reply_markup=yr_keyboard,
                             token=bot_token
                         )
@@ -412,15 +430,38 @@ def telegram_polling_thread():
                         if cb_chat_id not in USER_COLLAB_STATE:
                             USER_COLLAB_STATE[cb_chat_id] = {}
                         USER_COLLAB_STATE[cb_chat_id]["year"] = year_val
-                        USER_COLLAB_STATE[cb_chat_id]["step"] = "idea"
+                        USER_COLLAB_STATE[cb_chat_id]["step"] = "num"
                         answer_telegram_callback(cb_id, "Year Selected!", token=bot_token)
                         
+                        num_keyboard = {
+                            "inline_keyboard": [
+                                [{"text": "1 Collaborator", "callback_data": "cflow_num_1"}, {"text": "2 Collaborators", "callback_data": "cflow_num_2"}],
+                                [{"text": "3 Collaborators", "callback_data": "cflow_num_3"}, {"text": "4 Collaborators", "callback_data": "cflow_num_4"}]
+                            ]
+                        }
+                        edit_telegram_message(
+                            cb_chat_id, cb_msg_id,
+                            f"📌 *Step 4 of 5: How many collaborators are you looking for?*",
+                            reply_markup=num_keyboard,
+                            token=bot_token
+                        )
+                        continue
+
+                    if cb_data.startswith("cflow_num_"):
+                        num_val = int(cb_data.replace("cflow_num_", ""))
+                        if cb_chat_id not in USER_COLLAB_STATE:
+                            USER_COLLAB_STATE[cb_chat_id] = {}
+                        USER_COLLAB_STATE[cb_chat_id]["collaboratorsNeeded"] = num_val
+                        USER_COLLAB_STATE[cb_chat_id]["step"] = "idea"
+                        answer_telegram_callback(cb_id, "Count Selected!", token=bot_token)
+
                         st = USER_COLLAB_STATE[cb_chat_id]
                         edit_telegram_message(
                             cb_chat_id, cb_msg_id,
-                            f"📌 *Step 4 of 4: Enter Project Idea & Name*\n\n"
+                            f"📌 *Step 5 of 5: Enter Project Idea & Name*\n\n"
                             f"🏷️ Tag: `{st.get('tag')}`\n"
-                            f"🏫 Dept: `{st.get('dept')}` | Year: `{year_val}`\n\n"
+                            f"🏫 Dept: `{st.get('dept')}` | Year: `{st.get('year')}`\n"
+                            f"👥 Collaborators Needed: `{num_val}`\n\n"
                             f"💬 *Now reply to this chat with your details in this format:*\n"
                             f"`Name: Your Name`\n"
                             f"`Idea: Building an AI attendance app`\n"
@@ -439,6 +480,29 @@ def telegram_polling_thread():
                 
                 logging.info(f"Received message from chat {chat_id}: '{text}'")
 
+                # Handle /remove command in Telegram
+                if text.lower() in ["/remove", "/cancel"]:
+                    try:
+                        res = requests.get(f"{backend_url}/api/collab/active/telegram/{chat_id}", timeout=5)
+                        if res.status_code == 200:
+                            requests_list = res.json()
+                            if not requests_list:
+                                send_telegram_message(chat_id, "ℹ️ *You have no active collaboration requests to remove.*", token=bot_token)
+                            else:
+                                keyboard = []
+                                for req_item in requests_list:
+                                    req_id = req_item["id"]
+                                    snippet = req_item.get("projectIdea", "Project")[:28]
+                                    keyboard.append([{"text": f"❌ Cancel: {snippet}", "callback_data": f"collab_rm_{req_id}"}])
+                                
+                                rm_markup = {"inline_keyboard": keyboard}
+                                send_telegram_message(chat_id, "🗑️ *Your Active Collaboration Requests*\n\nTap a request below to cancel and remove it from RIT Dev Hub:", reply_markup=rm_markup, token=bot_token)
+                        else:
+                            send_telegram_message(chat_id, "❌ Failed to fetch active requests.", token=bot_token)
+                    except Exception as e:
+                        send_telegram_message(chat_id, f"❌ Error: {e}", token=bot_token)
+                    continue
+
                 # Handle /collab Command or structured collab post
                 if text.lower().startswith("/collab") or (chat_id in USER_COLLAB_STATE and USER_COLLAB_STATE[chat_id].get("step") == "idea"):
                     parsed = parse_collab_text(text)
@@ -448,6 +512,7 @@ def telegram_polling_thread():
                     dept = parsed.get("department") or st.get("dept") or "CSE"
                     year = parsed.get("year") or st.get("year") or "1st Year"
                     tag = parsed.get("tag") or st.get("tag") or TAG_MAP["1"]
+                    num_needed = st.get("collaboratorsNeeded") or parsed.get("collaboratorsNeeded") or 1
                     idea = parsed.get("projectIdea")
                     github = parsed.get("githubLink")
 
@@ -475,6 +540,7 @@ def telegram_polling_thread():
                         "authorName": author_display,
                         "department": dept,
                         "year": year,
+                        "collaboratorsNeeded": num_needed,
                         "projectIdea": idea,
                         "githubLink": github or None,
                         "tag": tag,
@@ -490,8 +556,10 @@ def telegram_polling_thread():
                                 f"👤 *Author:* {author_display} ({dept}, {year})\n"
                                 f"📌 *Project Idea:* {idea}\n"
                                 f"🏷️ *Tag:* `{tag}`\n"
+                                f"👥 *Collaborators Looking For:* `{num_needed}`\n"
                                 f"📱 *Telegram Contact:* {contact_display}\n\n"
-                                f"When other developers apply on the website, you will receive a Telegram message right here to Accept or Decline!"
+                                f"When other developers apply on the website, you will receive a Telegram message right here to Accept or Decline!\n"
+                                f"*(Type `/remove` anytime to cancel your active requests)*"
                             )
                             send_telegram_message(chat_id, resp_msg, force_reply=False, token=bot_token)
                             if chat_id in USER_COLLAB_STATE:
@@ -507,7 +575,8 @@ def telegram_polling_thread():
                     welcome_text = (
                         f"👋 *Welcome to the RIT Chatbot 24/7!*\n\n"
                         f"I can help you answer any questions about RIT Chennai — courses, hostels, transport, sports, and more.\n\n"
-                        f"🚀 *Developer Collaboration:* Type `/collab` to post your project idea and find co-developers!\n\n"
+                        f"🚀 *Developer Collaboration:* Type `/collab` to post your project idea!\n"
+                        f"🗑️ *Remove Request:* Type `/remove` to cancel your active requests.\n\n"
                         f"💬 *Or just type your question here!*"
                     )
                     send_telegram_message(chat_id, welcome_text, force_reply=False, token=bot_token)
@@ -589,12 +658,43 @@ async def broadcast_discord_collab_application(application_id: int, project_idea
         except Exception as e:
             logging.error(f"Failed to send Discord collab DM to {user_id_val}: {e}")
 
+# Discord Remove Select View
+class DiscordCollabRemoveSelect(discord.ui.Select):
+    def __init__(self, active_requests: list):
+        options = []
+        for req in active_requests:
+            req_id = str(req["id"])
+            snippet = req.get("projectIdea", "Project")[:45]
+            options.append(discord.SelectOption(
+                label=f"Cancel: {snippet}",
+                value=req_id,
+                description=f"Tag: {req.get('tag')} | Dept: {req.get('department')}",
+                emoji="❌"
+            ))
+        super().__init__(placeholder="Select a request to remove...", min_values=1, max_values=1, options=options)
+
+    async def callback(self, interaction: discord.Interaction):
+        req_id = self.values[0]
+        try:
+            res = requests.delete(f"{BACKEND_URL}/api/collab/{req_id}", timeout=5)
+            if res.status_code in [200, 204]:
+                await interaction.response.send_message("✅ **Collaboration Request cancelled and removed from RIT Dev Hub.**", ephemeral=False)
+            else:
+                await interaction.response.send_message("❌ Failed to cancel request.", ephemeral=True)
+        except Exception as e:
+            await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
+
+class DiscordCollabRemoveView(discord.ui.View):
+    def __init__(self, active_requests: list):
+        super().__init__(timeout=180)
+        self.add_item(DiscordCollabRemoveSelect(active_requests))
+
 # Discord Native Interactive UI Components (Modal & Dropdown View)
 class CollabModal(discord.ui.Modal, title="Post Collaboration Request"):
     author_name = discord.ui.TextInput(label="1) Your Name", placeholder="e.g. Priyan Sharma", required=True)
-    department = discord.ui.TextInput(label="2) Department", placeholder="e.g. CSE / ECE / AIML", required=True, default="CSE")
-    year = discord.ui.TextInput(label="3) Year", placeholder="e.g. 1st Year / 2nd Year", required=True, default="1st Year")
-    project_idea = discord.ui.TextInput(label="4) Project Idea & Details", style=discord.TextStyle.paragraph, placeholder="Describe your project idea and what help you need...", required=True)
+    dept_and_year = discord.ui.TextInput(label="2) Dept & Year", placeholder="e.g. CSE, 1st Year", required=True, default="CSE, 1st Year")
+    collaborators_needed = discord.ui.TextInput(label="3) Collaborators Needed", placeholder="e.g. 2", required=True, default="1")
+    project_idea = discord.ui.TextInput(label="4) Project Idea & Details", style=discord.TextStyle.paragraph, placeholder="Describe your project idea...", required=True)
     github_link = discord.ui.TextInput(label="5) GitHub Link (Optional)", placeholder="https://github.com/...", required=False)
 
     def __init__(self, tag: str):
@@ -602,10 +702,25 @@ class CollabModal(discord.ui.Modal, title="Post Collaboration Request"):
         self.selected_tag = tag
 
     async def on_submit(self, interaction: discord.Interaction):
+        try:
+            num_needed = int(self.collaborators_needed.value)
+        except ValueError:
+            num_needed = 1
+
+        dept_val = "CSE"
+        year_val = "1st Year"
+        if "," in self.dept_and_year.value:
+            parts = [p.strip() for p in self.dept_and_year.value.split(",", 1)]
+            dept_val = parts[0]
+            year_val = parts[1]
+        else:
+            dept_val = self.dept_and_year.value.strip()
+
         payload = {
             "authorName": self.author_name.value,
-            "department": self.department.value,
-            "year": self.year.value,
+            "department": dept_val,
+            "year": year_val,
+            "collaboratorsNeeded": num_needed,
             "tag": self.selected_tag,
             "projectIdea": self.project_idea.value,
             "githubLink": self.github_link.value or None,
@@ -617,9 +732,10 @@ class CollabModal(discord.ui.Modal, title="Post Collaboration Request"):
             if res.status_code in [200, 201]:
                 await interaction.response.send_message(
                     f"🎉 **Collaboration Request posted live to RIT Dev Hub!**\n"
-                    f"👤 **Author:** {self.author_name.value} ({self.department.value}, {self.year.value})\n"
+                    f"👤 **Author:** {self.author_name.value} ({dept_val}, {year_val})\n"
                     f"📌 **Project:** {self.project_idea.value}\n"
-                    f"🏷️ **Tag:** `{self.selected_tag}`",
+                    f"🏷️ **Tag:** `{self.selected_tag}`\n"
+                    f"👥 **Collaborators Needed:** `{num_needed}`",
                     ephemeral=False
                 )
             else:
@@ -690,6 +806,23 @@ async def on_message(message):
         mention_nick_str = f"<@!{discord_client.user.id}>"
         content = content.replace(mention_str, "").replace(mention_nick_str, "").strip()
 
+    # Discord /remove Command
+    if content.lower().startswith("/remove") or content.lower().startswith("/cancel"):
+        try:
+            res = requests.get(f"{BACKEND_URL}/api/collab/active/discord/{message.author.id}", timeout=5)
+            if res.status_code == 200:
+                requests_list = res.json()
+                if not requests_list:
+                    await message.reply("ℹ️ **You have no active collaboration requests to remove.**")
+                else:
+                    view = DiscordCollabRemoveView(requests_list)
+                    await message.reply("🗑️ **Your Active Collaboration Requests**\nSelect a request from the dropdown below to cancel it:", view=view)
+            else:
+                await message.reply("❌ Failed to fetch active requests.")
+        except Exception as e:
+            await message.reply(f"❌ Error: {e}")
+        return
+
     # Discord Interactive /collab command
     if content.lower().startswith("/collab"):
         view = CollabView()
@@ -699,6 +832,32 @@ async def on_message(message):
             view=view
         )
         return
+
+    # Check if this message is a reply to a question DM sent to a helper
+    if message.reference and message.reference.message_id:
+        question_id = get_question_id(message.author.id, message.reference.message_id)
+        if question_id:
+            author_name = message.author.display_name or message.author.name or "Senior Helper"
+            logging.info(f"Submitting answer for question {question_id} by Discord helper '{author_name}'")
+            backend_endpoint = f"{BACKEND_URL}/api/questions/{question_id}/answers"
+            answer_payload = {
+                "body": content,
+                "author": author_name
+            }
+            try:
+                def call_backend():
+                    return requests.post(backend_endpoint, json=answer_payload, timeout=10)
+
+                loop = asyncio.get_event_loop()
+                res = await loop.run_in_executor(None, call_backend)
+                if res.status_code in [200, 201]:
+                    await message.reply("✅ **Answer posted successfully to the Q&A board!**")
+                else:
+                    await message.reply(f"❌ **Failed to post answer to backend.** (Status: {res.status_code})")
+            except Exception as e:
+                logging.error(f"Error calling backend endpoint {backend_endpoint}: {e}")
+                await message.reply(f"❌ **Connection error to backend.** ({e})")
+            return
 
     # Direct query fallback to Go chatbot service
     if not content.strip():
@@ -910,11 +1069,9 @@ async def run_uvicorn():
     await server.serve()
 
 async def main():
-    # Start Senior Helper Community Bot thread
     comm_thread = threading.Thread(target=community_bot_polling_thread, daemon=True)
     comm_thread.start()
 
-    # Start 24/7 Chatbot & Collab Bot thread
     chat_thread = threading.Thread(target=telegram_polling_thread, daemon=True)
     chat_thread.start()
 

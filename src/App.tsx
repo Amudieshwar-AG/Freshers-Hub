@@ -11,6 +11,7 @@ import Community from '@/pages/Community/Community';
 import BusRoutes from '@/pages/BusRoutes/BusRoutes';
 import Faculty from '@/pages/Faculty/Faculty';
 import DevCollab from '@/pages/DevCollab/DevCollab';
+import LeetcodeLeaderboard from '@/pages/LeetcodeLeaderboard/LeetcodeLeaderboard';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,6 +48,7 @@ function App() {
             <Route path="/events" element={<Events />} />
             <Route path="/community" element={<Community />} />
             <Route path="/collab" element={<DevCollab />} />
+            <Route path="/leetcode" element={<LeetcodeLeaderboard />} />
           </Route>
         </Routes>
       </BrowserRouter>

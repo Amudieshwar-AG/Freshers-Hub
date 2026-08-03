@@ -29,6 +29,7 @@ dist-ssr
 
 # Maven & Java
 target/
+**/target/
 .mvn/
 
 # Android & Gradle

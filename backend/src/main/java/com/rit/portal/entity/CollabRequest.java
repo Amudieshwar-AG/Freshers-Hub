@@ -54,6 +54,14 @@ public class CollabRequest {
     @Builder.Default
     private Integer applicationsCount = 0;
 
+    @Column(name = "collaborators_needed")
+    @Builder.Default
+    private Integer collaboratorsNeeded = 1;
+
+    @Column(name = "accepted_count")
+    @Builder.Default
+    private Integer acceptedCount = 0;
+
     @Column(name = "created_at")
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
