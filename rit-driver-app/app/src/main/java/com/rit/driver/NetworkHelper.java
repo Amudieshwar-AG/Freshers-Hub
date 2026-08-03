@@ -36,9 +36,10 @@ public class NetworkHelper {
                     conn.setConnectTimeout(8000);
                     conn.setReadTimeout(8000);
 
-                    // Build JSON string payload
+                    // Build JSON string payload using Locale.US to ensure dot decimals in JSON
                     String jsonInputString = String.format(
-                        "{\"latitude\": %f, \"longitude\": %f, \"pin\": \"%s\"}",
+                        java.util.Locale.US,
+                        "{\"latitude\": %.6f, \"longitude\": %.6f, \"pin\": \"%s\"}",
                         lat, lng, pin
                     );
 
