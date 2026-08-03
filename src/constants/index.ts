@@ -4,6 +4,7 @@ import type { Feature, Stat, BusRoute, Faculty, Event, Club, Question, ToolkitIt
 export const NAV_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'Notes', path: '/notes' },
+  { label: 'Toolkit', path: '/notes?section=toolkit' },
   { label: 'Chatbot', path: '/ai-assistant' },
   { label: 'Campus Map', path: '/campus' },
   { label: 'Bus Routes', path: '/bus-routes' },
@@ -93,7 +94,7 @@ export const FEATURES: Feature[] = [
     icon: 'Wrench',
     title: 'Student Toolkit',
     description: 'Download timetables, academic calendar, syllabus, forms, and ERP guides.',
-    path: '/notes',
+    path: '/notes?section=toolkit',
     color: '#06B6D4',
     bgColor: '#ECFEFF',
   },
@@ -857,12 +858,12 @@ export const QUESTIONS_DATA: Question[] = [
 
 // ─── Toolkit Items ───────────────────────────────────────────────────────────
 export const TOOLKIT_ITEMS: ToolkitItem[] = [
-  { id: '1', title: 'CS tools', description: 'Computer Science tools and resources', type: 'link', url: '#', icon: 'Code', category: 'Engineering' },
-  { id: '2', title: 'Business tools', description: 'Business systems and management resources', type: 'link', url: '#', icon: 'Briefcase', category: 'Engineering' },
-  { id: '3', title: 'Cybersecurity tools', description: 'Security and networking tools', type: 'link', url: '#', icon: 'Shield', category: 'Engineering' },
-  { id: '4', title: 'AI tools', description: 'Artificial Intelligence and Machine Learning resources', type: 'link', url: '#', icon: 'Brain', category: 'Engineering' },
-  { id: '5', title: 'Electrical and Electronic tools', description: 'Electrical and Electronics engineering tools', type: 'link', url: '#', icon: 'Cpu', category: 'Engineering' },
-  { id: '6', title: 'Biotech tools', description: 'Biotechnology tools and lab resources', type: 'link', url: '#', icon: 'FlaskConical', category: 'Engineering' },
+  { id: '1', title: 'CS tools', description: 'Access specialized development environments, IDE configurations, compiler guides, GitHub setup instructions, and essential documentation for Computer Science students.', type: 'link', url: '#', icon: 'Code', category: 'Engineering' },
+  { id: '2', title: 'Business tools', description: 'Explore enterprise resource planning (ERP) guides, financial spreadsheets, management templates, and business analytics tools for CSBS and management students.', type: 'link', url: '#', icon: 'Briefcase', category: 'Engineering' },
+  { id: '3', title: 'Cybersecurity tools', description: 'Discover network simulators, virtualization setup guides, penetration testing tutorials, cryptography tools, and security lab blueprints.', type: 'link', url: '#', icon: 'Shield', category: 'Engineering' },
+  { id: '4', title: 'AI tools', description: 'Configure machine learning frameworks, deep learning libraries, Jupyter environments, dataset download scripts, and pre-trained model APIs.', type: 'link', url: '#', icon: 'Brain', category: 'Engineering' },
+  { id: '5', title: 'Electrical and Electronic tools', description: 'Access circuit design simulators, MATLAB packages, microcontroller IDE setups, hardware debugging guides, and lab calculation spreadsheets.', type: 'link', url: '#', icon: 'Cpu', category: 'Engineering' },
+  { id: '6', title: 'Biotech tools', description: 'Find biology lab guidelines, chemical structure tools, bioinformatics databases tutorials, genetic sequence analysis resources, and safety manuals.', type: 'link', url: '#', icon: 'FlaskConical', category: 'Engineering' },
 ];
 
 // ─── Campus Locations ────────────────────────────────────────────────────────

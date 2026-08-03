@@ -102,7 +102,7 @@ export default function AIAssistant() {
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: '#FAFAFA' }}>
       {/* Header */}
-      <div className="bg-white border-b border-[#E5E7EB] py-4 sticky top-16 z-40">
+      <div className="bg-white border-b border-[#E5E7EB] py-4 relative z-10">
         <div className="container-custom flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)' }}>

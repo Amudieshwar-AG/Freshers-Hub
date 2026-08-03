@@ -34,6 +34,7 @@ export default function Home() {
             willChange: 'transform'
           }}
         >
+          <source src="/video/RIT Video.webm" type="video/webm" />
           <source src="/video/RIT Video.mp4" type="video/mp4" />
         </video>
         {/* Dark Overlay (40-50%) */}

@@ -19,6 +19,24 @@ export default function Navbar() {
     setIsMobileOpen(false);
   }, [location.pathname]);
 
+  const checkIsActive = (linkPath: string) => {
+    const [pathName, searchString] = linkPath.split('?');
+    if (location.pathname !== pathName) return false;
+    
+    if (pathName === '/notes') {
+      const params = new URLSearchParams(location.search);
+      const hasToolkit = params.has('toolkit') || params.get('section') === 'toolkit';
+      
+      if (searchString) {
+        return hasToolkit;
+      } else {
+        return !hasToolkit;
+      }
+    }
+    
+    return true;
+  };
+
   return (
     <>
       <motion.nav
@@ -61,12 +79,12 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map((link) => {
-              const isActive = location.pathname === link.path;
+              const isActive = checkIsActive(link.path);
               return (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className="relative px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-200"
+                  className="relative px-1.5 lg:px-2.5 xl:px-3.5 py-1.5 rounded-lg text-[10px] lg:text-[11px] xl:text-xs font-semibold uppercase tracking-wider transition-all duration-200"
                   style={{
                     fontFamily: 'Poppins, sans-serif',
                     color: isActive ? '#FFFFFF' : '#CBD5E1',
@@ -112,7 +130,7 @@ export default function Navbar() {
             >
               <div className="px-4 pb-5 pt-3 grid grid-cols-2 gap-2 border-t border-white/10 bg-slate-950/90 backdrop-blur-2xl rounded-b-2xl">
                 {NAV_LINKS.map((link) => {
-                  const isActive = location.pathname === link.path;
+                  const isActive = checkIsActive(link.path);
                   return (
                     <Link
                       key={link.path}

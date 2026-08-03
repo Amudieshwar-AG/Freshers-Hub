@@ -1360,6 +1360,14 @@ export default function Notes() {
     fetchNotes();
   }, []);
 
+  useEffect(() => {
+    if (searchParams.get('section') === 'toolkit') {
+      setTimeout(() => {
+        toolkitRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+    }
+  }, [searchParams]);
+
   const handleDownload = async (noteId: string, downloadUrl: string) => {
     try {
       await fetch(getBackendUrl(`/api/notes/${noteId}/download`), { method: 'POST' });
@@ -2073,7 +2081,7 @@ export default function Notes() {
             {/* Toolkit Section */}
             <div ref={toolkitRef} />
             <SectionTitle tag="Useful Downloads" title="Student" highlight="Toolkit" align="left" />
-            <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
               {TOOLKIT_ITEMS.map((item) => {
                 const iconConfig = TOOLKIT_ICONS[item.title] || { icon: Code, bg: '#FFF7ED', color: '#F97316' };
                 const IconComponent = iconConfig.icon;
@@ -2097,24 +2105,24 @@ export default function Notes() {
                           window.open(item.url, '_blank');
                         }
                       }}
-                      whileHover={{ y: -3 }}
-                      className="flex items-center gap-4 p-5 bg-white hover:bg-[#FFF7ED] rounded-2xl border border-[#E5E7EB] hover:border-[#FED7AA] cursor-pointer group w-full transition-all shadow-xs hover:shadow-md"
+                      whileHover={{ y: -4, boxShadow: '0 12px 30px -10px rgba(249,115,22,0.15)' }}
+                      className="flex items-start gap-5 p-7 bg-white hover:bg-[#FFF7ED] rounded-[22px] border border-[#E5E7EB] hover:border-[#FED7AA] cursor-pointer group w-full transition-all shadow-xs hover:shadow-md"
                     >
                       <div
-                        className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 font-bold text-sm transition-transform group-hover:scale-105"
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 font-bold text-sm transition-transform group-hover:scale-105"
                         style={{ backgroundColor: iconConfig.bg, color: iconConfig.color }}
                       >
-                        <IconComponent className="w-5.5 h-5.5" />
+                        <IconComponent className="w-7 h-7" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-bold text-[#1E293B] group-hover:text-[#F97316] transition-colors mb-0.5" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <div className="text-base lg:text-lg font-bold text-[#1E293B] group-hover:text-[#F97316] transition-colors mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {item.title}
                         </div>
-                        <div className="text-xs text-[#64748B] line-clamp-1" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        <div className="text-sm text-[#64748B] leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                           {item.description}
                         </div>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-[#94A3B8] group-hover:text-[#F97316] group-hover:translate-x-1 transition-all shrink-0" />
+                      <ChevronRight className="w-5 h-5 text-[#94A3B8] group-hover:text-[#F97316] group-hover:translate-x-1.5 transition-all shrink-0 mt-1" />
                     </motion.div>
                   </StaggerItem>
                 );

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronRight, MapPin, ZoomIn, ZoomOut, Maximize2, Minimize2,
@@ -32,25 +32,25 @@ const BLUEPRINT_LEGEND = [
 ];
 
 const LOCATION_SPOTS: LocationSpot[] = [
-  { name: 'Girls Hostel', x: 8.5, y: 12.0, category: 'Hostel / Mess', desc: 'Residential Quarter for Women', area: 'Top Left' },
-  { name: 'Playground', x: 32.0, y: 24.0, category: 'Amenity', desc: 'Main Sports & Athletic Field', area: 'Top Left' },
-  { name: 'Canteen', x: 64.0, y: 14.0, category: 'Amenity', desc: 'Food Court & Refreshments', area: 'North Center' },
-  { name: 'Statue', x: 63.0, y: 25.5, category: 'Amenity', desc: 'Landmark Monument', area: 'North Center' },
-  { name: 'Boys Mess', x: 87.0, y: 9.5, category: 'Amenity', desc: 'Ground Floor Dining', area: 'Top Right' },
-  { name: 'Staff Mess', x: 87.0, y: 18.5, category: 'Amenity', desc: 'First Floor Dining', area: 'Top Right' },
-  { name: 'C Block', x: 87.0, y: 42.0, category: 'C Block', desc: 'Labs, Classrooms, Auditorium & Staff Rooms', area: 'East Block' },
-  { name: 'Steve Jobs Block', x: 8.5, y: 39.0, category: 'Admin / Facility', desc: 'Auditorium, Labs & Staff Rooms', area: 'West Wing' },
-  { name: 'Girls Mess', x: 8.5, y: 53.0, category: 'Amenity', desc: 'Dedicated Dining Hall for Women', area: 'West Wing' },
-  { name: 'EPL Lab', x: 8.5, y: 67.0, category: 'Lab / Academic', desc: 'Engineering Practices Laboratory', area: 'South West' },
-  { name: 'B Block', x: 33.0, y: 51.0, category: 'B Block', desc: 'Labs, Classrooms & Faculty Rooms', area: 'Central West' },
-  { name: 'Hut', x: 63.0, y: 41.0, category: 'Amenity', desc: 'Student Discussion & Rest Area', area: 'Central Green' },
-  { name: 'A Block', x: 70.0, y: 65.0, category: 'A Block', desc: 'Labs, Classrooms, Faculty Rooms, Principal Room & Exam Cell', area: 'Central East' },
-  { name: 'RSB Block', x: 24.0, y: 80.0, category: 'Amenity', desc: 'Library, Auditorium & Accounts Room', area: 'South West' },
-  { name: 'Side Parking', x: 6.5, y: 83.0, category: 'Parking Area', desc: 'Visitor & Staff Parking Zone', area: 'South West' },
-  { name: 'Arcade', x: 43.5, y: 72.0, category: 'Amenity', desc: 'Student Hub & Stores', area: 'South Central' },
-  { name: 'Security Booth', x: 45.8, y: 88.5, category: 'Amenity', desc: 'Main Gate Security Checkpoint', area: 'South Entrance' },
-  { name: 'Parking Area', x: 73.5, y: 85.5, category: 'Parking Area', desc: 'Two-Wheeler & Four-Wheeler Parking', area: 'South East' },
-  { name: 'Main Entrance', x: 50.5, y: 95.5, category: 'Amenity', desc: 'Primary Campus Security Gate', area: 'South Entrance' },
+  { name: 'Girls Hostel', x: 8.2, y: 12.0, category: 'Hostel / Mess', desc: 'Residential Quarter for Women', area: 'Top Left' },
+  { name: 'Playground', x: 32.5, y: 19.5, category: 'Amenity', desc: 'Main Sports & Athletic Field', area: 'Top Left' },
+  { name: 'Canteen', x: 63.5, y: 13.5, category: 'Amenity', desc: 'Food Court & Refreshments', area: 'North Center' },
+  { name: 'Statue', x: 61.0, y: 26.0, category: 'Amenity', desc: 'Landmark Monument', area: 'North Center' },
+  { name: 'Boys Mess', x: 87.8, y: 10.5, category: 'Amenity', desc: 'Ground Floor Dining', area: 'Top Right' },
+  { name: 'Staff Mess', x: 87.8, y: 22.0, category: 'Amenity', desc: 'First Floor Dining', area: 'Top Right' },
+  { name: 'C Block', x: 87.8, y: 41.0, category: 'C Block', desc: 'Labs, Classrooms, Auditorium & Staff Rooms', area: 'East Block' },
+  { name: 'Steve Jobs Block', x: 8.1, y: 38.5, category: 'Admin / Facility', desc: 'Auditorium, Labs & Staff Rooms', area: 'West Wing' },
+  { name: 'Girls Mess', x: 8.1, y: 53.0, category: 'Amenity', desc: 'Dedicated Dining Hall for Women', area: 'West Wing' },
+  { name: 'EPL Lab', x: 8.1, y: 65.5, category: 'Lab / Academic', desc: 'Engineering Practices Laboratory', area: 'South West' },
+  { name: 'B Block', x: 32.5, y: 55.0, category: 'B Block', desc: 'Labs, Classrooms & Faculty Rooms', area: 'Central West' },
+  { name: 'Hut', x: 62.7, y: 42.5, category: 'Amenity', desc: 'Student Discussion & Rest Area', area: 'Central Green' },
+  { name: 'A Block', x: 70.3, y: 67.0, category: 'A Block', desc: 'Labs, Classrooms, Faculty Rooms, Principal Room & Exam Cell', area: 'Central East' },
+  { name: 'RSB Block', x: 24.0, y: 81.5, category: 'Amenity', desc: 'Library, Auditorium & Accounts Room', area: 'South West' },
+  { name: 'Side Parking', x: 5.5, y: 85.5, category: 'Parking Area', desc: 'Visitor & Staff Parking Zone', area: 'South West' },
+  { name: 'Arcade', x: 41.5, y: 72.8, category: 'Amenity', desc: 'Student Hub & Stores', area: 'South Central' },
+  { name: 'Security Booth', x: 45.9, y: 88.5, category: 'Amenity', desc: 'Main Gate Security Checkpoint', area: 'South Entrance' },
+  { name: 'Parking Area', x: 73.0, y: 86.0, category: 'Parking Area', desc: 'Two-Wheeler & Four-Wheeler Parking', area: 'South East' },
+  { name: 'Main Entrance', x: 51.8, y: 92.5, category: 'Amenity', desc: 'Primary Campus Security Gate', area: 'South Entrance' },
 ];
 
 const CATEGORY_MAP_SPOTS: Record<string, string[]> = {
@@ -64,6 +64,14 @@ const CATEGORY_MAP_SPOTS: Record<string, string[]> = {
 };
 
 export default function Campus() {
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  const scrollToMap = () => {
+    setTimeout(() => {
+      mapRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
   // Interactive Map State
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -71,7 +79,7 @@ export default function Campus() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [selectedFacility, setSelectedFacility] = useState<LocationSpot | null>(null);
 
-  const currentMapSrc = '/campus-map.jpg';
+  const currentMapSrc = '/map.png';
 
   const handleZoomIn = () => setZoomLevel((prev) => Math.min(prev + 0.25, 2.5));
   const handleZoomOut = () => setZoomLevel((prev) => Math.max(prev - 0.25, 0.75));
@@ -80,7 +88,7 @@ export default function Campus() {
   const handleDownload = () => {
     const link = document.createElement('a');
     link.href = currentMapSrc;
-    link.download = 'RIT_Campus_Blueprint.jpg';
+    link.download = 'RIT_Campus_Blueprint.png';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -92,7 +100,7 @@ export default function Campus() {
     } else {
       setActiveCategory(catId);
       setSelectedFacility(null);
-      setZoomLevel(1.1);
+      scrollToMap();
     }
   };
 
@@ -155,7 +163,7 @@ export default function Campus() {
         <div className="container-custom py-8">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             {/* Map Viewer Header Bar */}
-            <div className="bg-[#0F172A] rounded-t-3xl p-4 md:p-6 text-white border-b border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div ref={mapRef} className="bg-[#0F172A] rounded-t-3xl p-4 md:p-6 text-white border-b border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 text-xs font-semibold border border-orange-500/30">
@@ -223,7 +231,7 @@ export default function Campus() {
                           )}
                           <motion.div whileHover={{ scale: 1.3 }} animate={isHighlighted ? { scale: [1, 1.25, 1] } : { scale: 1 }} transition={isHighlighted ? { repeat: Infinity, duration: 2 } : {}} className={`relative flex items-center justify-center p-1.5 rounded-full shadow-lg border transition-all ${isSelected ? 'bg-gradient-to-r from-orange-500 to-amber-500 border-white ring-4 ring-orange-500/40 text-white z-30' : isHighlighted ? 'bg-orange-500 border-white text-white ring-2 ring-orange-400/60 z-20' : 'bg-slate-900/80 border-slate-600 text-orange-400 hover:bg-orange-50 hover:text-white opacity-75 hover:opacity-100'}`}>
                             <MapPin className="w-4 h-4" />
-                            <div className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1 rounded-xl text-[11px] font-bold whitespace-nowrap shadow-xl border pointer-events-none transition-all ${isHighlighted || isSelected ? 'bg-slate-900 text-orange-400 border-orange-500/40 opacity-100 scale-100' : 'bg-slate-900/90 text-white border-slate-700 opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100'}`}>{spot.name}</div>
+                            <div className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 px-2.5 py-1 rounded-xl text-[11px] font-bold whitespace-nowrap shadow-xl border pointer-events-none transition-all ${isHighlighted || isSelected ? 'bg-slate-900 text-orange-400 border-orange-500/40 opacity-100 scale-100' : 'bg-slate-900/90 text-white border-slate-700 opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100'}`}>{spot.name}</div>
                           </motion.div>
                         </div>
                       );
@@ -289,7 +297,7 @@ export default function Campus() {
                 {BLUEPRINT_LEGEND.map((item) => {
                   const isActive = activeLegend === item.id;
                   return (
-                    <button key={item.id} onClick={() => { setActiveLegend(item.id); setActiveCategory(null); setSelectedFacility(null); }} className={`flex items-center gap-2.5 px-4 py-2 rounded-full border transition-all cursor-pointer ${isActive ? 'border-[#F97316] bg-orange-500 text-white shadow-md scale-105' : `${item.border} ${item.bg} ${item.text} hover:scale-105`}`}>
+                    <button key={item.id} onClick={() => { setActiveLegend(item.id); setActiveCategory(null); setSelectedFacility(null); scrollToMap(); }} className={`flex items-center gap-2.5 px-4 py-2 rounded-full border transition-all cursor-pointer ${isActive ? 'border-[#F97316] bg-orange-500 text-white shadow-md scale-105' : `${item.border} ${item.bg} ${item.text} hover:scale-105`}`}>
                       <span className="w-3.5 h-3.5 rounded-full shrink-0 shadow-xs border border-black/10" style={{ backgroundColor: isActive ? 'white' : item.color }} />
                       <span className="text-xs font-semibold" style={{ fontFamily: 'Inter, sans-serif' }}>{item.label}</span>
                     </button>
@@ -315,7 +323,7 @@ export default function Campus() {
                   const isSelected = selectedFacility?.name === facility.name;
                   const isHighlighted = highlightedSpotNames.has(facility.name);
                   return (
-                    <motion.button key={facility.name} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => { if (isSelected) setSelectedFacility(null); else { setSelectedFacility(facility); setActiveCategory(null); } }} className={`text-left p-4 rounded-2xl border transition-all cursor-pointer ${isSelected ? 'border-[#F97316] bg-orange-500 text-white shadow-lg ring-2 ring-orange-400/40' : isHighlighted ? 'border-[#F97316] bg-orange-50/90 shadow-md' : 'border-[#E5E7EB] bg-[#F8FAFC] hover:bg-white hover:border-orange-200 hover:shadow-xs'}`}>
+                    <motion.button key={facility.name} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => { if (isSelected) setSelectedFacility(null); else { setSelectedFacility(facility); setActiveCategory(null); scrollToMap(); } }} className={`text-left p-4 rounded-2xl border transition-all cursor-pointer ${isSelected ? 'border-[#F97316] bg-orange-500 text-white shadow-lg ring-2 ring-orange-400/40' : isHighlighted ? 'border-[#F97316] bg-orange-50/90 shadow-md' : 'border-[#E5E7EB] bg-[#F8FAFC] hover:bg-white hover:border-orange-200 hover:shadow-xs'}`}>
                       <div className="flex items-start justify-between gap-1 mb-1.5">
                         <span className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-[#1E293B]'}`} style={{ fontFamily: 'Poppins, sans-serif' }}>{facility.name}</span>
                         <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 border ${isSelected ? 'bg-white/20 border-white/30 text-white' : 'bg-white border-[#E5E7EB] text-[#475569]'}`}>{facility.area}</span>
@@ -348,7 +356,7 @@ export default function Campus() {
                           <div key={`fs-${spot.name}`} style={{ left: `${spot.x}%`, top: `${spot.y}%` }} className="absolute -translate-x-1/2 -translate-y-1/2 z-20 group cursor-pointer" onClick={() => setSelectedFacility(spot)}>
                             <div className={`relative flex items-center justify-center p-1.5 rounded-full shadow-lg border transition-all ${isSelected ? 'bg-orange-500 border-white text-white ring-4 ring-orange-500/40 z-30 scale-125' : isHighlighted ? 'bg-orange-500 border-white text-white ring-2 ring-orange-400/60 z-20' : 'bg-slate-900/80 border-slate-600 text-orange-400 hover:bg-orange-50 hover:text-white'}`}>
                               <MapPin className="w-4 h-4" />
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold whitespace-nowrap bg-slate-900 text-white border border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity">{spot.name}</div>
+                              <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold whitespace-nowrap bg-slate-900 text-white border border-slate-700 opacity-0 group-hover:opacity-100 transition-opacity">{spot.name}</div>
                             </div>
                           </div>
                         );
