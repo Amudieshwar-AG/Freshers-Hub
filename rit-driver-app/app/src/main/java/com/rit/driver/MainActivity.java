@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         // Register receiver for service communication
         IntentFilter filter = new IntentFilter(TrackingService.ACTION_LOCATION_BROADCAST);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(locationReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(locationReceiver, filter, Context.RECEIVER_EXPORTED);
         } else {
             registerReceiver(locationReceiver, filter);
         }
