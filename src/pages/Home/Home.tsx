@@ -32,8 +32,8 @@ export default function Home() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-white text-3xl md:text-5xl font-medium tracking-wide mb-2"
-            style={{ fontFamily: 'Playfair Display, serif', textShadow: '0 2px 12px rgba(0,0,0,0.9)' }}
+            className="text-3xl md:text-5xl font-medium tracking-wide mb-2"
+            style={{ color: '#FFFFFF', fontFamily: 'Playfair Display, serif', textShadow: '0 2px 14px rgba(0,0,0,0.95)' }}
           >
             Welcome to
           </motion.h1>
@@ -42,8 +42,8 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-black leading-tight mb-6 text-white"
-            style={{ fontFamily: 'Playfair Display, serif', textShadow: '0 4px 20px rgba(0,0,0,0.95), 0 0 30px rgba(249, 115, 22, 0.5)' }}
+            className="text-5xl md:text-7xl font-black leading-tight mb-6"
+            style={{ color: '#FFFFFF', fontFamily: 'Playfair Display, serif', textShadow: '0 4px 24px rgba(0,0,0,0.95)' }}
           >
             RIT Freshers Hub
           </motion.h2>
