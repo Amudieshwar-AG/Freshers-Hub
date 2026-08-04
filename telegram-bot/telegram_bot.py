@@ -811,31 +811,9 @@ async def on_message(message):
         mention_nick_str = f"<@!{discord_client.user.id}>"
         content = content.replace(mention_str, "").replace(mention_nick_str, "").strip()
 
-    # Discord /remove Command
-    if content.lower().startswith("/remove") or content.lower().startswith("/cancel"):
-        try:
-            res = requests.get(f"{BACKEND_URL}/api/collab/active/discord/{message.author.id}", timeout=5)
-            if res.status_code == 200:
-                requests_list = res.json()
-                if not requests_list:
-                    await message.reply("ℹ️ **You have no active collaboration requests to remove.**")
-                else:
-                    view = DiscordCollabRemoveView(requests_list)
-                    await message.reply("🗑️ **Your Active Collaboration Requests**\nSelect a request from the dropdown below to cancel it:", view=view)
-            else:
-                await message.reply("❌ Failed to fetch active requests.")
-        except Exception as e:
-            await message.reply(f"❌ Error: {e}")
-        return
-
-    # Discord Interactive /collab command
-    if content.lower().startswith("/collab"):
-        view = CollabView()
-        await message.reply(
-            "🚀 **Post a Collaboration Request to RIT Dev Hub!**\n"
-            "Please select a tag from the scroll-down dropdown menu below to open the submission form:",
-            view=view
-        )
+    # Discord /collab & /remove commands disabled as requested
+    if content.lower().startswith("/collab") or content.lower().startswith("/remove") or content.lower().startswith("/cancel"):
+        await message.reply("ℹ️ **Dev Hub collaboration requests via Discord are currently disabled.** Please use the RIT Dev Hub website (https://rit-services.in/dev-collab) or the Telegram bot (@Ritchatbot_bot).")
         return
 
     # Check if this message is a reply to a question DM sent to a helper
@@ -1003,12 +981,8 @@ def send_collab_application(payload: CollabApplicationPayload):
     telegram_sent = False
     discord_sent = False
 
-    # 1. Telegram Broadcast via 24/7 Chatbot & Collab Bot
+    # 1. Telegram Notification strictly to Person A (the project author)
     chat_id = payload.telegram_chat_id
-    if not chat_id:
-        helpers = current_config.get("helper_chat_ids", [])
-        if helpers:
-            chat_id = helpers[0]
 
     if chat_id:
         msg_text = (
@@ -1031,36 +1005,11 @@ def send_collab_application(payload: CollabApplicationPayload):
         res = send_telegram_message(chat_id, msg_text, reply_markup=reply_markup, token=bot_token)
         if res.get("ok"):
             telegram_sent = True
+    else:
+        logging.info(f"Skipping Telegram notification for collab application {payload.application_id}: No telegram_chat_id provided for author.")
 
-    # 2. Discord Broadcast
-    discord_target_users = []
-    if payload.discord_user_id:
-        discord_target_users.append(payload.discord_user_id)
-    
-    config_discord_helpers = current_config.get("discord_helper_user_ids", [])
-    for dh in config_discord_helpers:
-        if str(dh) not in [str(x) for x in discord_target_users]:
-            discord_target_users.append(dh)
-
-    if discord_target_users and DISCORD_TOKEN and discord_loop:
-        try:
-            asyncio.run_coroutine_threadsafe(
-                broadcast_discord_collab_application(
-                    payload.application_id,
-                    payload.project_idea,
-                    payload.tag,
-                    payload.applicant_name,
-                    payload.applicant_dept,
-                    payload.applicant_year,
-                    payload.applicant_contact,
-                    payload.message or "",
-                    discord_target_users
-                ),
-                discord_loop
-            )
-            discord_sent = True
-        except Exception as e:
-            logging.error(f"Error scheduling Discord collab broadcast: {e}")
+    # 2. Discord Broadcast - Disabled as requested
+    discord_sent = False
 
     return {
         "status": "success",
