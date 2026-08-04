@@ -143,9 +143,7 @@ cd freshers-hub
 
 ---
 
-## Step 6: Build & Run Component 2 (Spring Boot Java Backend - Port 8085)
 
-1. **Build the Spring Boot `.jar` file:**
    ```bash
    cd /var/www/freshers-hub/backend
    chmod +x mvnw
