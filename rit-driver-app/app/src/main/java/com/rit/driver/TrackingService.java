@@ -107,7 +107,13 @@ public class TrackingService extends Service {
                     try {
                         Location gpsLoc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                         Location netLoc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                        loc = (gpsLoc != null) ? gpsLoc : netLoc;
+                        if (gpsLoc != null && netLoc != null) {
+                            loc = (gpsLoc.getTime() >= netLoc.getTime()) ? gpsLoc : netLoc;
+                        } else if (gpsLoc != null) {
+                            loc = gpsLoc;
+                        } else {
+                            loc = netLoc;
+                        }
                     } catch (SecurityException ignored) {}
                 }
                 
@@ -115,7 +121,7 @@ public class TrackingService extends Service {
                     locationListener.onLocationChanged(loc);
                 } else {
                     Intent statusIntent = new Intent(ACTION_LOCATION_BROADCAST);
-                    statusIntent.putExtra(EXTRA_STATUS, "Waiting for initial GPS location fix...");
+                    statusIntent.putExtra(EXTRA_STATUS, "Waiting for indoor / outdoor GPS fix...");
                     sendBroadcast(statusIntent);
                 }
             } catch (Exception e) {
