@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Download, Filter, BookOpen, FileText, ScrollText, BookMarked, ChevronRight, ArrowLeft, ExternalLink, Code, Globe, GitBranch, Cloud, Palette, Shield, DollarSign, BarChart3, Users, Megaphone, TrendingUp, UserCheck, ClipboardList, ShoppingCart, Cpu, Activity, LayoutGrid, Layers, Zap, Settings, Gauge, Radio, Wifi, Bot, Sun, Wrench, Binary, BatteryCharging, CircuitBoard, ShieldCheck, BrainCircuit, FlaskConical, Lock, Terminal, Dna, Microscope, Sparkles, Smartphone, Monitor, Server, CheckCircle2, Database, Briefcase } from 'lucide-react';
+import { Search, Download, Filter, BookOpen, FileText, ScrollText, BookMarked, ChevronRight, ArrowLeft, ExternalLink, Code, Globe, GitBranch, Cloud, Palette, Shield, DollarSign, BarChart3, Users, Megaphone, TrendingUp, UserCheck, ClipboardList, ShoppingCart, Cpu, Activity, LayoutGrid, Layers, Zap, Settings, Gauge, Radio, Wifi, Bot, Sun, Wrench, Binary, BatteryCharging, CircuitBoard, ShieldCheck, BrainCircuit, FlaskConical, Lock, Terminal, Dna, Microscope, Sparkles, Smartphone, Monitor, Server, CheckCircle2, Database, Briefcase, AlertTriangle } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import { getBackendUrl } from '@/lib/utils';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
@@ -1432,6 +1432,28 @@ export default function Notes() {
       )}
 
       <div className="container-custom py-10">
+        {/* Under Development Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-amber-900 shadow-2xs mb-8"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <div className="text-xs font-bold uppercase tracking-wider text-amber-700" style={{ fontFamily: 'Inter, sans-serif' }}>Under Development</div>
+              <div className="text-xs font-medium text-amber-900" style={{ fontFamily: 'Inter, sans-serif' }}>
+                Currently displaying sample mock notes & syllabus data. Official semester notes repository integration is in progress.
+              </div>
+            </div>
+          </div>
+          <span className="px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-[11px] font-bold text-amber-800 shrink-0">
+            Mock Data Active
+          </span>
+        </motion.div>
+
         {selectedToolkit ? (
           (() => {
             const TOOLKIT_MAP: Record<string, { categories: typeof CS_TOOLS_CATEGORIES; label: string }> = {
