@@ -183,15 +183,22 @@ public class TrackingService extends Service {
         try {
             if (locationManager != null) {
                 if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0.0f, locationListener);
+                    try {
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3000, 0.0f, locationListener);
+                    } catch (SecurityException ignored) {}
                 }
                 if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-                    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 0.0f, locationListener);
+                    try {
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 3000, 0.0f, locationListener);
+                    } catch (SecurityException ignored) {}
                 }
             }
-        } catch (SecurityException e) {
-            Log.e(TAG, "SecurityException: Location permissions not granted", e);
-            stopSelf();
+        } catch (Exception e) {
+            Log.e(TAG, "Location permission warning", e);
+            Intent statusIntent = new Intent(ACTION_LOCATION_BROADCAST);
+            statusIntent.setPackage(getPackageName());
+            statusIntent.putExtra(EXTRA_STATUS, "Location Warning: " + e.getMessage());
+            sendBroadcast(statusIntent);
         }
 
         // 4. Start periodic 5-second uploader
