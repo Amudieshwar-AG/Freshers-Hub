@@ -1,25 +1,16 @@
 import { Link } from 'react-router-dom';
-import { GraduationCap, MapPin, Phone, Mail, Camera, Send, Globe, Play, ArrowRight } from 'lucide-react';
+import { GraduationCap, MapPin, Phone, Mail, ArrowRight } from 'lucide-react';
 
 const quickLinks = [
   { label: 'Home', path: '/' },
   { label: 'Notes & PYQs', path: '/notes' },
-  { label: 'Chatbot', path: '/ai-assistant' },
-  { label: 'Campus Map', path: '/campus' },
+  { label: 'RIT Chatbot', path: '/ai-assistant' },
+  { label: '3D Campus Map', path: '/campus' },
   { label: 'Bus Routes', path: '/bus-routes' },
   { label: 'Faculty Directory', path: '/faculty' },
   { label: 'Events', path: '/events' },
   { label: 'Community', path: '/community' },
-  { label: 'Dev Collab', path: '/collab' },
-];
-
-const resources = [
-  { label: 'Student Handbook', path: '#' },
-  { label: 'Academic Calendar', path: '#' },
-  { label: 'ERP Portal', path: '#' },
-  { label: 'Library Portal', path: '#' },
-  { label: 'Exam Results', path: '#' },
-  { label: 'Fee Payment', path: '#' },
+  { label: 'Dev Hub', path: '/collab' },
 ];
 
 export default function Footer() {
@@ -49,7 +40,7 @@ export default function Footer() {
 
       {/* Main Footer */}
       <div className="container-custom py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2.5 mb-4">
@@ -65,68 +56,34 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-slate-400 text-sm leading-relaxed mb-5" style={{ fontFamily: 'Inter, sans-serif' }}>
-              Your all-in-one guide to campus life at RIT. Notes, chatbot, events, faculty, and more — made for freshers.
+              Your all-in-one guide to campus life at RIT. Notes, chatbot, bus routes, 3D campus map, and developer hub — built for students.
             </p>
-            <div className="flex items-center gap-3">
-              {[Camera, Send, Globe, Play].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="w-9 h-9 rounded-lg bg-slate-700 flex items-center justify-center text-slate-400 hover:bg-[#F97316] hover:text-white transition-all duration-200"
-                  aria-label="Social link"
-                >
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Quick Links */}
           <div>
             <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Quick Links
+              Quick Navigation
             </h4>
-            <ul className="space-y-2.5">
+            <div className="grid grid-cols-2 gap-2">
               {quickLinks.map((link) => (
-                <li key={link.path}>
-                  <Link
-                    to={link.path}
-                    className="text-slate-400 hover:text-[#F97316] text-sm transition-colors flex items-center gap-1.5 group"
-                    style={{ fontFamily: 'Inter, sans-serif' }}
-                  >
-                    <span className="w-1 h-1 rounded-full bg-[#F97316] opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {link.label}
-                  </Link>
-                </li>
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className="text-slate-400 hover:text-[#F97316] text-sm transition-colors flex items-center gap-1.5 group py-1"
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  <span className="w-1 h-1 rounded-full bg-[#F97316] opacity-0 group-hover:opacity-100 transition-opacity" />
+                  {link.label}
+                </Link>
               ))}
-            </ul>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Resources
-            </h4>
-            <ul className="space-y-2.5">
-              {resources.map((res) => (
-                <li key={res.label}>
-                  <a
-                    href={res.path}
-                    className="text-slate-400 hover:text-[#F97316] text-sm transition-colors flex items-center gap-1.5 group"
-                    style={{ fontFamily: 'Inter, sans-serif' }}
-                  >
-                    <span className="w-1 h-1 rounded-full bg-[#F97316] opacity-0 group-hover:opacity-100 transition-opacity" />
-                    {res.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            </div>
           </div>
 
           {/* Contact */}
           <div>
             <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Contact
+              Campus Location & Contact
             </h4>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-slate-400 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>

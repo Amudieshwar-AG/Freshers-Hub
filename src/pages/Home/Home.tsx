@@ -27,25 +27,13 @@ export default function Home() {
             className="container-custom relative z-20 flex flex-col items-center text-center px-4"
             style={{ opacity: heroOpacity, y: heroY }}
           >
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FFF7ED] border border-[#FED7AA] text-[#F97316] text-xs font-semibold shadow-2xs"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>OFFICIAL STUDENT PORTAL</span>
-          </motion.div>
-
           {/* Heading */}
           <motion.h1
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-white text-3xl md:text-4xl font-light mb-1"
-            style={{ fontFamily: 'Playfair Display, serif', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
+            className="text-white text-3xl md:text-5xl font-medium tracking-wide mb-2"
+            style={{ fontFamily: 'Playfair Display, serif', textShadow: '0 2px 12px rgba(0,0,0,0.9)' }}
           >
             Welcome to
           </motion.h1>
@@ -54,8 +42,8 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-black leading-tight mb-6 bg-gradient-to-r from-[#F97316] via-[#FB923C] to-[#F97316] bg-clip-text text-transparent"
-            style={{ fontFamily: 'Playfair Display, serif', filter: 'drop-shadow(0 4px 12px rgba(249, 115, 22, 0.45))' }}
+            className="text-5xl md:text-7xl font-black leading-tight mb-6 text-white"
+            style={{ fontFamily: 'Playfair Display, serif', textShadow: '0 4px 20px rgba(0,0,0,0.95), 0 0 30px rgba(249, 115, 22, 0.5)' }}
           >
             RIT Freshers Hub
           </motion.h2>
@@ -64,7 +52,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="max-w-2xl text-slate-200 text-base md:text-lg leading-relaxed mb-8"
+            className="max-w-2xl text-slate-100 text-base md:text-lg font-medium leading-relaxed mb-8 drop-shadow-md"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
             Your centralized gateway to campus life at Rajalakshmi Institute of Technology — academic notes, AI assistant, bus routes, faculty directory, and campus navigation.
@@ -75,7 +63,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-4 mb-10"
+            className="flex flex-wrap justify-center gap-4"
           >
             <a href="#built-for-freshers">
               <motion.button
@@ -97,32 +85,13 @@ export default function Home() {
               <motion.button
                 whileHover={{ scale: 1.04, borderColor: '#F97316', backgroundColor: 'rgba(255,255,255,0.2)' }}
                 whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm border-2 border-white/30 text-white bg-white/10 backdrop-blur-md transition-all cursor-pointer shadow-2xs"
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm border-2 border-white/40 text-white bg-black/30 backdrop-blur-md transition-all cursor-pointer shadow-2xs"
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
                 <Bot className="w-4 h-4 text-[#F97316]" />
                 Ask Assistant
               </motion.button>
             </Link>
-          </motion.div>
-
-          {/* Trust Badges */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex flex-wrap justify-center gap-6 text-slate-300 border-t border-white/20 pt-6 max-w-lg w-full"
-          >
-            {[
-              { icon: CheckCircle, text: 'Official Portal' },
-              { icon: Zap, text: 'Instant AI Support' },
-              { icon: Shield, text: 'Student Verified' },
-            ].map((badge, i) => (
-              <div key={i} className="flex items-center gap-1.5 text-xs font-medium" style={{ fontFamily: 'Inter, sans-serif' }}>
-                <badge.icon className="w-4 h-4 text-[#F97316]" />
-                <span>{badge.text}</span>
-              </div>
-            ))}
           </motion.div>
         </motion.div>
       </section>
