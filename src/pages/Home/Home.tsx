@@ -44,8 +44,8 @@ export default function Home() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-[#1E293B] text-3xl md:text-4xl font-light mb-1"
-            style={{ fontFamily: 'Playfair Display, serif' }}
+            className="text-white text-3xl md:text-4xl font-light mb-1"
+            style={{ fontFamily: 'Playfair Display, serif', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
           >
             Welcome to
           </motion.h1>
@@ -54,8 +54,8 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-black leading-tight mb-6 bg-gradient-to-r from-[#F97316] via-[#EA580C] to-[#F97316] bg-clip-text text-transparent"
-            style={{ fontFamily: 'Playfair Display, serif', filter: 'drop-shadow(0 2px 8px rgba(249, 115, 22, 0.2))' }}
+            className="text-5xl md:text-7xl font-black leading-tight mb-6 bg-gradient-to-r from-[#F97316] via-[#FB923C] to-[#F97316] bg-clip-text text-transparent"
+            style={{ fontFamily: 'Playfair Display, serif', filter: 'drop-shadow(0 4px 12px rgba(249, 115, 22, 0.45))' }}
           >
             RIT Freshers Hub
           </motion.h2>
@@ -64,7 +64,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="max-w-2xl text-[#475569] text-base md:text-lg leading-relaxed mb-8"
+            className="max-w-2xl text-slate-200 text-base md:text-lg leading-relaxed mb-8"
             style={{ fontFamily: 'Inter, sans-serif' }}
           >
             Your centralized gateway to campus life at Rajalakshmi Institute of Technology — academic notes, AI assistant, bus routes, faculty directory, and campus navigation.
@@ -95,9 +95,9 @@ export default function Home() {
 
             <Link to="/ai-assistant">
               <motion.button
-                whileHover={{ scale: 1.04, borderColor: '#F97316', backgroundColor: '#FFF7ED' }}
+                whileHover={{ scale: 1.04, borderColor: '#F97316', backgroundColor: 'rgba(255,255,255,0.2)' }}
                 whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm border-2 border-[#E5E7EB] text-[#1E293B] bg-white transition-all cursor-pointer shadow-2xs hover:text-[#F97316]"
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm border-2 border-white/30 text-white bg-white/10 backdrop-blur-md transition-all cursor-pointer shadow-2xs"
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
                 <Bot className="w-4 h-4 text-[#F97316]" />
@@ -111,7 +111,7 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="flex flex-wrap justify-center gap-6 text-[#64748B] border-t border-[#E5E7EB] pt-6 max-w-lg w-full"
+            className="flex flex-wrap justify-center gap-6 text-slate-300 border-t border-white/20 pt-6 max-w-lg w-full"
           >
             {[
               { icon: CheckCircle, text: 'Official Portal' },
@@ -124,9 +124,9 @@ export default function Home() {
               </div>
             ))}
           </motion.div>
-          </motion.div>
-        </section>
-      </LazyVideoHero>
+        </motion.div>
+      </section>
+    </LazyVideoHero>
 
       {/* Sleek Stats Card Section */}
       <section className="relative z-30 -mt-6 px-4">
