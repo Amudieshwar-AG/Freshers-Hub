@@ -11,6 +11,8 @@ import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer'
 import { FEATURES, CAMPUS_LOCATIONS } from '@/constants';
 import * as LucideIcons from 'lucide-react';
 
+import LazyVideoHero from '@/components/LazyVideoHero/LazyVideoHero';
+
 export default function Home() {
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 450], [1, 0]);
@@ -18,31 +20,13 @@ export default function Home() {
 
   return (
     <div className="relative bg-[#FAFAFA] min-h-screen overflow-hidden">
-      {/* ─── Ultra-Sleek Mesh Background Effect (Lightweight - Zero Video Load) ─── */}
-      <div className="absolute top-0 left-0 right-0 h-[650px] overflow-hidden pointer-events-none z-0">
-        <div 
-          className="absolute -top-[20%] -left-[10%] w-[60%] h-[80%] rounded-full opacity-20 blur-[120px]"
-          style={{ background: 'radial-gradient(circle, #F97316 0%, #FB923C 100%)' }}
-        />
-        <div 
-          className="absolute top-[10%] -right-[10%] w-[50%] h-[70%] rounded-full opacity-15 blur-[120px]"
-          style={{ background: 'radial-gradient(circle, #EA580C 0%, #F97316 100%)' }}
-        />
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: 'radial-gradient(#1E293B 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
-          }}
-        />
-      </div>
-
-      {/* ─── Hero Section ─────────────────────────────────────────────────────── */}
-      <section className="relative pt-20 pb-24 z-10">
-        <motion.div 
-          className="container-custom relative z-20 flex flex-col items-center text-center px-4"
-          style={{ opacity: heroOpacity, y: heroY }}
-        >
+      {/* ─── Hero Section with IntersectionObserver Lazy Video ─────────────────── */}
+      <LazyVideoHero>
+        <section className="relative pt-20 pb-24 z-10">
+          <motion.div 
+            className="container-custom relative z-20 flex flex-col items-center text-center px-4"
+            style={{ opacity: heroOpacity, y: heroY }}
+          >
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -140,8 +124,9 @@ export default function Home() {
               </div>
             ))}
           </motion.div>
-        </motion.div>
-      </section>
+          </motion.div>
+        </section>
+      </LazyVideoHero>
 
       {/* Sleek Stats Card Section */}
       <section className="relative z-30 -mt-6 px-4">
