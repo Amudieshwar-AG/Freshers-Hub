@@ -329,4 +329,3 @@ Run this single command anytime you push new changes to GitHub:
 ```bash
 cd /var/www/freshers-hub && git pull && npm run build && cd backend && ./mvnw clean package -DskipTests && sudo systemctl restart springboot chatbot telegram-bot nginx
 ```
-87t8tttttitutt8686r76ruyffjhvj
