@@ -1,4 +1,5 @@
-![alt text](image.png)# 🚀 Complete Bluehost Ubuntu 24.04 VPS Hosting Guide for Freshers-Hub
+![alt text](image.png)# 🚀 Bluehost VPS Deployment & Management Guide
+<!-- CI/CD Automated Test Push Trigger --> for Freshers-Hub
 
 This guide provides a step-by-step walkthrough for deploying the entire **Freshers-Hub** project on a **Bluehost Ubuntu 24.04 VPS**.
 
@@ -317,7 +318,7 @@ sudo systemctl status telegram-bot
 sudo systemctl status nginx
 ```
 
-### View real-time logs when debugging:
+
 * **Spring Boot logs:** `sudo journalctl -u springboot -f`
 * **Telegram Bot logs:** `sudo journalctl -u telegram-bot -f`
 * **Go Chatbot logs:** `sudo journalctl -u chatbot -f`

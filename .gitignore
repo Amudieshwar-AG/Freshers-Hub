@@ -40,3 +40,4 @@ app/build/
 *.aar
 *.log
 __pycache__/
+rit-driver-app/
