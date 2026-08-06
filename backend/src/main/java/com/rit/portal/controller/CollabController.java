@@ -32,11 +32,26 @@ public class CollabController {
         return collabRequestRepository.findAllByOrderByCreatedAtDesc();
     }
 
+    @GetMapping("/my-requests")
+    public List<CollabRequest> getMyCollabRequests(@RequestParam String email) {
+        return collabRequestRepository.findByAuthorEmailOrderByCreatedAtDesc(email);
+    }
+
+    @GetMapping("/my-applications")
+    public List<CollabApplication> getMyCollabApplications(@RequestParam String email) {
+        return collabApplicationRepository.findByApplicantEmailOrderByCreatedAtDesc(email);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CollabRequest> getCollabRequestById(@PathVariable Integer id) {
         return collabRequestRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/applications")
+    public List<CollabApplication> getApplicationsForRequest(@PathVariable Integer id) {
+        return collabApplicationRepository.findByCollabRequestIdOrderByCreatedAtDesc(id);
     }
 
     @PostMapping
@@ -49,6 +64,22 @@ public class CollabController {
         if (request.getAcceptedCount() == null) request.setAcceptedCount(0);
         request.setCreatedAt(LocalDateTime.now());
         return collabRequestRepository.save(request);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CollabRequest> updateCollabRequest(
+            @PathVariable Integer id,
+            @RequestBody CollabRequest updated) {
+        return collabRequestRepository.findById(id).map(req -> {
+            if (updated.getProjectIdea() != null) req.setProjectIdea(updated.getProjectIdea());
+            if (updated.getTag() != null) req.setTag(updated.getTag());
+            if (updated.getDepartment() != null) req.setDepartment(updated.getDepartment());
+            if (updated.getYear() != null) req.setYear(updated.getYear());
+            if (updated.getGithubLink() != null) req.setGithubLink(updated.getGithubLink());
+            if (updated.getContactInfo() != null) req.setContactInfo(updated.getContactInfo());
+            if (updated.getCollaboratorsNeeded() != null) req.setCollaboratorsNeeded(updated.getCollaboratorsNeeded());
+            return ResponseEntity.ok(collabRequestRepository.save(req));
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/{id}/apply")
@@ -66,7 +97,7 @@ public class CollabController {
 
             CollabApplication savedApp = collabApplicationRepository.save(application);
 
-            // Increment count on parent request
+            // Increment applications count on parent request
             request.setApplicationsCount(request.getApplicationsCount() + 1);
             collabRequestRepository.save(request);
 
@@ -83,6 +114,7 @@ public class CollabController {
                     payload.put("telegram_chat_id", request.getTelegramChatId());
                     payload.put("discord_user_id", request.getDiscordUserId());
                     payload.put("applicant_name", savedApp.getApplicantName());
+                    payload.put("applicant_email", savedApp.getApplicantEmail());
                     payload.put("applicant_dept", savedApp.getApplicantDept());
                     payload.put("applicant_year", savedApp.getApplicantYear());
                     payload.put("applicant_contact", savedApp.getApplicantContact());
@@ -108,18 +140,24 @@ public class CollabController {
             app.setStatus(newStatus);
             CollabApplication updated = collabApplicationRepository.save(app);
 
-            // Delete request entirely when accepted count meets requested collaborators count
-            if ("ACCEPTED".equals(newStatus) && !"ACCEPTED".equals(oldStatus)) {
-                CollabRequest parentReq = app.getCollabRequest();
-                if (parentReq != null) {
+            // Manage parent request counts
+            CollabRequest parentReq = app.getCollabRequest();
+            if (parentReq != null) {
+                if ("ACCEPTED".equals(newStatus) && !"ACCEPTED".equals(oldStatus)) {
                     int accepted = (parentReq.getAcceptedCount() == null ? 0 : parentReq.getAcceptedCount()) + 1;
                     parentReq.setAcceptedCount(accepted);
                     int needed = parentReq.getCollaboratorsNeeded() == null ? 1 : parentReq.getCollaboratorsNeeded();
                     if (accepted >= needed) {
-                        collabRequestRepository.delete(parentReq);
-                    } else {
-                        collabRequestRepository.save(parentReq);
+                        parentReq.setStatus("CLOSED");
                     }
+                    collabRequestRepository.save(parentReq);
+                } else if (!"ACCEPTED".equals(newStatus) && "ACCEPTED".equals(oldStatus)) {
+                    int accepted = Math.max(0, (parentReq.getAcceptedCount() == null ? 0 : parentReq.getAcceptedCount()) - 1);
+                    parentReq.setAcceptedCount(accepted);
+                    if ("CLOSED".equals(parentReq.getStatus())) {
+                        parentReq.setStatus("OPEN");
+                    }
+                    collabRequestRepository.save(parentReq);
                 }
             }
             return ResponseEntity.ok(updated);

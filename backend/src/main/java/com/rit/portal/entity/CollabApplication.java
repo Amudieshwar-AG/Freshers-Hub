@@ -26,6 +26,9 @@ public class CollabApplication {
     @Column(name = "applicant_name", nullable = false)
     private String applicantName;
 
+    @Column(name = "applicant_email")
+    private String applicantEmail;
+
     @Column(name = "applicant_dept", nullable = false)
     private String applicantDept;
 

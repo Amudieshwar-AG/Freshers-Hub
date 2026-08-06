@@ -8,6 +8,7 @@ import java.util.List;
 @Repository
 public interface CollabRequestRepository extends JpaRepository<CollabRequest, Integer> {
     List<CollabRequest> findAllByOrderByCreatedAtDesc();
+    List<CollabRequest> findByAuthorEmailOrderByCreatedAtDesc(String authorEmail);
     List<CollabRequest> findByTelegramChatIdAndStatusOrderByCreatedAtDesc(Long telegramChatId, String status);
     List<CollabRequest> findByDiscordUserIdAndStatusOrderByCreatedAtDesc(String discordUserId, String status);
 }

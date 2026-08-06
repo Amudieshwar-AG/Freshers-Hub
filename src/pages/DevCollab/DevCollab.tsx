@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Code2, Plus, GitBranch, Tag, User, Send, CheckCircle2,
-  Search, Filter, Sparkles, X, ExternalLink, Layers,
-  ChevronRight, MessageSquare, Clock, Users, ArrowUpRight,
-  ShieldCheck, LogIn, ShieldAlert
+  Code2, Plus, GitBranch, CheckCircle2, XCircle,
+  Search, Sparkles, X, ExternalLink,
+  ChevronRight, MessageSquare, ArrowUpRight,
+  ShieldCheck, LogIn, ShieldAlert, Edit3, Trash2, Users,
+  Check, Clock, Send
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getBackendUrl } from '@/lib/utils';
@@ -13,6 +14,7 @@ import { useAuth } from '@/context/AuthContext';
 export interface CollabRequestItem {
   id: number;
   authorName: string;
+  authorEmail?: string;
   department: string;
   year: string;
   projectIdea: string;
@@ -28,6 +30,19 @@ export interface CollabRequestItem {
   createdAt: string;
 }
 
+export interface CollabApplicationItem {
+  id: number;
+  applicantName: string;
+  applicantEmail?: string;
+  applicantDept: string;
+  applicantYear: string;
+  applicantContact: string;
+  message?: string;
+  status: string; // PENDING, ACCEPTED, REJECTED
+  createdAt: string;
+  collabRequest?: CollabRequestItem;
+}
+
 const TAG_OPTIONS = [
   'looking for co-developing a project from scratch',
   'looking for beta testers',
@@ -41,6 +56,7 @@ const INITIAL_MOCK_REQUESTS: CollabRequestItem[] = [
   {
     id: 101,
     authorName: 'Rohan Sharma',
+    authorEmail: 'rohan@ritchennai.edu.in',
     department: 'CSE',
     year: '3rd Year',
     projectIdea: 'Building an automated AI Attendance & Proxy Detection system using OpenCV and Python for college labs.',
@@ -56,6 +72,7 @@ const INITIAL_MOCK_REQUESTS: CollabRequestItem[] = [
   {
     id: 102,
     authorName: 'Ananya V.',
+    authorEmail: 'ananya@ritchennai.edu.in',
     department: 'AIML',
     year: '2nd Year',
     projectIdea: 'Need beta testers for our web-based RIT Bus Tracking & Live ETA PWA before publishing to campus app store.',
@@ -71,6 +88,7 @@ const INITIAL_MOCK_REQUESTS: CollabRequestItem[] = [
   {
     id: 103,
     authorName: 'Karthik N.',
+    authorEmail: 'karthik@ritchennai.edu.in',
     department: 'ECE',
     year: '4th Year',
     projectIdea: 'Open-source IoT Smart Canteen Pre-order Hardware & Mobile App. Looking for React Native & ESP32 contributors!',
@@ -88,18 +106,25 @@ const INITIAL_MOCK_REQUESTS: CollabRequestItem[] = [
 export default function DevCollab() {
   const { user, isAuthenticated, isVerifiedStudent, loginWithGoogle } = useAuth();
 
+  const [activeTab, setActiveTab] = useState<'explore' | 'my-requests' | 'my-applications'>('explore');
   const [requests, setRequests] = useState<CollabRequestItem[]>(INITIAL_MOCK_REQUESTS);
+  const [myRequests, setMyRequests] = useState<CollabRequestItem[]>([]);
+  const [myApplications, setMyApplications] = useState<CollabApplicationItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTagFilter, setActiveTagFilter] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Modals
+  // Modals & UI state
   const [showPostModal, setShowPostModal] = useState(false);
+  const [editingCollab, setEditingCollab] = useState<CollabRequestItem | null>(null);
   const [selectedCollab, setSelectedCollab] = useState<CollabRequestItem | null>(null);
+  const [managingCollab, setManagingCollab] = useState<CollabRequestItem | null>(null);
+  const [managingApplicants, setManagingApplicants] = useState<CollabApplicationItem[]>([]);
+  const [loadingApplicants, setLoadingApplicants] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showAuthGate, setShowAuthGate] = useState(false);
 
-  // New Request Form — auto-populated from Google profile for verified students
+  // New Request Form
   const [newAuthorName, setNewAuthorName] = useState(user?.name || '');
   const [newDept, setNewDept] = useState('CSE');
   const [newYear, setNewYear] = useState('1st Year');
@@ -110,14 +135,26 @@ export default function DevCollab() {
   const [newContact, setNewContact] = useState(user?.email || '');
   const [submittingPost, setSubmittingPost] = useState(false);
 
-  // Application Form — auto-populated from Google profile
+  // Application Form
   const [appApplicantName, setAppApplicantName] = useState(user?.name || '');
   const [appDept, setAppDept] = useState('CSE');
   const [appYear, setAppYear] = useState('1st Year');
   const [appContact, setAppContact] = useState(user?.email || '');
   const [appMessage, setAppMessage] = useState('');
+  const [submittingApp, setSubmittingApp] = useState(false);
 
-  // Helper: gate action behind verified student check
+  // Sync state when user logs in
+  useEffect(() => {
+    if (user?.name) {
+      setNewAuthorName(user.name);
+      setAppApplicantName(user.name);
+    }
+    if (user?.email) {
+      setNewContact(user.email);
+      setAppContact(user.email);
+    }
+  }, [user]);
+
   const requireVerifiedStudent = (action: () => void) => {
     if (!isAuthenticated || !isVerifiedStudent) {
       setShowAuthGate(true);
@@ -125,7 +162,11 @@ export default function DevCollab() {
     }
     action();
   };
-  const [submittingApp, setSubmittingApp] = useState(false);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
 
   const fetchCollabRequests = () => {
     setLoading(true);
@@ -139,21 +180,78 @@ export default function DevCollab() {
           setRequests(data);
         }
       })
-      .catch(() => {
-        // Fallback to mock data if backend not available
-      })
+      .catch(() => {})
       .finally(() => setLoading(false));
+  };
+
+  const fetchMyRequests = () => {
+    if (!user?.email) return;
+    fetch(getBackendUrl(`/api/collab/my-requests?email=${encodeURIComponent(user.email)}`))
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setMyRequests(data);
+        }
+      })
+      .catch(() => {});
+  };
+
+  const fetchMyApplications = () => {
+    if (!user?.email) return;
+    fetch(getBackendUrl(`/api/collab/my-applications?email=${encodeURIComponent(user.email)}`))
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setMyApplications(data);
+        }
+      })
+      .catch(() => {});
   };
 
   useEffect(() => {
     fetchCollabRequests();
   }, []);
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+  useEffect(() => {
+    if (isAuthenticated && user?.email) {
+      fetchMyRequests();
+      fetchMyApplications();
+    }
+  }, [isAuthenticated, user?.email, activeTab]);
+
+  // Open Manage Applicants Modal
+  const openManageApplicants = (item: CollabRequestItem) => {
+    setManagingCollab(item);
+    setLoadingApplicants(true);
+    fetch(getBackendUrl(`/api/collab/${item.id}/applications`))
+      .then((res) => res.json())
+      .then((data) => {
+        setManagingApplicants(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setManagingApplicants([]))
+      .finally(() => setLoadingApplicants(false));
   };
 
+  // Handle Accept / Reject applicant
+  const handleUpdateApplicationStatus = (appId: number, status: 'ACCEPTED' | 'REJECTED') => {
+    fetch(getBackendUrl(`/api/collab/applications/${appId}/status?status=${status}`), {
+      method: 'PUT',
+    })
+      .then((res) => res.json())
+      .then(() => {
+        showToast(status === 'ACCEPTED' ? '✅ Applicant ACCEPTED!' : '❌ Applicant REJECTED');
+        if (managingCollab) {
+          openManageApplicants(managingCollab);
+        }
+        fetchCollabRequests();
+        fetchMyRequests();
+      })
+      .catch(() => {
+        showToast('Updated status locally');
+      });
+  };
+
+  // Handle Post New Request
   const handlePostRequest = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAuthorName.trim() || !newIdea.trim()) return;
@@ -161,6 +259,7 @@ export default function DevCollab() {
     setSubmittingPost(true);
     const payload = {
       authorName: newAuthorName.trim(),
+      authorEmail: user?.email || null,
       department: newDept,
       year: newYear,
       tag: newTag,
@@ -178,19 +277,18 @@ export default function DevCollab() {
       .then((res) => res.json())
       .then((saved) => {
         setRequests((prev) => [saved, ...prev]);
+        setMyRequests((prev) => [saved, ...prev]);
         showToast('🎉 Collaboration request posted successfully!');
         setShowPostModal(false);
-        setNewAuthorName('');
         setNewIdea('');
         setNewGithub('');
-        setNewContact('');
         setNewCollaboratorsNeeded(1);
       })
       .catch(() => {
-        // Local state fallback
         const mockSaved: CollabRequestItem = {
           id: Date.now(),
           authorName: payload.authorName,
+          authorEmail: user?.email,
           department: payload.department,
           year: payload.year,
           tag: payload.tag,
@@ -204,12 +302,56 @@ export default function DevCollab() {
           createdAt: new Date().toISOString(),
         };
         setRequests((prev) => [mockSaved, ...prev]);
-        showToast('🎉 Collaboration request posted to live view!');
+        setMyRequests((prev) => [mockSaved, ...prev]);
+        showToast('🎉 Collaboration request posted!');
         setShowPostModal(false);
       })
       .finally(() => setSubmittingPost(false));
   };
 
+  // Handle Edit Request
+  const handleSaveEditRequest = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCollab) return;
+
+    fetch(getBackendUrl(`/api/collab/${editingCollab.id}`), {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(editingCollab),
+    })
+      .then((res) => res.json())
+      .then((updated) => {
+        setRequests((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+        setMyRequests((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+        showToast('✏️ Collaboration request updated!');
+        setEditingCollab(null);
+      })
+      .catch(() => {
+        setRequests((prev) => prev.map((r) => (r.id === editingCollab.id ? editingCollab : r)));
+        setMyRequests((prev) => prev.map((r) => (r.id === editingCollab.id ? editingCollab : r)));
+        showToast('✏️ Request updated locally!');
+        setEditingCollab(null);
+      });
+  };
+
+  // Handle Delete Request
+  const handleDeleteRequest = (id: number) => {
+    if (!confirm('Are you sure you want to delete this collaboration request?')) return;
+
+    fetch(getBackendUrl(`/api/collab/${id}`), { method: 'DELETE' })
+      .then(() => {
+        setRequests((prev) => prev.filter((r) => r.id !== id));
+        setMyRequests((prev) => prev.filter((r) => r.id !== id));
+        showToast('🗑️ Collaboration request deleted!');
+      })
+      .catch(() => {
+        setRequests((prev) => prev.filter((r) => r.id !== id));
+        setMyRequests((prev) => prev.filter((r) => r.id !== id));
+        showToast('🗑️ Request removed!');
+      });
+  };
+
+  // Handle Apply
   const handleApply = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedCollab || !appApplicantName.trim() || !appContact.trim()) return;
@@ -217,6 +359,7 @@ export default function DevCollab() {
     setSubmittingApp(true);
     const payload = {
       applicantName: appApplicantName.trim(),
+      applicantEmail: user?.email || null,
       applicantDept: appDept,
       applicantYear: appYear,
       applicantContact: appContact.trim(),
@@ -237,9 +380,8 @@ export default function DevCollab() {
           )
         );
         setSelectedCollab(null);
-        setAppApplicantName('');
-        setAppContact('');
         setAppMessage('');
+        fetchMyApplications();
       })
       .catch(() => {
         showToast(`🚀 Application submitted! Sent notification to ${selectedCollab.authorName}.`);
@@ -271,12 +413,6 @@ export default function DevCollab() {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#FAFAFA]">
-      {/* Background Orbs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-orange-200/30 rounded-full blur-3xl opacity-50" />
-        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-purple-200/30 rounded-full blur-3xl opacity-40" />
-      </div>
-
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -313,7 +449,7 @@ export default function DevCollab() {
                   </span>
                 </h1>
                 <p className="text-[#475569] text-sm max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  Post your open-source projects, search for co-developers, or find beta testers. Connect instantly via Telegram & Discord bot integrations!
+                  Post open-source projects, search for co-developers, or manage candidate applications cleanly on the website or via Telegram!
                 </p>
               </div>
 
@@ -321,7 +457,7 @@ export default function DevCollab() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => requireVerifiedStudent(() => setShowPostModal(true))}
-                className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg shadow-orange-500/25 shrink-0"
+                className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg shadow-orange-500/25 shrink-0 cursor-pointer"
                 style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', fontFamily: 'Poppins, sans-serif' }}
               >
                 {isVerifiedStudent && <ShieldCheck className="w-4 h-4" />}
@@ -329,195 +465,614 @@ export default function DevCollab() {
                 Post Collaboration Request
               </motion.button>
             </div>
+
+            {/* Dashboard Tabs Bar */}
+            <div className="flex items-center gap-3 mt-8 border-b border-slate-200 overflow-x-auto pb-px">
+              <button
+                onClick={() => setActiveTab('explore')}
+                className={`px-5 py-3 text-xs font-bold transition-all border-b-2 flex items-center gap-2 cursor-pointer ${
+                  activeTab === 'explore'
+                    ? 'border-[#F97316] text-[#F97316]'
+                    : 'border-transparent text-slate-500 hover:text-slate-800'
+                }`}
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
+                <Code2 className="w-4 h-4" />
+                Explore Projects ({requests.length})
+              </button>
+
+              {isAuthenticated && (
+                <>
+                  <button
+                    onClick={() => setActiveTab('my-requests')}
+                    className={`px-5 py-3 text-xs font-bold transition-all border-b-2 flex items-center gap-2 cursor-pointer ${
+                      activeTab === 'my-requests'
+                        ? 'border-[#F97316] text-[#F97316]'
+                        : 'border-transparent text-slate-500 hover:text-slate-800'
+                    }`}
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    <Edit3 className="w-4 h-4" />
+                    My Posted Requests ({myRequests.length})
+                  </button>
+
+                  <button
+                    onClick={() => setActiveTab('my-applications')}
+                    className={`px-5 py-3 text-xs font-bold transition-all border-b-2 flex items-center gap-2 cursor-pointer ${
+                      activeTab === 'my-applications'
+                        ? 'border-[#F97316] text-[#F97316]'
+                        : 'border-transparent text-slate-500 hover:text-slate-800'
+                    }`}
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    <Send className="w-4 h-4" />
+                    My Applications ({myApplications.length})
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Main Content Container */}
         <div className="container-custom py-8 space-y-8">
-          {/* Telegram / Discord Bot Banner Callout */}
-          <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-6 text-white border border-slate-700/80 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
-            <div className="flex items-start gap-4 relative z-10">
-              <div className="w-12 h-12 rounded-2xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center shrink-0">
-                <Send className="w-6 h-6 text-[#F97316]" />
+          {/* TAB 1: EXPLORE PROJECTS */}
+          {activeTab === 'explore' && (
+            <>
+              {/* Telegram Callout Banner */}
+              <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-6 text-white border border-slate-700/80 shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="w-12 h-12 rounded-2xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center shrink-0">
+                    <Send className="w-6 h-6 text-[#F97316]" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      🤖 Telegram Bot Workflow
+                    </h3>
+                    <p className="text-xs text-slate-300 max-w-xl leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Applications sent to your projects will also arrive on Telegram with <code className="px-1.5 py-0.5 rounded bg-slate-800 text-orange-400 font-mono">[Accept]</code> and <code className="px-1.5 py-0.5 rounded bg-slate-800 text-orange-400 font-mono">[Reject]</code> buttons for 1-tap responses!
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0 relative z-10">
+                  <a
+                    href="https://t.me/Ritchatbot_bot"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2.5 rounded-xl bg-[#229ED9]/20 hover:bg-[#229ED9]/30 text-[#229ED9] border border-[#229ED9]/40 text-xs font-semibold flex items-center gap-2 transition-all"
+                  >
+                    Telegram Bot <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-white mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  🤖 Post or remove requests via Telegram or Discord!
-                </h3>
-                <p className="text-xs text-slate-300 max-w-xl leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  Send <code className="px-2 py-0.5 rounded bg-slate-800 text-orange-400 font-mono border border-slate-700">/collab</code> to post requests or <code className="px-2 py-0.5 rounded bg-slate-800 text-orange-400 font-mono border border-slate-700">/remove</code> to cancel active requests anytime!
-                </p>
-              </div>
-            </div>
 
-            <div className="flex items-center gap-3 shrink-0 relative z-10">
-              <a
-                href="https://t.me/Ritchatbot_bot"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2.5 rounded-xl bg-[#229ED9]/20 hover:bg-[#229ED9]/30 text-[#229ED9] border border-[#229ED9]/40 text-xs font-semibold flex items-center gap-2 transition-all"
-              >
-                Telegram Bot <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          </div>
-
-          {/* Search & Tag Filter Bar */}
-          <div className="bg-white rounded-3xl p-4 border border-[#E5E7EB] shadow-xs flex flex-col lg:flex-row gap-4 justify-between">
-            {/* Search Input */}
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-[#94A3B8]" />
-              <input
-                type="text"
-                placeholder="Search by idea, author, department, or tag..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F8FAFC] border-none text-sm text-[#1E293B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#F97316]/20 focus:outline-none transition-all"
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              />
-            </div>
-
-            {/* Tag Filter Pills */}
-            <div className="flex flex-wrap items-center gap-2">
-              {['All', ...TAG_OPTIONS].map((tag) => {
-                const isActive = activeTagFilter === tag;
-                return (
-                  <button
-                    key={tag}
-                    onClick={() => setActiveTagFilter(tag)}
-                    className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
-                      isActive
-                        ? 'bg-[#1E293B] text-white border-[#1E293B] shadow-sm'
-                        : 'bg-[#F8FAFC] text-[#475569] border-[#E5E7EB] hover:bg-orange-50 hover:text-[#F97316] hover:border-orange-200'
-                    }`}
+              {/* Search & Tag Filter Bar */}
+              <div className="bg-white rounded-3xl p-4 border border-[#E5E7EB] shadow-xs flex flex-col lg:flex-row gap-4 justify-between">
+                <div className="relative flex-1">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-[#94A3B8]" />
+                  <input
+                    type="text"
+                    placeholder="Search by idea, author, department, or tag..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#F8FAFC] border-none text-sm text-[#1E293B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#F97316]/20 focus:outline-none transition-all"
                     style={{ fontFamily: 'Inter, sans-serif' }}
-                  >
-                    {tag === 'All' ? 'All Tags' : tag.replace('looking for ', '')}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+                  />
+                </div>
 
-          {/* Cards Grid */}
-          {filteredRequests.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
-              {filteredRequests.map((item) => {
-                const tagStyle = getTagColor(item.tag);
-                const needed = item.collaboratorsNeeded || 1;
-                const accepted = item.acceptedCount || 0;
-                const isClosed = item.status === 'CLOSED' || item.status === 'CANCELLED' || accepted >= needed;
+                <div className="flex flex-wrap items-center gap-2">
+                  {['All', ...TAG_OPTIONS].map((tag) => {
+                    const isActive = activeTagFilter === tag;
+                    return (
+                      <button
+                        key={tag}
+                        onClick={() => setActiveTagFilter(tag)}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
+                          isActive
+                            ? 'bg-[#1E293B] text-white border-[#1E293B] shadow-sm'
+                            : 'bg-[#F8FAFC] text-[#475569] border-[#E5E7EB] hover:bg-orange-50 hover:text-[#F97316] hover:border-orange-200'
+                        }`}
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                      >
+                        {tag === 'All' ? 'All Tags' : tag.replace('looking for ', '')}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
 
-                return (
-                  <motion.div
-                    key={item.id}
-                    whileHover={{ y: -4, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.08)' }}
-                    className={`bg-white rounded-3xl border ${isClosed ? 'border-red-200 bg-slate-50/50' : 'border-[#E8ECF4]'} p-6 flex flex-col justify-between relative shadow-xs transition-all`}
-                  >
-                    <div>
-                      {/* Top Bar: Tag Badge & Status */}
-                      <div className="flex items-center justify-between gap-2 mb-4">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold border ${tagStyle.bg}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${tagStyle.dot}`} />
-                          {item.tag}
-                        </span>
+              {/* Cards Grid */}
+              {filteredRequests.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-12">
+                  {filteredRequests.map((item) => {
+                    const tagStyle = getTagColor(item.tag);
+                    const needed = item.collaboratorsNeeded || 1;
+                    const accepted = item.acceptedCount || 0;
+                    const isClosed = item.status === 'CLOSED' || item.status === 'CANCELLED' || accepted >= needed;
 
-                        {isClosed ? (
-                          <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-50 text-red-600 border border-red-200 shadow-xs">
-                            CLOSED • SPOTS FILLED
-                          </span>
-                        ) : (
-                          <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                            {accepted} / {needed} Spots Filled
-                          </span>
-                        )}
-                      </div>
+                    return (
+                      <motion.div
+                        key={item.id}
+                        whileHover={{ y: -4, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.08)' }}
+                        className={`bg-white rounded-3xl border ${isClosed ? 'border-red-200 bg-slate-50/50' : 'border-[#E8ECF4]'} p-6 flex flex-col justify-between relative shadow-xs transition-all`}
+                      >
+                        <div>
+                          <div className="flex items-center justify-between gap-2 mb-4">
+                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold border ${tagStyle.bg}`}>
+                              <span className={`w-1.5 h-1.5 rounded-full ${tagStyle.dot}`} />
+                              {item.tag}
+                            </span>
 
-                      {/* Project Idea */}
-                      <h3 className={`text-base font-bold leading-snug mb-3 ${isClosed ? 'text-slate-600' : 'text-[#1E293B]'}`} style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {item.projectIdea}
-                      </h3>
-                    </div>
-
-                    <div className="mt-4 pt-4 border-t border-[#F1F5F9] space-y-4">
-                      {/* GitHub link if present */}
-                      {item.githubLink && (
-                        <a
-                          href={item.githubLink}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 hover:text-[#F97316] bg-slate-100 hover:bg-orange-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-orange-200 transition-all w-fit"
-                        >
-                          <GitBranch className="w-3.5 h-3.5" />
-                          View Repository
-                          <ArrowUpRight className="w-3 h-3 text-slate-400" />
-                        </a>
-                      )}
-
-                      {/* Author Info */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-9 h-9 rounded-xl bg-orange-100 flex items-center justify-center text-[#F97316] font-bold text-xs">
-                            {item.authorName.charAt(0)}
+                            {isClosed ? (
+                              <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-50 text-red-600 border border-red-200 shadow-xs">
+                                CLOSED • SPOTS FILLED
+                              </span>
+                            ) : (
+                              <span className="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                                {accepted} / {needed} Spots Filled
+                              </span>
+                            )}
                           </div>
-                          <div>
-                            <div className="text-xs font-bold text-[#1E293B]">{item.authorName}</div>
-                            <div className="text-[11px] text-[#64748B]">
-                              {item.department} • {item.year}
+
+                          <h3 className={`text-base font-bold leading-snug mb-3 ${isClosed ? 'text-slate-600' : 'text-[#1E293B]'}`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            {item.projectIdea}
+                          </h3>
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-[#F1F5F9] space-y-4">
+                          {item.githubLink && (
+                            <a
+                              href={item.githubLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 hover:text-[#F97316] bg-slate-100 hover:bg-orange-50 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-orange-200 transition-all w-fit"
+                            >
+                              <GitBranch className="w-3.5 h-3.5" />
+                              View Repository
+                              <ArrowUpRight className="w-3 h-3 text-slate-400" />
+                            </a>
+                          )}
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2.5">
+                              <div className="w-9 h-9 rounded-xl bg-orange-100 flex items-center justify-center text-[#F97316] font-bold text-xs">
+                                {item.authorName.charAt(0)}
+                              </div>
+                              <div>
+                                <div className="text-xs font-bold text-[#1E293B]">{item.authorName}</div>
+                                <div className="text-[11px] text-[#64748B]">
+                                  {item.department} • {item.year}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="text-right">
+                              <div className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                                {item.applicationsCount} Applications
+                              </div>
                             </div>
                           </div>
+
+                          {isClosed ? (
+                            <button
+                              disabled
+                              className="w-full py-2.5 rounded-xl bg-slate-100 text-slate-400 text-xs font-semibold cursor-not-allowed border border-slate-200 flex items-center justify-center gap-2"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              Collaborations Closed (Full)
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => requireVerifiedStudent(() => setSelectedCollab(item))}
+                              className="w-full py-2.5 rounded-xl bg-[#FFF7ED] hover:bg-[#F97316] text-[#F97316] hover:text-white border border-[#FED7AA] hover:border-transparent text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                              style={{ fontFamily: 'Poppins, sans-serif' }}
+                            >
+                              <MessageSquare className="w-3.5 h-3.5" />
+                              Send Collaboration Request
+                            </button>
+                          )}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="py-20 text-center flex flex-col items-center justify-center bg-white rounded-3xl border border-[#E8ECF4] shadow-xs">
+                  <Code2 className="w-12 h-12 text-[#CBD5E1] mb-4" />
+                  <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    No collaboration requests found
+                  </h3>
+                  <p className="text-[#64748B] text-xs mt-1 mb-6" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    Be the first developer to post a request or try adjusting your filters!
+                  </p>
+                  <button
+                    onClick={() => requireVerifiedStudent(() => setShowPostModal(true))}
+                    className="px-5 py-2.5 rounded-xl bg-[#F97316] text-white text-xs font-semibold hover:bg-[#EA580C] transition-all cursor-pointer"
+                  >
+                    Post First Collaboration Request
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* TAB 2: MY POSTED REQUESTS */}
+          {activeTab === 'my-requests' && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    My Posted Projects ({myRequests.length})
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Manage your posted projects, edit details, and accept/reject applicant candidates.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => requireVerifiedStudent(() => setShowPostModal(true))}
+                  className="px-4 py-2.5 rounded-xl bg-[#F97316] text-white text-xs font-semibold hover:bg-[#EA580C] transition-all cursor-pointer flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  New Project
+                </button>
+              </div>
+
+              {myRequests.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {myRequests.map((item) => (
+                    <div
+                      key={item.id}
+                      className="bg-white rounded-3xl border border-[#E5E7EB] p-6 shadow-xs flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-orange-50 text-[#F97316] border border-orange-200">
+                            {item.tag}
+                          </span>
+                          <span className="text-xs font-bold text-slate-500">
+                            {item.acceptedCount || 0} / {item.collaboratorsNeeded || 1} Spots Filled
+                          </span>
                         </div>
 
-                        <div className="text-right">
-                          <div className="text-[11px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                            {item.applicationsCount} Applications
-                          </div>
-                        </div>
+                        <h3 className="text-base font-bold text-[#1E293B] mb-3 leading-snug" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {item.projectIdea}
+                        </h3>
                       </div>
 
-                      {/* Primary Action Button */}
-                      {isClosed ? (
+                      <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
                         <button
-                          disabled
-                          className="w-full py-2.5 rounded-xl bg-slate-100 text-slate-400 text-xs font-semibold cursor-not-allowed border border-slate-200 flex items-center justify-center gap-2"
+                          onClick={() => openManageApplicants(item)}
+                          className="px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          Collaborations Closed (Full)
+                          <Users className="w-3.5 h-3.5" />
+                          Applicants ({item.applicationsCount || 0})
                         </button>
-                      ) : (
-                        <button
-                          onClick={() => requireVerifiedStudent(() => setSelectedCollab(item))}
-                          className="w-full py-2.5 rounded-xl bg-[#FFF7ED] hover:bg-[#F97316] text-[#F97316] hover:text-white border border-[#FED7AA] hover:border-transparent text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
-                          style={{ fontFamily: 'Poppins, sans-serif' }}
-                        >
-                          <MessageSquare className="w-3.5 h-3.5" />
-                          Send Collaboration Request
-                        </button>
-                      )}
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setEditingCollab(item)}
+                            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+                            title="Edit Request"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteRequest(item.id)}
+                            className="p-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 transition-colors cursor-pointer"
+                            title="Delete Request"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </motion.div>
-                );
-              })}
+                  ))}
+                </div>
+              ) : (
+                <div className="py-16 text-center bg-white rounded-3xl border border-slate-200 p-8">
+                  <Edit3 className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                  <p className="text-sm font-bold text-slate-700">You haven't posted any collaboration requests yet.</p>
+                  <p className="text-xs text-slate-500 mt-1 mb-4">Post your first project to find co-developers across campus!</p>
+                  <button
+                    onClick={() => requireVerifiedStudent(() => setShowPostModal(true))}
+                    className="px-4 py-2 rounded-xl bg-[#F97316] text-white text-xs font-semibold"
+                  >
+                    Post Request Now
+                  </button>
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="py-20 text-center flex flex-col items-center justify-center bg-white rounded-3xl border border-[#E8ECF4] shadow-xs">
-              <Code2 className="w-12 h-12 text-[#CBD5E1] mb-4" />
-              <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                No collaboration requests found
-              </h3>
-              <p className="text-[#64748B] text-xs mt-1 mb-6" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Be the first developer to post a request or try adjusting your filters!
-              </p>
-              <button
-                onClick={() => requireVerifiedStudent(() => setShowPostModal(true))}
-                className="px-5 py-2.5 rounded-xl bg-[#F97316] text-white text-xs font-semibold hover:bg-[#EA580C] transition-all"
-              >
-                Post First Collaboration Request
-              </button>
+          )}
+
+          {/* TAB 3: MY SENT APPLICATIONS */}
+          {activeTab === 'my-applications' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-xl font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  My Sent Applications ({myApplications.length})
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Track the status of your sent collaboration requests. Unlocks author contact info once accepted!
+                </p>
+              </div>
+
+              {myApplications.length > 0 ? (
+                <div className="space-y-4">
+                  {myApplications.map((app) => {
+                    const status = app.status?.toUpperCase() || 'PENDING';
+                    const isAccepted = status === 'ACCEPTED';
+                    const isRejected = status === 'REJECTED';
+
+                    return (
+                      <div
+                        key={app.id}
+                        className="bg-white rounded-3xl border border-[#E5E7EB] p-6 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+                      >
+                        <div className="space-y-1.5 flex-1">
+                          <div className="flex items-center gap-2">
+                            {isAccepted && (
+                              <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                                <Check className="w-3 h-3" /> ACCEPTED
+                              </span>
+                            )}
+                            {isRejected && (
+                              <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-red-50 text-red-600 border border-red-200 flex items-center gap-1">
+                                <XCircle className="w-3 h-3" /> REJECTED
+                              </span>
+                            )}
+                            {!isAccepted && !isRejected && (
+                              <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1">
+                                <Clock className="w-3 h-3" /> PENDING REVIEW
+                              </span>
+                            )}
+                          </div>
+
+                          <h3 className="text-sm font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            Applied to Project #{app.collabRequest?.id || ''}
+                          </h3>
+
+                          <p className="text-xs text-slate-600 italic">"{app.message || 'No additional message'}"</p>
+                        </div>
+
+                        {/* Unlocked Author Contact Card if Accepted */}
+                        {isAccepted && app.collabRequest?.contactInfo && (
+                          <div className="bg-emerald-50 border border-emerald-200 p-3.5 rounded-2xl text-xs text-emerald-900 shrink-0">
+                            <span className="font-bold block text-[11px] text-emerald-700 uppercase tracking-wider mb-1">
+                              🎉 Author Unlocked Contact Info:
+                            </span>
+                            <span className="font-mono text-xs font-bold text-emerald-900 bg-white px-2.5 py-1 rounded border border-emerald-300">
+                              {app.collabRequest.contactInfo}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="py-16 text-center bg-white rounded-3xl border border-slate-200 p-8">
+                  <Send className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                  <p className="text-sm font-bold text-slate-700">No sent applications found.</p>
+                  <p className="text-xs text-slate-500 mt-1 mb-4">Browse projects in the Explore tab and apply to co-develop!</p>
+                  <button
+                    onClick={() => setActiveTab('explore')}
+                    className="px-4 py-2 rounded-xl bg-[#F97316] text-white text-xs font-semibold"
+                  >
+                    Explore Projects
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
+
+      {/* ─── MANAGE APPLICANTS MODAL ─────────────────────────────────────── */}
+      <AnimatePresence>
+        {managingCollab && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setManagingCollab(null)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto z-10"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-[#F97316]">
+                    Manage Candidates
+                  </span>
+                  <h2 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Applicants for Project #{managingCollab.id}
+                  </h2>
+                </div>
+                <button
+                  onClick={() => setManagingCollab(null)}
+                  className="p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 mb-5 text-xs text-slate-700 leading-relaxed">
+                <strong>Project Idea:</strong> {managingCollab.projectIdea}
+              </div>
+
+              {loadingApplicants ? (
+                <div className="py-12 text-center text-xs text-slate-500">Loading candidate applications...</div>
+              ) : managingApplicants.length > 0 ? (
+                <div className="space-y-4">
+                  {managingApplicants.map((applicant) => {
+                    const status = applicant.status?.toUpperCase() || 'PENDING';
+                    const isAccepted = status === 'ACCEPTED';
+                    const isRejected = status === 'REJECTED';
+
+                    return (
+                      <div
+                        key={applicant.id}
+                        className="bg-slate-50 rounded-2xl border border-slate-200 p-4 space-y-3"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <span className="text-sm font-bold text-[#1E293B] block">{applicant.applicantName}</span>
+                            <span className="text-xs text-slate-500">
+                              {applicant.applicantDept} • {applicant.applicantYear} • {applicant.applicantEmail || 'No email'}
+                            </span>
+                          </div>
+
+                          {isAccepted && (
+                            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                              ACCEPTED CANDIDATE
+                            </span>
+                          )}
+                          {isRejected && (
+                            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-100 text-red-800 border border-red-300">
+                              REJECTED
+                            </span>
+                          )}
+                        </div>
+
+                        {applicant.message && (
+                          <div className="bg-white p-3 rounded-xl border border-slate-200 text-xs text-slate-700 italic">
+                            "{applicant.message}"
+                          </div>
+                        )}
+
+                        <div className="flex items-center justify-between pt-2 border-t border-slate-200">
+                          <div className="text-[11px] font-mono text-slate-600">
+                            Contact: <strong className="text-slate-900">{applicant.applicantContact}</strong>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {!isAccepted && (
+                              <button
+                                onClick={() => handleUpdateApplicationStatus(applicant.id, 'ACCEPTED')}
+                                className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1 transition-all cursor-pointer"
+                              >
+                                <Check className="w-3.5 h-3.5" /> Accept
+                              </button>
+                            )}
+
+                            {!isRejected && (
+                              <button
+                                onClick={() => handleUpdateApplicationStatus(applicant.id, 'REJECTED')}
+                                className="px-3.5 py-1.5 rounded-xl bg-red-100 hover:bg-red-200 text-red-700 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer"
+                              >
+                                <XCircle className="w-3.5 h-3.5" /> Reject
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="py-12 text-center text-xs text-slate-500">
+                  No applications received for this project yet.
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── EDIT COLLABORATION REQUEST MODAL ─────────────────────────────── */}
+      <AnimatePresence>
+        {editingCollab && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setEditingCollab(null)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto z-10"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Edit Project Request #{editingCollab.id}
+                </h2>
+                <button onClick={() => setEditingCollab(null)} className="p-2 text-slate-400 hover:text-slate-600">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveEditRequest} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#1E293B] mb-1">Project Idea</label>
+                  <textarea
+                    rows={3}
+                    required
+                    value={editingCollab.projectIdea}
+                    onChange={(e) => setEditingCollab({ ...editingCollab, projectIdea: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-[#1E293B] mb-1">Collaborators Needed</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={editingCollab.collaboratorsNeeded || 1}
+                      onChange={(e) =>
+                        setEditingCollab({
+                          ...editingCollab,
+                          collaboratorsNeeded: Math.max(1, parseInt(e.target.value) || 1),
+                        })
+                      }
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-[#1E293B] mb-1">GitHub Repo</label>
+                    <input
+                      type="url"
+                      value={editingCollab.githubLink || ''}
+                      onChange={(e) => setEditingCollab({ ...editingCollab, githubLink: e.target.value })}
+                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-4 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setEditingCollab(null)}
+                    className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 rounded-xl text-xs font-semibold text-white bg-[#F97316]"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ─── POST COLLABORATION REQUEST MODAL ───────────────────────────────────── */}
       <AnimatePresence>
@@ -554,7 +1109,6 @@ export default function DevCollab() {
               </div>
 
               <form onSubmit={handlePostRequest} className="space-y-4">
-                {/* 1. Name */}
                 <div>
                   <label className="block text-xs font-semibold text-[#1E293B] mb-1">
                     1) Your Name <span className="text-red-500">*</span>
@@ -569,7 +1123,6 @@ export default function DevCollab() {
                   />
                 </div>
 
-                {/* 2 & 3. Dept & Year */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-[#1E293B] mb-1">
@@ -601,7 +1154,6 @@ export default function DevCollab() {
                   </div>
                 </div>
 
-                {/* 4. Tag */}
                 <div>
                   <label className="block text-xs font-semibold text-[#1E293B] mb-1.5">
                     4) Choose a Tag <span className="text-red-500">*</span>
@@ -627,7 +1179,6 @@ export default function DevCollab() {
                   </div>
                 </div>
 
-                {/* 5. Collaborators Needed */}
                 <div>
                   <label className="block text-xs font-semibold text-[#1E293B] mb-1">
                     5) Number of Collaborators Needed <span className="text-red-500">*</span>
@@ -643,7 +1194,6 @@ export default function DevCollab() {
                   />
                 </div>
 
-                {/* 6. Project Idea */}
                 <div>
                   <label className="block text-xs font-semibold text-[#1E293B] mb-1">
                     6) Project Idea <span className="text-red-500">*</span>
@@ -658,7 +1208,6 @@ export default function DevCollab() {
                   />
                 </div>
 
-                {/* Optional GitHub & Contact */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-[#1E293B] mb-1">
@@ -834,7 +1383,7 @@ export default function DevCollab() {
         )}
       </AnimatePresence>
 
-      {/* ─── AUTH GATE MODAL (Verified Student Required) ─────────────────────── */}
+      {/* ─── AUTH GATE MODAL ─────────────────────── */}
       <AnimatePresence>
         {showAuthGate && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -862,62 +1411,30 @@ export default function DevCollab() {
                 <ShieldAlert className="w-8 h-8 text-[#F97316]" />
               </div>
 
-              <h2
-                className="text-xl font-bold text-[#1E293B] mb-2"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
-              >
-                {!isAuthenticated
-                  ? 'Sign In Required'
-                  : 'Verified Student Account Required'}
+              <h2 className="text-xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                {!isAuthenticated ? 'Sign In Required' : 'Verified Student Account Required'}
               </h2>
 
-              <p
-                className="text-sm text-[#64748B] mb-6 leading-relaxed"
-                style={{ fontFamily: 'Inter, sans-serif' }}
-              >
+              <p className="text-sm text-[#64748B] mb-6 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                 {!isAuthenticated ? (
-                  <>To post or apply for collaboration requests, please sign in with your <strong className="text-[#F97316]">@ritchennai.edu.in</strong> Google account.</>
+                  <>To post or apply for collaboration requests, please sign in with your <strong className="text-[#F97316]">ritchennai.edu.in</strong> Google account.</>
                 ) : (
-                  <>You are signed in as <strong>{user?.email}</strong>, which is not a verified RIT college email. Please sign in with your <strong className="text-[#F97316]">@ritchennai.edu.in</strong> email to access DevCollab features.</>
+                  <>You are signed in as <strong>{user?.email}</strong>, which is not a verified RIT college email. Please sign in with your <strong className="text-[#F97316]">ritchennai.edu.in</strong> email to access DevCollab features.</>
                 )}
               </p>
 
               <div className="space-y-3">
-                {!isAuthenticated ? (
-                  <button
-                    onClick={() => {
-                      loginWithGoogle();
-                      setShowAuthGate(false);
-                    }}
-                    className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg"
-                    style={{
-                      background: 'linear-gradient(135deg, #F97316, #FB923C)',
-                      fontFamily: 'Poppins, sans-serif',
-                    }}
-                  >
-                    <LogIn className="w-4.5 h-4.5" />
-                    Sign In with Google
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      loginWithGoogle();
-                      setShowAuthGate(false);
-                    }}
-                    className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg"
-                    style={{
-                      background: 'linear-gradient(135deg, #F97316, #FB923C)',
-                      fontFamily: 'Poppins, sans-serif',
-                    }}
-                  >
-                    <ShieldCheck className="w-4.5 h-4.5" />
-                    Switch to College Account
-                  </button>
-                )}
-
-                <p className="text-[11px] text-[#94A3B8]">
-                  We only verify your email domain — no personal data is stored beyond your name and email.
-                </p>
+                <button
+                  onClick={() => {
+                    loginWithGoogle();
+                    setShowAuthGate(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', fontFamily: 'Poppins, sans-serif' }}
+                >
+                  <LogIn className="w-4.5 h-4.5" />
+                  {!isAuthenticated ? 'Sign In with Google' : 'Switch to College Account'}
+                </button>
               </div>
             </motion.div>
           </div>
