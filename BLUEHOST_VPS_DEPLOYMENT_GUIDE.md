@@ -1,5 +1,5 @@
 ![alt text](image.png)# 🚀 Bluehost VPS Deployment & Management Guide
-<!-- CI/CD Automated Test Push Trigger: Instant Async Webhook Delivery -->
+<!-- CI/CD Automated Test Push Trigger: Detached Async Webhook Delivery -->
 
 This guide provides a step-by-step walkthrough for deploying the entire **Freshers-Hub** project on a **Bluehost Ubuntu 24.04 VPS**.
 
