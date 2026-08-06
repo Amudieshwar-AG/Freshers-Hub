@@ -25,10 +25,18 @@ export default function AIAssistant() {
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [messages, isTyping]);
 
   const sendMessage = async (text: string) => {
@@ -178,6 +186,7 @@ export default function AIAssistant() {
 
         {/* Chat Container */}
         <div
+          ref={chatContainerRef}
           className="flex-1 bg-white rounded-3xl border border-[#E5E7EB] p-4 sm:p-6 flex flex-col gap-4 overflow-y-auto"
           style={{ minHeight: '420px', maxHeight: '65vh', boxShadow: '0 8px 30px -6px rgba(0,0,0,0.04)' }}
         >
