@@ -15,33 +15,31 @@ export default function BusRoutes() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
-    setLoadingBus(true);
-    fetch(getBackendUrl('/api/bus-routes'))
-      .then((res) => {
-        if (!res.ok) throw new Error('Backend offline');
-        return res.json();
-      })
+    // 1. Instantly load static bus routes (0ms loading delay)
+    fetch('/bus_routes.json')
+      .then((res) => res.json())
       .then((data) => {
-        if (data && data.length > 0) {
+        if (Array.isArray(data) && data.length > 0) {
           setBusRoutes(data);
           setSelectedBusRoute(data[0]);
-        } else {
-          throw new Error('Empty data');
         }
-        setLoadingBus(false);
       })
-      .catch(() => {
-        fetch('/bus_routes.json')
-          .then((res) => res.json())
-          .then((data) => {
-            setBusRoutes(data);
-            setSelectedBusRoute(data[0]);
-          })
-          .catch((err) => console.error('Fallback fetch error:', err))
-          .finally(() => {
-            setLoadingBus(false);
-          });
-      });
+      .catch((err) => console.error('Local JSON load error:', err))
+      .finally(() => setLoadingBus(false));
+
+    // 2. Silently fetch live backend updates in background with a 2s timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+    fetch(getBackendUrl('/api/bus-routes'), { signal: controller.signal })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setBusRoutes(data);
+        }
+      })
+      .catch(() => {})
+      .finally(() => clearTimeout(timeoutId));
   }, []);
 
   const filteredRoutes = busRoutes.filter(
