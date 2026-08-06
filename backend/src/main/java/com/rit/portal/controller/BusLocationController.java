@@ -23,27 +23,35 @@ public class BusLocationController {
     @PostMapping("/{routeNumber}")
     public ResponseEntity<Map<String, String>> updateLocation(
             @PathVariable String routeNumber,
-            @RequestBody DriverLocationUpdate update) {
+            @RequestBody(required = false) DriverLocationUpdate update,
+            @RequestParam(required = false) Double lat,
+            @RequestParam(required = false) Double lng,
+            @RequestParam(required = false) String pin) {
         
-        if (update == null || update.getLatitude() == null || update.getLongitude() == null) {
+        Double finalLat = (update != null && update.getLatitude() != null) ? update.getLatitude() : lat;
+        Double finalLng = (update != null && update.getLongitude() != null) ? update.getLongitude() : lng;
+        String finalPin = (update != null && update.getPin() != null) ? update.getPin() : pin;
+
+        if (finalLat == null || finalLng == null) {
             return ResponseEntity.badRequest().body(Map.of("error", "Invalid coordinates"));
         }
         
-        if (!REQUIRED_PIN.equals(update.getPin())) {
+        if (!REQUIRED_PIN.equalsIgnoreCase(finalPin)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid driver PIN"));
         }
 
-        busLocationService.updateLocation(routeNumber, update.getLatitude(), update.getLongitude());
+        busLocationService.updateLocation(routeNumber, finalLat, finalLng);
         return ResponseEntity.ok(Map.of("status", "success", "message", "Location updated successfully"));
     }
 
     @PostMapping("/{routeNumber}/stop")
     public ResponseEntity<Map<String, String>> stopLocation(
             @PathVariable String routeNumber,
-            @RequestBody Map<String, String> body) {
+            @RequestBody(required = false) Map<String, String> body,
+            @RequestParam(required = false) String pin) {
         
-        String pin = body != null ? body.get("pin") : null;
-        if (!REQUIRED_PIN.equals(pin)) {
+        String finalPin = body != null ? body.get("pin") : pin;
+        if (!REQUIRED_PIN.equalsIgnoreCase(finalPin)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid driver PIN"));
         }
 
