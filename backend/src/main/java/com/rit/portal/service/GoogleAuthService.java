@@ -89,10 +89,13 @@ public class GoogleAuthService {
     }
 
     /**
-     * Returns true if the email belongs to the college domain.
+     * Returns true if the email belongs to the college domain or any department subdomain
+     * e.g., @ritchennai.edu.in, @aids.ritchennai.edu.in, @cse.ritchennai.edu.in, etc.
      */
     public boolean isCollegeDomain(String email) {
-        return email != null && email.toLowerCase().endsWith("@" + COLLEGE_DOMAIN);
+        if (email == null) return false;
+        String lower = email.toLowerCase().trim();
+        return lower.endsWith("ritchennai.edu.in");
     }
 
     /**

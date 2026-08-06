@@ -69,7 +69,7 @@ export default function ProtectedRoute({
             </>
           ) : (
             <>
-              You are signed in as <strong>{user?.email}</strong>. This feature is restricted to verified students with an <strong className="text-[#F97316]">@ritchennai.edu.in</strong> college email.
+              You are signed in as <strong>{user?.email}</strong>. This feature is restricted to verified students with a <strong className="text-[#F97316]">ritchennai.edu.in</strong> college email.
             </>
           )}
         </p>
