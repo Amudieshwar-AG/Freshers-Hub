@@ -107,7 +107,7 @@ export default function DevCollab() {
   const { user, isAuthenticated, isVerifiedStudent, loginWithGoogle } = useAuth();
 
   const [activeTab, setActiveTab] = useState<'explore' | 'my-requests' | 'my-applications'>('explore');
-  const [requests, setRequests] = useState<CollabRequestItem[]>(INITIAL_MOCK_REQUESTS);
+  const [requests, setRequests] = useState<CollabRequestItem[]>([]);
   const [myRequests, setMyRequests] = useState<CollabRequestItem[]>([]);
   const [myApplications, setMyApplications] = useState<CollabApplicationItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -176,7 +176,7 @@ export default function DevCollab() {
         return res.json();
       })
       .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setRequests(data);
         }
       })
@@ -804,7 +804,7 @@ export default function DevCollab() {
                   {myApplications.map((app) => {
                     const status = app.status?.toUpperCase() || 'PENDING';
                     const isAccepted = status === 'ACCEPTED';
-                    const isRejected = status === 'REJECTED';
+                    const isRejected = status === 'REJECTED' || status === 'DECLINED';
 
                     return (
                       <div

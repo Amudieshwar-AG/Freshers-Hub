@@ -357,7 +357,7 @@ def telegram_polling_thread():
                         parts = cb_data.split("_")
                         app_id = parts[2]
                         try:
-                            requests.put(f"{backend_url}/api/collab/applications/{app_id}/status?status=DECLINED", timeout=5)
+                            requests.put(f"{backend_url}/api/collab/applications/{app_id}/status?status=REJECTED", timeout=5)
                         except Exception as e:
                             logging.error(f"Error updating app status: {e}")
                             
@@ -635,7 +635,7 @@ class DiscordCollabActionView(discord.ui.View):
     @discord.ui.button(label="Decline Request", style=discord.ButtonStyle.danger, emoji="❌")
     async def decline_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            requests.put(f"{BACKEND_URL}/api/collab/applications/{self.application_id}/status?status=DECLINED", timeout=5)
+            requests.put(f"{BACKEND_URL}/api/collab/applications/{self.application_id}/status?status=REJECTED", timeout=5)
             await interaction.response.send_message("❌ **Collaboration Request Declined.**", ephemeral=False)
             for item in self.children:
                 item.disabled = True

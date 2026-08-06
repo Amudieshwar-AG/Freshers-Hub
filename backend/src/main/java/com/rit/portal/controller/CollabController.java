@@ -136,6 +136,9 @@ public class CollabController {
             @RequestParam String status) {
         return collabApplicationRepository.findById(applicationId).map(app -> {
             String newStatus = status.toUpperCase();
+            if ("DECLINED".equals(newStatus) || "DECLINE".equals(newStatus) || "REJECT".equals(newStatus)) {
+                newStatus = "REJECTED";
+            }
             String oldStatus = app.getStatus();
             app.setStatus(newStatus);
             CollabApplication updated = collabApplicationRepository.save(app);
