@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Code2, Plus, GitBranch, Tag, User, Send, CheckCircle2,
   Search, Filter, Sparkles, X, ExternalLink, Layers,
-  ChevronRight, MessageSquare, Clock, Users, ArrowUpRight
+  ChevronRight, MessageSquare, Clock, Users, ArrowUpRight,
+  ShieldCheck, LogIn, ShieldAlert
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getBackendUrl } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
 
 export interface CollabRequestItem {
   id: number;
@@ -84,6 +86,8 @@ const INITIAL_MOCK_REQUESTS: CollabRequestItem[] = [
 ];
 
 export default function DevCollab() {
+  const { user, isAuthenticated, isVerifiedStudent, loginWithGoogle } = useAuth();
+
   const [requests, setRequests] = useState<CollabRequestItem[]>(INITIAL_MOCK_REQUESTS);
   const [loading, setLoading] = useState(false);
   const [activeTagFilter, setActiveTagFilter] = useState('All');
@@ -93,24 +97,34 @@ export default function DevCollab() {
   const [showPostModal, setShowPostModal] = useState(false);
   const [selectedCollab, setSelectedCollab] = useState<CollabRequestItem | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showAuthGate, setShowAuthGate] = useState(false);
 
-  // New Request Form
-  const [newAuthorName, setNewAuthorName] = useState('');
+  // New Request Form — auto-populated from Google profile for verified students
+  const [newAuthorName, setNewAuthorName] = useState(user?.name || '');
   const [newDept, setNewDept] = useState('CSE');
   const [newYear, setNewYear] = useState('1st Year');
   const [newTag, setNewTag] = useState(TAG_OPTIONS[0]);
   const [newCollaboratorsNeeded, setNewCollaboratorsNeeded] = useState(1);
   const [newIdea, setNewIdea] = useState('');
   const [newGithub, setNewGithub] = useState('');
-  const [newContact, setNewContact] = useState('');
+  const [newContact, setNewContact] = useState(user?.email || '');
   const [submittingPost, setSubmittingPost] = useState(false);
 
-  // Application Form
-  const [appApplicantName, setAppApplicantName] = useState('');
+  // Application Form — auto-populated from Google profile
+  const [appApplicantName, setAppApplicantName] = useState(user?.name || '');
   const [appDept, setAppDept] = useState('CSE');
   const [appYear, setAppYear] = useState('1st Year');
-  const [appContact, setAppContact] = useState('');
+  const [appContact, setAppContact] = useState(user?.email || '');
   const [appMessage, setAppMessage] = useState('');
+
+  // Helper: gate action behind verified student check
+  const requireVerifiedStudent = (action: () => void) => {
+    if (!isAuthenticated || !isVerifiedStudent) {
+      setShowAuthGate(true);
+      return;
+    }
+    action();
+  };
   const [submittingApp, setSubmittingApp] = useState(false);
 
   const fetchCollabRequests = () => {
@@ -306,10 +320,11 @@ export default function DevCollab() {
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={() => setShowPostModal(true)}
+                onClick={() => requireVerifiedStudent(() => setShowPostModal(true))}
                 className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg shadow-orange-500/25 shrink-0"
                 style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', fontFamily: 'Poppins, sans-serif' }}
               >
+                {isVerifiedStudent && <ShieldCheck className="w-4 h-4" />}
                 <Plus className="w-4.5 h-4.5" />
                 Post Collaboration Request
               </motion.button>
@@ -471,7 +486,7 @@ export default function DevCollab() {
                         </button>
                       ) : (
                         <button
-                          onClick={() => setSelectedCollab(item)}
+                          onClick={() => requireVerifiedStudent(() => setSelectedCollab(item))}
                           className="w-full py-2.5 rounded-xl bg-[#FFF7ED] hover:bg-[#F97316] text-[#F97316] hover:text-white border border-[#FED7AA] hover:border-transparent text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
                           style={{ fontFamily: 'Poppins, sans-serif' }}
                         >
@@ -494,7 +509,7 @@ export default function DevCollab() {
                 Be the first developer to post a request or try adjusting your filters!
               </p>
               <button
-                onClick={() => setShowPostModal(true)}
+                onClick={() => requireVerifiedStudent(() => setShowPostModal(true))}
                 className="px-5 py-2.5 rounded-xl bg-[#F97316] text-white text-xs font-semibold hover:bg-[#EA580C] transition-all"
               >
                 Post First Collaboration Request
@@ -814,6 +829,96 @@ export default function DevCollab() {
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── AUTH GATE MODAL (Verified Student Required) ─────────────────────── */}
+      <AnimatePresence>
+        {showAuthGate && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowAuthGate(false)}
+              className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
+              className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 z-10 text-center"
+            >
+              <button
+                onClick={() => setShowAuthGate(false)}
+                className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="w-16 h-16 rounded-2xl bg-orange-100 flex items-center justify-center mx-auto mb-5">
+                <ShieldAlert className="w-8 h-8 text-[#F97316]" />
+              </div>
+
+              <h2
+                className="text-xl font-bold text-[#1E293B] mb-2"
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
+                {!isAuthenticated
+                  ? 'Sign In Required'
+                  : 'Verified Student Account Required'}
+              </h2>
+
+              <p
+                className="text-sm text-[#64748B] mb-6 leading-relaxed"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                {!isAuthenticated ? (
+                  <>To post or apply for collaboration requests, please sign in with your <strong className="text-[#F97316]">@ritchennai.edu.in</strong> Google account.</>
+                ) : (
+                  <>You are signed in as <strong>{user?.email}</strong>, which is not a verified RIT college email. Please sign in with your <strong className="text-[#F97316]">@ritchennai.edu.in</strong> email to access DevCollab features.</>
+                )}
+              </p>
+
+              <div className="space-y-3">
+                {!isAuthenticated ? (
+                  <button
+                    onClick={() => {
+                      loginWithGoogle();
+                      setShowAuthGate(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg"
+                    style={{
+                      background: 'linear-gradient(135deg, #F97316, #FB923C)',
+                      fontFamily: 'Poppins, sans-serif',
+                    }}
+                  >
+                    <LogIn className="w-4.5 h-4.5" />
+                    Sign In with Google
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      loginWithGoogle();
+                      setShowAuthGate(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg"
+                    style={{
+                      background: 'linear-gradient(135deg, #F97316, #FB923C)',
+                      fontFamily: 'Poppins, sans-serif',
+                    }}
+                  >
+                    <ShieldCheck className="w-4.5 h-4.5" />
+                    Switch to College Account
+                  </button>
+                )}
+
+                <p className="text-[11px] text-[#94A3B8]">
+                  We only verify your email domain — no personal data is stored beyond your name and email.
+                </p>
+              </div>
             </motion.div>
           </div>
         )}

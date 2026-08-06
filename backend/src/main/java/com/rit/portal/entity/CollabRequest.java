@@ -22,6 +22,9 @@ public class CollabRequest {
     @Column(name = "author_name", nullable = false)
     private String authorName;
 
+    @Column(name = "author_email")
+    private String authorEmail;
+
     @Column(nullable = false)
     private String department;
 

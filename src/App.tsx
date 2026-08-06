@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from '@/context/AuthContext';
 import MainLayout from '@/layouts/MainLayout';
 import Home from '@/pages/Home/Home';
 import Notes from '@/pages/Notes/Notes';
@@ -36,21 +37,23 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/notes" element={<Notes />} />
-            <Route path="/ai-assistant" element={<AIAssistant />} />
-            <Route path="/campus" element={<Campus />} />
-            <Route path="/bus-routes" element={<BusRoutes />} />
-            <Route path="/faculty" element={<Faculty />} />
-            <Route path="/events" element={<Events />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/collab" element={<DevCollab />} />
-            <Route path="/leetcode" element={<LeetcodeLeaderboard />} />
-          </Route>
-        </Routes>
+        <AuthProvider>
+          <ScrollToTop />
+          <Routes>
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/notes" element={<Notes />} />
+              <Route path="/ai-assistant" element={<AIAssistant />} />
+              <Route path="/campus" element={<Campus />} />
+              <Route path="/bus-routes" element={<BusRoutes />} />
+              <Route path="/faculty" element={<Faculty />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/community" element={<Community />} />
+              <Route path="/collab" element={<DevCollab />} />
+              <Route path="/leetcode" element={<LeetcodeLeaderboard />} />
+            </Route>
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );
