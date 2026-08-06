@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { getBackendUrl } from '@/lib/utils';
+import GoogleAuthModal from '@/components/Auth/GoogleAuthModal';
 
 // ──────────────────────────────────────────────────
 // Types
@@ -19,7 +20,10 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isVerifiedStudent: boolean;
   isLoading: boolean;
+  isAuthModalOpen: boolean;
   loginWithGoogle: () => void;
+  openAuthModal: () => void;
+  closeAuthModal: () => void;
   logout: () => void;
 }
 
@@ -27,10 +31,9 @@ interface AuthContextType {
 // Google Client ID
 // ──────────────────────────────────────────────────
 
-// IMPORTANT: Replace this with your actual Google Cloud Console OAuth2 Client ID
-// Create one at: https://console.cloud.google.com/apis/credentials
-// Authorized origins: https://rit-services.in, http://localhost:5173
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_ID =
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+  '81935488244-vmab5t8fipfof1n6l7di7eg4fve6k8lf.apps.googleusercontent.com';
 
 // ──────────────────────────────────────────────────
 // Context
@@ -41,7 +44,10 @@ const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   isVerifiedStudent: false,
   isLoading: true,
+  isAuthModalOpen: false,
   loginWithGoogle: () => {},
+  openAuthModal: () => {},
+  closeAuthModal: () => {},
   logout: () => {},
 });
 
@@ -75,6 +81,10 @@ const STORAGE_KEY = 'rit_auth_user';
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  const openAuthModal = useCallback(() => setIsAuthModalOpen(true), []);
+  const closeAuthModal = useCallback(() => setIsAuthModalOpen(false), []);
 
   // Handle the credential response from Google GSI
   const handleCredentialResponse = useCallback(async (response: { credential: string }) => {
@@ -93,6 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userData: AuthUser = await res.json();
       setUser(userData);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+      setIsAuthModalOpen(false);
     } catch (err) {
       console.error('Google auth error:', err);
     }
@@ -109,17 +120,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // Validate session is still valid against backend
         fetch(getBackendUrl(`/api/auth/me?email=${encodeURIComponent(parsed.email)}`))
-          .then(res => {
+          .then((res) => {
             if (!res.ok) {
-              // Session expired, clear it
               localStorage.removeItem(STORAGE_KEY);
               setUser(null);
             } else {
-              // Update with fresh data
               return res.json();
             }
           })
-          .then(freshData => {
+          .then((freshData) => {
             if (freshData) {
               setUser(freshData);
               localStorage.setItem(STORAGE_KEY, JSON.stringify(freshData));
@@ -146,7 +155,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     };
 
-    // The GSI script may not have loaded yet (async), so poll briefly
     if (window.google) {
       initGSI();
     } else {
@@ -156,57 +164,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           initGSI();
         }
       }, 200);
-      // Stop polling after 10 seconds
       setTimeout(() => clearInterval(interval), 10000);
     }
   }, [handleCredentialResponse]);
 
   const loginWithGoogle = useCallback(() => {
-    if (!GOOGLE_CLIENT_ID) {
-      console.warn('Google Client ID not configured. Set VITE_GOOGLE_CLIENT_ID in .env');
-      return;
-    }
+    // Open the clean Google Sign-In modal directly
+    setIsAuthModalOpen(true);
 
+    // Also trigger One Tap prompt as a secondary background hint if supported
     if (window.google) {
-      // Trigger the One Tap prompt
-      window.google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          // If One Tap doesn't show (e.g. blocked by browser), fall back to button-based flow
-          // Render a temporary popup button
-          const popup = document.createElement('div');
-          popup.id = 'google-signin-popup';
-          popup.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:99999;background:white;padding:32px;border-radius:16px;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);';
-          document.body.appendChild(popup);
-
-          window.google!.accounts.id.renderButton(popup, {
-            theme: 'outline',
-            size: 'large',
-            text: 'signin_with',
-            shape: 'pill',
-            width: 300,
-          });
-
-          // Remove after 30s or when clicked
-          setTimeout(() => popup.remove(), 30000);
-          const observer = new MutationObserver(() => {
-            if (!document.getElementById('google-signin-popup')) {
-              observer.disconnect();
-            }
-          });
-          observer.observe(document.body, { childList: true });
-        }
-      });
+      try {
+        window.google.accounts.id.prompt();
+      } catch {
+        // Silently ignore if browser blocks One Tap
+      }
     }
   }, []);
 
   const logout = useCallback(() => {
     if (user?.email && window.google) {
-      window.google.accounts.id.revoke(user.email, () => {
-        console.log('Google session revoked');
-      });
+      try {
+        window.google.accounts.id.revoke(user.email, () => {});
+      } catch {}
     }
     setUser(null);
     localStorage.removeItem(STORAGE_KEY);
+    setIsAuthModalOpen(false);
   }, [user]);
 
   return (
@@ -216,11 +200,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         isVerifiedStudent: !!user?.verifiedStudent,
         isLoading,
+        isAuthModalOpen,
         loginWithGoogle,
+        openAuthModal,
+        closeAuthModal,
         logout,
       }}
     >
       {children}
+      <GoogleAuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} />
     </AuthContext.Provider>
   );
 }
