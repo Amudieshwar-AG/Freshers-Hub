@@ -1,6 +1,5 @@
 package com.rit.portal.controller;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,28 +15,9 @@ import java.util.*;
 @CrossOrigin(origins = "*")
 public class AdminController {
 
-    @Value("${admin.username:ritadmin}")
-    private String adminUsername;
-
-    @Value("${admin.password:ritadmin2026!}")
-    private String adminPassword;
-
-    public static class LoginDTO {
-        private String username;
-        private String password;
-
-        public String getUsername() { return username; }
-        public void setUsername(String username) { this.username = username; }
-        public String getPassword() { return password; }
-        public void setPassword(String password) { this.password = password; }
-    }
-
-    public static class RecipientDTO {
-        private String email;
-
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-    }
+    // Hardcoded credentials - no @Value injection needed
+    private static final String ADMIN_USER = "ritadmin";
+    private static final String ADMIN_PASS = "ritadmin2026";
 
     private Path getRecipientsFilePath() {
         Path vpsPath = Paths.get("/var/www/freshers-hub/scripts/recipients.txt");
@@ -53,49 +33,32 @@ public class AdminController {
         return localPath;
     }
 
-    @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
-    public ResponseEntity<Map<String, Object>> login(
-            @RequestBody(required = false) LoginDTO dto,
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String password) {
-        
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, Object> payload) {
         Map<String, Object> response = new HashMap<>();
         try {
             String inputUser = "";
             String inputPass = "";
 
-            if (dto != null) {
-                if (dto.getUsername() != null) inputUser = dto.getUsername().trim();
-                if (dto.getPassword() != null) inputPass = dto.getPassword().trim();
-            }
-            if (inputUser.isEmpty() && username != null) inputUser = username.trim();
-            if (inputPass.isEmpty() && password != null) inputPass = password.trim();
-
-            String expectedUser = "ritadmin";
-            if (adminUsername != null && !adminUsername.trim().isEmpty()) {
-                expectedUser = adminUsername.trim();
+            if (payload != null) {
+                Object u = payload.get("username");
+                Object p = payload.get("password");
+                if (u != null) inputUser = u.toString().trim();
+                if (p != null) inputPass = p.toString().trim();
             }
 
-            String expectedPass = "ritadmin2026!";
-            if (adminPassword != null && !adminPassword.trim().isEmpty()) {
-                expectedPass = adminPassword.trim();
-            }
-
-            boolean isUsernameValid = "ritadmin".equalsIgnoreCase(inputUser) || expectedUser.equalsIgnoreCase(inputUser);
-            boolean isPasswordValid = "ritadmin2026!".equals(inputPass) || expectedPass.equals(inputPass);
-
-            if (isUsernameValid && isPasswordValid) {
+            if (ADMIN_USER.equalsIgnoreCase(inputUser) && ADMIN_PASS.equals(inputPass)) {
                 response.put("success", true);
                 response.put("message", "Admin login successful");
                 response.put("token", "ADMIN_SESSION_TOKEN_RIT_2026");
             } else {
                 response.put("success", false);
-                response.put("message", "Invalid admin username or password");
+                response.put("message", "Invalid admin credentials");
             }
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("success", false);
-            response.put("message", "Error during login: " + e.getMessage());
+            response.put("message", "Login error: " + e.getMessage());
             return ResponseEntity.ok(response);
         }
     }
@@ -108,34 +71,31 @@ public class AdminController {
     }
 
     @PostMapping("/recipients")
-    public ResponseEntity<Map<String, Object>> addRecipient(
-            @RequestBody(required = false) RecipientDTO dto,
-            @RequestParam(required = false) String email) {
-        
+    public ResponseEntity<Map<String, Object>> addRecipient(@RequestBody Map<String, Object> payload) {
         Map<String, Object> response = new HashMap<>();
-        String targetEmail = (dto != null && dto.getEmail() != null) ? dto.getEmail() : email;
+        Object emailObj = (payload != null) ? payload.get("email") : null;
+        String email = (emailObj != null) ? emailObj.toString().trim().toLowerCase() : null;
 
-        if (targetEmail == null || !targetEmail.contains("@")) {
+        if (email == null || !email.contains("@")) {
             response.put("success", false);
             response.put("message", "Please enter a valid email address");
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.ok(response);
         }
 
-        targetEmail = targetEmail.trim().toLowerCase();
         Path path = getRecipientsFilePath();
         List<String> existing = getRecipientsList(path);
 
-        if (existing.contains(targetEmail)) {
+        if (existing.contains(email)) {
             response.put("success", false);
-            response.put("message", "Email is already subscribed to notifications");
-            return ResponseEntity.badRequest().body(response);
+            response.put("message", "Email is already subscribed");
+            return ResponseEntity.ok(response);
         }
 
-        existing.add(targetEmail);
+        existing.add(email);
         saveRecipientsList(path, existing);
 
         response.put("success", true);
-        response.put("message", "Added recipient: " + targetEmail);
+        response.put("message", "Added recipient: " + email);
         response.put("recipients", existing);
         return ResponseEntity.ok(response);
     }
@@ -146,7 +106,7 @@ public class AdminController {
         if (email == null) {
             response.put("success", false);
             response.put("message", "Email parameter is required");
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.ok(response);
         }
 
         String target = email.trim().toLowerCase();
@@ -157,14 +117,13 @@ public class AdminController {
         if (removed) {
             saveRecipientsList(path, existing);
             response.put("success", true);
-            response.put("message", "Removed recipient: " + target);
+            response.put("message", "Removed: " + target);
             response.put("recipients", existing);
-            return ResponseEntity.ok(response);
         } else {
             response.put("success", false);
-            response.put("message", "Email not found in recipient list");
-            return ResponseEntity.badRequest().body(response);
+            response.put("message", "Email not found");
         }
+        return ResponseEntity.ok(response);
     }
 
     private List<String> getRecipientsList(Path path) {
