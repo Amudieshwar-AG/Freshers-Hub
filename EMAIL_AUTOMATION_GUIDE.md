@@ -28,27 +28,34 @@ Two core scripts were added to the repository under the [`scripts/`](file:///f:/
 
 ### Method A: Add to VPS Webhook / Deployment Script (Recommended)
 
-If your VPS uses an automated webhook endpoint or deployment script (e.g. `/var/www/freshers-hub/deploy.sh`), add the python execution command right after `git pull`:
+If your VPS uses the Webhook endpoint (`http://129.121.126.66:9000/hooks/deploy`), update `/var/www/freshers-hub/deploy.sh` on your VPS to execute asynchronously in the background. This ensures the Webhook returns an instant `200 OK` response to Gitea in 0.1 seconds, preventing timeout errors!
 
 ```bash
 #!/bin/bash
-cd /var/www/freshers-hub
+# /var/www/freshers-hub/deploy.sh
 
-# 1. Pull latest code
-git pull origin main
+(
+    cd /var/www/freshers-hub
+    
+    # 1. Pull latest code
+    git pull origin main
+    
+    # 2. Rebuild & Restart services
+    npm run build
+    systemctl restart springboot chatbot telegram-bot nginx
+    
+    # 3. 📧 Send Email Report Notification
+    python3 /var/www/freshers-hub/scripts/send_git_email.py \
+        "$(git rev-parse --abbrev-ref HEAD)" \
+        "$(git log -1 --format='%an <%ae>')" \
+        "$(git log -1 --format='%h')" \
+        "$(git log -1 --format='%cd' --date=local)" \
+        "$(git log -1 --format='%B')" \
+        "$(git diff-tree --no-commit-id --name-status -r HEAD | head -n 15)"
 
-# 2. Build & Restart services (your existing deployment steps)
-npm run build
-systemctl restart springboot chatbot telegram-bot nginx
+) >> /var/log/deploy.log 2>&1 &
 
-# 3. 📧 Trigger Email Report Notification
-/usr/bin/python3 /var/www/freshers-hub/scripts/send_git_email.py \
-    "$(git rev-parse --abbrev-ref HEAD)" \
-    "$(git log -1 --format='%an <%ae>')" \
-    "$(git log -1 --format='%h')" \
-    "$(git log -1 --format='%cd' --date=local)" \
-    "$(git log -1 --format='%B')" \
-    "$(git diff-tree --no-commit-id --name-status -r HEAD | head -n 15)"
+echo '{"status": "ok", "message": "Deployment triggered in background"}'
 ```
 
 ---
