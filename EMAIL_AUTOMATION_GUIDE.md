@@ -18,7 +18,7 @@ Two core scripts were added to the repository under the [`scripts/`](file:///f:/
 | Parameter | Value |
 | :--- | :--- |
 | **Sender Email** | `krishnaowoxd@gmail.com` |
-| **App Password** | `qkwy lwtc snlr pree` |
+| **App Password** | `qkwylwtcsnlrpree` (no spaces) |
 | **Recipient Email** | `dorutoslayer@gmail.com` |
 | **SMTP Host / Port** | `smtp.gmail.com:587` (TLS) |
 
