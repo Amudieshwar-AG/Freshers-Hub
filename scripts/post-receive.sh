@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# Configuration (or set in environment variables on VPS)
-export SENDER_EMAIL="your-gmail-id@gmail.com"
-export SENDER_PASSWORD="your-16-digit-app-password"
-export RECIPIENT_EMAIL="your-recipient-email@gmail.com"
+export SENDER_EMAIL="krishnaowoxd@gmail.com"
+export SENDER_PASSWORD="qkwy lwtc snlr pree"
+export RECIPIENT_EMAIL="krishnaowoxd@gmail.com"
 
 while read oldrev newrev refname
 do
