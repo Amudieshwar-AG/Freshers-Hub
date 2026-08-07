@@ -94,7 +94,7 @@ export const FEATURES: Feature[] = [
     icon: 'Wrench',
     title: 'Student Toolkit',
     description: 'Download timetables, academic calendar, syllabus, forms, and ERP guides.',
-    path: '/notes?section=toolkit',
+    path: '/toolkit',
     color: '#06B6D4',
     bgColor: '#ECFEFF',
   },

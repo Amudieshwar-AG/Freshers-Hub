@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/Auth/ProtectedRoute';
 import MainLayout from '@/layouts/MainLayout';
 import Home from '@/pages/Home/Home';
 import Notes from '@/pages/Notes/Notes';
+import Toolkit from '@/pages/Toolkit/Toolkit';
 import AIAssistant from '@/pages/AIAssistant/AIAssistant';
 import Campus from '@/pages/Campus/Campus';
 import Events from '@/pages/Events/Events';
@@ -44,6 +45,7 @@ function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/notes" element={<Notes />} />
+              <Route path="/toolkit" element={<Toolkit />} />
               <Route path="/ai-assistant" element={<AIAssistant />} />
               <Route path="/campus" element={<Campus />} />
               <Route path="/bus-routes" element={<BusRoutes />} />

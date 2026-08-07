@@ -2025,58 +2025,6 @@ export default function Notes() {
               </div>
             </motion.div>
           </div>
-
-            {/* Toolkit Section */}
-            <div ref={toolkitRef} />
-            <SectionTitle tag="Useful Downloads" title="Student" highlight="Toolkit" align="left" />
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
-              {TOOLKIT_ITEMS.map((item) => {
-                const iconConfig = TOOLKIT_ICONS[item.title] || { icon: Code, bg: '#FFF7ED', color: '#F97316' };
-                const IconComponent = iconConfig.icon;
-                return (
-                  <StaggerItem key={item.id} className="flex">
-                    <motion.div
-                      onClick={() => {
-                        if (item.title === 'CS tools') {
-                          setSelectedToolkit('cs');
-                        } else if (item.title === 'Business tools') {
-                          setSelectedToolkit('business');
-                        } else if (item.title === 'Electrical and Electronic tools') {
-                          setSelectedToolkit('electrical');
-                        } else if (item.title === 'Cybersecurity tools') {
-                          setSelectedToolkit('cybersecurity');
-                        } else if (item.title === 'AI tools') {
-                          setSelectedToolkit('ai');
-                        } else if (item.title === 'Biotech tools') {
-                          setSelectedToolkit('biotech');
-                        } else if (item.url && item.url !== '#') {
-                          window.open(item.url, '_blank');
-                        }
-                      }}
-                      whileHover={{ y: -4, boxShadow: '0 12px 30px -10px rgba(249,115,22,0.15)' }}
-                      className="flex items-start gap-5 p-7 bg-white hover:bg-[#FFF7ED] rounded-[22px] border border-[#E5E7EB] hover:border-[#FED7AA] cursor-pointer group w-full transition-all shadow-xs hover:shadow-md"
-                    >
-                      <div
-                        className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 font-bold text-sm transition-transform group-hover:scale-105"
-                        style={{ backgroundColor: iconConfig.bg, color: iconConfig.color }}
-                      >
-                        <IconComponent className="w-7 h-7" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-base lg:text-lg font-bold text-[#1E293B] group-hover:text-[#F97316] transition-colors mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {item.title}
-                        </div>
-                        <div className="text-sm text-[#64748B] leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {item.description}
-                        </div>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-[#94A3B8] group-hover:text-[#F97316] group-hover:translate-x-1.5 transition-all shrink-0 mt-1" />
-                    </motion.div>
-                  </StaggerItem>
-                );
-              })}
-            </StaggerContainer>
-          </div>
         )}
       </div>
     </div>
