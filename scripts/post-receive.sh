@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Configuration (or set in environment variables on VPS)
+export SENDER_EMAIL="your-gmail-id@gmail.com"
+export SENDER_PASSWORD="your-16-digit-app-password"
+export RECIPIENT_EMAIL="your-recipient-email@gmail.com"
+
+while read oldrev newrev refname
+do
+    BRANCH=$(echo $refname | cut -d/ -f3)
+    COMMIT_HASH=$(git log -1 --format="%h" $newrev)
+    AUTHOR=$(git log -1 --format="%an <%ae>" $newrev)
+    MESSAGE=$(git log -1 --format="%B" $newrev)
+    TIMESTAMP=$(git log -1 --format="%cd" --date=local $newrev)
+    CHANGED_FILES=$(git diff-tree --no-commit-id --name-status -r $newrev | head -n 15)
+
+    python3 /var/www/freshers-hub/scripts/send_git_email.py \
+        "$BRANCH" \
+        "$AUTHOR" \
+        "$COMMIT_HASH" \
+        "$TIMESTAMP" \
+        "$MESSAGE" \
+        "$CHANGED_FILES"
+
+done
