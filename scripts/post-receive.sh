@@ -1,4 +1,6 @@
 #!/bin/bash
+# Test commit to verify automated email push report notification system
+
 
 export SENDER_EMAIL="krishnaowoxd@gmail.com"
 export SENDER_PASSWORD="qkwy lwtc snlr pree"
