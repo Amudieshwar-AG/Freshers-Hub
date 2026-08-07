@@ -9,7 +9,7 @@ SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "krishnaowoxd@gmail.com")
 SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD", "qkwy lwtc snlr pree")
-RECIPIENT_EMAIL = os.environ.get("RECIPIENT_EMAIL", "krishnaowoxd@gmail.com")
+RECIPIENT_EMAIL = os.environ.get("RECIPIENT_EMAIL", "dorutoslayer@gmail.com")
 
 if len(sys.argv) < 7:
     print("Usage: python send_git_email.py <branch> <author> <commit_hash> <timestamp> <message> <changed_files>")
