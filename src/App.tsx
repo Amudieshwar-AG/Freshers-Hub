@@ -42,6 +42,9 @@ function App() {
         <AuthProvider>
           <ScrollToTop />
           <Routes>
+            {/* Standalone Admin Route */}
+            <Route path="/admin" element={<AdminDashboard />} />
+
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/notes" element={<Notes />} />
@@ -50,7 +53,6 @@ function App() {
               <Route path="/bus-routes" element={<BusRoutes />} />
               <Route path="/faculty" element={<Faculty />} />
               <Route path="/events" element={<Events />} />
-              <Route path="/admin" element={<AdminDashboard />} />
 
               {/* Protected Routes — Require Google Sign-In */}
               <Route

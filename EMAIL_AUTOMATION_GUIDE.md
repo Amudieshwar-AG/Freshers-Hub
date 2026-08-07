@@ -43,11 +43,14 @@ If your VPS uses the Webhook endpoint (`http://129.121.126.66:9000/hooks/deploy`
 (
     cd /var/www/freshers-hub
     
-    # 1. Pull latest code
+    # 1. Pull latest code from main
     git pull origin main
     
-    # 2. Rebuild & Restart services
+    # 2. Rebuild Spring Boot Java Backend & Vite Frontend
+    cd backend && ./mvnw clean package -DskipTests && cd ..
     npm run build
+    
+    # 3. Restart Microservices
     systemctl restart springboot chatbot telegram-bot nginx
     
     # 3. 📧 Send Email Report Notification (sent AFTER build & restart finish!)
