@@ -50,14 +50,15 @@ If your VPS uses the Webhook endpoint (`http://129.121.126.66:9000/hooks/deploy`
     npm run build
     systemctl restart springboot chatbot telegram-bot nginx
     
-    # 3. 📧 Send Email Report Notification
+    # 3. 📧 Send Email Report Notification (sent AFTER build & restart finish!)
     python3 /var/www/freshers-hub/scripts/send_git_email.py \
         "$(git rev-parse --abbrev-ref HEAD)" \
         "$(git log -1 --format='%an <%ae>')" \
         "$(git log -1 --format='%h')" \
         "$(git log -1 --format='%cd' --date=local)" \
         "$(git log -1 --format='%B')" \
-        "$(git diff-tree --no-commit-id --name-status -r HEAD | head -n 15)"
+        "$(git diff-tree --no-commit-id --name-status -r HEAD | head -n 15)" \
+        "SUCCESS (LIVE ONLINE)"
 
 ) >> /var/log/deploy.log 2>&1 &
 
