@@ -17,35 +17,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// Domain Boundary validation (Chennai and surrounding route regions)
-const MIN_LAT = 12.65;
-const MAX_LAT = 13.35;
-const MIN_LNG = 79.25;
-const MAX_LNG = 80.45;
-
-const isValidCoordinate = (lat?: number, lng?: number): boolean => {
-  if (lat === undefined || lng === undefined) return false;
-  return lat >= MIN_LAT && lat <= MAX_LAT && lng >= MIN_LNG && lng <= MAX_LNG;
-};
-
-const isRealStopCoordinate = (stop: { name: string; lat?: number; lng?: number }): boolean => {
-  if (stop.lat === undefined || stop.lng === undefined) return false;
-  if (!isValidCoordinate(stop.lat, stop.lng)) return false;
-
-  const isRITCoord = Math.abs(stop.lat - 13.0118) < 0.001 && Math.abs(stop.lng - 80.0214) < 0.001;
-  const isRITName =
-    stop.name.toLowerCase().includes('rit') ||
-    stop.name.toLowerCase().includes('campus') ||
-    stop.name.toLowerCase().includes('college') ||
-    stop.name.toLowerCase().includes('rajalakshmi');
-
-  if (isRITCoord && !isRITName) {
-    return false;
-  }
-
-  return true;
-};
-
 const liveBusIcon = L.divIcon({
   html: `<div class="relative flex items-center justify-center w-10 h-10 rounded-full bg-emerald-500 border-2 border-white shadow-xl text-white text-base font-bold cursor-pointer"><span class="absolute inset-0 rounded-full bg-emerald-500/50 animate-ping"></span>🚌</div>`,
   className: '',
@@ -60,14 +31,14 @@ const stoppedBusIcon = L.divIcon({
   iconAnchor: [20, 20],
 });
 
-// Helper component to auto-pan and fit the map bounds to the active route
-function MapUpdater({ bounds }: { bounds: L.LatLngBoundsExpression | null }) {
+// Helper component to pan map to active bus marker when selected
+function MapPanFocus({ center }: { center: [number, number] | null }) {
   const map = useMap();
   useEffect(() => {
-    if (bounds && (bounds as any).length > 0) {
-      map.fitBounds(bounds, { padding: [60, 60], maxZoom: 14, animate: true });
+    if (center) {
+      map.setView(center, 13, { animate: true });
     }
-  }, [bounds, map]);
+  }, [center, map]);
   return null;
 }
 
@@ -76,7 +47,7 @@ interface BusRouteMapProps {
   allRoutes: BusRoute[];
 }
 
-const DEFAULT_CENTER = [13.0118, 80.0214]; // RIT Campus default
+const DEFAULT_CENTER: [number, number] = [13.0118, 80.0214]; // RIT Campus default
 
 export default function BusRouteMap({ selectedRoute }: BusRouteMapProps) {
   const [allLiveLocations, setAllLiveLocations] = useState<
@@ -129,37 +100,26 @@ export default function BusRouteMap({ selectedRoute }: BusRouteMapProps) {
     return () => clearInterval(interval);
   }, []);
 
-  // Collect coordinates for polyline path
-  const pathCoordinates = useMemo(() => {
-    if (!selectedRoute) return [];
+  // Determine center focus point if a bus is live or selected
+  const activeFocusCenter = useMemo<[number, number] | null>(() => {
+    if (!selectedRoute) return null;
 
-    if (selectedRoute.polyline && selectedRoute.polyline.length > 0) {
-      return selectedRoute.polyline;
+    const normalizeRouteNum = (str: string) => (str || '').replace(/^[Rr]0*/, '').trim().toUpperCase();
+    const matchLocKey = Object.keys(allLiveLocations).find(
+      (k) => normalizeRouteNum(k) === normalizeRouteNum(selectedRoute.number)
+    );
+
+    if (matchLocKey && allLiveLocations[matchLocKey]) {
+      const loc = allLiveLocations[matchLocKey];
+      return [loc.latitude, loc.longitude];
     }
 
-    const coords: [number, number][] = [];
-
-    if (isValidCoordinate(selectedRoute.from_lat, selectedRoute.from_lng)) {
-      coords.push([selectedRoute.from_lat!, selectedRoute.from_lng!]);
+    if (selectedRoute.from_lat && selectedRoute.from_lng) {
+      return [selectedRoute.from_lat, selectedRoute.from_lng];
     }
 
-    selectedRoute.stops.forEach((stop) => {
-      if (isRealStopCoordinate(stop)) {
-        coords.push([stop.lat!, stop.lng!]);
-      }
-    });
-
-    if (isValidCoordinate(selectedRoute.to_lat, selectedRoute.to_lng)) {
-      coords.push([selectedRoute.to_lat!, selectedRoute.to_lng!]);
-    }
-
-    return coords;
-  }, [selectedRoute]);
-
-  const mapBounds = useMemo(() => {
-    if (pathCoordinates.length === 0) return null;
-    return pathCoordinates as L.LatLngBoundsExpression;
-  }, [pathCoordinates]);
+    return DEFAULT_CENTER;
+  }, [selectedRoute, allLiveLocations]);
 
   return (
     <div className="relative h-full w-full bg-slate-950 overflow-hidden">
@@ -178,9 +138,7 @@ export default function BusRouteMap({ selectedRoute }: BusRouteMapProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-
-
-        {/* Live GPS Bus Markers */}
+        {/* Live GPS Bus Markers ONLY - No polyline routes */}
         {Object.entries(allLiveLocations).map(([rNum, loc]) => {
           const normalizeRouteNum = (str: string) => (str || '').replace(/^[Rr]0*/, '').trim().toUpperCase();
           if (selectedRoute && normalizeRouteNum(selectedRoute.number) !== normalizeRouteNum(rNum)) return null;
@@ -216,7 +174,7 @@ export default function BusRouteMap({ selectedRoute }: BusRouteMapProps) {
           );
         })}
 
-        <MapUpdater bounds={mapBounds} />
+        <MapPanFocus center={activeFocusCenter} />
       </MapContainer>
 
       {/* Floating Info Card on Selected Route */}
