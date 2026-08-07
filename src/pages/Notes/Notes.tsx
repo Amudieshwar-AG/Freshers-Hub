@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Download, Filter, BookOpen, FileText, ScrollText, BookMarked, ChevronRight, ArrowLeft, ExternalLink, Code, Globe, GitBranch, Cloud, Palette, Shield, DollarSign, BarChart3, Users, Megaphone, TrendingUp, UserCheck, ClipboardList, ShoppingCart, Cpu, Activity, LayoutGrid, Layers, Zap, Settings, Gauge, Radio, Wifi, Bot, Sun, Wrench, Binary, BatteryCharging, CircuitBoard, ShieldCheck, BrainCircuit, FlaskConical, Lock, Terminal, Dna, Microscope, Sparkles, Smartphone, Monitor, Server, CheckCircle2, Database, Briefcase, AlertTriangle } from 'lucide-react';
+import { Search, Download, Filter, BookOpen, FileText, ScrollText, BookMarked, ChevronRight, ArrowLeft, ExternalLink, Code, Globe, GitBranch, Cloud, Palette, Shield, DollarSign, BarChart3, Users, Megaphone, TrendingUp, UserCheck, ClipboardList, ShoppingCart, Cpu, Activity, LayoutGrid, Layers, Zap, Settings, Gauge, Radio, Wifi, Bot, Sun, Wrench, Binary, BatteryCharging, CircuitBoard, ShieldCheck, BrainCircuit, FlaskConical, Lock, Terminal, Dna, Microscope, Sparkles, Smartphone, Monitor, Server, CheckCircle2, Database, Briefcase, AlertTriangle, RefreshCw } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
+
+const MOODLE_URL = 'http://182.74.17.142/moodle/login/index.php';
 import { getBackendUrl } from '@/lib/utils';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { TOOLKIT_ITEMS, DEPARTMENTS } from '@/constants';
@@ -1432,27 +1434,7 @@ export default function Notes() {
       )}
 
       <div className="container-custom py-10">
-        {/* Under Development Banner */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-amber-900 shadow-2xs mb-8"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
-              <AlertTriangle className="w-5 h-5 text-amber-600" />
-            </div>
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-amber-700" style={{ fontFamily: 'Inter, sans-serif' }}>Under Development</div>
-              <div className="text-xs font-medium text-amber-900" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Currently displaying sample mock notes & syllabus data. Official semester notes repository integration is in progress.
-              </div>
-            </div>
-          </div>
-          <span className="px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-[11px] font-bold text-amber-800 shrink-0">
-            Mock Data Active
-          </span>
-        </motion.div>
+
 
         {selectedToolkit ? (
           (() => {
@@ -1936,169 +1918,113 @@ export default function Notes() {
           })()
         ) : (
           <div>
-            {/* Search + Filters */}
+            <div className="mb-12">
+            {/* Moodle Academic Portal Hero Hub */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 }}
-              className="bg-white rounded-2xl border border-[#E5E7EB] p-5 mb-8"
-              style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
+              transition={{ duration: 0.4 }}
+              className="bg-white rounded-3xl border border-[#E5E7EB] p-8 md:p-10 shadow-sm relative overflow-hidden mb-8"
+              style={{ boxShadow: '0 4px 25px -5px rgba(0,0,0,0.05)' }}
             >
-              {/* Search */}
-              <div className="relative mb-4">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-[#94A3B8]" />
-                <input
-                  type="text"
-                  placeholder="Search notes, subjects..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#E5E7EB] text-sm text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:border-[#F97316] transition-colors"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
-                />
-              </div>
+              {/* Subtle Decorative Background Glow */}
+              <div className="absolute -right-20 -top-20 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
-              <div className="flex flex-wrap gap-3">
-                {/* Type Filter */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Filter className="w-4 h-4 text-[#94A3B8]" />
-                  {['all', 'notes', 'pyq', 'syllabus'].map((type) => (
-                    <button
-                      key={type}
-                      onClick={() => setSelectedType(type)}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all"
-                      style={{
-                        fontFamily: 'Poppins, sans-serif',
-                        backgroundColor: selectedType === type ? '#F97316' : '#F8FAFC',
-                        color: selectedType === type ? 'white' : '#475569',
-                        border: `1px solid ${selectedType === type ? '#F97316' : '#E5E7EB'}`,
-                      }}
-                    >
-                      {type === 'all' ? 'All Types' : type.toUpperCase()}
-                    </button>
-                  ))}
+              <div className="relative z-10 max-w-3xl mx-auto text-center">
+                {/* Header Badge */}
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-xs font-bold text-[#F97316] mb-6">
+                  <BookOpen className="w-4 h-4 text-[#F97316]" />
+                  <span>Official RIT Learning Management System</span>
                 </div>
 
-                {/* Semester Filter */}
-                <div className="flex gap-2 flex-wrap items-center">
-                  {SEMESTERS.slice(0, 3).map((sem) => (
-                    <button
-                      key={sem}
-                      onClick={() => { setSelectedSem(sem); setSelectedSubject('All Subjects'); }}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer"
-                      style={{
-                        fontFamily: 'Poppins, sans-serif',
-                        backgroundColor: selectedSem === sem ? '#1E293B' : '#F8FAFC',
-                        color: selectedSem === sem ? 'white' : '#475569',
-                        border: `1px solid ${selectedSem === sem ? '#1E293B' : '#E5E7EB'}`,
-                      }}
-                    >
-                      {sem}
-                    </button>
-                  ))}
+                {/* Main Heading */}
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E293B] mb-4 leading-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  Access Academic Notes & Study Materials on{' '}
+                  <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                    Moodle
+                  </span>
+                </h2>
+
+                <p className="text-base text-[#64748B] mb-8 leading-relaxed max-w-2xl mx-auto" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  All official semester notes, previous year question papers (PYQs), syllabus data, and lab manuals are hosted directly on the official Rajalakshmi Institute of Technology Moodle server.
+                </p>
+
+                {/* Primary Launch Action Buttons */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+                  <a
+                    href={MOODLE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl text-base font-bold text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer"
+                    style={{
+                      fontFamily: 'Poppins, sans-serif',
+                      background: 'linear-gradient(135deg, #F97316, #FB923C)',
+                    }}
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                    Launch Official RIT Moodle Portal
+                  </a>
+
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(MOODLE_URL);
+                      alert('Moodle URL copied to clipboard!');
+                    }}
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-[#E5E7EB] hover:border-[#F97316] bg-[#F8FAFC] hover:bg-white text-sm font-semibold text-[#475569] hover:text-[#F97316] transition-all cursor-pointer"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    <Globe className="w-4 h-4 text-[#64748B]" />
+                    Copy Moodle Direct URL
+                  </button>
                 </div>
 
-                {/* Subject Dropdown */}
-                {selectedSem !== 'All' && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-[#64748B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Subject:</span>
-                    <select
-                      value={selectedSubject}
-                      onChange={(e) => setSelectedSubject(e.target.value)}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[#F8FAFC] border border-[#E5E7EB] text-[#475569] focus:outline-none focus:border-[#F97316] transition-all cursor-pointer"
-                      style={{ fontFamily: 'Poppins, sans-serif' }}
-                    >
-                      <option value="All Subjects">All Subjects</option>
-                      {(SUBJECTS_BY_SEM[parseInt(selectedSem)] || []).map((sub) => (
-                        <option key={sub} value={sub}>
-                          {sub}
-                        </option>
-                      ))}
-                    </select>
+                {/* Feature Highlights Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left border-t border-[#F1F5F9] pt-8">
+                  <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E5E7EB]/70 flex flex-col gap-2">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600">
+                      <ShieldCheck className="w-4 h-4" />
+                    </div>
+                    <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      100% Direct & Secure
+                    </div>
+                    <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Authenticates directly on official college server <code className="bg-slate-200/80 px-1 py-0.5 rounded text-[10px]">182.74.17.142</code>.
+                    </div>
                   </div>
-                )}
+
+                  <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E5E7EB]/70 flex flex-col gap-2">
+                    <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      Official Semester Notes
+                    </div>
+                    <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Complete 1st to 8th Semester course notes, PYQs, and assignments.
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E5E7EB]/70 flex flex-col gap-2">
+                    <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      Student Login
+                    </div>
+                    <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Log in using your RIT Register Number and official Moodle password.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Technical Security Note */}
+                <div className="mt-6 text-[11px] text-[#94A3B8] leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                  ℹ️ <span className="font-semibold text-[#64748B]">Security Note:</span> To protect student session privacy and prevent clickjacking attacks, RIT's Moodle server enforces opening the portal directly in a secure browser tab rather than inside third-party frames (<code className="bg-slate-100 px-1 py-0.5 rounded text-[10px]">X-Frame-Options: SAMEORIGIN</code>).
+                </div>
               </div>
             </motion.div>
-
-            {/* Results */}
-            <StaggerContainer key={`${filtered.length}-${selectedSubject}`} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-12">
-              {filtered.map((note) => {
-                const typeConfig = TYPE_COLORS[note.type] || { bg: '#F1F5F9', text: '#475569', icon: BookOpen };
-                const TypeIcon = typeConfig.icon;
-                return (
-                  <StaggerItem key={note.id}>
-                    <motion.div
-                      whileHover={{ y: -4 }}
-                      className="bg-white rounded-2xl border border-[#E5E7EB] p-5 flex flex-col justify-between gap-4 h-full"
-                      style={{
-                        borderLeft: `4px solid ${typeConfig.text}`,
-                        boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)'
-                      }}
-                    >
-                      <div className="flex gap-4">
-                        {/* Visual PDF Preview Icon */}
-                        <div className="w-14 h-20 border border-slate-200 rounded-xl p-2 flex flex-col justify-between bg-[#F8FAFC] shrink-0 shadow-sm">
-                          <div className="bg-[#EF4444] text-[8px] font-extrabold text-white px-1 py-0.5 rounded w-fit uppercase tracking-wider" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                            PDF
-                          </div>
-                          <div className="flex flex-col gap-1.5">
-                            <div className="w-full h-1 bg-slate-200 rounded" />
-                            <div className="w-5/6 h-1 bg-slate-200 rounded" />
-                            <div className="w-2/3 h-1 bg-slate-200 rounded" />
-                          </div>
-                        </div>
-
-                        {/* Text Details */}
-                        <div className="flex flex-col justify-between flex-1 min-w-0">
-                          <div>
-                            <div className="flex items-center justify-between mb-1.5">
-                              <div className="w-6 h-6 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: typeConfig.bg }}>
-                                <TypeIcon className="w-3.5 h-3.5" style={{ color: typeConfig.text }} />
-                              </div>
-                              <span
-                                className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider"
-                                style={{ backgroundColor: typeConfig.bg, color: typeConfig.text, fontFamily: 'Poppins, sans-serif' }}
-                              >
-                                {note.type}
-                              </span>
-                            </div>
-                            <h3 className="text-sm font-bold text-[#1E293B] line-clamp-2 leading-tight mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                              {note.title}
-                            </h3>
-                            <p className="text-[11px] text-[#64748B] font-medium truncate" style={{ fontFamily: 'Inter, sans-serif' }}>
-                              {note.subject} • Sem {note.semester}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Metadata Line */}
-                      <div className="flex items-center justify-between border-t border-[#F1F5F9] pt-3 text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-semibold text-slate-800">{note.downloads} downloads · {note.fileSize}</span>
-                          <span className="px-1 py-0.2 bg-[#F1F5F9] rounded text-[9px] font-bold text-slate-600">PDF</span>
-                        </div>
-                        <span>{note.uploadedAt ? `Updated ${note.uploadedAt}` : 'Recently'}</span>
-                      </div>
-
-                      {/* Download Button */}
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => handleDownload(note.id, note.downloadUrl)}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer"
-                        style={{
-                          fontFamily: 'Poppins, sans-serif',
-                          background: 'linear-gradient(135deg, #F97316, #FB923C)',
-                        }}
-                      >
-                        <Download className="w-4 h-4" />
-                        Download
-                      </motion.button>
-                    </motion.div>
-                  </StaggerItem>
-                );
-              })}
-            </StaggerContainer>
+          </div>
 
             {/* Toolkit Section */}
             <div ref={toolkitRef} />
