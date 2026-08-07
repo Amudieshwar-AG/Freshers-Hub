@@ -46,9 +46,13 @@ export default function AdminDashboard() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password }),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('Invalid username or password');
-        return res.json();
+      .then(async (res) => {
+        try {
+          const data = await res.json();
+          return data;
+        } catch (e) {
+          return { success: false, message: `Server returned HTTP ${res.status}` };
+        }
       })
       .then((data) => {
         if (data.success) {
@@ -56,7 +60,7 @@ export default function AdminDashboard() {
           setIsLoggedIn(true);
           fetchRecipients();
         } else {
-          setLoginError(data.message || 'Login failed');
+          setLoginError(data.message || 'Invalid username or password');
         }
       })
       .catch((err) => {
