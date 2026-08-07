@@ -4,11 +4,15 @@ import os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+# Ensure UTF-8 output for terminal/logging
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
 # Load configuration from environment or fallback defaults
 SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "krishnaowoxd@gmail.com")
-SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD", "qkwy lwtc snlr pree")
+SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD", "qkwylwtcsnlrpree").replace(" ", "")
 RECIPIENT_EMAIL = os.environ.get("RECIPIENT_EMAIL", "dorutoslayer@gmail.com")
 
 if len(sys.argv) < 7:

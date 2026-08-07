@@ -3,7 +3,7 @@
 
 
 export SENDER_EMAIL="krishnaowoxd@gmail.com"
-export SENDER_PASSWORD="qkwy lwtc snlr pree"
+export SENDER_PASSWORD="qkwylwtcsnlrpree"
 export RECIPIENT_EMAIL="dorutoslayer@gmail.com"
 
 while read oldrev newrev refname
