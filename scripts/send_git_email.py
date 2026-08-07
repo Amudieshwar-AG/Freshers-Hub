@@ -13,7 +13,19 @@ SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
 SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "krishnaowoxd@gmail.com")
 SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD", "qkwylwtcsnlrpree").replace(" ", "")
-RECIPIENT_EMAIL = os.environ.get("RECIPIENT_EMAIL", "dorutoslayer@gmail.com")
+
+# Load recipients list from recipients.txt file
+recipients_file = os.path.join(os.path.dirname(__file__), "recipients.txt")
+recipients = []
+if os.path.exists(recipients_file):
+    with open(recipients_file, "r", encoding="utf-8") as f:
+        recipients = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+
+if not recipients:
+    env_recipient = os.environ.get("RECIPIENT_EMAIL", "dorutoslayer@gmail.com")
+    recipients = [r.strip() for r in env_recipient.split(",") if r.strip()]
+
+recipient_str = ", ".join(recipients)
 
 if len(sys.argv) < 7:
     print("Usage: python send_git_email.py <branch> <author> <commit_hash> <timestamp> <message> <changed_files> [deploy_status]")
@@ -105,14 +117,14 @@ html_content = f"""
 msg = MIMEMultipart("alternative")
 msg["Subject"] = subject
 msg["From"] = SENDER_EMAIL
-msg["To"] = RECIPIENT_EMAIL
+msg["To"] = recipient_str
 msg.attach(MIMEText(html_content, "html"))
 
 try:
     with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
         server.starttls()
         server.login(SENDER_EMAIL, SENDER_PASSWORD)
-        server.sendmail(SENDER_EMAIL, RECIPIENT_EMAIL, msg.as_string())
+        server.sendmail(SENDER_EMAIL, recipients, msg.as_string())
     print("✅ Email report sent successfully.")
 except Exception as e:
     print(f"❌ Failed to send email report: {e}")
