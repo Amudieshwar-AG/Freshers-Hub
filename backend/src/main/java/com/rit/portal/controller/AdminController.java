@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,19 +17,18 @@ import java.util.*;
 public class AdminController {
 
     @Value("${admin.username:ritadmin}")
-    private String adminUsername;
+    private String adminUsername = "ritadmin";
 
     @Value("${admin.password:ritadmin2026!}")
-    private String adminPassword;
+    private String adminPassword = "ritadmin2026!";
 
     private Path getRecipientsFilePath() {
-        // Try VPS deployment path first, fallback to workspace relative path
         Path vpsPath = Paths.get("/var/www/freshers-hub/scripts/recipients.txt");
-        if (Files.exists(vpsPath.getParent())) {
+        if (vpsPath.getParent() != null && Files.exists(vpsPath.getParent())) {
             return vpsPath;
         }
         Path localPath = Paths.get("scripts/recipients.txt").toAbsolutePath();
-        if (!Files.exists(localPath.getParent())) {
+        if (localPath.getParent() != null && !Files.exists(localPath.getParent())) {
             try {
                 Files.createDirectories(localPath.getParent());
             } catch (IOException ignored) {}
@@ -44,28 +42,38 @@ public class AdminController {
             @RequestParam(required = false) String user,
             @RequestParam(required = false) String pass) {
         
-        String username = "";
-        String password = "";
-
-        if (payload != null) {
-            if (payload.get("username") != null) username = payload.get("username").trim();
-            if (payload.get("password") != null) password = payload.get("password").trim();
-        }
-        if (username.isEmpty() && user != null) username = user.trim();
-        if (password.isEmpty() && pass != null) password = pass.trim();
-
         Map<String, Object> response = new HashMap<>();
-        boolean isUsernameValid = "ritadmin".equalsIgnoreCase(username) || (adminUsername != null && adminUsername.equalsIgnoreCase(username));
-        boolean isPasswordValid = "ritadmin2026!".equals(password) || (adminPassword != null && adminPassword.equals(password));
+        try {
+            String username = "";
+            String password = "";
 
-        if (isUsernameValid && isPasswordValid) {
-            response.put("success", true);
-            response.put("message", "Admin login successful");
-            response.put("token", "ADMIN_SESSION_TOKEN_RIT_2026");
-            return ResponseEntity.ok(response);
-        } else {
+            if (payload != null) {
+                if (payload.get("username") != null) username = payload.get("username").trim();
+                if (payload.get("password") != null) password = payload.get("password").trim();
+            }
+            if (username.isEmpty() && user != null) username = user.trim();
+            if (password.isEmpty() && pass != null) password = pass.trim();
+
+            String expectedUser = (adminUsername != null && !adminUsername.isEmpty()) ? adminUsername : "ritadmin";
+            String expectedPass = (adminPassword != null && !adminPassword.isEmpty()) ? adminPassword : "ritadmin2026!";
+
+            boolean isUsernameValid = "ritadmin".equalsIgnoreCase(username) || expectedUser.equalsIgnoreCase(username);
+            boolean isPasswordValid = "ritadmin2026!".equals(password) || expectedPass.equals(password);
+
+            if (isUsernameValid && isPasswordValid) {
+                response.put("success", true);
+                response.put("message", "Admin login successful");
+                response.put("token", "ADMIN_SESSION_TOKEN_RIT_2026");
+                return ResponseEntity.ok(response);
+            } else {
+                response.put("success", false);
+                response.put("message", "Invalid admin username or password");
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             response.put("success", false);
-            response.put("message", "Invalid username or password. (Expected: ritadmin / ritadmin2026!)");
+            response.put("message", "Internal server error: " + e.getMessage());
             return ResponseEntity.ok(response);
         }
     }
@@ -92,7 +100,7 @@ public class AdminController {
 
     @PostMapping("/recipients")
     public ResponseEntity<Map<String, Object>> addRecipient(@RequestBody Map<String, String> payload) {
-        String email = payload.get("email");
+        String email = payload != null ? payload.get("email") : null;
         Map<String, Object> response = new HashMap<>();
 
         if (email == null || !email.contains("@")) {
