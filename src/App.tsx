@@ -14,6 +14,7 @@ import BusRoutes from '@/pages/BusRoutes/BusRoutes';
 import Faculty from '@/pages/Faculty/Faculty';
 import DevCollab from '@/pages/DevCollab/DevCollab';
 import LeetcodeLeaderboard from '@/pages/LeetcodeLeaderboard/LeetcodeLeaderboard';
+import AdminDashboard from '@/pages/Admin/AdminDashboard';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +50,7 @@ function App() {
               <Route path="/bus-routes" element={<BusRoutes />} />
               <Route path="/faculty" element={<Faculty />} />
               <Route path="/events" element={<Events />} />
+              <Route path="/admin" element={<AdminDashboard />} />
 
               {/* Protected Routes — Require Google Sign-In */}
               <Route
