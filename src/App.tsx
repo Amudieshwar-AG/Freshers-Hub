@@ -44,6 +44,7 @@ function App() {
           <Routes>
             {/* Standalone Admin Route */}
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/*" element={<AdminDashboard />} />
 
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
