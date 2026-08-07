@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { BusRoute } from '@/types';
@@ -178,19 +178,7 @@ export default function BusRouteMap({ selectedRoute }: BusRouteMapProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* Polyline Route Path */}
-        {pathCoordinates.length > 0 && selectedRoute && (
-          <Polyline
-            positions={pathCoordinates}
-            pathOptions={{
-              color: selectedRoute.color || '#F97316',
-              weight: 5,
-              opacity: 0.8,
-              lineCap: 'round',
-              lineJoin: 'round',
-            }}
-          />
-        )}
+
 
         {/* Live GPS Bus Markers */}
         {Object.entries(allLiveLocations).map(([rNum, loc]) => {
