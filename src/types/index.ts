@@ -119,6 +119,8 @@ export interface Club {
   category: string;
   members: number;
   presidentName?: string;
+  vicePresidentName?: string;
+  coordinatorName?: string;
   year?: string;
   contactEmail?: string;
   contactPhone?: string;
