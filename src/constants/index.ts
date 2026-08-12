@@ -4,7 +4,7 @@ import type { Feature, Stat, BusRoute, Faculty, Event, Club, Question, ToolkitIt
 export const NAV_LINKS = [
   { label: 'Home', path: '/' },
   { label: 'Notes', path: '/notes' },
-  { label: 'Toolkit', path: '/toolkit' },
+  { label: 'Toolkit', path: '/notes?section=toolkit' },
   { label: 'Chatbot', path: '/ai-assistant' },
   { label: 'Campus Map', path: '/campus' },
   { label: 'Bus Routes', path: '/bus-routes' },
@@ -97,24 +97,6 @@ export const FEATURES: Feature[] = [
     path: '/toolkit',
     color: '#06B6D4',
     bgColor: '#ECFEFF',
-  },
-  {
-    id: 'collab',
-    icon: 'Code2',
-    title: 'Dev Collab',
-    description: 'Connect with peer developers, build campus projects, share repositories, and collaborate.',
-    path: '/collab',
-    color: '#6366F1',
-    bgColor: '#EEF2FF',
-  },
-  {
-    id: 'leetcode',
-    icon: 'Trophy',
-    title: 'LeetCode Leaderboard',
-    description: 'Track peer coding rankings, solve daily problems, and compete on the campus leaderboard.',
-    path: '/leetcode',
-    color: '#F59E0B',
-    bgColor: '#FEF3C7',
   },
 ];
 

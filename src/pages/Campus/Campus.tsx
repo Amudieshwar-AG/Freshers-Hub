@@ -23,9 +23,8 @@ const BLUEPRINT_LEGEND = [
   { id: 'a-block', label: 'A Block', color: '#60A5FA', bg: 'bg-blue-50/80', text: 'text-blue-900', border: 'border-blue-200' },
   { id: 'b-block', label: 'B Block', color: '#93C5FD', bg: 'bg-blue-50/60', text: 'text-blue-900', border: 'border-blue-200' },
   { id: 'c-block', label: 'C Block', color: '#BFDBFE', bg: 'bg-blue-50/40', text: 'text-blue-900', border: 'border-blue-200' },
-  { id: 'h-block', label: 'H Block', color: '#C084FC', bg: 'bg-purple-50/80', text: 'text-purple-900', border: 'border-purple-200' },
   { id: 'admin', label: 'Admin / Facility', color: '#FDBA74', bg: 'bg-orange-50/80', text: 'text-orange-950', border: 'border-orange-200' },
-  { id: 'hostel', label: 'Hostel / Mess', color: '#F472B6', bg: 'bg-pink-50/80', text: 'text-pink-950', border: 'border-pink-200' },
+  { id: 'hostel', label: 'Hostel / Mess', color: '#C084FC', bg: 'bg-purple-50/80', text: 'text-purple-950', border: 'border-purple-200' },
   { id: 'lab', label: 'Lab / Academic', color: '#FDE047', bg: 'bg-yellow-50/80', text: 'text-yellow-950', border: 'border-yellow-200' },
   { id: 'amenity', label: 'Amenity', color: '#BEF264', bg: 'bg-lime-50/80', text: 'text-lime-950', border: 'border-lime-200' },
   { id: 'parking', label: 'Parking Area', color: '#94A3B8', bg: 'bg-slate-100/80', text: 'text-slate-900', border: 'border-slate-300' },
@@ -40,15 +39,15 @@ const LOCATION_SPOTS: LocationSpot[] = [
   { name: 'Girls Mess', x: 14.5, y: 31.0, category: 'Hostel / Mess', desc: 'Dedicated Dining Hall for Women', area: 'West Wing' },
   { name: 'MEC Lab', x: 14.0, y: 39.5, category: 'Lab / Academic', desc: 'Mechanical Engineering Laboratory', area: 'West Wing' },
   { name: 'EPL Lab', x: 13.0, y: 47.5, category: 'Lab / Academic', desc: 'Engineering Practices Laboratory', area: 'West Wing' },
-  { name: 'B Block (Nikola Tesla Block)', x: 40.5, y: 36.5, category: 'B Block', desc: 'Main Electrical & Engineering Research Block', area: 'Central Block' },
+  { name: 'Nikola Tesla Block', x: 40.5, y: 36.5, category: 'B Block', desc: 'Main Electrical & Engineering Research Block', area: 'Central Block' },
   { name: 'Astronaut Statue', x: 51.0, y: 23.0, category: 'Amenity', desc: 'Iconic Landmark Monument', area: 'Central Park' },
   { name: 'Campus Centre', x: 67.0, y: 23.0, category: 'Admin / Facility', desc: 'Student Activity & Administrative Center', area: 'North East' },
   { name: 'Hut', x: 70.0, y: 37.0, category: 'Amenity', desc: 'Student Discussion & Rest Area', area: 'Central East' },
-  { name: 'H Block (Homi Jehangir Bhabha Block)', x: 87.0, y: 24.0, category: 'H Block', desc: 'Science & Physics Research Block', area: 'East Wing' },
-  { name: 'Boys Mess', x: 87.0, y: 17.5, category: 'Hostel / Mess', desc: 'Ground Floor Dining Hall for Men (H Block)', area: 'East Wing' },
-  { name: 'Staff Mess', x: 87.0, y: 30.5, category: 'Amenity', desc: 'First Floor Dining Hall for Faculty & Staff (H Block)', area: 'East Wing' },
+  { name: 'Homi Jehangir Bhabha Block', x: 87.0, y: 24.0, category: 'A Block', desc: 'Science & Physics Research Block', area: 'East Wing' },
+  { name: 'Boys Mess', x: 87.0, y: 17.5, category: 'Hostel / Mess', desc: 'Ground Floor Dining Hall for Men (Homi Bhabha Block)', area: 'East Wing' },
+  { name: 'Staff Mess', x: 87.0, y: 30.5, category: 'Amenity', desc: 'First Floor Dining Hall for Faculty & Staff (Homi Bhabha Block)', area: 'East Wing' },
   { name: 'C Block', x: 87.0, y: 38.0, category: 'C Block', desc: 'Labs, Classrooms & Staff Rooms', area: 'East Wing' },
-  { name: 'A Block (Alan Turing Block)', x: 77.0, y: 53.0, category: 'A Block', desc: 'Computer Science & AI Labs', area: 'East Wing' },
+  { name: 'Alan Turing Block', x: 77.0, y: 53.0, category: 'Lab / Academic', desc: 'Computer Science & AI Labs', area: 'East Wing' },
   { name: 'Arcade', x: 35.0, y: 57.0, category: 'Amenity', desc: 'Student Hub & Stores', area: 'Central South' },
   { name: 'Green Building', x: 23.0, y: 71.0, category: 'Admin / Facility', desc: 'Eco-Friendly Academic Complex & Library', area: 'South West' },
   { name: 'Security Booth', x: 49.0, y: 77.0, category: 'Amenity', desc: 'Main Gate Security Checkpoint', area: 'South Entrance' },
@@ -60,9 +59,9 @@ const LOCATION_SPOTS: LocationSpot[] = [
 ];
 
 const CATEGORY_MAP_SPOTS: Record<string, string[]> = {
-  dept: ['A Block (Alan Turing Block)', 'B Block (Nikola Tesla Block)', 'C Block', 'H Block (Homi Jehangir Bhabha Block)', 'Steve Jobs Block', 'Green Building'],
+  dept: ['Homi Jehangir Bhabha Block', 'Nikola Tesla Block', 'C Block', 'Steve Jobs Block', 'Alan Turing Block', 'Green Building'],
   library: ['Green Building'],
-  labs: ['MEC Lab', 'EPL Lab', 'A Block (Alan Turing Block)', 'B Block (Nikola Tesla Block)', 'C Block', 'H Block (Homi Jehangir Bhabha Block)', 'Steve Jobs Block'],
+  labs: ['MEC Lab', 'EPL Lab', 'Steve Jobs Block', 'Alan Turing Block', 'Nikola Tesla Block', 'C Block'],
   hostel: ['Girls Hostel', 'Boys Mess'],
   canteen: ['Canteen', 'Girls Mess', 'Boys Mess', 'Staff Mess', 'Arcade'],
   auditorium: ['Steve Jobs Block', 'Campus Centre'],
@@ -120,7 +119,6 @@ export default function Campus() {
       if (activeLegend === 'a-block' && spot.category === 'A Block') highlightedSpotNames.add(spot.name);
       if (activeLegend === 'b-block' && spot.category === 'B Block') highlightedSpotNames.add(spot.name);
       if (activeLegend === 'c-block' && spot.category === 'C Block') highlightedSpotNames.add(spot.name);
-      if (activeLegend === 'h-block' && spot.category === 'H Block') highlightedSpotNames.add(spot.name);
       if (activeLegend === 'admin' && spot.category === 'Admin / Facility') highlightedSpotNames.add(spot.name);
       if (activeLegend === 'hostel' && spot.category === 'Hostel / Mess') highlightedSpotNames.add(spot.name);
       if (activeLegend === 'lab' && spot.category === 'Lab / Academic') highlightedSpotNames.add(spot.name);
@@ -135,7 +133,6 @@ export default function Campus() {
     if (activeLegend === 'a-block') return fac.category === 'A Block';
     if (activeLegend === 'b-block') return fac.category === 'B Block';
     if (activeLegend === 'c-block') return fac.category === 'C Block';
-    if (activeLegend === 'h-block') return fac.category === 'H Block';
     if (activeLegend === 'admin') return fac.category === 'Admin / Facility';
     if (activeLegend === 'hostel') return fac.category === 'Hostel / Mess';
     if (activeLegend === 'lab') return fac.category === 'Lab / Academic';
