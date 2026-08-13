@@ -630,18 +630,19 @@ export default function Events() {
                   </div>
                 )}
 
-                {/* Email Card - Emerald Theme */}
-                <div className="bg-emerald-50/80 border border-emerald-100 hover:border-emerald-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center shadow-xs shadow-emerald-200 shrink-0">
-                    <Mail className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <span className="text-[11px] text-emerald-500 font-semibold block">Contact Email</span>
-                    <a href={`mailto:${selectedClub.contactEmail}`} className="text-sm font-bold text-emerald-700 hover:text-emerald-800 hover:underline truncate block">
-                      {selectedClub.contactEmail || 'club@ritchennai.edu.in'}
-                    </a>
-                  </div>
-                </div>
+{selectedClub.contactEmail && (
+  <div className="bg-emerald-50/80 border border-emerald-100 hover:border-emerald-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
+    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center shadow-xs shadow-emerald-200 shrink-0">
+      <Mail className="w-5 h-5 text-white" />
+    </div>
+    <div className="min-w-0 flex-1">
+      <span className="text-[11px] text-emerald-500 font-semibold block">Contact Email</span>
+      <a href={`mailto:${selectedClub.contactEmail}`} className="text-sm font-bold text-emerald-700 hover:text-emerald-800 hover:underline truncate block">
+        {selectedClub.contactEmail}
+      </a>
+    </div>
+  </div>
+)}
 
                 {/* Phone Card - Sky Theme */}
                 <div className="bg-sky-50/80 border border-sky-100 hover:border-sky-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
