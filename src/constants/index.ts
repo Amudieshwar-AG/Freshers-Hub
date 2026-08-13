@@ -13,6 +13,7 @@ export const NAV_LINKS = [
   { label: 'Community', path: '/community' },
   { label: 'Dev Collab', path: '/collab' },
   { label: 'LeetCode', path: '/leetcode' },
+  { label: 'RAISE', path: '/raise' },
 ];
 
 // ─── Stats ────────────────────────────────────────────────────────────────────

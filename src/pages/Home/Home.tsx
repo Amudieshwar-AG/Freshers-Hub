@@ -92,6 +92,19 @@ export default function Home() {
                 Ask Assistant
               </motion.button>
             </Link>
+
+            <Link to="/raise">
+              <motion.button
+                whileHover={{ scale: 1.04, boxShadow: '0 10px 30px -5px rgba(233,30,99,0.5)' }}
+                whileTap={{ scale: 0.96 }}
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-rose-500 to-pink-600 border border-white/30 backdrop-blur-md transition-all cursor-pointer shadow-lg shadow-pink-500/20"
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
+                <Sparkles className="w-4 h-4 text-amber-200" />
+                Pitch your Idea - RAISE
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
+            </Link>
           </motion.div>
         </motion.div>
       </section>

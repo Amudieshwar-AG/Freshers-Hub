@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, LogIn, LogOut, ShieldCheck, ChevronDown } from 'lucide-react';
+import { Menu, X, LogIn, LogOut, ShieldCheck, ChevronDown, Rocket, Sparkles } from 'lucide-react';
 import { NAV_LINKS } from '@/constants';
 import { useAuth } from '@/context/AuthContext';
 
@@ -121,6 +121,16 @@ export default function Navbar() {
 
           {/* Right Side: Auth + Mobile Toggle */}
           <div className="flex items-center gap-2">
+            {/* Pitch your Idea - RAISE Button */}
+            <Link
+              to="/raise"
+              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 hover:from-rose-600 hover:to-pink-600 text-white text-[11px] font-bold shadow-md shadow-rose-500/25 border border-white/20 transition-all duration-200 hover:scale-[1.03] active:scale-95 whitespace-nowrap"
+              style={{ fontFamily: 'Poppins, sans-serif' }}
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+              <span>Pitch your Idea - RAISE</span>
+            </Link>
+
             {/* Auth Section */}
             {isAuthenticated && user ? (
               <div className="relative" ref={profileRef}>
@@ -266,6 +276,17 @@ export default function Navbar() {
                     </Link>
                   );
                 })}
+
+                {/* Mobile RAISE Button */}
+                <Link
+                  to="/raise"
+                  onClick={() => setIsMobileOpen(false)}
+                  className="col-span-2 mt-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-bold bg-gradient-to-r from-rose-500 to-pink-600 border border-rose-400/40 shadow-md shadow-rose-500/20 transition-all active:scale-95"
+                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                >
+                  <Sparkles className="w-4 h-4 text-amber-200" />
+                  Pitch your Idea - RAISE
+                </Link>
 
                 {/* Mobile Auth Button */}
                 {!isAuthenticated ? (
