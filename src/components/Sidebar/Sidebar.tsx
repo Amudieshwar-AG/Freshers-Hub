@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -14,13 +14,12 @@ import {
   Code2,
   Trophy,
   Rocket,
-  ShieldAlert,
   LogOut,
   LogIn,
   ShieldCheck,
+  ChevronLeft,
   ChevronRight,
-  Sparkles,
-  Menu,
+  GitBranch,
   X
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -28,13 +27,14 @@ import { useAuth } from '@/context/AuthContext';
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
 interface NavItem {
   label: string;
   path: string;
   icon: any;
-  badge?: string;
   highlight?: boolean;
 }
 
@@ -43,9 +43,13 @@ interface NavGroup {
   items: NavItem[];
 }
 
-export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
+export default function Sidebar({
+  isOpen,
+  onToggle,
+  isCollapsed,
+  onToggleCollapse,
+}: SidebarProps) {
   const location = useLocation();
-  const navigate = useNavigate();
   const { user, isAuthenticated, isVerifiedStudent, loginWithGoogle, logout } = useAuth();
 
   const checkIsActive = (linkPath: string) => {
@@ -72,7 +76,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         { label: 'Dashboard', path: '/', icon: LayoutDashboard },
         { label: 'Notes & PYQs', path: '/notes', icon: BookOpen },
         { label: 'Student Toolkit', path: '/notes?section=toolkit', icon: Wrench },
-        { label: 'RIT AI Chatbot', path: '/ai-assistant', icon: Bot, badge: 'AI' },
+        { label: 'RIT Chatbot', path: '/ai-assistant', icon: Bot },
       ],
     },
     {
@@ -88,9 +92,9 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       title: 'COMMUNITY & DEV',
       items: [
         { label: 'Freshers Q&A', path: '/community', icon: MessageSquare },
-        { label: 'Dev Collab Hub', path: '/collab', icon: Code2 },
+        { label: 'Dev Collab Hub', path: '/collab', icon: Code2, highlight: true },
         { label: 'LeetCode Board', path: '/leetcode', icon: Trophy },
-        { label: 'RAISE Incubator', path: '/raise', icon: Rocket, highlight: true },
+        { label: 'RAISE Incubator', path: '/raise', icon: Rocket },
       ],
     },
   ];
@@ -110,75 +114,88 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         )}
       </AnimatePresence>
 
-      {/* Main Sidebar Container */}
+      {/* Main Sidebar Container - Sleek Professional Deep Indigo */}
       <aside
-        className={`fixed top-0 left-0 z-50 h-screen w-64 xl:w-72 bg-gradient-to-b from-[#1E1B4B] via-[#2E1065] to-[#3B0764] text-white transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-0 left-0 z-50 h-screen bg-[#0F172A] text-white transition-all duration-300 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } flex flex-col justify-between border-r border-white/10 shadow-[8px_0_32px_rgba(0,0,0,0.3)]`}
+        } ${
+          isCollapsed ? 'w-20' : 'w-64 xl:w-72'
+        } flex flex-col justify-between border-r border-slate-800 shadow-[8px_0_30px_rgba(0,0,0,0.3)]`}
       >
-        {/* Top Header & Branding */}
-        <div className="p-6 flex flex-col gap-6">
+        {/* Top Branding & Collapse Button */}
+        <div className="p-4 sm:p-5 flex flex-col gap-5">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="relative p-2 rounded-2xl bg-gradient-to-br from-purple-500/30 to-indigo-500/20 border border-white/20 shadow-lg group-hover:scale-105 transition-transform">
+            <Link to="/" className="flex items-center gap-3 group min-w-0">
+              <div className="p-2 rounded-2xl bg-indigo-950/80 border border-indigo-500/20 shadow-sm shrink-0">
                 <img
                   src="/logo.png"
                   alt="RIT Logo"
-                  className="w-8 h-8 object-contain rounded-full"
+                  className="w-7 h-7 object-contain rounded-full"
                 />
               </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-white text-xl tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              {!isCollapsed && (
+                <div className="flex flex-col min-w-0">
+                  <span className="font-bold text-white text-lg tracking-tight truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     RIT Portal
                   </span>
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-purple-500/30 text-purple-200 border border-purple-400/30">
-                    v2.0
+                  <span className="text-[10px] text-indigo-300/70 font-medium tracking-wider uppercase truncate" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    Freshers Hub
                   </span>
                 </div>
-                <span className="text-[10px] font-medium text-purple-200/70 tracking-wider uppercase" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  Rajalakshmi Tech
-                </span>
-              </div>
+              )}
             </Link>
 
+            {/* Mobile Close Button */}
             <button
               onClick={onToggle}
-              className="lg:hidden p-2 rounded-xl bg-white/10 hover:bg-white/20 text-purple-200 transition-colors"
+              className="lg:hidden p-1.5 rounded-xl bg-slate-800 text-slate-200 hover:bg-slate-700"
             >
               <X className="w-5 h-5" />
             </button>
+
+            {/* Desktop Collapse Toggle Button */}
+            <button
+              onClick={onToggleCollapse}
+              className="hidden lg:flex p-1.5 rounded-xl bg-slate-800/80 hover:bg-indigo-900/60 text-indigo-300 hover:text-white border border-slate-700/60 transition-colors"
+              title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+            >
+              {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            </button>
           </div>
 
-          {/* Quick Pitch CTA inside Sidebar */}
-          <Link
-            to="/raise"
-            className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-500 hover:to-indigo-500 border border-purple-400/30 shadow-md shadow-purple-900/40 text-white group transition-all duration-200"
-          >
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-xl bg-amber-400/20 border border-amber-300/40 flex items-center justify-center text-amber-300">
-                <Sparkles className="w-4 h-4" />
+          {/* Quick Dev Collab Launch CTA inside Sidebar (Expanded only) */}
+          {!isCollapsed && (
+            <Link
+              to="/collab"
+              className="w-full flex items-center justify-between p-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 border border-indigo-400/30 text-white group transition-all duration-200 shadow-md shadow-indigo-950/50"
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-7 h-7 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center text-white shrink-0">
+                  <GitBranch className="w-4 h-4" />
+                </div>
+                <div className="flex flex-col text-left min-w-0">
+                  <span className="text-xs font-bold leading-tight truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Dev Collab Hub
+                  </span>
+                  <span className="text-[10px] text-indigo-100/80 truncate">Co-Developer Projects</span>
+                </div>
               </div>
-              <div className="flex flex-col text-left">
-                <span className="text-xs font-bold leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  RAISE Incubator
-                </span>
-                <span className="text-[10px] text-purple-200/80">Pitch Startup Idea</span>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-purple-200 group-hover:translate-x-1 transition-transform" />
-          </Link>
+              <ChevronRight className="w-4 h-4 text-indigo-200 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          )}
 
           {/* Navigation Groups */}
-          <nav className="flex flex-col gap-6 overflow-y-auto max-h-[calc(100vh-340px)] custom-scrollbar pr-1">
+          <nav className="flex flex-col gap-5 overflow-y-auto max-h-[calc(100vh-320px)] custom-scrollbar pr-0.5">
             {navGroups.map((group) => (
               <div key={group.title} className="flex flex-col gap-1">
-                <span
-                  className="px-3 text-[10px] font-bold text-purple-300/60 tracking-widest uppercase mb-1"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
-                >
-                  {group.title}
-                </span>
+                {!isCollapsed && (
+                  <span
+                    className="px-3 text-[10px] font-bold text-slate-400/70 tracking-widest uppercase mb-1"
+                    style={{ fontFamily: 'Inter, sans-serif' }}
+                  >
+                    {group.title}
+                  </span>
+                )}
 
                 {group.items.map((item) => {
                   const isActive = checkIsActive(item.path);
@@ -188,32 +205,27 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                     <Link
                       key={item.path}
                       to={item.path}
-                      className={`relative flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 group ${
+                      title={isCollapsed ? item.label : undefined}
+                      className={`relative flex items-center ${
+                        isCollapsed ? 'justify-center px-0 py-3' : 'justify-between px-3 py-2.5'
+                      } rounded-xl text-xs font-semibold transition-all duration-200 group ${
                         isActive
-                          ? 'bg-gradient-to-r from-purple-600/90 via-purple-700/80 to-indigo-800/90 text-white shadow-lg shadow-purple-950/50 border border-purple-400/30'
-                          : 'text-purple-200/80 hover:text-white hover:bg-white/10'
+                          ? 'bg-indigo-600 text-white shadow-sm border border-indigo-400/30'
+                          : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
                       }`}
                       style={{ fontFamily: 'Poppins, sans-serif' }}
                     >
                       <div className="flex items-center gap-3">
                         <Icon
-                          className={`w-4 h-4 transition-colors ${
-                            isActive
-                              ? 'text-white'
-                              : 'text-purple-300/70 group-hover:text-purple-200'
+                          className={`w-4 h-4 shrink-0 ${
+                            isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'
                           }`}
                         />
-                        <span>{item.label}</span>
+                        {!isCollapsed && <span>{item.label}</span>}
                       </div>
 
-                      {item.badge && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-400/30">
-                          {item.badge}
-                        </span>
-                      )}
-
-                      {item.highlight && !isActive && (
-                        <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
+                      {!isCollapsed && item.highlight && !isActive && (
+                        <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse" />
                       )}
                     </Link>
                   );
@@ -224,54 +236,55 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         </div>
 
         {/* Footer User Profile & Auth Section */}
-        <div className="p-4 border-t border-white/10 bg-black/20 backdrop-blur-md">
+        <div className="p-3 border-t border-slate-800 bg-slate-950/60">
           {isAuthenticated && user ? (
-            <div className="flex items-center justify-between p-2.5 rounded-2xl bg-white/5 border border-white/10">
-              <div className="flex items-center gap-3 min-w-0">
+            <div className={`flex items-center ${isCollapsed ? 'justify-center p-2' : 'justify-between p-2.5'} rounded-2xl bg-white/5 border border-white/10`}>
+              <div className="flex items-center gap-2.5 min-w-0">
                 {user.pictureUrl ? (
                   <img
                     src={user.pictureUrl}
                     alt={user.name}
-                    className="w-9 h-9 rounded-xl border border-purple-400/40 object-cover shrink-0"
+                    className="w-8 h-8 rounded-xl border border-indigo-400/40 object-cover shrink-0"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                 )}
-                <div className="flex flex-col min-w-0">
-                  <span className="text-xs font-bold text-white truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {user.name}
-                  </span>
-                  <div className="flex items-center gap-1 text-[10px] text-purple-200/70 truncate">
-                    {isVerifiedStudent ? (
-                      <span className="text-emerald-400 font-semibold flex items-center gap-0.5">
-                        <ShieldCheck className="w-3 h-3" /> Verified Student
-                      </span>
-                    ) : (
-                      <span>RIT Account</span>
-                    )}
+                {!isCollapsed && (
+                  <div className="flex flex-col min-w-0 text-left">
+                    <span className="text-xs font-bold text-white truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      {user.name}
+                    </span>
+                    <span className="text-[10px] text-slate-400 truncate">
+                      {isVerifiedStudent ? 'Verified Student' : 'RIT Account'}
+                    </span>
                   </div>
-                </div>
+                )}
               </div>
 
-              <button
-                onClick={logout}
-                title="Sign Out"
-                className="p-2 rounded-xl hover:bg-white/10 text-purple-300 hover:text-white transition-colors cursor-pointer"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
+              {!isCollapsed && (
+                <button
+                  onClick={logout}
+                  title="Sign Out"
+                  className="p-1.5 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              )}
             </div>
           ) : (
             <button
               onClick={loginWithGoogle}
-              className="w-full flex items-center justify-center gap-2 p-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md border border-purple-400/30 transition-all cursor-pointer"
+              title={isCollapsed ? 'Student Sign In' : undefined}
+              className={`w-full flex items-center justify-center gap-2 ${
+                isCollapsed ? 'p-2.5' : 'p-2.5'
+              } rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all cursor-pointer`}
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
-              <LogIn className="w-4 h-4" />
-              <span>Student Sign In</span>
+              <LogIn className="w-4 h-4 shrink-0" />
+              {!isCollapsed && <span>Student Sign In</span>}
             </button>
           )}
         </div>

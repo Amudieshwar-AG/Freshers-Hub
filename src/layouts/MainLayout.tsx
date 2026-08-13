@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Sidebar from '@/components/Sidebar/Sidebar';
@@ -13,17 +13,36 @@ const pageVariants = {
 
 export default function MainLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    return localStorage.getItem('rit_sidebar_collapsed') === 'true';
+  });
   const location = useLocation();
 
   const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
+  const toggleSidebarCollapse = () => {
+    setIsSidebarCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem('rit_sidebar_collapsed', String(next));
+      return next;
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col lg:flex-row font-sans selection:bg-purple-600 selection:text-white">
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col lg:flex-row font-sans selection:bg-purple-700 selection:text-white">
       {/* Left Sidebar Navigation */}
-      <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onToggle={toggleSidebar}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={toggleSidebarCollapse}
+      />
 
       {/* Main Right Viewport Wrapper */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-64 xl:pl-72 transition-all duration-300">
+      <div
+        className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
+          isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64 xl:pl-72'
+        }`}
+      >
         {/* Top Header */}
         <Header onToggleSidebar={toggleSidebar} />
 
