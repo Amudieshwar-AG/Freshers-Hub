@@ -1,6 +1,8 @@
-import { Outlet, useSearchParams, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import Navbar from '@/components/Navbar/Navbar';
+import Sidebar from '@/components/Sidebar/Sidebar';
+import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 
 const pageVariants = {
@@ -10,26 +12,41 @@ const pageVariants = {
 };
 
 export default function MainLayout() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
-  const [searchParams] = useSearchParams();
-  const hideFooter = location.pathname === '/notes' && searchParams.has('toolkit');
+
+  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAFAFA' }}>
-      <Navbar />
-      <AnimatePresence mode="wait">
-        <motion.main
-          key={location.pathname}
-          variants={pageVariants}
-          initial="initial"
-          animate="enter"
-          exit="exit"
-          transition={{ duration: 0.3, ease: 'easeInOut' }}
-        >
-          <Outlet />
-        </motion.main>
-      </AnimatePresence>
-      {!hideFooter && <Footer />}
+    <div className="min-h-screen bg-[#F8FAFC] flex flex-col lg:flex-row font-sans selection:bg-purple-600 selection:text-white">
+      {/* Left Sidebar Navigation */}
+      <Sidebar isOpen={isSidebarOpen} onToggle={toggleSidebar} />
+
+      {/* Main Right Viewport Wrapper */}
+      <div className="flex-1 flex flex-col min-w-0 lg:pl-64 xl:pl-72 transition-all duration-300">
+        {/* Top Header */}
+        <Header onToggleSidebar={toggleSidebar} />
+
+        {/* Dynamic Page Content */}
+        <div className="flex-1 p-4 sm:p-6 lg:p-8">
+          <AnimatePresence mode="wait">
+            <motion.main
+              key={location.pathname}
+              variants={pageVariants}
+              initial="initial"
+              animate="enter"
+              exit="exit"
+              transition={{ duration: 0.25, ease: 'easeInOut' }}
+              className="max-w-7xl mx-auto"
+            >
+              <Outlet />
+            </motion.main>
+          </AnimatePresence>
+        </div>
+
+        {/* Global Footer */}
+        <Footer />
+      </div>
     </div>
   );
 }
