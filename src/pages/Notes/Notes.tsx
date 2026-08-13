@@ -2020,13 +2020,14 @@ export default function Notes() {
 
                 {/* Technical Security Note */}
                 <div className="mt-6 text-[11px] text-[#94A3B8] leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  ℹ️ <span className="font-semibold text-[#64748B]">Security Note:</span> To protect student session privacy and prevent clickjacking attacks, RIT's Moodle server enforces opening the portal directly in a secure browser tab rather than inside third-party frames (<code className="bg-slate-100 px-1 py-0.5 rounded text-[10px]">X-Frame-Options: SAMEORIGIN</code>).
+                  ℹ️ <span className="font-semibold text-[#64748B]">Security Note:</span> To protect student session privacy and prevent clickjacking attacks, RIT&apos;s Moodle server enforces opening the portal directly in a secure browser tab rather than inside third-party frames (<code className="bg-slate-100 px-1 py-0.5 rounded text-[10px]">X-Frame-Options: SAMEORIGIN</code>).
                 </div>
               </div>
             </motion.div>
             </div>
           </div>
-        )}
+        </div>
+      )}
       </div>
     </div>
   );

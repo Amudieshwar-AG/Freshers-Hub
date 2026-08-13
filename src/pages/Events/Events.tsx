@@ -66,15 +66,18 @@ const QUIZ_QUESTIONS = [
     id: 'interest',
     title: '1. What topics or domains are you most interested in?',
     options: [
-      { label: '🚀 Space Tech, Astronomy & Rocketry', clubIds: ['stellar_space_tech', 'infinitus'] },
       { label: '⚙️ AI Quests, Chip Design, RobochipX & STEM', clubIds: ['steam', 'wistem', 'techspark'] },
       { label: '🎙️ Radio, Podcasting, Storytelling & RJing', clubIds: ['podx', 'mediastic'] },
-      { label: '🤝 Community Service, Village Development & NSS Drives', clubIds: ['nss', 'unnat_bharat'] },
+      { label: '🤝 Community Service, Village Development & NSS Drives', clubIds: ['nss', 'unnat_bharat', 'rotaract'] },
+      { label: '🩸 Blood Donation, Health Camps & Humanitarian Relief', clubIds: ['yrc', 'nss', 'rotaract'] },
       { label: '🎭 Dance, Music, Band & Cultural Arts', clubIds: ['artist_league', 'podx'] },
-      { label: '🧮 Fast Calculation, PiDoku, Logic & Mathematics', clubIds: ['infinitus', 'stellar_space_tech'] },
+      { label: '🧮 Fast Calculation, PiDoku, Logic & Mathematics', clubIds: ['infinitus', 'steam'] },
       { label: '✍️ Tamil Literature, Debates & Cultural Heritage', clubIds: ['vaarithi', 'fusion'] },
+      { label: '🏛️ Telugu Culture, Festival Celebrations & Heritage', clubIds: ['telugu', 'fusion'] },
       { label: '🌸 Japanese Culture, Anime, Manga & Foreign Languages', clubIds: ['nippon', 'fusion'] },
       { label: '📷 Photo/Video Production & Social Media Content', clubIds: ['mediastic', 'helios', 'podx'] },
+      { label: '✨ Women Empowerment, Leadership & Career Vision', clubIds: ['wec', 'wistem'] },
+      { label: '🚀 Youth Leadership, Yi Networking & National Summits', clubIds: ['yuva', 'rotaract'] },
     ],
   },
   {
@@ -82,13 +85,15 @@ const QUIZ_QUESTIONS = [
     title: '2. What skills do you currently have or want to develop?',
     options: [
       { label: '💻 Web3, AI Tools, Circuit Design & Coding Hackathons', clubIds: ['wistem', 'steam', 'techspark'] },
-      { label: '🌌 Space Science & Physics Problem Solving', clubIds: ['stellar_space_tech', 'infinitus'] },
       { label: '🎙️ Public Speaking, Interviewing & Voice Recording', clubIds: ['podx', 'mediastic'] },
-      { label: '🤝 Social Work, Environmental Protection & Leadership', clubIds: ['nss', 'unnat_bharat'] },
+      { label: '🤝 Social Work, Environmental Protection & Leadership', clubIds: ['nss', 'unnat_bharat', 'rotaract'] },
+      { label: '🩸 Health Awareness, Blood Drive Logistics & Disaster Relief', clubIds: ['yrc', 'nss'] },
       { label: '🕺 Stage Performance, Singing, Dance & Rap', clubIds: ['artist_league'] },
       { label: '📐 Analytical Thinking, Logic Puzzles & Aptitude', clubIds: ['infinitus'] },
-      { label: '📝 Essay Writing, Tamil/English Oratory & Literature', clubIds: ['vaarithi', 'fusion'] },
+      { label: '📝 Essay Writing, Tamil/Telugu/English Oratory & Literature', clubIds: ['vaarithi', 'telugu', 'fusion'] },
       { label: '🎥 Camera Operations, Video Editing & Digital Media', clubIds: ['mediastic', 'helios'] },
+      { label: '🌟 Women Leadership, Self Defense & Mentorship', clubIds: ['wec', 'wistem'] },
+      { label: '👑 Youth Representation, Project Management & Event Planning', clubIds: ['yuva', 'rotaract'] },
     ],
   },
   {
@@ -96,11 +101,13 @@ const QUIZ_QUESTIONS = [
     title: '3. What is your main goal for joining a club at RIT?',
     options: [
       { label: '🤖 Build hackathon projects, chip designs & STEM innovations', clubIds: ['steam', 'wistem', 'techspark'] },
-      { label: '🚀 Work on aerospace tech & scientific projects', clubIds: ['stellar_space_tech', 'infinitus'] },
       { label: '🌟 Share inspiring stories & host campus podcasts', clubIds: ['podx', 'mediastic'] },
       { label: '👥 Drive social change & serve rural communities', clubIds: ['nss', 'unnat_bharat'] },
+      { label: '🩸 Organize blood donation drives & health protection campaigns', clubIds: ['yrc', 'rotaract'] },
       { label: '🏆 Perform live at cultural fests & stage shows', clubIds: ['artist_league', 'vaarithi'] },
-      { label: '📖 Master new languages & explore world cultures', clubIds: ['nippon', 'fusion', 'vaarithi'] },
+      { label: '📖 Master new languages & explore world/regional cultures', clubIds: ['nippon', 'telugu', 'vaarithi', 'fusion'] },
+      { label: '💪 Empower women in STEM & corporate leadership', clubIds: ['wec', 'wistem'] },
+      { label: '💼 Connect with Young Indians (Yi), CII & Industry Leaders', clubIds: ['yuva', 'rotaract'] },
     ],
   },
 ];
@@ -111,37 +118,38 @@ export default function Events() {
   // ─── Interactive Like / Favorite System State ─────────────────────────────
   const [likedClubs, setLikedClubs] = useState<Set<string>>(() => {
     try {
-      const saved = localStorage.getItem('rit_freshers_liked_clubs');
-      return saved ? new Set(JSON.parse(saved)) : new Set(['podx', 'stellar_space_tech']);
+      localStorage.removeItem('rit_freshers_liked_clubs');
+      const saved = localStorage.getItem('rit_freshers_liked_clubs_v3');
+      return saved ? new Set(JSON.parse(saved)) : new Set();
     } catch {
-      return new Set(['podx', 'stellar_space_tech']);
+      return new Set();
     }
   });
 
   const [likesMap, setLikesMap] = useState<Record<string, number>>(() => {
     const initialMap: Record<string, number> = {};
-    CLUBS_DATA.forEach((c, idx) => {
-      initialMap[c.id] = Math.round(c.members * 0.42) + (idx % 5) * 14 + 35;
+    CLUBS_DATA.forEach((c) => {
+      initialMap[c.id] = 0;
     });
     return initialMap;
   });
 
   const toggleLike = (clubId: string) => {
-    setLikedClubs((prev) => {
-      const next = new Set(prev);
-      const isCurrentlyLiked = next.has(clubId);
-      if (isCurrentlyLiked) {
-        next.delete(clubId);
-        setLikesMap((l) => ({ ...l, [clubId]: Math.max(0, (l[clubId] || 1) - 1) }));
-      } else {
-        next.add(clubId);
-        setLikesMap((l) => ({ ...l, [clubId]: (l[clubId] || 0) + 1 }));
-      }
-      try {
-        localStorage.setItem('rit_freshers_liked_clubs', JSON.stringify(Array.from(next)));
-      } catch {}
-      return next;
-    });
+    const isCurrentlyLiked = likedClubs.has(clubId);
+    const next = new Set(likedClubs);
+
+    if (isCurrentlyLiked) {
+      next.delete(clubId);
+      setLikesMap((l) => ({ ...l, [clubId]: Math.max(0, (l[clubId] || 1) - 1) }));
+    } else {
+      next.add(clubId);
+      setLikesMap((l) => ({ ...l, [clubId]: (l[clubId] || 0) + 1 }));
+    }
+
+    setLikedClubs(next);
+    try {
+      localStorage.setItem('rit_freshers_liked_clubs_v3', JSON.stringify(Array.from(next)));
+    } catch {}
   };
 
   // ─── Club Matcher Quiz State (Feature 1) ─────────────────────────────────
@@ -284,7 +292,7 @@ export default function Events() {
                       </div>
                     )}
 
-                    {/* Like Button & Members Count */}
+                    {/* Like Button */}
                     <div className="flex items-center gap-2">
                       <motion.button
                         whileHover={{ scale: 1.08 }}
@@ -302,11 +310,6 @@ export default function Events() {
                         <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
                         <span>{likesCount}</span>
                       </motion.button>
-
-                      <div className="flex items-center gap-1 text-xs text-[#94A3B8] bg-slate-50 px-2 py-1 rounded-full border border-slate-100">
-                        <Users className="w-3.5 h-3.5 text-slate-400" />
-                        <span>{club.members}</span>
-                      </div>
                     </div>
                   </div>
 
@@ -472,7 +475,7 @@ export default function Events() {
                                 <span className="font-bold text-sm text-[#1E293B]">{item.club.name}</span>
                                 {i === 0 && <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">Top Match 🏆</span>}
                               </div>
-                              <span className="text-xs text-slate-500">{item.club.category} Club • {item.club.members} members</span>
+                              <span className="text-xs text-slate-500">{item.club.category} Club</span>
                             </div>
                           </div>
                           <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 shrink-0">
@@ -601,16 +604,31 @@ export default function Events() {
                   </div>
                 </div>
 
-                {/* Year Card - Purple Theme */}
-                <div className="bg-purple-50/80 border border-purple-100 hover:border-purple-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 text-white flex items-center justify-center shadow-xs shadow-purple-200 shrink-0">
-                    <GraduationCap className="w-5 h-5 text-white" />
+                {/* Vice President Card - Violet Theme */}
+                {selectedClub.vicePresidentName && (
+                  <div className="bg-violet-50/80 border border-violet-100 hover:border-violet-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 text-white flex items-center justify-center shadow-xs shadow-violet-200 shrink-0">
+                      <Users className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-violet-500 font-semibold block">Vice President</span>
+                      <span className="text-sm font-bold text-violet-950">{selectedClub.vicePresidentName}</span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-[11px] text-purple-500 font-semibold block">Year & Department</span>
-                    <span className="text-sm font-bold text-purple-950">{selectedClub.year || 'Senior Year'}</span>
+                )}
+
+                {/* Coordinator Card - Amber Theme */}
+                {selectedClub.coordinatorName && (
+                  <div className="bg-amber-50/80 border border-amber-100 hover:border-amber-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center shadow-xs shadow-amber-200 shrink-0">
+                      <GraduationCap className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-amber-600 font-semibold block">Faculty Coordinator</span>
+                      <span className="text-sm font-bold text-amber-950">{selectedClub.coordinatorName}</span>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Email Card - Emerald Theme */}
                 <div className="bg-emerald-50/80 border border-emerald-100 hover:border-emerald-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
