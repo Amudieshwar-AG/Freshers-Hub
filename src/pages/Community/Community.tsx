@@ -533,8 +533,8 @@ export default function Community() {
                                                 <div className="flex-1 min-w-0">
                                                   <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
                                                     <span className="text-[11.5px] font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>{ans.author}</span>
-                                                    {/* Blue verified check icon for senior helpers */}
-                                                    <span className="inline-flex text-blue-500" title="Verified Senior Helper">
+                                                    {/* Verified check icon for senior helpers */}
+                                                    <span className="inline-flex text-violet-400" title="Verified Senior Helper">
                                                       <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                                                         <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                                                       </svg>

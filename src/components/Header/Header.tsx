@@ -176,12 +176,12 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-3 sm:px-4 lg:px-8 py-3 flex items-center justify-between shadow-xs">
+    <header className="sticky top-0 z-30 w-full bg-[#0F172A]/90 backdrop-blur-md border-b border-slate-800/80 px-3 sm:px-4 lg:px-8 py-3 flex items-center justify-between shadow-md text-white">
       <div className="flex items-center gap-2.5 sm:gap-4 min-w-0 flex-1">
         {/* Mobile Toggle */}
         <button
           onClick={onToggleSidebar}
-          className="lg:hidden p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer shrink-0"
+          className="lg:hidden p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 transition-colors cursor-pointer shrink-0 border border-slate-700/60"
           title="Toggle Navigation Menu"
         >
           <Menu className="w-5 h-5" />
@@ -203,24 +203,24 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
               }}
               onFocus={() => setIsSearchOpen(true)}
               placeholder="Search notes, faculty, bus routes..."
-              className="w-full pl-9 pr-8 sm:pr-12 py-2 text-xs font-medium bg-slate-100/90 hover:bg-slate-100 focus:bg-white border border-transparent focus:border-indigo-500/40 rounded-xl text-slate-800 placeholder-slate-400 outline-none transition-all shadow-inner truncate"
+              className="w-full pl-9 pr-8 sm:pr-12 py-2 text-xs font-medium bg-slate-900/90 hover:bg-slate-900 focus:bg-slate-950 border border-slate-800 focus:border-violet-500/50 rounded-xl text-white placeholder-slate-400 outline-none transition-all shadow-inner truncate"
               style={{ fontFamily: 'Inter, sans-serif' }}
             />
-            <span className="hidden sm:inline-flex absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-slate-400 bg-white border border-slate-200 px-1.5 py-0.5 rounded-md shadow-2xs">
+            <span className="hidden sm:inline-flex absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-slate-300 bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded-md shadow-2xs">
               ⌘K
             </span>
           </div>
 
           {/* Search Live Results Dropdown Overlay */}
           {isSearchOpen && (
-            <div className="absolute top-full left-0 mt-2 w-full sm:w-[420px] bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden z-50 p-2 text-left">
-              <div className="flex items-center justify-between px-3 py-2 border-b border-slate-100">
+            <div className="absolute top-full left-0 mt-2 w-full sm:w-[420px] bg-[#0F172A] rounded-2xl border border-slate-800 shadow-2xl overflow-hidden z-50 p-2 text-left">
+              <div className="flex items-center justify-between px-3 py-2 border-b border-slate-800">
                 <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                   {searchQuery.trim() ? 'Search Results' : 'Quick Navigation'}
                 </span>
                 <button
                   onClick={() => setIsSearchOpen(false)}
-                  className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+                  className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -234,20 +234,20 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
                       <div
                         key={i}
                         onClick={() => handleSelectResult(res.path)}
-                        className="flex items-center justify-between p-2.5 rounded-xl hover:bg-indigo-50/70 cursor-pointer transition-colors group"
+                        className="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-800/80 cursor-pointer transition-colors group"
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+                          <div className="w-8 h-8 rounded-lg bg-[#1E1B4B] text-violet-300 flex items-center justify-center shrink-0 border border-violet-800/40">
                             <Icon className="w-4 h-4" />
                           </div>
                           <div className="flex flex-col min-w-0">
-                            <span className="text-xs font-bold text-slate-900 group-hover:text-indigo-700 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                            <span className="text-xs font-bold text-white group-hover:text-violet-300 truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
                               {res.title}
                             </span>
-                            <span className="text-[11px] text-slate-500 truncate">{res.desc}</span>
+                            <span className="text-[11px] text-slate-400 truncate">{res.desc}</span>
                           </div>
                         </div>
-                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 shrink-0">
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 shrink-0 border border-slate-700">
                           {res.category}
                         </span>
                       </div>
@@ -255,25 +255,25 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
                   })
                 ) : (
                   <div className="p-4 text-center space-y-2">
-                    <span className="text-xs text-slate-500 block">
+                    <span className="text-xs text-slate-400 block">
                       {searchQuery.trim() ? `No matches found for "${searchQuery}"` : 'Type to search notes, faculty, routes & clubs'}
                     </span>
                     <div className="flex flex-wrap justify-center gap-1.5 pt-1">
                       <button
                         onClick={() => handleSelectResult('/notes')}
-                        className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-medium hover:bg-indigo-50 hover:text-indigo-600"
+                        className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 hover:text-white border border-slate-700"
                       >
                         Notes
                       </button>
                       <button
                         onClick={() => handleSelectResult('/bus-routes')}
-                        className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-medium hover:bg-indigo-50 hover:text-indigo-600"
+                        className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 hover:text-white border border-slate-700"
                       >
                         Bus Routes
                       </button>
                       <button
                         onClick={() => handleSelectResult('/faculty')}
-                        className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-medium hover:bg-indigo-50 hover:text-indigo-600"
+                        className="text-[11px] px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-medium hover:bg-slate-700 hover:text-white border border-slate-700"
                       >
                         Faculty
                       </button>
@@ -289,8 +289,8 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
       {/* Right Header Status Bar */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {/* Date Display Badge */}
-        <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-600 text-xs font-medium border border-slate-200/60">
-          <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+        <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900/90 text-slate-300 text-xs font-medium border border-slate-800">
+          <Calendar className="w-3.5 h-3.5 text-violet-400" />
           <span>{currentDate}</span>
         </div>
 
@@ -298,25 +298,25 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
         <div className="relative" ref={notifRef}>
           <button
             onClick={() => setIsNotifOpen((prev) => !prev)}
-            className="relative p-2 rounded-xl bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer border border-slate-200/60"
+            className="relative p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors cursor-pointer border border-slate-800"
             title="Notifications"
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-600 ring-2 ring-white" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-violet-400 ring-2 ring-[#0F172A]" />
             )}
           </button>
 
           {/* Notifications Panel Dropdown */}
           {isNotifOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden z-50 p-3 text-left">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+            <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-[#0F172A] rounded-2xl border border-slate-800 shadow-2xl overflow-hidden z-50 p-3 text-left">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-800">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-slate-900" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <span className="text-xs font-bold text-white" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     Notifications
                   </span>
                   {unreadCount > 0 && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-600 text-white">
                       {unreadCount} new
                     </span>
                   )}
@@ -326,7 +326,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
                   {unreadCount > 0 && (
                     <button
                       onClick={markAllAsRead}
-                      className="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800"
+                      className="text-[11px] font-semibold text-violet-400 hover:text-violet-300"
                     >
                       Mark all read
                     </button>
@@ -334,7 +334,7 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
                   {notifications.length > 0 && (
                     <button
                       onClick={clearNotifications}
-                      className="text-[11px] font-semibold text-slate-400 hover:text-slate-600"
+                      className="text-[11px] font-semibold text-slate-400 hover:text-slate-300"
                     >
                       Clear
                     </button>
@@ -348,16 +348,16 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
                     <div
                       key={n.id}
                       className={`p-2.5 rounded-xl border transition-colors ${
-                        n.read ? 'bg-slate-50/60 border-slate-100' : 'bg-indigo-50/40 border-indigo-100'
+                        n.read ? 'bg-slate-900/40 border-slate-800' : 'bg-slate-900/90 border-slate-700'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-bold text-slate-900 leading-snug" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <span className="text-xs font-bold text-white leading-snug" style={{ fontFamily: 'Poppins, sans-serif' }}>
                           {n.title}
                         </span>
                         <span className="text-[10px] text-slate-400 font-medium">{n.time}</span>
                       </div>
-                      <p className="text-[11px] text-slate-600 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      <p className="text-[11px] text-slate-300 leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                         {n.message}
                       </p>
                     </div>
@@ -374,24 +374,24 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
 
         {/* User Auth Quick Badge (If Logged In) */}
         {isAuthenticated && user && (
-          <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+          <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
             {user.pictureUrl ? (
               <img
                 src={user.pictureUrl}
                 alt={user.name}
-                className="w-8 h-8 rounded-full border border-indigo-300 object-cover"
+                className="w-8 h-8 rounded-full border border-slate-700 object-cover"
                 referrerPolicy="no-referrer"
               />
             ) : (
-              <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-[#1E1B4B] text-white font-bold text-xs flex items-center justify-center border border-violet-800/40">
                 {user.name.charAt(0)}
               </div>
             )}
             <div className="hidden xl:flex flex-col text-left">
-              <span className="text-xs font-bold text-slate-800 leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <span className="text-xs font-bold text-white leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
                 {user.name}
               </span>
-              <span className="text-[10px] text-indigo-600 font-semibold">
+              <span className="text-[10px] text-violet-300 font-semibold">
                 {isVerifiedStudent ? 'Verified Student' : 'RIT Account'}
               </span>
             </div>

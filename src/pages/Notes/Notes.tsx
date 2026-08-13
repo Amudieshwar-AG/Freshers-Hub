@@ -1994,7 +1994,7 @@ export default function Notes() {
                   </div>
 
                   <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E5E7EB]/70 flex flex-col gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600">
+                    <div className="w-8 h-8 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center text-violet-300">
                       <FileText className="w-4 h-4" />
                     </div>
                     <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>

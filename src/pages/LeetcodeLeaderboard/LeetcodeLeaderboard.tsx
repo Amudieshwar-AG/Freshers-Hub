@@ -153,7 +153,7 @@ export default function LeetcodeLeaderboard() {
                 RIT LeetCode Arena
               </div>
               <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#1E293B] font-poppins">
-                Campus <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-indigo-600 to-purple-600">LeetCode Leaderboard</span>
+                Campus <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#0F172A] via-[#1E1B4B] to-[#2E1065]">LeetCode Leaderboard</span>
               </h1>
               <p className="mt-2 text-slate-500 max-w-2xl text-sm sm:text-base">
                 Track top problem solvers across departments. Automatically updated every 24 hours with rate-limited, spaced background sync.
@@ -205,7 +205,7 @@ export default function LeetcodeLeaderboard() {
 
             <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0]">
               <span className="text-xs font-semibold text-slate-500 flex items-center gap-1.5">
-                <User className="w-4 h-4 text-indigo-500" /> Active Coders
+                <User className="w-4 h-4 text-violet-400" /> Active Coders
               </span>
               <p className="text-xl font-bold text-[#1E293B] mt-1">
                 {profiles.length}

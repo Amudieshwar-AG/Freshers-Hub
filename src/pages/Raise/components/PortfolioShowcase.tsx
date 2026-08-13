@@ -56,7 +56,7 @@ export const PortfolioShowcase: React.FC = () => {
       domain: "AI-based Systems",
       description: "Cognitive educational platforms providing personalised student learning paths.",
       remarks: "Testing with users",
-      color: "bg-blue-500"
+      color: "bg-[#1E1B4B]"
     },
     {
       name: "Innsole",
@@ -64,7 +64,7 @@ export const PortfolioShowcase: React.FC = () => {
       domain: "Hardware & Health",
       description: "Smart footwear soles embedded with sensor arrays to monitor athletic gait and posture.",
       remarks: "Testing with users",
-      color: "bg-blue-500"
+      color: "bg-[#1E1B4B]"
     },
 
     // Prototype
@@ -207,7 +207,7 @@ export const PortfolioShowcase: React.FC = () => {
   const getStageIcon = (stage: string) => {
     switch(stage) {
       case 'commercialization': return <TrendingUp className="w-4 h-4 text-emerald-600" />;
-      case 'mvp': return <Box className="w-4 h-4 text-blue-600" />;
+      case 'mvp': return <Box className="w-4 h-4 text-violet-300" />;
       case 'prototype': return <Layers className="w-4 h-4 text-amber-600" />;
       case 'idea': return <Sparkles className="w-4 h-4 text-purple-600" />;
       default: return <HelpCircle className="w-4 h-4" />;
@@ -277,7 +277,7 @@ export const PortfolioShowcase: React.FC = () => {
                 <div className="flex justify-between items-center mb-6">
                   <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider ${
                     startup.stage === 'commercialization' ? 'bg-emerald-100 text-emerald-800' :
-                    startup.stage === 'mvp' ? 'bg-blue-100 text-blue-800' :
+                    startup.stage === 'mvp' ? 'bg-slate-900 text-violet-300' :
                     startup.stage === 'prototype' ? 'bg-amber-100 text-amber-800' :
                     'bg-purple-100 text-purple-800'
                   }`}>

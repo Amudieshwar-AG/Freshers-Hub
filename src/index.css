@@ -3,20 +3,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #6366F1;
-  --color-primary-light: #818CF8;
-  --color-primary-dark: #4F46E5;
-  --color-primary-50: #EEF2FF;
-  --color-primary-100: #E0E7FF;
-  --color-primary-200: #C7D2FE;
-  --color-secondary: #818CF8;
+  --color-primary: #1E1B4B;
+  --color-primary-light: #2E1065;
+  --color-primary-dark: #0A0D16;
+  --color-primary-50: #0B0F19;
+  --color-primary-100: #131722;
+  --color-primary-200: #1E1B4B;
+  --color-secondary: #2E1065;
   --color-background: #FAFAFA;
   --color-surface: #FFFFFF;
   --color-border: #E5E7EB;
   --color-heading: #1E293B;
   --color-body: #475569;
   --color-muted: #94A3B8;
-  --color-accent: #EEF2FF;
+  --color-accent: #131722;
 
   --font-heading: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
@@ -70,17 +70,17 @@ body {
   background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
-  background: #6366F1;
+  background: #1E1B4B;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #4F46E5;
+  background: #2E1065;
 }
 
 /* Selection */
 ::selection {
-  background-color: rgba(99, 102, 241, 0.2);
-  color: #1E293B;
+  background-color: rgba(30, 27, 75, 0.4);
+  color: #FFFFFF;
 }
 
 /* Typography base */
@@ -91,7 +91,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Focus ring */
 :focus-visible {
-  outline: 2px solid #6366F1;
+  outline: 2px solid #1E1B4B;
   outline-offset: 2px;
 }
 
@@ -160,7 +160,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-dark {
-  background: rgba(30, 41, 59, 0.8);
+  background: rgba(15, 23, 42, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -182,7 +182,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #4F46E5, #6366F1, #8B5CF6);
+  background: linear-gradient(135deg, #0F172A, #1E1B4B, #2E1065);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -191,16 +191,16 @@ h1, h2, h3, h4, h5, h6 {
 /* Primary button */
 .btn-primary {
   font-family: var(--font-button);
-  background: linear-gradient(135deg, #4F46E5, #6366F1);
+  background: linear-gradient(135deg, #0F172A, #1E1B4B, #2E1065);
   color: white;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 12px 28px;
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.5);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -209,8 +209,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
-  background: linear-gradient(135deg, #4338CA, #4F46E5);
+  box-shadow: 0 8px 25px rgba(46, 16, 101, 0.6);
+  background: linear-gradient(135deg, #1E1B4B, #2E1065, #3B0764);
 }
 
 .btn-primary:active {
@@ -236,8 +236,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-ghost:hover {
-  border-color: #6366F1;
-  color: #6366F1;
+  border-color: #2E1065;
+  color: #2E1065;
   transform: translateY(-2px);
 }
 
