@@ -13,10 +13,10 @@ import { CLUBS_DATA } from '@/constants';
 import type { Club } from '@/types';
 
 const CLUB_CATEGORY_COLORS: Record<string, string> = {
-  Technical: '#3B82F6',
-  Cultural: '#EC4899',
+  Technical: '#4F46E5',
+  Cultural: '#7C3AED',
   Social: '#10B981',
-  Creative: '#F59E0B',
+  Creative: '#0284C7',
 };
 
 const CLUB_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -118,7 +118,6 @@ export default function Events() {
   // ─── Interactive Like / Favorite System State ─────────────────────────────
   const [likedClubs, setLikedClubs] = useState<Set<string>>(() => {
     try {
-      localStorage.removeItem('rit_freshers_liked_clubs');
       const saved = localStorage.getItem('rit_freshers_liked_clubs_v3');
       return saved ? new Set(JSON.parse(saved)) : new Set();
     } catch {
@@ -202,7 +201,7 @@ export default function Events() {
         <div className="container-custom">
           <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
             Student{' '}
-            <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <span style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               Clubs
             </span>
           </h1>
@@ -217,17 +216,17 @@ export default function Events() {
         {/* ─── Feature 1: "Find My Ideal Club" Banner ────────────────────────── */}
         <AnimatedContainer className="mb-14">
           <div
-            className="rounded-3xl p-6 md:p-8 text-white relative overflow-hidden border border-orange-400/30 flex flex-col md:flex-row items-center justify-between gap-6"
-            style={{ background: 'linear-gradient(135deg, #1E293B, #0F172A)' }}
+            className="rounded-3xl p-6 md:p-8 text-white relative overflow-hidden border border-indigo-500/30 flex flex-col md:flex-row items-center justify-between gap-6"
+            style={{ background: 'linear-gradient(135deg, #0F172A, #1E1B4B)' }}
           >
             {/* Background Glow */}
             <div
               className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-20 pointer-events-none"
-              style={{ background: 'radial-gradient(circle, #F97316, transparent)' }}
+              style={{ background: 'radial-gradient(circle, #6366F1, transparent)' }}
             />
 
             <div className="relative z-10 max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 text-xs font-semibold mb-3 border border-orange-500/30">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold mb-3 border border-indigo-500/30">
                 <Target className="w-3.5 h-3.5" />
                 <span>Interactive Club Matcher</span>
               </div>
@@ -235,7 +234,7 @@ export default function Events() {
                 Not sure which club to join?
               </h2>
               <p className="text-slate-300 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Take our 3-step AI-powered Club Matcher quiz to get instant recommendations tailored to your interests, skills, and goals!
+                Take our 3-step Club Matcher quiz to get instant recommendations tailored to your interests, skills, and goals!
               </p>
             </div>
 
@@ -244,10 +243,10 @@ export default function Events() {
               whileTap={{ scale: 0.98 }}
               onClick={() => { resetQuiz(); setIsQuizOpen(true); }}
               className="relative z-10 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm flex items-center gap-2.5 shadow-lg shrink-0 cursor-pointer"
-              style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', fontFamily: 'Poppins, sans-serif' }}
+              style={{ background: 'linear-gradient(135deg, #4F46E5, #6366F1)', fontFamily: 'Poppins, sans-serif' }}
             >
-              <Sparkles className="w-4 h-4" />
-              Find My Ideal Club
+              <Sparkles className="w-4 h-4 text-indigo-200" />
+              <span>Find My Ideal Club</span>
               <ArrowRight className="w-4 h-4" />
             </motion.button>
           </div>
@@ -263,7 +262,7 @@ export default function Events() {
 
           const renderClubCard = (club: Club) => {
             const IconComponent = (club.icon && CLUB_ICON_MAP[club.icon]) || Atom;
-            const categoryColor = CLUB_CATEGORY_COLORS[club.category] || '#F97316';
+            const categoryColor = CLUB_CATEGORY_COLORS[club.category] || '#4F46E5';
             const isLiked = likedClubs.has(club.id);
             const likesCount = likesMap[club.id] || 0;
 
@@ -271,7 +270,7 @@ export default function Events() {
               <motion.div
                 whileHover={{ y: -4 }}
                 onClick={() => setSelectedClub(club)}
-                className="bg-white rounded-2xl border border-[#E5E7EB] p-5 cursor-pointer hover:border-[#F97316] transition-all flex flex-col justify-between h-full group"
+                className="bg-white rounded-2xl border border-[#E5E7EB] p-5 cursor-pointer hover:border-indigo-400 transition-all flex flex-col justify-between h-full group"
                 style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
               >
                 <div>
@@ -314,7 +313,7 @@ export default function Events() {
                   </div>
 
                   {/* Club Title & Description */}
-                  <h3 className="font-semibold text-[#1E293B] mb-1 group-hover:text-[#F97316] transition-colors" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  <h3 className="font-semibold text-[#1E293B] mb-1 group-hover:text-indigo-600 transition-colors" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     {club.name}
                   </h3>
                   <p className="text-xs text-[#64748B] mb-3 line-clamp-2" style={{ fontFamily: 'Inter, sans-serif' }}>{club.description}</p>
@@ -328,8 +327,8 @@ export default function Events() {
                   </span>
                   <motion.button
                     whileHover={{ scale: 1.04 }}
-                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white flex items-center gap-1 cursor-pointer"
-                    style={{ fontFamily: 'Poppins, sans-serif', background: 'linear-gradient(135deg, #F97316, #FB923C)' }}
+                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white flex items-center gap-1 cursor-pointer bg-indigo-600 hover:bg-indigo-700 transition-colors"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
                   >
                     View Details
                   </motion.button>
@@ -349,7 +348,7 @@ export default function Events() {
                 ))}
               </div>
 
-              {/* Centered Flex Row for Remaining Clubs (WiSTEM & STEAM) */}
+              {/* Centered Flex Row for Remaining Clubs */}
               {remainingClubs.length > 0 && (
                 <div className="flex flex-wrap justify-center gap-6 md:gap-7">
                   {remainingClubs.map((club) => (
@@ -391,13 +390,13 @@ export default function Events() {
                   </div>
                   <div className="w-full h-1.5 bg-slate-100 rounded-full mb-6 overflow-hidden">
                     <div
-                      className="h-full bg-[#F97316] transition-all duration-300 rounded-full"
+                      className="h-full bg-indigo-600 transition-all duration-300 rounded-full"
                       style={{ width: `${((quizStep + 1) / QUIZ_QUESTIONS.length) * 100}%` }}
                     />
                   </div>
 
                   {/* Question Header */}
-                  <div className="flex items-center gap-2 mb-2 text-[#F97316]">
+                  <div className="flex items-center gap-2 mb-2 text-indigo-600">
                     <Compass className="w-5 h-5" />
                     <span className="text-xs font-bold uppercase tracking-wider">Club Matcher Quiz</span>
                   </div>
@@ -411,10 +410,10 @@ export default function Events() {
                       <button
                         key={idx}
                         onClick={() => handleSelectOption(idx)}
-                        className="w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-[#F97316] hover:bg-orange-50/50 transition-all flex items-center justify-between text-sm font-medium text-slate-700 cursor-pointer group"
+                        className="w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/50 transition-all flex items-center justify-between text-sm font-medium text-slate-700 cursor-pointer group"
                       >
                         <span>{opt.label}</span>
-                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#F97316] group-hover:translate-x-1 transition-all" />
+                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
                       </button>
                     ))}
                   </div>
@@ -432,7 +431,7 @@ export default function Events() {
                 /* Results Screen */
                 <div>
                   <div className="text-center mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-orange-100 text-[#F97316] flex items-center justify-center mx-auto mb-3">
+                    <div className="w-14 h-14 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mx-auto mb-3">
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
                     <h3 className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
@@ -445,7 +444,7 @@ export default function Events() {
                   <div className="space-y-3 mb-6">
                     {quizResults.map((item, i) => {
                       const IconComponent = (item.club.icon && CLUB_ICON_MAP[item.club.icon]) || Atom;
-                      const catColor = CLUB_CATEGORY_COLORS[item.club.category] || '#F97316';
+                      const catColor = CLUB_CATEGORY_COLORS[item.club.category] || '#4F46E5';
                       const matchPercent = i === 0 ? '98%' : i === 1 ? '91%' : '84%';
 
                       return (
@@ -455,7 +454,7 @@ export default function Events() {
                             setIsQuizOpen(false);
                             setSelectedClub(item.club);
                           }}
-                          className="p-4 rounded-2xl border border-slate-200 hover:border-[#F97316] bg-slate-50 hover:bg-white cursor-pointer transition-all flex items-center justify-between"
+                          className="p-4 rounded-2xl border border-slate-200 hover:border-indigo-500 bg-slate-50 hover:bg-white cursor-pointer transition-all flex items-center justify-between"
                         >
                           <div className="flex items-center gap-3">
                             {item.club.logoUrl ? (
@@ -496,7 +495,7 @@ export default function Events() {
                     </button>
                     <button
                       onClick={() => setIsQuizOpen(false)}
-                      className="flex-1 py-3 rounded-xl text-white font-semibold text-xs bg-[#F97316] hover:bg-[#EA580C] transition-all cursor-pointer"
+                      className="flex-1 py-3 rounded-xl text-white font-semibold text-xs bg-indigo-600 hover:bg-indigo-700 transition-all cursor-pointer"
                     >
                       Explore All Clubs
                     </button>
@@ -508,7 +507,7 @@ export default function Events() {
         )}
       </AnimatePresence>
 
-      {/* ─── Club Details Modal (Featuring Feature 5: Social Link Hub) ───────── */}
+      {/* ─── Club Details Modal ────────────────────────────────────────────── */}
       <AnimatePresence>
         {selectedClub && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -530,7 +529,7 @@ export default function Events() {
               {/* Modal Header */}
               {(() => {
                 const IconComponent = (selectedClub.icon && CLUB_ICON_MAP[selectedClub.icon]) || Atom;
-                const categoryColor = CLUB_CATEGORY_COLORS[selectedClub.category] || '#F97316';
+                const categoryColor = CLUB_CATEGORY_COLORS[selectedClub.category] || '#4F46E5';
                 const isLiked = likedClubs.has(selectedClub.id);
                 const likesCount = likesMap[selectedClub.id] || 0;
 
@@ -581,9 +580,9 @@ export default function Events() {
               })()}
 
               {/* Club Detailed Description */}
-              <div className="mb-5 bg-gradient-to-r from-orange-50/70 via-amber-50/40 to-slate-50 border border-orange-200/80 rounded-2xl p-4.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-[#F97316] uppercase tracking-wider mb-2">
-                  <Info className="w-4 h-4 text-[#F97316]" />
+              <div className="mb-5 bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">
+                  <Info className="w-4 h-4 text-indigo-600" />
                   <span>About the Club</span>
                 </div>
                 <p className="text-slate-700 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -591,9 +590,8 @@ export default function Events() {
                 </p>
               </div>
 
-              {/* Leadership & Contact Information - Icon Based Color Cards */}
+              {/* Leadership & Contact Information */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6">
-                {/* President Card - Indigo Theme */}
                 <div className="bg-indigo-50/80 border border-indigo-100 hover:border-indigo-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white flex items-center justify-center shadow-xs shadow-indigo-200 shrink-0">
                     <UserCheck className="w-5 h-5 text-white" />
@@ -604,7 +602,6 @@ export default function Events() {
                   </div>
                 </div>
 
-                {/* Vice President Card - Violet Theme */}
                 {selectedClub.vicePresidentName && (
                   <div className="bg-violet-50/80 border border-violet-100 hover:border-violet-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 text-white flex items-center justify-center shadow-xs shadow-violet-200 shrink-0">
@@ -616,50 +613,12 @@ export default function Events() {
                     </div>
                   </div>
                 )}
-
-                {/* Coordinator Card - Amber Theme */}
-                {selectedClub.coordinatorName && (
-                  <div className="bg-amber-50/80 border border-amber-100 hover:border-amber-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center shadow-xs shadow-amber-200 shrink-0">
-                      <GraduationCap className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <span className="text-[11px] text-amber-600 font-semibold block">Faculty Coordinator</span>
-                      <span className="text-sm font-bold text-amber-950">{selectedClub.coordinatorName}</span>
-                    </div>
-                  </div>
-                )}
-
-{selectedClub.contactEmail && (
-  <div className="bg-emerald-50/80 border border-emerald-100 hover:border-emerald-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center shadow-xs shadow-emerald-200 shrink-0">
-      <Mail className="w-5 h-5 text-white" />
-    </div>
-    <div className="min-w-0 flex-1">
-      <span className="text-[11px] text-emerald-500 font-semibold block">Contact Email</span>
-      <a href={`mailto:${selectedClub.contactEmail}`} className="text-sm font-bold text-emerald-700 hover:text-emerald-800 hover:underline truncate block">
-        {selectedClub.contactEmail}
-      </a>
-    </div>
-  </div>
-)}
-
-                {/* Phone Card - Sky Theme */}
-                <div className="bg-sky-50/80 border border-sky-100 hover:border-sky-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-sky-600 text-white flex items-center justify-center shadow-xs shadow-sky-200 shrink-0">
-                    <Phone className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <span className="text-[11px] text-sky-500 font-semibold block">Contact Phone</span>
-                    <span className="text-sm font-bold text-sky-950">{selectedClub.contactPhone || '+91 98765 43210'}</span>
-                  </div>
-                </div>
               </div>
 
-              {/* ─── Feature 5: Social & Community Link Hub (Dummy Links) ─────── */}
-              <div className="mb-6 bg-orange-50/60 border border-orange-200/80 rounded-2xl p-4">
+              {/* Community & Social Links */}
+              <div className="mb-6 bg-indigo-50/60 border border-indigo-200/80 rounded-2xl p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#F97316] uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-wider">
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>Community & Social Links</span>
                   </div>
@@ -684,9 +643,9 @@ export default function Events() {
                       href={selectedClub.socialLinks.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-orange-500 hover:text-orange-600 transition-all text-xs font-medium text-slate-700"
+                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-indigo-500 hover:text-indigo-600 transition-all text-xs font-medium text-slate-700"
                     >
-                      <Globe className="w-4 h-4 text-orange-500 shrink-0" />
+                      <Globe className="w-4 h-4 text-indigo-500 shrink-0" />
                       <span className="truncate">Linktree Hub</span>
                     </a>
                   )}
@@ -712,18 +671,6 @@ export default function Events() {
                     >
                       <MessageCircle className="w-4 h-4 text-emerald-500 shrink-0" />
                       <span className="truncate">WhatsApp Group</span>
-                    </a>
-                  )}
-
-                  {selectedClub.socialLinks?.youtube && (
-                    <a
-                      href={selectedClub.socialLinks.youtube}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-red-600 hover:text-red-600 transition-all text-xs font-medium text-slate-700"
-                    >
-                      <YoutubeIcon className="w-4 h-4 text-red-600 shrink-0" />
-                      <span className="truncate">YouTube Channel</span>
                     </a>
                   )}
                 </div>

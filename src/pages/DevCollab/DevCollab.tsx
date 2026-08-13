@@ -433,18 +433,18 @@ export default function DevCollab() {
         <div className="bg-white border-b border-[#E5E7EB] py-10">
           <div className="container-custom">
             <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-3">
-              <Link to="/" className="hover:text-[#F97316]">Home</Link>
+              <Link to="/" className="hover:text-indigo-600">Home</Link>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-[#F97316]">Developer Collab Hub</span>
+              <span className="text-indigo-600">Developer Collab Hub</span>
             </div>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-[#F97316] text-xs font-semibold mb-3">
-                  <Code2 className="w-4 h-4" /> RIT Developers Environment
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-600 text-xs font-semibold mb-3">
+                  <Code2 className="w-4 h-4 text-indigo-600" /> RIT Developers Environment
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
                   Find Project{' '}
-                  <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                  <span style={{ background: 'linear-gradient(135deg, #4F46E5, #6366F1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                     Collaborators
                   </span>
                 </h1>
@@ -457,8 +457,8 @@ export default function DevCollab() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => requireVerifiedStudent(() => setShowPostModal(true))}
-                className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg shadow-orange-500/25 shrink-0 cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', fontFamily: 'Poppins, sans-serif' }}
+                className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 shrink-0 cursor-pointer"
+                style={{ background: 'linear-gradient(135deg, #4F46E5, #6366F1)', fontFamily: 'Poppins, sans-serif' }}
               >
                 {isVerifiedStudent && <ShieldCheck className="w-4 h-4" />}
                 <Plus className="w-4.5 h-4.5" />
