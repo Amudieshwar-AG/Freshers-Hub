@@ -2024,7 +2024,6 @@ export default function Notes() {
                 </div>
               </div>
             </motion.div>
-            </div>
           </div>
         </div>
       )}
