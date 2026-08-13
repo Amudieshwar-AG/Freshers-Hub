@@ -39,7 +39,7 @@ const SUBJECTS_BY_SEM: Record<number, string[]> = {
 
 const TYPE_COLORS: Record<string, { bg: string; text: string; icon: React.ComponentType<any> }> = {
   notes: { bg: '#EFF6FF', text: '#3B82F6', icon: BookOpen },
-  pyq: { bg: '#FFF7ED', text: '#F97316', icon: FileText },
+  pyq: { bg: '#EEF2FF', text: '#6366F1', icon: FileText },
   syllabus: { bg: '#ECFDF5', text: '#10B981', icon: ScrollText },
   assignment: { bg: '#FDF2F8', text: '#EC4899', icon: BookMarked },
 };
@@ -1421,7 +1421,7 @@ export default function Notes() {
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Notes &{' '}
-                <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                <span style={{ background: 'linear-gradient(135deg, #6366F1, #4F46E5)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                   PYQs
                 </span>
               </h1>

@@ -684,13 +684,13 @@ export default function Toolkit() {
           <div className="container-custom">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                <Link to="/" className="hover:text-[#F97316]">Home</Link>
+                <Link to="/" className="hover:text-[#6366F1]">Home</Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-[#F97316]">Student Toolkit</span>
+                <span className="text-[#6366F1]">Student Toolkit</span>
               </div>
               <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Student{' '}
-                <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                <span style={{ background: 'linear-gradient(135deg, #6366F1, #4F46E5)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                   Toolkit
                 </span>
               </h1>
