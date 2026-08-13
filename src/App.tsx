@@ -16,6 +16,7 @@ import Faculty from '@/pages/Faculty/Faculty';
 import DevCollab from '@/pages/DevCollab/DevCollab';
 import LeetcodeLeaderboard from '@/pages/LeetcodeLeaderboard/LeetcodeLeaderboard';
 import AdminDashboard from '@/pages/Admin/AdminDashboard';
+import Raise from '@/pages/Raise/Raise';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,6 +47,9 @@ function App() {
             {/* Standalone Admin Route */}
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/*" element={<AdminDashboard />} />
+
+            {/* Standalone RAISE Route */}
+            <Route path="/raise" element={<Raise />} />
 
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />

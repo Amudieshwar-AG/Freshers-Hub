@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Archivo+Black&display=swap');
 
 @import "tailwindcss";
 
@@ -34,6 +34,11 @@
   --shadow-medium: 0 4px 25px -5px rgba(0,0,0,0.1), 0 10px 30px -5px rgba(0,0,0,0.07);
   --shadow-strong: 0 8px 40px -8px rgba(0,0,0,0.15), 0 20px 45px -8px rgba(0,0,0,0.1);
   --shadow-orange: 0 8px 30px -4px rgba(249,115,22,0.3);
+
+  --color-brand-orange: #ff5722;
+  --color-brand-pink: #e91e63;
+  --color-brand-purple: #9c27b0;
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Tailwind Preflight handles resets natively. Custom modifications go here: */
@@ -305,4 +310,70 @@ h1, h2, h3, h4, h5, h6 {
   outline: none !important;
   border-color: #F97316 !important;
   box-shadow: none !important;
+}
+
+/* RAISE Incubator Website Styles */
+.raise-website {
+  --font-sans: 'Inter', sans-serif;
+  --font-heading: 'Plus Jakarta Sans', sans-serif;
+  --color-primary: #101010;
+}
+
+.raise-website body {
+  font-family: var(--font-sans);
+  background-color: #fafafa;
+  color: #171717;
+}
+
+.raise-website h1,
+.raise-website h2,
+.raise-website h3,
+.raise-website h4,
+.raise-website h5,
+.raise-website h6 {
+  font-family: var(--font-heading) !important;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.logo-blue {
+  filter: invert(29%) sepia(92%) saturate(2377%) hue-rotate(215deg) brightness(93%) contrast(97%);
+}
+
+.logo-black {
+  filter: brightness(0);
+}
+
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.shadow-premium {
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02),
+              0 1px 3px rgba(0, 0, 0, 0.05),
+              0 20px 40px rgba(0, 0, 0, 0.03);
+}
+
+.shadow-premium-hover {
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.shadow-premium-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04),
+              0 2px 8px rgba(0, 0, 0, 0.06),
+              0 30px 60px rgba(0, 0, 0, 0.05);
+}
+
+.grid-bg {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
 }
