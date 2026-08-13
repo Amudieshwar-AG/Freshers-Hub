@@ -16,24 +16,24 @@ const quickLinks = [
 export default function Footer() {
   return (
     <footer className="bg-[#0F172A] text-white border-t border-slate-800">
-      {/* CTA Banner - Enterprise Deep Indigo */}
-      <div className="bg-gradient-to-r from-indigo-700 via-indigo-800 to-purple-900 py-12 border-b border-indigo-500/20">
+      {/* CTA Banner - Professional Dark Slate Gray */}
+      <div className="bg-slate-800 border-b border-slate-700/60 py-10">
         <div className="container-custom flex flex-col md:flex-row items-center justify-between gap-6 px-4">
           <div>
             <h3 className="text-2xl font-bold text-white" style={{ fontFamily: 'Playfair Display, serif' }}>
               Ready to explore RIT?
             </h3>
-            <p className="text-indigo-100/90 mt-1 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <p className="text-slate-300 mt-1 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
               Everything a fresher needs — all in one place.
             </p>
           </div>
           <Link
             to="/ai-assistant"
-            className="flex items-center gap-2 bg-white hover:bg-slate-100 text-indigo-950 px-6 py-3 rounded-xl font-bold transition-all shadow-md hover:scale-105"
+            className="flex items-center gap-2 bg-slate-100 hover:bg-white text-slate-900 px-6 py-3 rounded-xl font-bold transition-all shadow-sm border border-slate-200 hover:scale-105"
             style={{ fontFamily: 'Poppins, sans-serif' }}
           >
             <span>Ask Chatbot</span>
-            <ArrowRight className="w-4 h-4 text-indigo-700" />
+            <ArrowRight className="w-4 h-4 text-slate-700" />
           </Link>
         </div>
       </div>

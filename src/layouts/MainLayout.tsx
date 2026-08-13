@@ -28,7 +28,7 @@ export default function MainLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col lg:flex-row font-sans selection:bg-purple-700 selection:text-white">
+    <div className="min-h-screen w-full max-w-full bg-[#F8FAFC] flex flex-col lg:flex-row font-sans selection:bg-purple-700 selection:text-white overflow-x-hidden">
       {/* Left Sidebar Navigation */}
       <Sidebar
         isOpen={isSidebarOpen}
@@ -39,7 +39,7 @@ export default function MainLayout() {
 
       {/* Main Right Viewport Wrapper */}
       <div
-        className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
+        className={`flex-1 flex flex-col min-w-0 w-full transition-all duration-300 ${
           isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64 xl:pl-72'
         }`}
       >
@@ -47,7 +47,7 @@ export default function MainLayout() {
         <Header onToggleSidebar={toggleSidebar} />
 
         {/* Dynamic Page Content */}
-        <div className="flex-1 p-4 sm:p-6 lg:p-8">
+        <div className="flex-1 p-3 sm:p-6 lg:p-8 w-full max-w-full overflow-x-hidden">
           <AnimatePresence mode="wait">
             <motion.main
               key={location.pathname}
@@ -56,7 +56,7 @@ export default function MainLayout() {
               animate="enter"
               exit="exit"
               transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="max-w-7xl mx-auto"
+              className="max-w-7xl mx-auto w-full"
             >
               <Outlet />
             </motion.main>

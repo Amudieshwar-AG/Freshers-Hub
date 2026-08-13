@@ -3,20 +3,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #F97316;
-  --color-primary-light: #FB923C;
-  --color-primary-dark: #EA580C;
-  --color-primary-50: #FFF7ED;
-  --color-primary-100: #FFEDD5;
-  --color-primary-200: #FED7AA;
-  --color-secondary: #FB923C;
+  --color-primary: #6366F1;
+  --color-primary-light: #818CF8;
+  --color-primary-dark: #4F46E5;
+  --color-primary-50: #EEF2FF;
+  --color-primary-100: #E0E7FF;
+  --color-primary-200: #C7D2FE;
+  --color-secondary: #818CF8;
   --color-background: #FAFAFA;
   --color-surface: #FFFFFF;
   --color-border: #E5E7EB;
   --color-heading: #1E293B;
   --color-body: #475569;
   --color-muted: #94A3B8;
-  --color-accent: #FFF7ED;
+  --color-accent: #EEF2FF;
 
   --font-heading: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
@@ -33,19 +33,24 @@
   --shadow-soft: 0 2px 15px -3px rgba(0,0,0,0.07), 0 10px 20px -2px rgba(0,0,0,0.04);
   --shadow-medium: 0 4px 25px -5px rgba(0,0,0,0.1), 0 10px 30px -5px rgba(0,0,0,0.07);
   --shadow-strong: 0 8px 40px -8px rgba(0,0,0,0.15), 0 20px 45px -8px rgba(0,0,0,0.1);
-  --shadow-orange: 0 8px 30px -4px rgba(249,115,22,0.3);
 
-  --color-brand-orange: #ff5722;
-  --color-brand-pink: #e91e63;
-  --color-brand-purple: #9c27b0;
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 /* Tailwind Preflight handles resets natively. Custom modifications go here: */
 
-html {
+html, body {
   scroll-behavior: smooth;
   font-size: 16px;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 body {
@@ -65,29 +70,28 @@ body {
   background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
-  background: #F97316;
+  background: #6366F1;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #EA580C;
+  background: #4F46E5;
 }
 
 /* Selection */
 ::selection {
-  background-color: rgba(249, 115, 22, 0.2);
+  background-color: rgba(99, 102, 241, 0.2);
   color: #1E293B;
 }
 
 /* Typography base */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  color: #1E293B;
   line-height: 1.2;
 }
 
 /* Focus ring */
 :focus-visible {
-  outline: 2px solid #F97316;
+  outline: 2px solid #6366F1;
   outline-offset: 2px;
 }
 
@@ -178,16 +182,16 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #F97316, #FB923C, #FBBF24);
+  background: linear-gradient(135deg, #4F46E5, #6366F1, #8B5CF6);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Orange button */
+/* Primary button */
 .btn-primary {
   font-family: var(--font-button);
-  background: linear-gradient(135deg, #F97316, #FB923C);
+  background: linear-gradient(135deg, #4F46E5, #6366F1);
   color: white;
   border: none;
   border-radius: 12px;
@@ -196,7 +200,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -205,8 +209,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(249, 115, 22, 0.4);
-  background: linear-gradient(135deg, #EA580C, #F97316);
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+  background: linear-gradient(135deg, #4338CA, #4F46E5);
 }
 
 .btn-primary:active {
@@ -232,8 +236,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-ghost:hover {
-  border-color: #F97316;
-  color: #F97316;
+  border-color: #6366F1;
+  color: #6366F1;
   transform: translateY(-2px);
 }
 
