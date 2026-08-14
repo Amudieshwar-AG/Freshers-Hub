@@ -1,6 +1,6 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useSearchParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import Header from '@/components/Header/Header';
+import Navbar from '@/components/Navbar/Navbar';
 import Footer from '@/components/Footer/Footer';
 
 const pageVariants = {
@@ -11,34 +11,25 @@ const pageVariants = {
 
 export default function MainLayout() {
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const hideFooter = location.pathname === '/notes' && searchParams.has('toolkit');
 
   return (
-    <div className="min-h-screen w-full max-w-full bg-[#F8FAFC] flex flex-col font-sans selection:bg-orange-500 selection:text-white overflow-x-hidden">
-      {/* Top Header Navigation */}
-      <Header />
-
-      {/* Main Viewport Container */}
-      <div className="flex-1 flex flex-col min-w-0 w-full">
-        {/* Dynamic Page Content */}
-        <div className="flex-1 p-3 sm:p-6 lg:p-8 w-full max-w-full overflow-x-hidden">
-          <AnimatePresence mode="wait">
-            <motion.main
-              key={location.pathname}
-              variants={pageVariants}
-              initial="initial"
-              animate="enter"
-              exit="exit"
-              transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="max-w-7xl mx-auto w-full"
-            >
-              <Outlet />
-            </motion.main>
-          </AnimatePresence>
-        </div>
-
-        {/* Global Footer */}
-        <Footer />
-      </div>
+    <div className="min-h-screen" style={{ backgroundColor: '#FAFAFA' }}>
+      <Navbar />
+      <AnimatePresence mode="wait">
+        <motion.main
+          key={location.pathname}
+          variants={pageVariants}
+          initial="initial"
+          animate="enter"
+          exit="exit"
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        >
+          <Outlet />
+        </motion.main>
+      </AnimatePresence>
+      {!hideFooter && <Footer />}
     </div>
   );
 }

@@ -75,7 +75,7 @@ export default function GoogleAuthModal({ isOpen, onClose }: GoogleAuthModalProp
           >
             {/* Background Orbs */}
             <div className="absolute -top-20 -right-20 w-40 h-40 bg-orange-500/20 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-orange-600/20 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-blue-500/20 rounded-full blur-2xl pointer-events-none" />
 
             {/* Close Button */}
             <button

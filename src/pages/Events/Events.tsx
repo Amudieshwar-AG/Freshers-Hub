@@ -13,10 +13,10 @@ import { CLUBS_DATA } from '@/constants';
 import type { Club } from '@/types';
 
 const CLUB_CATEGORY_COLORS: Record<string, string> = {
-  Technical: '#4F46E5',
-  Cultural: '#7C3AED',
+  Technical: '#3B82F6',
+  Cultural: '#EC4899',
   Social: '#10B981',
-  Creative: '#0284C7',
+  Creative: '#F59E0B',
 };
 
 const CLUB_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -118,6 +118,7 @@ export default function Events() {
   // ─── Interactive Like / Favorite System State ─────────────────────────────
   const [likedClubs, setLikedClubs] = useState<Set<string>>(() => {
     try {
+      localStorage.removeItem('rit_freshers_liked_clubs');
       const saved = localStorage.getItem('rit_freshers_liked_clubs_v3');
       return saved ? new Set(JSON.parse(saved)) : new Set();
     } catch {
@@ -201,7 +202,7 @@ export default function Events() {
         <div className="container-custom">
           <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
             Student{' '}
-            <span style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               Clubs
             </span>
           </h1>
@@ -216,25 +217,25 @@ export default function Events() {
         {/* ─── Feature 1: "Find My Ideal Club" Banner ────────────────────────── */}
         <AnimatedContainer className="mb-14">
           <div
-            className="rounded-3xl p-6 md:p-8 text-white relative overflow-hidden border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6"
-            style={{ background: 'linear-gradient(135deg, #C25E17, #EA580C)' }}
+            className="rounded-3xl p-6 md:p-8 text-white relative overflow-hidden border border-orange-400/30 flex flex-col md:flex-row items-center justify-between gap-6"
+            style={{ background: 'linear-gradient(135deg, #1E293B, #0F172A)' }}
           >
             {/* Background Glow */}
             <div
               className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-20 pointer-events-none"
-              style={{ background: 'radial-gradient(circle, #EA580C, transparent)' }}
+              style={{ background: 'radial-gradient(circle, #F97316, transparent)' }}
             />
 
             <div className="relative z-10 max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 text-orange-300 text-xs font-semibold mb-3 border border-orange-500/40">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 text-xs font-semibold mb-3 border border-orange-500/30">
                 <Target className="w-3.5 h-3.5" />
                 <span>Interactive Club Matcher</span>
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Not sure which club to join?
               </h2>
-              <p className="text-orange-50 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Take our 3-step Club Matcher quiz to get instant recommendations tailored to your interests, skills, and goals!
+              <p className="text-slate-300 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                Take our 3-step AI-powered Club Matcher quiz to get instant recommendations tailored to your interests, skills, and goals!
               </p>
             </div>
 
@@ -242,11 +243,11 @@ export default function Events() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => { resetQuiz(); setIsQuizOpen(true); }}
-              className="relative z-10 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm flex items-center gap-2.5 shadow-lg shrink-0 cursor-pointer border border-white/20"
-              style={{ background: 'linear-gradient(135deg, #EA580C, #F97316)', fontFamily: 'Poppins, sans-serif' }}
+              className="relative z-10 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm flex items-center gap-2.5 shadow-lg shrink-0 cursor-pointer"
+              style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', fontFamily: 'Poppins, sans-serif' }}
             >
-              <Sparkles className="w-4 h-4 text-amber-200" />
-              <span>Find My Ideal Club</span>
+              <Sparkles className="w-4 h-4" />
+              Find My Ideal Club
               <ArrowRight className="w-4 h-4" />
             </motion.button>
           </div>
@@ -262,58 +263,61 @@ export default function Events() {
 
           const renderClubCard = (club: Club) => {
             const IconComponent = (club.icon && CLUB_ICON_MAP[club.icon]) || Atom;
-            const categoryColor = CLUB_CATEGORY_COLORS[club.category] || '#C25E17';
+            const categoryColor = CLUB_CATEGORY_COLORS[club.category] || '#F97316';
             const isLiked = likedClubs.has(club.id);
             const likesCount = likesMap[club.id] || 0;
 
             return (
               <motion.div
-                layout
-                whileHover={{ y: -6 }}
+                whileHover={{ y: -4 }}
                 onClick={() => setSelectedClub(club)}
-                className="bg-white rounded-3xl border border-[#E5E7EB] p-6 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer group"
+                className="bg-white rounded-2xl border border-[#E5E7EB] p-5 cursor-pointer hover:border-[#F97316] transition-all flex flex-col justify-between h-full group"
+                style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
               >
                 <div>
-                  {/* Top Row: Club Icon & Like Button */}
-                  <div className="flex items-start justify-between mb-4">
+                  {/* Top Row: Tech Icon / Club Logo & Interactive Heart Like Button */}
+                  <div className="flex items-center justify-between mb-3">
                     {club.logoUrl ? (
-                      <div className="w-14 h-14 rounded-full border-2 border-slate-100 p-1 shadow-sm bg-white overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="w-12 h-12 rounded-full border border-slate-100 p-0.5 shadow-sm bg-white overflow-hidden shrink-0 transition-transform group-hover:scale-105">
                         <img src={club.logoUrl} alt={club.name} className="w-full h-full object-cover rounded-full" />
                       </div>
                     ) : (
                       <div
-                        className="w-13 h-13 rounded-2xl flex items-center justify-center text-white shadow-md shrink-0 group-hover:scale-105 transition-transform"
-                        style={{ background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}DD)` }}
+                        className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105"
+                        style={{
+                          background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}DD)`,
+                        }}
                       >
-                        <IconComponent className="w-6 h-6 text-white" />
+                        <IconComponent className="w-5 h-5 text-white" />
                       </div>
                     )}
 
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleLike(club.id);
-                      }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border cursor-pointer ${
-                        isLiked
-                          ? 'bg-rose-500 text-white border-rose-600 shadow-sm'
-                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200'
-                      }`}
-                    >
-                      <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-white' : ''}`} />
-                      <span>{likesCount}</span>
-                    </motion.button>
+                    {/* Like Button */}
+                    <div className="flex items-center gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.08 }}
+                        whileTap={{ scale: 0.85 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleLike(club.id);
+                        }}
+                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
+                          isLiked
+                            ? 'bg-rose-50 border-rose-200 text-rose-600 shadow-2xs'
+                            : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-rose-300 hover:text-rose-500'
+                        }`}
+                      >
+                        <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                        <span>{likesCount}</span>
+                      </motion.button>
+                    </div>
                   </div>
 
-                  {/* Club Title & Tagline */}
-                  <h3 className="text-xl font-bold text-[#1E293B] mb-1.5 group-hover:text-orange-600 transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  {/* Club Title & Description */}
+                  <h3 className="font-semibold text-[#1E293B] mb-1 group-hover:text-[#F97316] transition-colors" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     {club.name}
                   </h3>
-                  <p className="text-xs text-[#64748B] line-clamp-2 leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    {club.description}
-                  </p>
+                  <p className="text-xs text-[#64748B] mb-3 line-clamp-2" style={{ fontFamily: 'Inter, sans-serif' }}>{club.description}</p>
                 </div>
 
                 {/* Bottom Row: Category Tag & View Details Button */}
@@ -324,8 +328,8 @@ export default function Events() {
                   </span>
                   <motion.button
                     whileHover={{ scale: 1.04 }}
-                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white flex items-center gap-1 cursor-pointer bg-[#C25E17] hover:bg-[#EA580C] transition-colors"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white flex items-center gap-1 cursor-pointer"
+                    style={{ fontFamily: 'Poppins, sans-serif', background: 'linear-gradient(135deg, #F97316, #FB923C)' }}
                   >
                     View Details
                   </motion.button>
@@ -345,7 +349,7 @@ export default function Events() {
                 ))}
               </div>
 
-              {/* Centered Flex Row for Remaining Clubs */}
+              {/* Centered Flex Row for Remaining Clubs (WiSTEM & STEAM) */}
               {remainingClubs.length > 0 && (
                 <div className="flex flex-wrap justify-center gap-6 md:gap-7">
                   {remainingClubs.map((club) => (
@@ -387,13 +391,13 @@ export default function Events() {
                   </div>
                   <div className="w-full h-1.5 bg-slate-100 rounded-full mb-6 overflow-hidden">
                     <div
-                      className="h-full bg-[#C25E17] transition-all duration-300 rounded-full"
+                      className="h-full bg-[#F97316] transition-all duration-300 rounded-full"
                       style={{ width: `${((quizStep + 1) / QUIZ_QUESTIONS.length) * 100}%` }}
                     />
                   </div>
 
                   {/* Question Header */}
-                  <div className="flex items-center gap-2 mb-2 text-[#C25E17]">
+                  <div className="flex items-center gap-2 mb-2 text-[#F97316]">
                     <Compass className="w-5 h-5" />
                     <span className="text-xs font-bold uppercase tracking-wider">Club Matcher Quiz</span>
                   </div>
@@ -407,10 +411,10 @@ export default function Events() {
                       <button
                         key={idx}
                         onClick={() => handleSelectOption(idx)}
-                        className="w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-orange-500 hover:bg-orange-50/50 transition-all flex items-center justify-between text-sm font-medium text-slate-700 cursor-pointer group"
+                        className="w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-[#F97316] hover:bg-orange-50/50 transition-all flex items-center justify-between text-sm font-medium text-slate-700 cursor-pointer group"
                       >
                         <span>{opt.label}</span>
-                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#C25E17] group-hover:translate-x-1 transition-all" />
+                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#F97316] group-hover:translate-x-1 transition-all" />
                       </button>
                     ))}
                   </div>
@@ -428,7 +432,7 @@ export default function Events() {
                 /* Results Screen */
                 <div>
                   <div className="text-center mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center mx-auto mb-3">
+                    <div className="w-14 h-14 rounded-2xl bg-orange-100 text-[#F97316] flex items-center justify-center mx-auto mb-3">
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
                     <h3 className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
@@ -441,7 +445,7 @@ export default function Events() {
                   <div className="space-y-3 mb-6">
                     {quizResults.map((item, i) => {
                       const IconComponent = (item.club.icon && CLUB_ICON_MAP[item.club.icon]) || Atom;
-                      const catColor = CLUB_CATEGORY_COLORS[item.club.category] || '#C25E17';
+                      const catColor = CLUB_CATEGORY_COLORS[item.club.category] || '#F97316';
                       const matchPercent = i === 0 ? '98%' : i === 1 ? '91%' : '84%';
 
                       return (
@@ -451,7 +455,7 @@ export default function Events() {
                             setIsQuizOpen(false);
                             setSelectedClub(item.club);
                           }}
-                          className="p-4 rounded-2xl border border-slate-200 hover:border-orange-500 bg-slate-50 hover:bg-white cursor-pointer transition-all flex items-center justify-between"
+                          className="p-4 rounded-2xl border border-slate-200 hover:border-[#F97316] bg-slate-50 hover:bg-white cursor-pointer transition-all flex items-center justify-between"
                         >
                           <div className="flex items-center gap-3">
                             {item.club.logoUrl ? (
@@ -492,7 +496,7 @@ export default function Events() {
                     </button>
                     <button
                       onClick={() => setIsQuizOpen(false)}
-                      className="flex-1 py-3 rounded-xl text-white font-semibold text-xs bg-[#C25E17] hover:bg-[#EA580C] transition-all cursor-pointer"
+                      className="flex-1 py-3 rounded-xl text-white font-semibold text-xs bg-[#F97316] hover:bg-[#EA580C] transition-all cursor-pointer"
                     >
                       Explore All Clubs
                     </button>
@@ -504,7 +508,7 @@ export default function Events() {
         )}
       </AnimatePresence>
 
-      {/* ─── Club Details Modal ────────────────────────────────────────────── */}
+      {/* ─── Club Details Modal (Featuring Feature 5: Social Link Hub) ───────── */}
       <AnimatePresence>
         {selectedClub && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -526,7 +530,7 @@ export default function Events() {
               {/* Modal Header */}
               {(() => {
                 const IconComponent = (selectedClub.icon && CLUB_ICON_MAP[selectedClub.icon]) || Atom;
-                const categoryColor = CLUB_CATEGORY_COLORS[selectedClub.category] || '#C25E17';
+                const categoryColor = CLUB_CATEGORY_COLORS[selectedClub.category] || '#F97316';
                 const isLiked = likedClubs.has(selectedClub.id);
                 const likesCount = likesMap[selectedClub.id] || 0;
 
@@ -577,9 +581,9 @@ export default function Events() {
               })()}
 
               {/* Club Detailed Description */}
-              <div className="mb-5 bg-orange-50/60 border border-orange-200/60 rounded-2xl p-4.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-orange-600 uppercase tracking-wider mb-2">
-                  <Info className="w-4 h-4 text-orange-600" />
+              <div className="mb-5 bg-gradient-to-r from-orange-50/70 via-amber-50/40 to-slate-50 border border-orange-200/80 rounded-2xl p-4.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-[#F97316] uppercase tracking-wider mb-2">
+                  <Info className="w-4 h-4 text-[#F97316]" />
                   <span>About the Club</span>
                 </div>
                 <p className="text-slate-700 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -587,35 +591,75 @@ export default function Events() {
                 </p>
               </div>
 
-              {/* Leadership & Contact Information */}
+              {/* Leadership & Contact Information - Icon Based Color Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6">
-                <div className="bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C25E17] to-[#EA580C] text-white flex items-center justify-center shadow-xs shrink-0">
+                {/* President Card - Indigo Theme */}
+                <div className="bg-indigo-50/80 border border-indigo-100 hover:border-indigo-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white flex items-center justify-center shadow-xs shadow-indigo-200 shrink-0">
                     <UserCheck className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <span className="text-[11px] text-orange-300 font-semibold block">President / Student Lead</span>
-                    <span className="text-sm font-bold text-white">{selectedClub.presidentName || 'Student President'}</span>
+                    <span className="text-[11px] text-indigo-500 font-semibold block">President / Student Lead</span>
+                    <span className="text-sm font-bold text-indigo-950">{selectedClub.presidentName || 'Student President'}</span>
                   </div>
                 </div>
 
+                {/* Vice President Card - Violet Theme */}
                 {selectedClub.vicePresidentName && (
-                  <div className="bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#EA580C] to-[#F97316] text-white flex items-center justify-center shadow-xs shrink-0">
+                  <div className="bg-violet-50/80 border border-violet-100 hover:border-violet-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 text-white flex items-center justify-center shadow-xs shadow-violet-200 shrink-0">
                       <Users className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <span className="text-[11px] text-orange-300 font-semibold block">Vice President</span>
-                      <span className="text-sm font-bold text-white">{selectedClub.vicePresidentName}</span>
+                      <span className="text-[11px] text-violet-500 font-semibold block">Vice President</span>
+                      <span className="text-sm font-bold text-violet-950">{selectedClub.vicePresidentName}</span>
                     </div>
                   </div>
                 )}
+
+                {/* Coordinator Card - Amber Theme */}
+                {selectedClub.coordinatorName && (
+                  <div className="bg-amber-50/80 border border-amber-100 hover:border-amber-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center shadow-xs shadow-amber-200 shrink-0">
+                      <GraduationCap className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-amber-600 font-semibold block">Faculty Coordinator</span>
+                      <span className="text-sm font-bold text-amber-950">{selectedClub.coordinatorName}</span>
+                    </div>
+                  </div>
+                )}
+
+{selectedClub.contactEmail && (
+  <div className="bg-emerald-50/80 border border-emerald-100 hover:border-emerald-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
+    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center shadow-xs shadow-emerald-200 shrink-0">
+      <Mail className="w-5 h-5 text-white" />
+    </div>
+    <div className="min-w-0 flex-1">
+      <span className="text-[11px] text-emerald-500 font-semibold block">Contact Email</span>
+      <a href={`mailto:${selectedClub.contactEmail}`} className="text-sm font-bold text-emerald-700 hover:text-emerald-800 hover:underline truncate block">
+        {selectedClub.contactEmail}
+      </a>
+    </div>
+  </div>
+)}
+
+                {/* Phone Card - Sky Theme */}
+                <div className="bg-sky-50/80 border border-sky-100 hover:border-sky-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-sky-600 text-white flex items-center justify-center shadow-xs shadow-sky-200 shrink-0">
+                    <Phone className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-sky-500 font-semibold block">Contact Phone</span>
+                    <span className="text-sm font-bold text-sky-950">{selectedClub.contactPhone || '+91 98765 43210'}</span>
+                  </div>
+                </div>
               </div>
 
-              {/* Community & Social Links */}
-              <div className="mb-6 bg-slate-900/40 border border-slate-800 rounded-2xl p-4">
+              {/* ─── Feature 5: Social & Community Link Hub (Dummy Links) ─────── */}
+              <div className="mb-6 bg-orange-50/60 border border-orange-200/80 rounded-2xl p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2 text-xs font-bold text-orange-400 uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#F97316] uppercase tracking-wider">
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>Community & Social Links</span>
                   </div>
@@ -640,9 +684,9 @@ export default function Events() {
                       href={selectedClub.socialLinks.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-slate-800 hover:text-slate-900 transition-all text-xs font-medium text-slate-700"
+                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-orange-500 hover:text-orange-600 transition-all text-xs font-medium text-slate-700"
                     >
-                      <Globe className="w-4 h-4 text-slate-800 shrink-0" />
+                      <Globe className="w-4 h-4 text-orange-500 shrink-0" />
                       <span className="truncate">Linktree Hub</span>
                     </a>
                   )}
@@ -652,9 +696,9 @@ export default function Events() {
                       href={selectedClub.socialLinks.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-slate-800 hover:text-slate-900 transition-all text-xs font-medium text-slate-700"
+                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-blue-600 hover:text-blue-600 transition-all text-xs font-medium text-slate-700"
                     >
-                      <LinkedinIcon className="w-4 h-4 text-slate-800 shrink-0" />
+                      <LinkedinIcon className="w-4 h-4 text-blue-600 shrink-0" />
                       <span className="truncate">LinkedIn</span>
                     </a>
                   )}
@@ -668,6 +712,18 @@ export default function Events() {
                     >
                       <MessageCircle className="w-4 h-4 text-emerald-500 shrink-0" />
                       <span className="truncate">WhatsApp Group</span>
+                    </a>
+                  )}
+
+                  {selectedClub.socialLinks?.youtube && (
+                    <a
+                      href={selectedClub.socialLinks.youtube}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-red-600 hover:text-red-600 transition-all text-xs font-medium text-slate-700"
+                    >
+                      <YoutubeIcon className="w-4 h-4 text-red-600 shrink-0" />
+                      <span className="truncate">YouTube Channel</span>
                     </a>
                   )}
                 </div>

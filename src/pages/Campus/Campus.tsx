@@ -20,9 +20,9 @@ interface LocationSpot {
 
 const BLUEPRINT_LEGEND = [
   { id: 'all', label: 'All Locations', color: '#F97316', bg: 'bg-orange-50/80', text: 'text-orange-950', border: 'border-orange-300' },
-  { id: 'a-block', label: 'A Block', color: '#C25E17', bg: 'bg-orange-50/80', text: 'text-orange-950', border: 'border-orange-300' },
-  { id: 'b-block', label: 'B Block', color: '#EA580C', bg: 'bg-orange-50/60', text: 'text-orange-950', border: 'border-orange-300' },
-  { id: 'c-block', label: 'C Block', color: '#F97316', bg: 'bg-orange-50/40', text: 'text-orange-950', border: 'border-orange-300' },
+  { id: 'a-block', label: 'A Block', color: '#60A5FA', bg: 'bg-blue-50/80', text: 'text-blue-900', border: 'border-blue-200' },
+  { id: 'b-block', label: 'B Block', color: '#93C5FD', bg: 'bg-blue-50/60', text: 'text-blue-900', border: 'border-blue-200' },
+  { id: 'c-block', label: 'C Block', color: '#BFDBFE', bg: 'bg-blue-50/40', text: 'text-blue-900', border: 'border-blue-200' },
   { id: 'admin', label: 'Admin / Facility', color: '#FDBA74', bg: 'bg-orange-50/80', text: 'text-orange-950', border: 'border-orange-200' },
   { id: 'hostel', label: 'Hostel / Mess', color: '#C084FC', bg: 'bg-purple-50/80', text: 'text-purple-950', border: 'border-purple-200' },
   { id: 'lab', label: 'Lab / Academic', color: '#FDE047', bg: 'bg-yellow-50/80', text: 'text-yellow-950', border: 'border-yellow-200' },

@@ -1,121 +1,248 @@
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
-  BookOpen,
-  Bot,
-  Bus,
-  Calendar,
-  Code2,
-  Trophy,
-  Sparkles,
-  ChevronRight
+  ArrowRight, BookOpen, Bot, GraduationCap,
+  CheckCircle, Zap, Shield, Trophy, Award, Cpu, Users, MapPin, Sparkles
 } from 'lucide-react';
+import SectionTitle from '@/components/SectionTitle/SectionTitle';
+import FeatureCard from '@/components/FeatureCard/FeatureCard';
+import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
+import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
+import { FEATURES, CAMPUS_LOCATIONS } from '@/constants';
+import * as LucideIcons from 'lucide-react';
+
+import LazyVideoHero from '@/components/LazyVideoHero/LazyVideoHero';
 
 export default function Home() {
-  const quickLaunchModules = [
-    { label: 'Bus Routes', path: '/bus-routes', icon: Bus, desc: 'Schedules & GPS' },
-    { label: 'Notes & PYQs', path: '/notes', icon: BookOpen, desc: 'Moodle Material' },
-    { label: 'Campus Chatbot', path: '/ai-assistant', icon: Bot, desc: 'AI Instant Q&A' },
-    { label: 'Student Clubs', path: '/events', icon: Calendar, desc: 'Clubs & Events' },
-    { label: 'LeetCode Board', path: '/leetcode', icon: Trophy, desc: 'Top RIT Coders' },
-    { label: 'Dev Collab', path: '/collab', icon: Code2, desc: 'Co-Developers' },
-  ];
+  const { scrollY } = useScroll();
+  const heroOpacity = useTransform(scrollY, [0, 450], [1, 0]);
+  const heroY = useTransform(scrollY, [0, 450], [0, -60]);
 
   return (
-    <div className="relative w-full min-h-[calc(100vh-90px)] flex flex-col justify-between p-2 sm:p-6 lg:p-8 text-white group">
-      {/* ─── Fixed Full-Screen Background Video (Spans Entire Laptop/Phone Frame) ─── */}
-      <video
-        src="/campus-video.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        className="fixed inset-0 w-full h-full object-cover pointer-events-none z-0"
-        style={{
-          filter: 'contrast(1.05) brightness(0.85) saturate(1.05)',
-          imageRendering: 'crisp-edges',
-        }}
-      />
+    <div className="relative bg-[#FAFAFA] min-h-screen overflow-hidden">
+      {/* ─── Hero Section with IntersectionObserver Lazy Video ─────────────────── */}
+      <LazyVideoHero>
+        <section className="relative pt-20 pb-24 z-10">
+          <motion.div 
+            className="container-custom relative z-20 flex flex-col items-center text-center px-4"
+            style={{ opacity: heroOpacity, y: heroY }}
+          >
+          {/* Heading */}
+          <motion.h1
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-3xl md:text-5xl font-medium tracking-wide mb-2"
+            style={{ color: '#FFFFFF', fontFamily: 'Playfair Display, serif', textShadow: '0 2px 14px rgba(0,0,0,0.95)' }}
+          >
+            Welcome to
+          </motion.h1>
 
-      {/* Fixed High-Contrast Dark Gradient Overlay across full viewport */}
-      <div 
-        className="fixed inset-0 pointer-events-none z-0" 
-        style={{
-          background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.5) 0%, rgba(15, 23, 42, 0.3) 45%, rgba(11, 15, 25, 0.85) 100%)',
-        }}
-      />
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="text-5xl md:text-7xl font-black leading-tight mb-6"
+            style={{ color: '#FFFFFF', fontFamily: 'Playfair Display, serif', textShadow: '0 4px 24px rgba(0,0,0,0.95)' }}
+          >
+            RIT Freshers Hub
+          </motion.h2>
 
-      {/* Top Branding Badge */}
-      <div className="relative z-10 flex items-center justify-between gap-2">
-        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-slate-950/60 border border-white/20 text-[10px] sm:text-xs font-semibold text-white backdrop-blur-md shadow-xl truncate">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-          <span className="truncate">Rajalakshmi Institute of Technology</span>
-        </div>
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="max-w-2xl text-slate-100 text-base md:text-lg font-medium leading-relaxed mb-8 drop-shadow-md"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+          >
+            Your centralized gateway to campus life at Rajalakshmi Institute of Technology — academic notes, AI assistant, bus routes, faculty directory, and campus navigation.
+          </motion.p>
 
-        <Link
-          to="/raise"
-          className="inline-flex items-center gap-1 sm:gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-gradient-to-r from-rose-500/90 to-pink-600/90 hover:from-rose-500 hover:to-pink-600 text-white text-[10px] sm:text-xs font-bold border border-white/25 backdrop-blur-md transition-all shadow-lg hover:scale-105 shrink-0"
-          style={{ fontFamily: 'Poppins, sans-serif' }}
-        >
-          <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-200" />
-          <span>RAISE Incubator</span>
-        </Link>
-      </div>
-
-      {/* Center Main Hero Title */}
-      <div className="relative z-10 max-w-4xl mx-auto text-center space-y-3 sm:space-y-4 my-auto py-8 sm:py-16">
-        <h1
-          className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-tight text-white"
-          style={{ 
-            fontFamily: 'Playfair Display, Georgia, serif', 
-            color: '#FFFFFF', 
-            textShadow: '0 4px 35px rgba(0,0,0,0.9), 0 2px 12px rgba(0,0,0,0.95)' 
-          }}
-        >
-          RIT Freshers Hub
-        </h1>
-        <p
-          className="text-xs sm:text-base md:text-lg text-slate-100 font-medium leading-relaxed max-w-2xl mx-auto px-2"
-          style={{ 
-            fontFamily: 'Inter, sans-serif',
-            textShadow: '0 2px 14px rgba(0,0,0,0.95)'
-          }}
-        >
-          Your unified campus portal — academic notes, AI chatbot, live bus tracking, faculty directory & student developer hub.
-        </p>
-      </div>
-
-      {/* Bottom Ultra-Compact Ultra-Transparent Quick Launch Bar */}
-      <div className="relative z-10 pt-2 sm:pt-4">
-        <div className="text-center mb-2 sm:mb-3">
-          <span className="text-[9px] sm:text-[10px] font-extrabold text-slate-200 uppercase tracking-widest bg-slate-950/70 px-3 py-1 rounded-full border border-white/20 backdrop-blur-md shadow-lg inline-block">
-            Quick Launch Portal Modules
-          </span>
-        </div>
-
-        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-1.5 sm:gap-3">
-          {quickLaunchModules.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.label}
-                to={item.path}
-                className="flex flex-col items-center justify-center p-2 sm:p-3.5 rounded-xl sm:rounded-2xl bg-slate-950/50 hover:bg-slate-900/80 border border-white/20 hover:border-white/40 backdrop-blur-md text-white transition-all duration-200 cursor-pointer hover:scale-[1.04] shadow-xl group text-center"
+          {/* Call to Actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4 }}
+            className="flex flex-wrap justify-center gap-4"
+          >
+            <a href="#built-for-freshers">
+              <motion.button
+                whileHover={{ scale: 1.04, boxShadow: '0 10px 30px -5px rgba(249,115,22,0.4)' }}
+                whileTap={{ scale: 0.96 }}
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl text-white font-semibold text-sm cursor-pointer shadow-md"
+                style={{
+                  fontFamily: 'Poppins, sans-serif',
+                  background: 'linear-gradient(135deg, #F97316, #FB923C)',
+                }}
               >
-                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-white/15 border border-white/25 flex items-center justify-center mb-1 sm:mb-1.5 group-hover:bg-[#C25E17] transition-colors shrink-0">
-                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+                <BookOpen className="w-4 h-4" />
+                Explore Hub
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
+            </a>
+
+            <Link to="/ai-assistant">
+              <motion.button
+                whileHover={{ scale: 1.04, borderColor: '#F97316', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                whileTap={{ scale: 0.96 }}
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm border-2 border-white/40 text-white bg-black/30 backdrop-blur-md transition-all cursor-pointer shadow-2xs"
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
+                <Bot className="w-4 h-4 text-[#F97316]" />
+                Ask Assistant
+              </motion.button>
+            </Link>
+
+            <Link to="/raise">
+              <motion.button
+                whileHover={{ scale: 1.04, boxShadow: '0 10px 30px -5px rgba(233,30,99,0.5)' }}
+                whileTap={{ scale: 0.96 }}
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-rose-500 to-pink-600 border border-white/30 backdrop-blur-md transition-all cursor-pointer shadow-lg shadow-pink-500/20"
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
+                <Sparkles className="w-4 h-4 text-amber-200" />
+                Pitch your Idea - RAISE
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
+            </Link>
+          </motion.div>
+        </motion.div>
+      </section>
+    </LazyVideoHero>
+
+      {/* Sleek Stats Card Section */}
+      <section className="relative z-30 -mt-6 px-4">
+        <div className="container-custom max-w-5xl">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="rounded-3xl border border-[#E5E7EB] p-6 md:p-8 bg-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.06)]"
+          >
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 text-center">
+              {[
+                { value: '20+', label: 'SPORTS', icon: Trophy },
+                { value: '100+', label: 'FACULTY', icon: GraduationCap },
+                { value: '18', label: 'CLUBS', icon: Award },
+                { value: '24/7', label: 'ASSISTANT', icon: Cpu },
+                { value: '5000+', label: 'STUDENTS', icon: Users },
+              ].map((stat, i) => (
+                <div key={i} className="flex flex-col items-center justify-center p-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#FFF7ED] flex items-center justify-center mb-2.5">
+                    <stat.icon className="w-5 h-5 text-[#F97316]" />
+                  </div>
+                  <div 
+                    className="text-2xl md:text-3xl font-black text-[#1E293B] mb-0.5"
+                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                  >
+                    {stat.value}
+                  </div>
+                  <div 
+                    className="text-[11px] font-bold tracking-wider text-[#94A3B8] uppercase"
+                    style={{ fontFamily: 'Inter, sans-serif' }}
+                  >
+                    {stat.label}
+                  </div>
                 </div>
-                <span className="text-[10px] sm:text-xs font-bold truncate max-w-full leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {item.label}
-                </span>
-                <span className="hidden sm:block text-[10px] text-slate-300/90 truncate max-w-full mt-0.5">
-                  {item.desc}
-                </span>
-              </Link>
-            );
-          })}
+              ))}
+            </div>
+          </motion.div>
         </div>
-      </div>
+      </section>
+
+      {/* ─── Features Section ─────────────────────────────────────────────────── */}
+      <section id="built-for-freshers" className="section-padding relative z-20">
+        <div className="container-custom">
+          <SectionTitle
+            tag="Everything You Need"
+            title="Built for"
+            highlight="RIT Freshers"
+            subtitle="From notes to AI assistance — we've got everything you need to navigate campus life with confidence."
+          />
+
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {FEATURES.map((feature) => (
+              <StaggerItem key={feature.id}>
+                <FeatureCard feature={feature} />
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </div>
+      </section>
+
+      {/* ─── Campus Quick Nav ─────────────────────────────────────────────────── */}
+      <section className="section-padding relative z-20 bg-white border-y border-[#E5E7EB]">
+        <div className="container-custom">
+          <SectionTitle
+            tag="Navigate Campus"
+            title="Explore"
+            highlight="RIT Campus"
+            subtitle="Find your way around campus — departments, labs, library, and key locations."
+          />
+
+          <AnimatedContainer>
+            <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden shadow-sm">
+              {/* Map Teaser Header */}
+              <div
+                className="h-52 flex items-center justify-center relative overflow-hidden"
+                style={{ background: 'linear-gradient(135deg, #1E293B, #0F172A)' }}
+              >
+                <div
+                  className="absolute inset-0 opacity-15"
+                  style={{
+                    backgroundImage: 'linear-gradient(rgba(249,115,22,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(249,115,22,0.4) 1px, transparent 1px)',
+                    backgroundSize: '28px 28px',
+                  }}
+                />
+                
+                <div className="relative z-10 text-center px-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F97316]/20 border border-[#F97316]/30 flex items-center justify-center mx-auto mb-3">
+                    <MapPin className="w-6 h-6 text-[#F97316]" />
+                  </div>
+                  <h3 className="text-white text-lg font-bold mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Interactive Campus Map
+                  </h3>
+                  <p className="text-slate-400 text-xs mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    Locate all major campus blocks, labs, library & amenities.
+                  </p>
+                  <Link to="/campus">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="px-5 py-2 rounded-xl text-white text-xs font-semibold shadow-sm cursor-pointer"
+                      style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', fontFamily: 'Poppins, sans-serif' }}
+                    >
+                      Open Full Map
+                    </motion.button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Quick Nav Grid */}
+              <div className="p-5 grid grid-cols-3 sm:grid-cols-7 gap-3 bg-[#FAFAFA]">
+                {CAMPUS_LOCATIONS.map((loc) => {
+                  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[loc.icon];
+                  return (
+                    <Link to="/campus" key={loc.id}>
+                      <motion.div
+                        whileHover={{ y: -3, backgroundColor: '#FFF7ED' }}
+                        className="flex flex-col items-center gap-2 p-3 rounded-xl cursor-pointer transition-all border border-transparent hover:border-[#FED7AA] bg-white shadow-2xs"
+                      >
+                        <div className="w-9 h-9 rounded-xl bg-[#FFF7ED] flex items-center justify-center">
+                          {Icon && <Icon className="w-4.5 h-4.5 text-[#F97316]" />}
+                        </div>
+                        <span className="text-[11px] text-[#475569] text-center font-medium leading-tight" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          {loc.name}
+                        </span>
+                      </motion.div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </AnimatedContainer>
+        </div>
+      </section>
     </div>
   );
 }

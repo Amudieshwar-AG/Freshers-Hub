@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Phone, Building2, User, X, BookOpen, ChevronRight, Monitor, Command, GraduationCap, Briefcase, Microscope, Clock, MapPin } from 'lucide-react';
+import { Mail, Phone, Building2, User, X, BookOpen, ChevronRight, Monitor, Command, GraduationCap, Briefcase, Microscope, Clock } from 'lucide-react';
 import type { Faculty } from '@/types';
 
 interface FacultyCardProps {
@@ -32,7 +32,7 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
   const mailOptions = [
     { name: 'Default Mail App', url: `mailto:${faculty.email}`, icon: Monitor, color: 'text-gray-700', bg: 'bg-gray-100' },
     { name: 'Gmail', url: `https://mail.google.com/mail/?view=cm&fs=1&to=${faculty.email}`, icon: Mail, color: 'text-red-500', bg: 'bg-red-50' },
-    { name: 'Outlook', url: `https://outlook.office.com/mail/deeplink/compose?to=${faculty.email}`, icon: Mail, color: 'text-slate-800', bg: 'bg-slate-100' },
+    { name: 'Outlook', url: `https://outlook.office.com/mail/deeplink/compose?to=${faculty.email}`, icon: Mail, color: 'text-blue-600', bg: 'bg-blue-50' },
     { name: 'Yahoo Mail', url: `https://compose.mail.yahoo.com/?to=${faculty.email}`, icon: Mail, color: 'text-purple-600', bg: 'bg-purple-50' },
   ];
 
@@ -172,8 +172,8 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
                           className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/80 transition-colors border group w-full"
                           style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)', borderColor: `${from}15` }}
                         >
-                          <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center group-hover:bg-[#C25E17] transition-colors shrink-0">
-                            <Phone className="w-4 h-4 text-orange-400 group-hover:text-white transition-colors" />
+                          <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center group-hover:bg-blue-500 transition-colors shrink-0">
+                            <Phone className="w-4 h-4 text-blue-500 group-hover:text-white transition-colors" />
                           </div>
                           <div className="overflow-hidden">
                             <p className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider mb-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>Phone Number</p>
@@ -224,14 +224,14 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
                   {/* Section 2: Academic Info */}
                   <div className="bg-white rounded-[20px] shadow-sm border border-[#E8ECF4] p-6 sm:p-8">
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center shrink-0">
-                        <BookOpen className="w-5 h-5 text-orange-400" />
+                      <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
+                        <BookOpen className="w-5 h-5 text-indigo-500" />
                       </div>
                       <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Academic Information</h3>
                     </div>
                     <div className="flex flex-col gap-4">
-                      <div className="p-5 rounded-xl bg-orange-50/40 border border-orange-200/50">
-                        <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Subjects Handling</p>
+                      <div className="p-5 rounded-xl bg-indigo-50/30 border border-indigo-100/50">
+                        <p className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Subjects Handling</p>
                         <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif', lineHeight: '1.6' }}>{faculty.subjectsHandling || 'Not specified'}</p>
                       </div>
                       <div className="p-5 rounded-xl bg-teal-50/30 border border-teal-100/50">
@@ -239,8 +239,8 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
                         <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif', lineHeight: '1.6' }}>{faculty.researchAreas || 'Not specified'}</p>
                       </div>
                       {faculty.studentsGuided && (
-                        <div className="p-5 rounded-xl bg-orange-50/40 border border-orange-200/50">
-                          <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>Students Guided</p>
+                        <div className="p-5 rounded-xl bg-blue-50/30 border border-blue-100/50">
+                          <p className="text-xs font-bold text-blue-500 uppercase tracking-wider mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>Students Guided</p>
                           <div className="flex gap-8">
                             <div className="flex flex-col">
                               <span className="text-2xl font-bold text-[#1E293B]">{faculty.studentsGuided.ug}</span> 
@@ -250,45 +250,17 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
                               <span className="text-2xl font-bold text-[#1E293B]">{faculty.studentsGuided.pg}</span> 
                               <span className="text-xs font-semibold text-[#64748B]">PG</span>
                             </div>
-                            {faculty.studentsGuided.phd && (
-                              <div className="flex flex-col">
-                                <span className="text-2xl font-bold text-[#1E293B]">{faculty.studentsGuided.phd}</span> 
-                                <span className="text-xs font-semibold text-[#64748B]">PhD</span>
-                              </div>
-                            )}
+                            <div className="flex flex-col">
+                              <span className="text-2xl font-bold text-[#1E293B]">{faculty.studentsGuided.phd}</span> 
+                              <span className="text-xs font-semibold text-[#64748B]">Ph.D.</span>
+                            </div>
                           </div>
                         </div>
                       )}
                     </div>
                   </div>
 
-                  {/* Section 3: Office & Availability */}
-                  <div className="bg-white rounded-[20px] shadow-sm border border-[#E8ECF4] p-6 sm:p-8">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-                        <MapPin className="w-5 h-5 text-[#FF7A00]" />
-                      </div>
-                      <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Office & Availability</h3>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-5 rounded-xl bg-gray-50/80 border border-gray-100 flex items-start gap-4">
-                        <Clock className="w-6 h-6 text-[#FF7A00] shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Office Hours</p>
-                          <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.officeHours || 'Not specified'}</p>
-                        </div>
-                      </div>
-                      <div className="p-5 rounded-xl bg-orange-50/40 border border-orange-200/50 flex items-start gap-4">
-                        <Building2 className="w-6 h-6 text-orange-500 shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Office Location</p>
-                          <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.office || 'Not specified'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Section 4: Achievements (Render only if present) */}
+                  {/* Section 3: Achievements (Render only if present) */}
                   {(faculty.achievements || faculty.publications) && (
                     <div className="bg-white rounded-[20px] shadow-sm border border-[#E8ECF4] p-6 sm:p-8">
                       <div className="flex items-center gap-3 mb-6">
@@ -338,10 +310,10 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
                           <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.officeHours || 'Not specified'}</p>
                         </div>
                       </div>
-                      <div className="p-5 rounded-xl bg-orange-50/40 border border-orange-200/50 flex items-start gap-4">
-                        <Building2 className="w-6 h-6 text-orange-500 shrink-0 mt-0.5" />
+                      <div className="p-5 rounded-xl bg-blue-50/30 border border-blue-100/50 flex items-start gap-4">
+                        <Building2 className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
                         <div>
-                          <p className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Office Location</p>
+                          <p className="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Office Location</p>
                           <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.office || 'Not specified'}</p>
                         </div>
                       </div>
