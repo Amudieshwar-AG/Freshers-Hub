@@ -36,6 +36,52 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
     { name: 'Yahoo Mail', url: `https://compose.mail.yahoo.com/?to=${faculty.email}`, icon: Mail, color: 'text-purple-600', bg: 'bg-purple-50' },
   ];
 
+  const parseToListItems = (text: string | undefined): string[] => {
+    if (!text) return [];
+    const cleaned = text.replace(/<br\s*\/?>/gi, '\n');
+    const lines = cleaned.split(/\n+/);
+    const items: string[] = [];
+    lines.forEach((line) => {
+      let subParts: string[];
+      if (line.includes(';')) {
+        subParts = line.split(';');
+      } else if (line.includes(',') && !line.includes('(')) {
+        subParts = line.split(',');
+      } else {
+        subParts = [line];
+      }
+      subParts.forEach((part) => {
+        let trimmed = part.trim();
+        trimmed = trimmed.replace(/^[\d+.)\-•\s*]+/, '').trim();
+        if (trimmed && trimmed !== '—' && trimmed !== 'Nil' && trimmed !== 'nil') {
+          items.push(trimmed);
+        }
+      });
+    });
+    return items;
+  };
+
+  const renderPointList = (value: string | undefined, placeholder: string = 'Not specified') => {
+    const items = parseToListItems(value);
+    if (items.length <= 1) {
+      return (
+        <p className="text-sm font-semibold text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+          {items[0] || placeholder}
+        </p>
+      );
+    }
+    return (
+      <ul className="space-y-1.5 mt-1 text-left">
+        {items.map((item, idx) => (
+          <li key={idx} className="flex items-start gap-2 text-sm font-semibold text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FF6B00] mt-2 shrink-0" />
+            <span className="leading-tight">{item}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
   return (
     <>
       <motion.div
@@ -134,11 +180,11 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
                   >
                     <div
                       className="w-32 h-32 rounded-full flex items-center justify-center text-white font-bold text-5xl mb-5 shadow-lg"
-                      style={{ background: `linear-gradient(135deg, ${from}, ${to})`, fontFamily: 'Poppins, sans-serif' }}
+                      style={{ background: `linear-gradient(135deg, ${from}, ${to})`, fontFamily: 'Plus Jakarta Sans, sans-serif' }}
                     >
                       {initials}
                     </div>
-                    <h2 className="text-2xl font-bold text-center text-[#1E293B] mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <h2 className="text-2xl font-bold text-center text-[#1E293B] mb-1" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                       {faculty.name}
                     </h2>
                     <p className="text-base font-semibold text-[#FF7A00] text-center" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -192,16 +238,12 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
                       <div className="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
                         <User className="w-5 h-5 text-[#FF7A00]" />
                       </div>
-                      <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Professional Details</h3>
+                      <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Professional Details</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 rounded-xl bg-gray-50/80 border border-gray-100 transition-colors hover:bg-gray-50">
                         <p className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Department</p>
                         <p className="text-sm font-semibold text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.department}</p>
-                      </div>
-                      <div className="p-4 rounded-xl bg-gray-50/80 border border-gray-100 transition-colors hover:bg-gray-50">
-                        <p className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Specialization</p>
-                        <p className="text-sm font-semibold text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.specialization || 'Not specified'}</p>
                       </div>
                       <div className="p-4 rounded-xl bg-gray-50/80 border border-gray-100 transition-colors hover:bg-gray-50">
                         <p className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Qualification</p>
@@ -212,11 +254,15 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
                         <p className="text-sm font-semibold text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.experience || 'Not specified'}</p>
                       </div>
                       {faculty.joinedInstitution && (
-                        <div className="p-4 rounded-xl bg-gray-50/80 border border-gray-100 transition-colors hover:bg-gray-50 md:col-span-2">
+                        <div className="p-4 rounded-xl bg-gray-50/80 border border-gray-100 transition-colors hover:bg-gray-50">
                           <p className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Joined Institution</p>
                           <p className="text-sm font-semibold text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.joinedInstitution}</p>
                         </div>
                       )}
+                      <div className="p-4 rounded-xl bg-gray-50/80 border border-gray-100 transition-colors hover:bg-gray-50 md:col-span-2">
+                        <p className="text-xs font-semibold text-[#94A3B8] uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Interest / Domain / Specialization</p>
+                        {renderPointList(faculty.interest || faculty.specialization)}
+                      </div>
                     </div>
                   </div>
 
@@ -226,17 +272,19 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
                       <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
                         <BookOpen className="w-5 h-5 text-indigo-500" />
                       </div>
-                      <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Academic Information</h3>
+                      <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Academic Information</h3>
                     </div>
                     <div className="flex flex-col gap-4">
                       <div className="p-5 rounded-xl bg-indigo-50/30 border border-indigo-100/50">
                         <p className="text-xs font-bold text-indigo-400 uppercase tracking-wider mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Subjects Handling</p>
-                        <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif', lineHeight: '1.6' }}>{faculty.subjectsHandling || 'Not specified'}</p>
+                        {renderPointList(faculty.subjectsHandling)}
                       </div>
-                      <div className="p-5 rounded-xl bg-teal-50/30 border border-teal-100/50">
-                        <p className="text-xs font-bold text-teal-500 uppercase tracking-wider mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Research Areas</p>
-                        <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif', lineHeight: '1.6' }}>{faculty.researchAreas || 'Not specified'}</p>
-                      </div>
+                      {faculty.researchAreas && (
+                        <div className="p-5 rounded-xl bg-teal-50/30 border border-teal-100/50">
+                          <p className="text-xs font-bold text-teal-500 uppercase tracking-wider mb-2" style={{ fontFamily: 'Inter, sans-serif' }}>Research Areas</p>
+                          <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif', lineHeight: '1.6' }}>{faculty.researchAreas}</p>
+                        </div>
+                      )}
                       {faculty.studentsGuided && (
                         <div className="p-5 rounded-xl bg-blue-50/30 border border-blue-100/50">
                           <p className="text-xs font-bold text-blue-500 uppercase tracking-wider mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>Students Guided</p>
@@ -266,7 +314,7 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
                         <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center shrink-0">
                           <GraduationCap className="w-5 h-5 text-pink-500" />
                         </div>
-                        <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Achievements</h3>
+                        <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Achievements</h3>
                       </div>
                       <div className="flex flex-col gap-6">
                         {faculty.achievements && faculty.achievements.length > 0 && (
@@ -294,30 +342,36 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
                   )}
 
                   {/* Section 4: Office Info */}
-                  <div className="bg-white rounded-[20px] shadow-sm border border-[#E8ECF4] p-6 sm:p-8">
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-                        <Clock className="w-5 h-5 text-emerald-500" />
-                      </div>
-                      <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Office Information</h3>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="p-5 rounded-xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-4">
-                        <Clock className="w-6 h-6 text-emerald-500 shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Office Hours</p>
-                          <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.officeHours || 'Not specified'}</p>
+                  {(faculty.office || faculty.officeHours) && (
+                    <div className="bg-white rounded-[20px] shadow-sm border border-[#E8ECF4] p-6 sm:p-8">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+                          <Clock className="w-5 h-5 text-emerald-500" />
                         </div>
+                        <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Office Information</h3>
                       </div>
-                      <div className="p-5 rounded-xl bg-blue-50/30 border border-blue-100/50 flex items-start gap-4">
-                        <Building2 className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Office Location</p>
-                          <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.office || 'Not specified'}</p>
-                        </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {faculty.officeHours && (
+                          <div className="p-5 rounded-xl bg-emerald-50/50 border border-emerald-100 flex items-start gap-4">
+                            <Clock className="w-6 h-6 text-emerald-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="text-xs font-bold text-emerald-600 uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Office Hours</p>
+                              <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.officeHours}</p>
+                            </div>
+                          </div>
+                        )}
+                        {faculty.office && (
+                          <div className="p-5 rounded-xl bg-blue-50/30 border border-blue-100/50 flex items-start gap-4">
+                            <Building2 className="w-6 h-6 text-blue-500 shrink-0 mt-0.5" />
+                            <div>
+                              <p className="text-xs font-bold text-blue-500 uppercase tracking-wider mb-1" style={{ fontFamily: 'Inter, sans-serif' }}>Office Location</p>
+                              <p className="text-sm font-medium text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.office}</p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </motion.div>
@@ -348,7 +402,7 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
             >
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>Choose Mail App</h3>
+                  <h3 className="text-lg font-bold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Choose Mail App</h3>
                   <p className="text-xs text-[#64748B] mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>Compose email to {faculty.name}</p>
                 </div>
                 <button onClick={() => setShowEmailOptions(false)} className="p-2 rounded-full hover:bg-gray-100 transition-colors">

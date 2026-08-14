@@ -28,13 +28,14 @@ export interface Stat {
 export interface Faculty {
   id: string;
   name: string;
-  designation: string;
+  designation?: string;
   department: string;
   email: string;
   phone?: string;
   office?: string;
   avatar?: string;
   specialization?: string;
+  interest?: string;
   qualification?: string;
   experience?: string;
   subjectsHandling?: string;

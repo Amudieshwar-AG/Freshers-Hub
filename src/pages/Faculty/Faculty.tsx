@@ -6,6 +6,23 @@ import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/An
 import { FACULTY_DATA, DEPARTMENTS } from '@/constants';
 import { Link } from 'react-router-dom';
 
+const DEPT_MAP: Record<string, { abrv: string; full: string }> = {
+  'Computer Science & Engineering': { abrv: 'CSE', full: 'Computer Science and Engineering' },
+  'Computer Science & Business Systems': { abrv: 'CSBS', full: 'Computer Science and Business Systems' },
+  'Artificial Intelligence & Machine Learning': { abrv: 'AIML', full: 'Artificial Intelligence and Machine Learning' },
+  'Electronics & Communication Engineering': { abrv: 'ECE', full: 'Electronics and Communication Engineering' },
+  'Mechanical Engineering': { abrv: 'MECH', full: 'Mechanical Engineering' },
+  'Civil Engineering': { abrv: 'CIVIL', full: 'Civil Engineering' },
+  'Artificial Intelligence & Data Science': { abrv: 'AI&DS', full: 'Artificial Intelligence and Data Science' },
+  'Electrical & Electronics Engineering': { abrv: 'EEE', full: 'Electrical and Electronics Engineering' },
+  'Communication and Computer Engineering': { abrv: 'CCE', full: 'Communication and Computer Engineering' },
+  'Electronics Engineering VLSI (Design and Technology)': { abrv: 'EE VLSI (D&T)', full: 'Electronics Engineering (VLSI Design and Technology)' },
+  'Humanities & Sciences': { abrv: 'H&S', full: 'Humanities and Sciences' },
+  'M.Tech (Data Science)': { abrv: 'M.TECH-DS', full: 'M.Tech (Data Science)' },
+  'Mathematics': { abrv: 'MATHS', full: 'Mathematics' },
+  'M.E. (VLSI Design)': { abrv: 'MEVLSI', full: 'M.E. (VLSI Design)' },
+};
+
 export default function Faculty() {
   const [searchFaculty, setSearchFaculty] = useState('');
   const [selectedDept, setSelectedDept] = useState('All Departments');
@@ -15,22 +32,38 @@ export default function Faculty() {
     const filtered = FACULTY_DATA.filter((f) => {
       const searchLower = searchFaculty.trim().toLowerCase();
       const matchSearch = 
-        f.name.toLowerCase().includes(searchLower) ||
-        f.department.toLowerCase().includes(searchLower) ||
-        f.designation.toLowerCase().includes(searchLower) ||
-        (f.specialization && f.specialization.toLowerCase().includes(searchLower));
+        (f.name && f.name.toLowerCase().includes(searchLower)) ||
+        (f.department && f.department.toLowerCase().includes(searchLower)) ||
+        (f.designation && f.designation.toLowerCase().includes(searchLower)) ||
+        (f.specialization && f.specialization.toLowerCase().includes(searchLower)) ||
+        (f.interest && f.interest.toLowerCase().includes(searchLower));
       
       const matchDept = selectedDept === 'All Departments' || f.department === selectedDept;
       return matchSearch && matchDept;
     });
 
     return filtered.sort((a, b) => {
-      if (sortBy === 'Name A-Z') return a.name.localeCompare(b.name);
-      if (sortBy === 'Department') return a.department.localeCompare(b.department);
-      if (sortBy === 'Designation') return a.designation.localeCompare(b.designation);
+      if (sortBy === 'Name A-Z') return (a.name || '').localeCompare(b.name || '');
+      if (sortBy === 'Department') return (a.department || '').localeCompare(b.department || '');
+      if (sortBy === 'Designation') return (a.designation || '').localeCompare(b.designation || '');
       return 0;
     });
   }, [searchFaculty, selectedDept, sortBy]);
+
+  const groupedFaculty = useMemo(() => {
+    const groups: Record<string, typeof filteredAndSortedFaculty> = {};
+    filteredAndSortedFaculty.forEach((faculty) => {
+      if (!groups[faculty.department]) {
+        groups[faculty.department] = [];
+      }
+      groups[faculty.department].push(faculty);
+    });
+    return groups;
+  }, [filteredAndSortedFaculty]);
+
+  const departmentOrder = useMemo(() => {
+    return DEPARTMENTS.filter(d => d !== 'All Departments');
+  }, []);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#F8FAFC]">
@@ -112,15 +145,21 @@ export default function Faculty() {
                   { abrv: 'CIVIL', full: 'Civil Engineering', color: 'emerald' },
                   { abrv: 'AI & DS', full: 'Artificial Intelligence & Data Science', color: 'pink' },
                   { abrv: 'EEE', full: 'Electrical & Electronics Engineering', color: 'yellow' },
-                ].map(d => {
+                  { abrv: 'CCE', full: 'Communication and Computer Engineering', color: 'rose' },
+                  { abrv: 'EE VLSI (D&T)', full: 'Electronics Engineering VLSI (Design and Technology)', color: 'teal' },
+                  { abrv: 'H&S', full: 'Humanities & Sciences', color: 'indigo' },
+                  { abrv: 'M.TECH-DS', full: 'M.Tech (Data Science)', color: 'fuchsia' },
+                  { abrv: 'MATHS', full: 'Mathematics', color: 'blue' },
+                  { abrv: 'MEVLSI', full: 'M.E. (VLSI Design)', color: 'rose' },
+                ].filter(d => FACULTY_DATA.filter(f => f.department === d.full).length > 0).map(d => {
                   const count = FACULTY_DATA.filter(f => f.department === d.full).length;
                   return (
                     <div key={d.abrv} className={`p-4 rounded-2xl bg-${d.color}-50 border border-${d.color}-100 flex flex-col gap-1 transition-transform hover:scale-105 cursor-default`}>
                       <div className="flex justify-between items-center">
-                        <span className={`text-xs font-bold text-${d.color}-700`} style={{ fontFamily: 'Poppins, sans-serif' }}>{d.abrv}</span>
+                        <span className={`text-xs font-bold text-${d.color}-700`} style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{d.abrv}</span>
                         <BookOpen className={`w-3.5 h-3.5 text-${d.color}-400`} />
                       </div>
-                      <span className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>{count}</span>
+                      <span className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{count}</span>
                     </div>
                   );
                 })}
@@ -134,7 +173,7 @@ export default function Faculty() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94A3B8]" />
               <input
                 type="text"
-                placeholder="Search by faculty name, department, designation or specialization..."
+                placeholder="Search by faculty name, department, designation or interest..."
                 value={searchFaculty}
                 onChange={(e) => setSearchFaculty(e.target.value)}
                 className="w-full pl-12 pr-4 py-3.5 rounded-2xl bg-[#F8FAFC] border-none text-sm text-[#1E293B] placeholder-[#94A3B8] focus:ring-2 focus:ring-[#FF7A00]/20 focus:outline-none transition-all"
@@ -150,7 +189,7 @@ export default function Faculty() {
                   className="h-full pl-10 pr-10 py-3.5 rounded-2xl bg-[#F8FAFC] border-none text-sm font-medium text-[#475569] focus:ring-2 focus:ring-[#FF7A00]/20 focus:outline-none transition-all appearance-none cursor-pointer min-w-[200px]"
                   style={{ fontFamily: 'Inter, sans-serif', backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394A3B8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem top 50%', backgroundSize: '0.65rem auto' }}
                 >
-                  {DEPARTMENTS.map((dept) => {
+                  {DEPARTMENTS.filter(dept => dept === 'All Departments' || FACULTY_DATA.filter((f) => f.department === dept).length > 0).map((dept) => {
                     const count = dept === 'All Departments' ? FACULTY_DATA.length : FACULTY_DATA.filter((f) => f.department === dept).length;
                     return <option key={dept} value={dept}>{dept} ({count})</option>;
                   })}
@@ -172,15 +211,38 @@ export default function Faculty() {
             </div>
           </div>
 
-          {/* Grid */}
+          {/* Grouped Grid */}
           {filteredAndSortedFaculty.length > 0 ? (
-            <StaggerContainer key={`${searchFaculty}-${selectedDept}-${sortBy}`} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-              {filteredAndSortedFaculty.map((faculty) => (
-                <StaggerItem key={faculty.id}>
-                  <FacultyCard faculty={faculty} />
-                </StaggerItem>
-              ))}
-            </StaggerContainer>
+            <div className="space-y-12 pb-20">
+              {departmentOrder.map((deptName) => {
+                const facultyInDept = groupedFaculty[deptName];
+                if (!facultyInDept || facultyInDept.length === 0) return null;
+                const deptInfo = DEPT_MAP[deptName] || { abrv: deptName, full: deptName };
+
+                return (
+                  <div key={deptName} className="space-y-6">
+                    {/* Department Header */}
+                    <div className="border-l-4 border-[#FF6B00] pl-4 py-1">
+                      <h2 className="text-xl font-bold text-[#1A0B2E]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                        {deptInfo.abrv}
+                      </h2>
+                      <p className="text-xs text-[#9E91B6] font-semibold mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+                        {deptInfo.full}
+                      </p>
+                    </div>
+
+                    {/* Department Grid */}
+                    <StaggerContainer key={`${deptName}-${searchFaculty}-${selectedDept}-${sortBy}`} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {facultyInDept.map((faculty) => (
+                        <StaggerItem key={faculty.id}>
+                          <FacultyCard faculty={faculty} />
+                        </StaggerItem>
+                      ))}
+                    </StaggerContainer>
+                  </div>
+                );
+              })}
+            </div>
           ) : (
             <div className="py-20 text-center flex flex-col items-center justify-center bg-white rounded-3xl border border-[#E8ECF4] shadow-sm">
               <Users className="w-12 h-12 text-[#CBD5E1] mb-4" />
