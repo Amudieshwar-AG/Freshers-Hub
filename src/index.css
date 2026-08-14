@@ -3,20 +3,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #1E1B4B;
-  --color-primary-light: #2E1065;
-  --color-primary-dark: #0A0D16;
-  --color-primary-50: #0B0F19;
-  --color-primary-100: #131722;
-  --color-primary-200: #1E1B4B;
-  --color-secondary: #2E1065;
+  --color-primary: #F97316;
+  --color-primary-light: #FB923C;
+  --color-primary-dark: #C25E17;
+  --color-primary-50: #FFF7ED;
+  --color-primary-100: #FFEDD5;
+  --color-primary-200: #FED7AA;
+  --color-secondary: #EA580C;
   --color-background: #FAFAFA;
   --color-surface: #FFFFFF;
   --color-border: #E5E7EB;
   --color-heading: #1E293B;
   --color-body: #475569;
   --color-muted: #94A3B8;
-  --color-accent: #131722;
+  --color-accent: #C25E17;
 
   --font-heading: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
@@ -70,16 +70,16 @@ body {
   background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1E1B4B;
+  background: #F97316;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #2E1065;
+  background: #EA580C;
 }
 
 /* Selection */
 ::selection {
-  background-color: rgba(30, 27, 75, 0.4);
+  background-color: rgba(249, 115, 22, 0.35);
   color: #FFFFFF;
 }
 
@@ -91,7 +91,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Focus ring */
 :focus-visible {
-  outline: 2px solid #1E1B4B;
+  outline: 2px solid #F97316;
   outline-offset: 2px;
 }
 
@@ -182,7 +182,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #0F172A, #1E1B4B, #2E1065);
+  background: linear-gradient(135deg, #C25E17, #EA580C, #F97316);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -191,16 +191,16 @@ h1, h2, h3, h4, h5, h6 {
 /* Primary button */
 .btn-primary {
   font-family: var(--font-button);
-  background: linear-gradient(135deg, #0F172A, #1E1B4B, #2E1065);
+  background: linear-gradient(135deg, #C25E17, #EA580C);
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
   padding: 12px 28px;
   font-weight: 600;
   font-size: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.5);
+  box-shadow: 0 4px 15px rgba(194, 94, 23, 0.4);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -209,8 +209,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(46, 16, 101, 0.6);
-  background: linear-gradient(135deg, #1E1B4B, #2E1065, #3B0764);
+  box-shadow: 0 8px 25px rgba(234, 88, 12, 0.5);
+  background: linear-gradient(135deg, #EA580C, #F97316);
 }
 
 .btn-primary:active {
@@ -236,8 +236,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-ghost:hover {
-  border-color: #2E1065;
-  color: #2E1065;
+  border-color: #F97316;
+  color: #EA580C;
   transform: translateY(-2px);
 }
 

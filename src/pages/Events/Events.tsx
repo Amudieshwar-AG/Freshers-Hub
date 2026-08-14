@@ -217,23 +217,23 @@ export default function Events() {
         <AnimatedContainer className="mb-14">
           <div
             className="rounded-3xl p-6 md:p-8 text-white relative overflow-hidden border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6"
-            style={{ background: 'linear-gradient(135deg, #0F172A, #1E1B4B, #2E1065)' }}
+            style={{ background: 'linear-gradient(135deg, #C25E17, #EA580C)' }}
           >
             {/* Background Glow */}
             <div
               className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-20 pointer-events-none"
-              style={{ background: 'radial-gradient(circle, #2E1065, transparent)' }}
+              style={{ background: 'radial-gradient(circle, #EA580C, transparent)' }}
             />
 
             <div className="relative z-10 max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 text-violet-300 text-xs font-semibold mb-3 border border-violet-900/40">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 text-orange-300 text-xs font-semibold mb-3 border border-orange-500/40">
                 <Target className="w-3.5 h-3.5" />
                 <span>Interactive Club Matcher</span>
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
                 Not sure which club to join?
               </h2>
-              <p className="text-slate-300 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <p className="text-orange-50 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Take our 3-step Club Matcher quiz to get instant recommendations tailored to your interests, skills, and goals!
               </p>
             </div>
@@ -242,10 +242,10 @@ export default function Events() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => { resetQuiz(); setIsQuizOpen(true); }}
-              className="relative z-10 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm flex items-center gap-2.5 shadow-lg shrink-0 cursor-pointer border border-violet-800/40"
-              style={{ background: 'linear-gradient(135deg, #0F172A, #1E1B4B, #2E1065)', fontFamily: 'Poppins, sans-serif' }}
+              className="relative z-10 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm flex items-center gap-2.5 shadow-lg shrink-0 cursor-pointer border border-white/20"
+              style={{ background: 'linear-gradient(135deg, #EA580C, #F97316)', fontFamily: 'Poppins, sans-serif' }}
             >
-              <Sparkles className="w-4 h-4 text-violet-200" />
+              <Sparkles className="w-4 h-4 text-amber-200" />
               <span>Find My Ideal Club</span>
               <ArrowRight className="w-4 h-4" />
             </motion.button>
@@ -262,61 +262,58 @@ export default function Events() {
 
           const renderClubCard = (club: Club) => {
             const IconComponent = (club.icon && CLUB_ICON_MAP[club.icon]) || Atom;
-            const categoryColor = CLUB_CATEGORY_COLORS[club.category] || '#1E1B4B';
+            const categoryColor = CLUB_CATEGORY_COLORS[club.category] || '#C25E17';
             const isLiked = likedClubs.has(club.id);
             const likesCount = likesMap[club.id] || 0;
 
             return (
               <motion.div
-                whileHover={{ y: -4 }}
+                layout
+                whileHover={{ y: -6 }}
                 onClick={() => setSelectedClub(club)}
-                className="bg-white rounded-2xl border border-[#E5E7EB] p-5 cursor-pointer hover:border-slate-800 transition-all flex flex-col justify-between h-full group"
-                style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
+                className="bg-white rounded-3xl border border-[#E5E7EB] p-6 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between cursor-pointer group"
               >
                 <div>
-                  {/* Top Row: Tech Icon / Club Logo & Interactive Heart Like Button */}
-                  <div className="flex items-center justify-between mb-3">
+                  {/* Top Row: Club Icon & Like Button */}
+                  <div className="flex items-start justify-between mb-4">
                     {club.logoUrl ? (
-                      <div className="w-12 h-12 rounded-full border border-slate-100 p-0.5 shadow-sm bg-white overflow-hidden shrink-0 transition-transform group-hover:scale-105">
+                      <div className="w-14 h-14 rounded-full border-2 border-slate-100 p-1 shadow-sm bg-white overflow-hidden shrink-0 group-hover:scale-105 transition-transform">
                         <img src={club.logoUrl} alt={club.name} className="w-full h-full object-cover rounded-full" />
                       </div>
                     ) : (
                       <div
-                        className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105"
-                        style={{
-                          background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}DD)`,
-                        }}
+                        className="w-13 h-13 rounded-2xl flex items-center justify-center text-white shadow-md shrink-0 group-hover:scale-105 transition-transform"
+                        style={{ background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}DD)` }}
                       >
-                        <IconComponent className="w-5 h-5 text-white" />
+                        <IconComponent className="w-6 h-6 text-white" />
                       </div>
                     )}
 
-                    {/* Like Button */}
-                    <div className="flex items-center gap-2">
-                      <motion.button
-                        whileHover={{ scale: 1.08 }}
-                        whileTap={{ scale: 0.85 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleLike(club.id);
-                        }}
-                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
-                          isLiked
-                            ? 'bg-rose-50 border-rose-200 text-rose-600 shadow-2xs'
-                            : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-rose-300 hover:text-rose-500'
-                        }`}
-                      >
-                        <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-                        <span>{likesCount}</span>
-                      </motion.button>
-                    </div>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleLike(club.id);
+                      }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border cursor-pointer ${
+                        isLiked
+                          ? 'bg-rose-500 text-white border-rose-600 shadow-sm'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200'
+                      }`}
+                    >
+                      <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-white' : ''}`} />
+                      <span>{likesCount}</span>
+                    </motion.button>
                   </div>
 
-                  {/* Club Title & Description */}
-                  <h3 className="font-semibold text-[#1E293B] mb-1 group-hover:text-slate-900 transition-colors" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  {/* Club Title & Tagline */}
+                  <h3 className="text-xl font-bold text-[#1E293B] mb-1.5 group-hover:text-orange-600 transition-colors" style={{ fontFamily: 'Playfair Display, serif' }}>
                     {club.name}
                   </h3>
-                  <p className="text-xs text-[#64748B] mb-3 line-clamp-2" style={{ fontFamily: 'Inter, sans-serif' }}>{club.description}</p>
+                  <p className="text-xs text-[#64748B] line-clamp-2 leading-relaxed mb-4" style={{ fontFamily: 'Inter, sans-serif' }}>
+                    {club.description}
+                  </p>
                 </div>
 
                 {/* Bottom Row: Category Tag & View Details Button */}
@@ -327,7 +324,7 @@ export default function Events() {
                   </span>
                   <motion.button
                     whileHover={{ scale: 1.04 }}
-                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white flex items-center gap-1 cursor-pointer bg-[#1E1B4B] hover:bg-[#2E1065] transition-colors"
+                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white flex items-center gap-1 cursor-pointer bg-[#C25E17] hover:bg-[#EA580C] transition-colors"
                     style={{ fontFamily: 'Poppins, sans-serif' }}
                   >
                     View Details
@@ -390,13 +387,13 @@ export default function Events() {
                   </div>
                   <div className="w-full h-1.5 bg-slate-100 rounded-full mb-6 overflow-hidden">
                     <div
-                      className="h-full bg-[#1E1B4B] transition-all duration-300 rounded-full"
+                      className="h-full bg-[#C25E17] transition-all duration-300 rounded-full"
                       style={{ width: `${((quizStep + 1) / QUIZ_QUESTIONS.length) * 100}%` }}
                     />
                   </div>
 
                   {/* Question Header */}
-                  <div className="flex items-center gap-2 mb-2 text-[#1E1B4B]">
+                  <div className="flex items-center gap-2 mb-2 text-[#C25E17]">
                     <Compass className="w-5 h-5" />
                     <span className="text-xs font-bold uppercase tracking-wider">Club Matcher Quiz</span>
                   </div>
@@ -410,10 +407,10 @@ export default function Events() {
                       <button
                         key={idx}
                         onClick={() => handleSelectOption(idx)}
-                        className="w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-slate-800 hover:bg-slate-50 transition-all flex items-center justify-between text-sm font-medium text-slate-700 cursor-pointer group"
+                        className="w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-orange-500 hover:bg-orange-50/50 transition-all flex items-center justify-between text-sm font-medium text-slate-700 cursor-pointer group"
                       >
                         <span>{opt.label}</span>
-                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#1E1B4B] group-hover:translate-x-1 transition-all" />
+                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#C25E17] group-hover:translate-x-1 transition-all" />
                       </button>
                     ))}
                   </div>
@@ -431,7 +428,7 @@ export default function Events() {
                 /* Results Screen */
                 <div>
                   <div className="text-center mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-slate-900 text-violet-300 flex items-center justify-center mx-auto mb-3">
+                    <div className="w-14 h-14 rounded-2xl bg-orange-50 text-orange-600 border border-orange-200 flex items-center justify-center mx-auto mb-3">
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
                     <h3 className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
@@ -444,7 +441,7 @@ export default function Events() {
                   <div className="space-y-3 mb-6">
                     {quizResults.map((item, i) => {
                       const IconComponent = (item.club.icon && CLUB_ICON_MAP[item.club.icon]) || Atom;
-                      const catColor = CLUB_CATEGORY_COLORS[item.club.category] || '#1E1B4B';
+                      const catColor = CLUB_CATEGORY_COLORS[item.club.category] || '#C25E17';
                       const matchPercent = i === 0 ? '98%' : i === 1 ? '91%' : '84%';
 
                       return (
@@ -454,7 +451,7 @@ export default function Events() {
                             setIsQuizOpen(false);
                             setSelectedClub(item.club);
                           }}
-                          className="p-4 rounded-2xl border border-slate-200 hover:border-slate-800 bg-slate-50 hover:bg-white cursor-pointer transition-all flex items-center justify-between"
+                          className="p-4 rounded-2xl border border-slate-200 hover:border-orange-500 bg-slate-50 hover:bg-white cursor-pointer transition-all flex items-center justify-between"
                         >
                           <div className="flex items-center gap-3">
                             {item.club.logoUrl ? (
@@ -495,7 +492,7 @@ export default function Events() {
                     </button>
                     <button
                       onClick={() => setIsQuizOpen(false)}
-                      className="flex-1 py-3 rounded-xl text-white font-semibold text-xs bg-[#1E1B4B] hover:bg-[#2E1065] transition-all cursor-pointer"
+                      className="flex-1 py-3 rounded-xl text-white font-semibold text-xs bg-[#C25E17] hover:bg-[#EA580C] transition-all cursor-pointer"
                     >
                       Explore All Clubs
                     </button>
@@ -529,7 +526,7 @@ export default function Events() {
               {/* Modal Header */}
               {(() => {
                 const IconComponent = (selectedClub.icon && CLUB_ICON_MAP[selectedClub.icon]) || Atom;
-                const categoryColor = CLUB_CATEGORY_COLORS[selectedClub.category] || '#1E1B4B';
+                const categoryColor = CLUB_CATEGORY_COLORS[selectedClub.category] || '#C25E17';
                 const isLiked = likedClubs.has(selectedClub.id);
                 const likesCount = likesMap[selectedClub.id] || 0;
 
@@ -580,9 +577,9 @@ export default function Events() {
               })()}
 
               {/* Club Detailed Description */}
-              <div className="mb-5 bg-slate-900/40 border border-slate-800 rounded-2xl p-4.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-violet-300 uppercase tracking-wider mb-2">
-                  <Info className="w-4 h-4 text-violet-300" />
+              <div className="mb-5 bg-orange-50/60 border border-orange-200/60 rounded-2xl p-4.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-orange-600 uppercase tracking-wider mb-2">
+                  <Info className="w-4 h-4 text-orange-600" />
                   <span>About the Club</span>
                 </div>
                 <p className="text-slate-700 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -593,22 +590,22 @@ export default function Events() {
               {/* Leadership & Contact Information */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6">
                 <div className="bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1E1B4B] to-[#2E1065] text-white flex items-center justify-center shadow-xs shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#C25E17] to-[#EA580C] text-white flex items-center justify-center shadow-xs shrink-0">
                     <UserCheck className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <span className="text-[11px] text-violet-300 font-semibold block">President / Student Lead</span>
+                    <span className="text-[11px] text-orange-300 font-semibold block">President / Student Lead</span>
                     <span className="text-sm font-bold text-white">{selectedClub.presidentName || 'Student President'}</span>
                   </div>
                 </div>
 
                 {selectedClub.vicePresidentName && (
                   <div className="bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2E1065] to-[#3B0764] text-white flex items-center justify-center shadow-xs shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#EA580C] to-[#F97316] text-white flex items-center justify-center shadow-xs shrink-0">
                       <Users className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <span className="text-[11px] text-violet-300 font-semibold block">Vice President</span>
+                      <span className="text-[11px] text-orange-300 font-semibold block">Vice President</span>
                       <span className="text-sm font-bold text-white">{selectedClub.vicePresidentName}</span>
                     </div>
                   </div>
@@ -618,7 +615,7 @@ export default function Events() {
               {/* Community & Social Links */}
               <div className="mb-6 bg-slate-900/40 border border-slate-800 rounded-2xl p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2 text-xs font-bold text-violet-300 uppercase tracking-wider">
+                  <div className="flex items-center gap-2 text-xs font-bold text-orange-400 uppercase tracking-wider">
                     <ExternalLink className="w-3.5 h-3.5" />
                     <span>Community & Social Links</span>
                   </div>

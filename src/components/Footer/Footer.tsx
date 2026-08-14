@@ -9,7 +9,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="max-w-md">
             <div className="flex items-center gap-2.5 mb-2.5">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#1E1B4B] border border-violet-800/40 text-white shadow-md">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#C25E17] border border-orange-500/40 text-white shadow-md">
                 <GraduationCap className="w-4 h-4" />
               </div>
               <div>
@@ -29,16 +29,16 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-xs sm:text-sm">
               <li className="flex items-start gap-2.5 text-slate-400" style={{ fontFamily: 'Inter, sans-serif' }}>
-                <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-violet-300" />
+                <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-orange-400" />
                 <span>Rajalakshmi Institute of Technology,<br />Kuthambakkam, Chennai - 600 124</span>
               </li>
               <li className="flex items-center gap-2.5 text-slate-400">
-                <Phone className="w-4 h-4 shrink-0 text-violet-300" />
-                <a href="tel:+914423422890" className="hover:text-violet-300 transition-colors">+91 44 2342 2890</a>
+                <Phone className="w-4 h-4 shrink-0 text-orange-400" />
+                <a href="tel:+914423422890" className="hover:text-orange-400 transition-colors">+91 44 2342 2890</a>
               </li>
               <li className="flex items-center gap-2.5 text-slate-400">
-                <Mail className="w-4 h-4 shrink-0 text-violet-300" />
-                <a href="mailto:info@rit.ac.in" className="hover:text-violet-300 transition-colors">info@rit.ac.in</a>
+                <Mail className="w-4 h-4 shrink-0 text-orange-400" />
+                <a href="mailto:info@rit.ac.in" className="hover:text-orange-400 transition-colors">info@rit.ac.in</a>
               </li>
             </ul>
           </div>

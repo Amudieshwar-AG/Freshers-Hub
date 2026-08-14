@@ -167,7 +167,7 @@ export default function Sidebar({
           {!isCollapsed && (
             <Link
               to="/collab"
-              className="w-full flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-[#1E1B4B] via-[#2E1065] to-[#1E1B4B] hover:from-[#2E1065] hover:to-[#3B0764] border border-violet-800/40 text-white group transition-all duration-200 shadow-md shadow-slate-950/50"
+              className="w-full flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-[#C25E17] via-[#EA580C] to-[#F97316] hover:from-[#EA580C] hover:to-[#FB923C] border border-orange-500/40 text-white group transition-all duration-200 shadow-md shadow-slate-950/50"
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-7 h-7 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white shrink-0">
@@ -177,10 +177,10 @@ export default function Sidebar({
                   <span className="text-xs font-bold leading-tight truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     Dev Collab Hub
                   </span>
-                  <span className="text-[10px] text-violet-200/90 truncate">Co-Developer Projects</span>
+                  <span className="text-[10px] text-orange-100/90 truncate">Co-Developer Projects</span>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-violet-200 group-hover:translate-x-0.5 transition-transform" />
+              <ChevronRight className="w-4 h-4 text-orange-100 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           )}
 
@@ -210,7 +210,7 @@ export default function Sidebar({
                         isCollapsed ? 'justify-center px-0 py-3' : 'justify-between px-3 py-2.5'
                       } rounded-xl text-xs font-semibold transition-all duration-200 group ${
                         isActive
-                          ? 'bg-gradient-to-r from-[#1E1B4B] to-[#2E1065] text-white shadow-sm border border-violet-800/50'
+                          ? 'bg-gradient-to-r from-[#C25E17] to-[#EA580C] text-white shadow-sm border border-orange-500/50'
                           : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
                       }`}
                       style={{ fontFamily: 'Poppins, sans-serif' }}
@@ -225,7 +225,7 @@ export default function Sidebar({
                       </div>
 
                       {!isCollapsed && item.highlight && !isActive && (
-                        <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
+                        <span className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
                       )}
                     </Link>
                   );
@@ -244,11 +244,11 @@ export default function Sidebar({
                   <img
                     src={user.pictureUrl}
                     alt={user.name}
-                    className="w-8 h-8 rounded-xl border border-violet-800/40 object-cover shrink-0"
+                    className="w-8 h-8 rounded-xl border border-orange-500/40 object-cover shrink-0"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="w-8 h-8 rounded-xl bg-[#1E1B4B] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-violet-800/40">
+                  <div className="w-8 h-8 rounded-xl bg-[#C25E17] text-white font-bold text-xs flex items-center justify-center shrink-0 border border-orange-500/40">
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -280,7 +280,7 @@ export default function Sidebar({
               title={isCollapsed ? 'Student Sign In' : undefined}
               className={`w-full flex items-center justify-center gap-2 ${
                 isCollapsed ? 'p-2.5' : 'p-2.5'
-              } rounded-xl bg-gradient-to-r from-[#1E1B4B] via-[#2E1065] to-[#1E1B4B] hover:from-[#2E1065] hover:to-[#3B0764] border border-violet-800/40 text-white font-bold text-xs transition-all cursor-pointer shadow-md`}
+              } rounded-xl bg-gradient-to-r from-[#C25E17] via-[#EA580C] to-[#F97316] hover:from-[#EA580C] hover:to-[#FB923C] border border-orange-500/40 text-white font-bold text-xs transition-all cursor-pointer shadow-md`}
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               <LogIn className="w-4 h-4 shrink-0" />

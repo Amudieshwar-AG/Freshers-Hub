@@ -102,7 +102,7 @@ export default function Home() {
                 to={item.path}
                 className="flex flex-col items-center justify-center p-2 sm:p-3.5 rounded-xl sm:rounded-2xl bg-slate-950/50 hover:bg-slate-900/80 border border-white/20 hover:border-white/40 backdrop-blur-md text-white transition-all duration-200 cursor-pointer hover:scale-[1.04] shadow-xl group text-center"
               >
-                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-white/15 border border-white/25 flex items-center justify-center mb-1 sm:mb-1.5 group-hover:bg-[#1E1B4B] transition-colors shrink-0">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-white/15 border border-white/25 flex items-center justify-center mb-1 sm:mb-1.5 group-hover:bg-[#C25E17] transition-colors shrink-0">
                   <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                 </div>
                 <span className="text-[10px] sm:text-xs font-bold truncate max-w-full leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>

@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import Sidebar from '@/components/Sidebar/Sidebar';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 
@@ -12,40 +10,15 @@ const pageVariants = {
 };
 
 export default function MainLayout() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
-    return localStorage.getItem('rit_sidebar_collapsed') === 'true';
-  });
   const location = useLocation();
 
-  const toggleSidebar = () => setIsSidebarOpen((prev) => !prev);
-  const toggleSidebarCollapse = () => {
-    setIsSidebarCollapsed((prev) => {
-      const next = !prev;
-      localStorage.setItem('rit_sidebar_collapsed', String(next));
-      return next;
-    });
-  };
-
   return (
-    <div className="min-h-screen w-full max-w-full bg-[#F8FAFC] flex flex-col lg:flex-row font-sans selection:bg-purple-700 selection:text-white overflow-x-hidden">
-      {/* Left Sidebar Navigation */}
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onToggle={toggleSidebar}
-        isCollapsed={isSidebarCollapsed}
-        onToggleCollapse={toggleSidebarCollapse}
-      />
+    <div className="min-h-screen w-full max-w-full bg-[#F8FAFC] flex flex-col font-sans selection:bg-orange-500 selection:text-white overflow-x-hidden">
+      {/* Top Header Navigation */}
+      <Header />
 
-      {/* Main Right Viewport Wrapper */}
-      <div
-        className={`flex-1 flex flex-col min-w-0 w-full transition-all duration-300 ${
-          isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64 xl:pl-72'
-        }`}
-      >
-        {/* Top Header */}
-        <Header onToggleSidebar={toggleSidebar} />
-
+      {/* Main Viewport Container */}
+      <div className="flex-1 flex flex-col min-w-0 w-full">
         {/* Dynamic Page Content */}
         <div className="flex-1 p-3 sm:p-6 lg:p-8 w-full max-w-full overflow-x-hidden">
           <AnimatePresence mode="wait">

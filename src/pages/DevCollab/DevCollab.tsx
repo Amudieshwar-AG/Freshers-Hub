@@ -433,18 +433,18 @@ export default function DevCollab() {
         <div className="bg-white border-b border-[#E5E7EB] py-10">
           <div className="container-custom">
             <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-3">
-              <Link to="/" className="hover:text-violet-400">Home</Link>
+              <Link to="/" className="hover:text-orange-500">Home</Link>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-violet-400">Developer Collab Hub</span>
+              <span className="text-orange-500 font-medium">Developer Collab Hub</span>
             </div>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-700 text-violet-300 text-xs font-semibold mb-3">
-                  <Code2 className="w-4 h-4 text-violet-300" /> RIT Developers Environment
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-orange-500/40 text-orange-300 text-xs font-semibold mb-3">
+                  <Code2 className="w-4 h-4 text-orange-400" /> RIT Developers Environment
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
                   Find Project{' '}
-                  <span style={{ background: 'linear-gradient(135deg, #0F172A, #1E1B4B, #2E1065)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                  <span style={{ background: 'linear-gradient(135deg, #C25E17, #EA580C, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                     Collaborators
                   </span>
                 </h1>
@@ -457,10 +457,10 @@ export default function DevCollab() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => requireVerifiedStudent(() => setShowPostModal(true))}
-                className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg shadow-slate-900/25 shrink-0 cursor-pointer border border-violet-800/40"
-                style={{ background: 'linear-gradient(135deg, #0F172A, #1E1B4B, #2E1065)', fontFamily: 'Poppins, sans-serif' }}
+                className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg shadow-orange-500/20 shrink-0 cursor-pointer border border-white/20"
+                style={{ background: 'linear-gradient(135deg, #C25E17, #EA580C)', fontFamily: 'Poppins, sans-serif' }}
               >
-                {isVerifiedStudent && <ShieldCheck className="w-4 h-4" />}
+                {isVerifiedStudent && <ShieldCheck className="w-4 h-4 text-amber-200" />}
                 <Plus className="w-4.5 h-4.5" />
                 Post Collaboration Request
               </motion.button>
