@@ -28,12 +28,12 @@ export default function SectionTitle({
           className={`inline-flex items-center gap-2 mb-3 ${isCenter ? 'mx-auto' : ''}`}
         >
           <span
-            className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase"
+            className="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase"
             style={{
-              fontFamily: 'Poppins, sans-serif',
+              fontFamily: 'Plus Jakarta Sans, sans-serif',
               backgroundColor: '#FFF7ED',
-              color: '#F97316',
-              border: '1px solid #FED7AA',
+              color: '#FF6B00',
+              border: '1px solid #FFEDD5',
             }}
           >
             {tag}
@@ -46,15 +46,15 @@ export default function SectionTitle({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="text-3xl md:text-4xl font-bold"
-        style={{ fontFamily: 'Playfair Display, serif', color: '#1E293B' }}
+        className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight"
+        style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', color: '#1A0B2E' }}
       >
         {title}{' '}
         {highlight && (
           <span
             className="relative inline-block"
             style={{
-              background: 'linear-gradient(135deg, #F97316, #FB923C)',
+              background: 'linear-gradient(135deg, #FF6B00, #F97316)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -71,7 +71,7 @@ export default function SectionTitle({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className={`mt-3 text-base text-[#475569] max-w-xl ${isCenter ? 'mx-auto' : ''}`}
+          className={`mt-3 text-base text-[#4A3E5E] max-w-xl ${isCenter ? 'mx-auto' : ''}`}
           style={{ fontFamily: 'Inter, sans-serif' }}
         >
           {subtitle}

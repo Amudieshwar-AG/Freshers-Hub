@@ -44,26 +44,26 @@ export default function Faculty() {
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="bg-white border-b border-[#E5E7EB] py-10">
+        <div className="bg-white border-b border-[#E9E5EE] py-10">
           <div className="container-custom">
-            <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-3">
-              <Link to="/" className="hover:text-[#F97316]">Home</Link>
+            <div className="flex items-center gap-2 text-xs text-[#9E91B6] mb-3">
+              <Link to="/" className="hover:text-[#FF6B00]">Home</Link>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-[#F97316]">Faculty Directory</span>
+              <span className="text-[#FF6B00] font-semibold">Faculty Directory</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#1A0B2E] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
               Faculty{' '}
-              <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <span style={{ background: 'linear-gradient(135deg, #FF6B00, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Directory
               </span>
             </h1>
-            <p className="text-[#475569] text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <p className="text-[#4A3E5E] text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
               Browse and connect with experienced faculty members across all departments.
             </p>
           </div>
         </div>
 
-        <div className="container-custom py-8 space-y-8">
+        <div className="container-custom pt-8 pb-20 md:pb-28 space-y-8">
           {/* Under Development Banner */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -87,15 +87,15 @@ export default function Faculty() {
           </motion.div>
           {/* Faculty Hero Section */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            <div className="lg:col-span-5 bg-white rounded-3xl p-8 border border-[#E8ECF4] shadow-sm flex flex-col justify-center relative overflow-hidden">
+            <div className="lg:col-span-5 bg-white rounded-2xl p-8 border border-[#E9E5EE] shadow-[0_4px_20px_-4px_rgba(19,9,36,0.04)] flex flex-col justify-center relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-bl-full -z-10" />
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#FF7A00] to-[#FB923C] flex items-center justify-center text-white mb-6 shadow-md">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#F97316] flex items-center justify-center text-white mb-6 shadow-md shadow-orange-500/20">
                 <Users className="w-7 h-7" />
               </div>
-              <h2 className="text-3xl font-bold text-[#1E293B] mb-3" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <h2 className="text-3xl font-extrabold text-[#1A0B2E] mb-3" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                 Faculty Directory
               </h2>
-              <p className="text-[#64748B] text-xs leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <p className="text-[#4A3E5E] text-xs leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Browse and connect with experienced faculty members. Search by name, department, or specialization.
               </p>
             </div>

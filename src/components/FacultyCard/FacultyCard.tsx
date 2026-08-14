@@ -39,17 +39,16 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
   return (
     <>
       <motion.div
-        whileHover={{ y: -6, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)' }}
+        whileHover={{ y: -4 }}
         transition={{ duration: 0.3 }}
-        className="bg-white border border-[#E8ECF4] rounded-[20px] p-5 flex flex-col gap-4 relative"
-        style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
+        className="bg-white border border-[#E9E5EE] rounded-2xl p-5 flex flex-col gap-4 relative shadow-[0_4px_20px_-4px_rgba(19,9,36,0.04)] hover:shadow-[0_12px_35px_-6px_rgba(19,9,36,0.08)] hover:border-[#FF6B00]/30"
       >
         {/* Avatar + Name */}
         <div className="flex items-center gap-4">
           <div className="relative">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-lg shrink-0 shadow-sm"
-              style={{ background: `linear-gradient(135deg, ${from}, ${to})`, fontFamily: 'Poppins, sans-serif' }}
+              style={{ background: `linear-gradient(135deg, ${from}, ${to})`, fontFamily: 'Plus Jakarta Sans, sans-serif' }}
             >
               {initials}
             </div>
@@ -57,10 +56,10 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#22C55E] border-2 border-white rounded-full z-10 shadow-sm" />
           </div>
           <div>
-            <h3 className="font-semibold text-[#1E293B] text-sm leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <h3 className="font-bold text-[#1A0B2E] text-sm leading-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
               {faculty.name}
             </h3>
-            <p className="text-xs text-[#FF7A00] font-medium mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <p className="text-xs text-[#FF6B00] font-semibold mt-0.5" style={{ fontFamily: 'Inter, sans-serif' }}>
               {faculty.designation}
             </p>
           </div>
@@ -68,27 +67,27 @@ export default function FacultyCard({ faculty }: FacultyCardProps) {
 
         {/* Details */}
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-xs text-[#475569]">
-            <Building2 className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
+          <div className="flex items-center gap-2 text-xs text-[#4A3E5E]">
+            <Building2 className="w-3.5 h-3.5 text-[#9E91B6] shrink-0" />
             <span style={{ fontFamily: 'Inter, sans-serif' }}>{faculty.department}</span>
           </div>
         </div>
 
         {/* Contact & Actions */}
-        <div className="flex items-center gap-2 pt-2 border-t border-[#E5E7EB] mt-auto">
+        <div className="flex items-center gap-2 pt-2 border-t border-[#E9E5EE] mt-auto">
           <button
             onClick={() => setShowEmailOptions(true)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium text-[#475569] transition-all hover:bg-gray-50 border border-transparent hover:border-gray-200"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold text-[#4A3E5E] transition-all hover:bg-purple-50/50 border border-transparent hover:border-[#E9E5EE]"
+            style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
             aria-label={`Email ${faculty.name}`}
           >
-            <Mail className="w-3.5 h-3.5" />
+            <Mail className="w-3.5 h-3.5 text-[#FF6B00]" />
             Email
           </button>
           <button
             onClick={() => setShowModal(true)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-medium transition-all hover:bg-[#FFF7ED]"
-            style={{ color: '#F97316', fontFamily: 'Poppins, sans-serif' }}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all hover:bg-[#FFF7ED]"
+            style={{ color: '#FF6B00', fontFamily: 'Plus Jakarta Sans, sans-serif' }}
           >
             View Profile
             <ChevronRight className="w-3.5 h-3.5" />

@@ -196,17 +196,17 @@ export default function Events() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAFAFA' }}>
+    <div className="min-h-screen bg-[#FAF9FC]">
       {/* Header */}
-      <div className="bg-white border-b border-[#E5E7EB] py-10">
+      <div className="bg-white border-b border-[#E9E5EE] py-10">
         <div className="container-custom">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#1A0B2E] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
             Student{' '}
-            <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <span style={{ background: 'linear-gradient(135deg, #FF6B00, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               Clubs
             </span>
           </h1>
-          <p className="text-[#475569]" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <p className="text-[#4A3E5E]" style={{ fontFamily: 'Inter, sans-serif' }}>
             Explore official RIT student clubs & societies, leadership details, and community links.
           </p>
         </div>
@@ -217,13 +217,13 @@ export default function Events() {
         {/* ─── Feature 1: "Find My Ideal Club" Banner ────────────────────────── */}
         <AnimatedContainer className="mb-14">
           <div
-            className="rounded-3xl p-6 md:p-8 text-white relative overflow-hidden border border-orange-400/30 flex flex-col md:flex-row items-center justify-between gap-6"
-            style={{ background: 'linear-gradient(135deg, #1E293B, #0F172A)' }}
+            className="rounded-2xl p-6 md:p-8 text-white relative overflow-hidden border border-[#3A1968] flex flex-col md:flex-row items-center justify-between gap-6"
+            style={{ background: 'linear-gradient(135deg, #130924, #1E0C36)' }}
           >
             {/* Background Glow */}
             <div
               className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-20 pointer-events-none"
-              style={{ background: 'radial-gradient(circle, #F97316, transparent)' }}
+              style={{ background: 'radial-gradient(circle, #FF6B00, transparent)' }}
             />
 
             <div className="relative z-10 max-w-xl">
@@ -231,10 +231,10 @@ export default function Events() {
                 <Target className="w-3.5 h-3.5" />
                 <span>Interactive Club Matcher</span>
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                 Not sure which club to join?
               </h2>
-              <p className="text-slate-300 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <p className="text-purple-200/80 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Take our 3-step AI-powered Club Matcher quiz to get instant recommendations tailored to your interests, skills, and goals!
               </p>
             </div>

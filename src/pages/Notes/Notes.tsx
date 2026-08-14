@@ -1433,7 +1433,7 @@ export default function Notes() {
         </div>
       )}
 
-      <div className="container-custom py-10">
+      <div className="container-custom pt-10 pb-32 lg:pb-44">
 
 
         {selectedToolkit ? (

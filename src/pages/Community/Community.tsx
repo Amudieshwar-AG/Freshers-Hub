@@ -261,24 +261,24 @@ export default function Community() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAFBFD' }}>
+    <div className="min-h-screen bg-[#FAF9FC]">
       {/* Header */}
-      <div className="bg-white border-b border-slate-100 py-12">
+      <div className="bg-white border-b border-[#E9E5EE] py-12">
         <div className="container-custom">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight" style={{ fontFamily: 'Playfair Display, serif', color: '#1E293B' }}>
+          <h1 className="text-3xl md:text-4xl font-extrabold mb-2 tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif', color: '#1A0B2E' }}>
             RIT Community
           </h1>
-          <p className="text-slate-500 text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <p className="text-[#4A3E5E] text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
             Ask questions and connect with fellow RIT students.
           </p>
         </div>
       </div>
 
-      <div className="container-custom py-10">
+      <div className="container-custom pt-10 pb-20 md:pb-28">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">                  {/* Ask Question Box */}
-                  <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 mb-8" style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}>
-                    <h3 className="text-base font-semibold text-[#1E293B] mb-3 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>Ask a Question</h3>
+                  <div className="bg-white border border-[#E9E5EE] rounded-2xl p-6 mb-8 shadow-[0_4px_20px_-4px_rgba(19,9,36,0.04)]">
+                    <h3 className="text-base font-bold text-[#1A0B2E] mb-3 tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Ask a Question</h3>
                     
                     {showSuccessBanner && (
                       <motion.div 

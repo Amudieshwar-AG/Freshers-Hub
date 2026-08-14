@@ -677,24 +677,24 @@ export default function Toolkit() {
   const toolkitRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#FAFAFA' }}>
+    <div className="min-h-screen bg-[#FAF9FC]">
       {/* Header */}
       {!selectedToolkit && (
-        <div className="bg-white border-b border-[#E5E7EB] py-10">
+        <div className="bg-white border-b border-[#E9E5EE] py-10">
           <div className="container-custom">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                <Link to="/" className="hover:text-[#F97316]">Home</Link>
+              <div className="flex items-center gap-2 text-xs text-[#9E91B6] mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
+                <Link to="/" className="hover:text-[#FF6B00]">Home</Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-[#F97316]">Student Toolkit</span>
+                <span className="text-[#FF6B00] font-semibold">Student Toolkit</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-[#1A0B2E] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                 Student{' '}
-                <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                <span style={{ background: 'linear-gradient(135deg, #FF6B00, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                   Toolkit
                 </span>
               </h1>
-              <p className="text-[#475569]" style={{ fontFamily: 'Inter, sans-serif' }}>
+              <p className="text-[#4A3E5E]" style={{ fontFamily: 'Inter, sans-serif' }}>
                 Access specialized development environments, IDE configurations, compiler guides, and department toolkits.
               </p>
             </motion.div>
@@ -702,7 +702,7 @@ export default function Toolkit() {
         </div>
       )}
 
-      <div className="container-custom py-10">
+      <div className="container-custom pt-10 pb-32 lg:pb-44">
         {selectedToolkit ? (
           (() => {
             const TOOLKIT_MAP: Record<string, { categories: typeof CS_TOOLS_CATEGORIES; label: string }> = {
@@ -737,8 +737,8 @@ export default function Toolkit() {
                         setSelectedToolkit(null);
                       }
                     }}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-[#475569] bg-white border border-[#E5E7EB] hover:border-[#F97316] hover:text-[#F97316] transition-all cursor-pointer shadow-2xs mb-4"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-[#4A3E5E] bg-white border border-[#E9E5EE] hover:border-[#FF6B00] hover:text-[#FF6B00] transition-all cursor-pointer shadow-2xs mb-4"
+                    style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
                   >
                     <ArrowLeft className="w-4 h-4" />
                     {selectedTool
@@ -750,8 +750,8 @@ export default function Toolkit() {
                       : 'Back to Toolkit'}
                   </button>
                   <div className="flex items-center gap-3">
-                    <h2 className="text-2xl md:text-3xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
-                      {label} <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Toolkit</span>
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-[#1A0B2E]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                      {label} <span style={{ background: 'linear-gradient(135deg, #FF6B00, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Toolkit</span>
                     </h2>
                   </div>
                   <p className="text-[#64748B] text-sm mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>

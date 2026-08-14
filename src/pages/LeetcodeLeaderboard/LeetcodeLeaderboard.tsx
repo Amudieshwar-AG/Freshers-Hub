@@ -125,7 +125,7 @@ export default function LeetcodeLeaderboard() {
   const topProfile = profiles.length > 0 ? profiles[0] : null;
 
   return (
-    <div className="min-h-screen pt-24 pb-16 bg-[#FAFAFA] text-[#1E293B] px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-24 pb-16 bg-[#FAF9FC] text-[#1A0B2E] px-4 sm:px-6 lg:px-8">
       {/* Toast Notification */}
       <AnimatePresence>
         {toastMessage && (
@@ -133,7 +133,7 @@ export default function LeetcodeLeaderboard() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="fixed top-6 right-6 z-50 px-5 py-3 rounded-xl bg-white border border-[#E5E7EB] backdrop-blur-md text-[#1E293B] font-semibold shadow-2xl flex items-center gap-2"
+            className="fixed top-6 right-6 z-50 px-5 py-3 rounded-xl bg-white border border-[#E9E5EE] backdrop-blur-md text-[#1A0B2E] font-bold shadow-2xl flex items-center gap-2"
           >
             {toastMessage}
           </motion.div>
@@ -142,20 +142,19 @@ export default function LeetcodeLeaderboard() {
 
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Banner Header */}
-        <div className="relative overflow-hidden rounded-[24px] bg-white border border-[#E5E7EB] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-          <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/3 -mb-12 w-80 h-80 bg-teal-500/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative overflow-hidden rounded-2xl bg-white border border-[#E9E5EE] p-8 shadow-[0_4px_20px_-4px_rgba(19,9,36,0.04)]">
+          <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
             <div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-semibold uppercase tracking-wider mb-4">
-                <Flame className="w-4 h-4 text-amber-500 animate-pulse" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-[#FF6B00] text-xs font-bold uppercase tracking-wider mb-4">
+                <Flame className="w-4 h-4 text-[#FF6B00] animate-pulse" />
                 RIT LeetCode Arena
               </div>
-              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#1E293B] font-poppins">
-                Campus <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-400 to-[#F97316]">LeetCode Leaderboard</span>
+              <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[#1A0B2E]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                Campus <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#FF6B00] to-[#F97316]">LeetCode Leaderboard</span>
               </h1>
-              <p className="mt-2 text-slate-500 max-w-2xl text-sm sm:text-base">
+              <p className="mt-2 text-[#4A3E5E] max-w-2xl text-sm sm:text-base font-medium">
                 Track top problem solvers across departments. Automatically updated every 24 hours with rate-limited, spaced background sync.
               </p>
             </div>
@@ -163,7 +162,8 @@ export default function LeetcodeLeaderboard() {
             <div className="flex flex-wrap items-center gap-3 shrink-0">
               <button
                 onClick={() => setShowModal(true)}
-                className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-[#F97316] to-[#FB923C] hover:from-[#EA580C] hover:to-[#F97316] text-white font-bold text-sm shadow-lg shadow-[#F97316]/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-[#FF6B00] to-[#F97316] hover:from-[#EA580C] hover:to-[#FF6B00] text-white font-bold text-sm shadow-lg shadow-orange-500/25 transition-all transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
               >
                 <Plus className="w-5 h-5 stroke-[2.5]" />
                 Register Handle
@@ -171,9 +171,10 @@ export default function LeetcodeLeaderboard() {
               <button
                 onClick={handleTriggerSync}
                 disabled={isSyncing}
-                className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-[#F8FAFC] hover:bg-[#F1F5F9] text-slate-700 border border-[#E2E8F0] font-semibold text-sm transition-all cursor-pointer"
+                className="flex items-center gap-2 px-4 py-3 rounded-xl bg-[#FAF9FC] hover:bg-purple-50/50 text-[#1A0B2E] border border-[#E9E5EE] font-semibold text-sm transition-all cursor-pointer"
+                style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
               >
-                <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin text-amber-500' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin text-[#FF6B00]' : ''}`} />
                 24h Spaced Sync
               </button>
             </div>
@@ -369,10 +370,10 @@ export default function LeetcodeLeaderboard() {
               </div>
 
               {/* Desktop Table View (Medium Screens & Up) */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full text-left text-slate-600 border-collapse">
+              <div className="hidden md:block overflow-x-auto rounded-2xl border border-[#E9E5EE] shadow-[0_4px_20px_-4px_rgba(19,9,36,0.04)] bg-white">
+                <table className="w-full text-left text-[#4A3E5E] border-collapse">
                   <thead>
-                    <tr className="border-b border-[#E5E7EB] bg-[#F8FAFC] text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    <tr className="border-b border-[#3A1968] bg-[#130924] text-[11px] font-extrabold uppercase tracking-wider text-white">
                       <th className="py-4 px-6 text-center w-16">Rank</th>
                       <th className="py-4 px-6">Student</th>
                       <th className="py-4 px-6">Dept & Year</th>

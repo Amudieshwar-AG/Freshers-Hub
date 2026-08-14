@@ -432,23 +432,23 @@ export default function DevCollab() {
         {/* Header */}
         <div className="bg-white border-b border-[#E5E7EB] py-10">
           <div className="container-custom">
-            <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-3">
-              <Link to="/" className="hover:text-[#F97316]">Home</Link>
+            <div className="flex items-center gap-2 text-xs text-[#9E91B6] mb-3">
+              <Link to="/" className="hover:text-[#FF6B00]">Home</Link>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-[#F97316]">Developer Collab Hub</span>
+              <span className="text-[#FF6B00] font-semibold">Developer Collab Hub</span>
             </div>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div>
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-[#F97316] text-xs font-semibold mb-3">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-[#FF6B00] text-xs font-bold mb-3">
                   <Code2 className="w-4 h-4" /> RIT Developers Environment
                 </div>
-                <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+                <h1 className="text-3xl md:text-4xl font-extrabold text-[#1A0B2E] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                   Find Project{' '}
-                  <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                  <span style={{ background: 'linear-gradient(135deg, #FF6B00, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                     Collaborators
                   </span>
                 </h1>
-                <p className="text-[#475569] text-sm max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
+                <p className="text-[#4A3E5E] text-sm max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
                   Post open-source projects, search for co-developers, or manage candidate applications cleanly on the website or via Telegram!
                 </p>
               </div>
@@ -457,8 +457,8 @@ export default function DevCollab() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
                 onClick={() => requireVerifiedStudent(() => setShowPostModal(true))}
-                className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm shadow-lg shadow-orange-500/25 shrink-0 cursor-pointer"
-                style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', fontFamily: 'Poppins, sans-serif' }}
+                className="flex items-center gap-2.5 px-6 py-3.5 rounded-xl text-white font-bold text-sm shadow-lg shadow-orange-500/25 shrink-0 cursor-pointer"
+                style={{ background: 'linear-gradient(135deg, #FF6B00, #F97316)', fontFamily: 'Plus Jakarta Sans, sans-serif' }}
               >
                 {isVerifiedStudent && <ShieldCheck className="w-4 h-4" />}
                 <Plus className="w-4.5 h-4.5" />
@@ -467,15 +467,15 @@ export default function DevCollab() {
             </div>
 
             {/* Dashboard Tabs Bar */}
-            <div className="flex items-center gap-3 mt-8 border-b border-slate-200 overflow-x-auto pb-px">
+            <div className="flex items-center gap-3 mt-8 border-b border-[#E9E5EE] overflow-x-auto pb-px">
               <button
                 onClick={() => setActiveTab('explore')}
                 className={`px-5 py-3 text-xs font-bold transition-all border-b-2 flex items-center gap-2 cursor-pointer ${
                   activeTab === 'explore'
-                    ? 'border-[#F97316] text-[#F97316]'
-                    : 'border-transparent text-slate-500 hover:text-slate-800'
+                    ? 'border-[#FF6B00] text-[#FF6B00]'
+                    : 'border-transparent text-purple-400 hover:text-[#1A0B2E]'
                 }`}
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
               >
                 <Code2 className="w-4 h-4" />
                 Explore Projects ({requests.length})

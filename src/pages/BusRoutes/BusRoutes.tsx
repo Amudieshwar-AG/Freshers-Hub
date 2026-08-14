@@ -50,18 +50,18 @@ export default function BusRoutes() {
   );
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-950 text-white">
+    <div className="min-h-screen relative overflow-hidden bg-[#0A0414] text-white">
       {/* Sleek Dark Header */}
-      <div className="bg-slate-900 border-b border-slate-800/80 py-4 px-4 sm:px-8 z-30 relative">
+      <div className="bg-[#130924] border-b border-[#3A1968]/80 py-4 px-4 sm:px-8 z-30 relative">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
-              <Link to="/" className="hover:text-orange-400">Home</Link>
+            <div className="flex items-center gap-2 text-xs text-purple-300/80 mb-1">
+              <Link to="/" className="hover:text-[#FF6B00]">Home</Link>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-orange-400 font-semibold">Live Bus Tracking</span>
+              <span className="text-[#FF6B00] font-semibold">Live Bus Tracking</span>
             </div>
             <div className="flex items-center gap-3">
-              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                 RIT Live Transport Map
               </h1>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-[11px] font-bold">
@@ -74,25 +74,25 @@ export default function BusRoutes() {
           {/* Controls: Search + Toggle Drawer Button */}
           <div className="flex items-center gap-2">
             <div className="relative flex-1 sm:w-64">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-300/60" />
               <input
                 type="text"
                 placeholder="Search route or bus no..."
                 value={busSearch}
                 onChange={(e) => setBusSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-orange-500 transition-colors"
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-[#1E0C36] border border-[#3A1968] text-xs text-white placeholder-purple-300/50 focus:outline-none focus:border-[#FF6B00] transition-colors"
                 style={{ fontFamily: 'Inter, sans-serif' }}
               />
             </div>
 
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                 isSidebarOpen
-                  ? 'bg-orange-500 text-white border-orange-400 shadow-lg shadow-orange-500/20'
-                  : 'bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700'
+                  ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white border-orange-400 shadow-lg shadow-orange-500/20'
+                  : 'bg-[#1E0C36] text-purple-100 border-[#3A1968] hover:bg-[#2A104E]'
               }`}
-              style={{ fontFamily: 'Poppins, sans-serif' }}
+              style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
             >
               {isSidebarOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
               <span className="hidden sm:inline">

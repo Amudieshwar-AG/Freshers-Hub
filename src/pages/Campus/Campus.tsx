@@ -148,27 +148,27 @@ export default function Campus() {
         {/* Header */}
         <div className="bg-white border-b border-[#E5E7EB] py-10">
           <div className="container-custom">
-            <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-3">
-              <Link to="/" className="hover:text-[#F97316]">Home</Link>
+            <div className="flex items-center gap-2 text-xs text-[#9E91B6] mb-3">
+              <Link to="/" className="hover:text-[#FF6B00]">Home</Link>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-[#F97316]">Campus Map</span>
+              <span className="text-[#FF6B00] font-semibold">Campus Map</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#1A0B2E] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
               Explore{' '}
-              <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <span style={{ background: 'linear-gradient(135deg, #FF6B00, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Campus Map
               </span>
             </h1>
-            <p className="text-[#475569] text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <p className="text-[#4A3E5E] text-sm" style={{ fontFamily: 'Inter, sans-serif' }}>
               Navigate campus layout, click location categories or blocks to spot exact places on the blueprint.
             </p>
           </div>
         </div>
 
-        <div className="container-custom py-8">
+        <div className="container-custom pt-8 pb-20 md:pb-28">
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
             {/* Map Viewer Header Bar */}
-            <div ref={mapRef} className="bg-[#0F172A] rounded-t-3xl p-4 md:p-6 text-white border-b border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div ref={mapRef} className="bg-[#130924] rounded-t-3xl p-4 md:p-6 text-white border-b border-purple-900/40 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 text-xs font-semibold border border-orange-500/30">
@@ -178,10 +178,10 @@ export default function Campus() {
                     <CheckCircle2 className="w-3 h-3" /> Interactive Location Spotter
                   </span>
                 </div>
-                <h2 className="text-xl md:text-2xl font-bold tracking-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
+                <h2 className="text-xl md:text-2xl font-extrabold tracking-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                   Rajalakshmi Institute of Technology
                 </h2>
-                <p className="text-xs md:text-sm text-slate-400 flex items-center gap-1.5 mt-0.5">
+                <p className="text-xs md:text-sm text-purple-300/80 flex items-center gap-1.5 mt-0.5">
                   <MapPin className="w-3.5 h-3.5 text-orange-400" />
                   Kuthambakkam, Chennai • Interactive Map Spotting Enabled
                 </p>
@@ -189,23 +189,23 @@ export default function Campus() {
 
               {/* Toolbar Controls */}
               <div className="flex items-center flex-wrap gap-2">
-                <div className="flex items-center bg-slate-800/80 rounded-xl p-1 border border-slate-700">
-                  <button onClick={handleZoomOut} title="Zoom Out" className="p-2 text-slate-300 hover:text-white hover:bg-slate-700/60 rounded-lg transition-colors cursor-pointer">
+                <div className="flex items-center bg-[#1E0C36] rounded-xl p-1 border border-[#3A1968]">
+                  <button onClick={handleZoomOut} title="Zoom Out" className="p-2 text-purple-200 hover:text-white hover:bg-purple-900/40 rounded-lg transition-colors cursor-pointer">
                     <ZoomOut className="w-4 h-4" />
                   </button>
                   <button onClick={handleResetZoom} title="Reset Zoom" className="px-2 text-xs font-semibold text-orange-400 hover:text-orange-300 transition-colors cursor-pointer">
                     {Math.round(zoomLevel * 100)}%
                   </button>
-                  <button onClick={handleZoomIn} title="Zoom In" className="p-2 text-slate-300 hover:text-white hover:bg-slate-700/60 rounded-lg transition-colors cursor-pointer">
+                  <button onClick={handleZoomIn} title="Zoom In" className="p-2 text-purple-200 hover:text-white hover:bg-purple-900/40 rounded-lg transition-colors cursor-pointer">
                     <ZoomIn className="w-4 h-4" />
                   </button>
                 </div>
 
-                <button onClick={() => setIsFullscreen(true)} className="p-2 bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 hover:text-white rounded-xl border border-slate-700 transition-colors cursor-pointer" title="Expand to Fullscreen">
+                <button onClick={() => setIsFullscreen(true)} className="p-2 bg-[#1E0C36] hover:bg-[#2A104E] text-purple-200 hover:text-white rounded-xl border border-[#3A1968] transition-colors cursor-pointer" title="Expand to Fullscreen">
                   <Maximize2 className="w-4 h-4" />
                 </button>
 
-                <button onClick={handleDownload} className="flex items-center gap-1.5 px-3 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-semibold rounded-xl shadow-lg shadow-orange-500/20 transition-all cursor-pointer" title="Download Blueprint Image">
+                <button onClick={handleDownload} className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-[#FF6B00] to-[#F97316] hover:from-[#EA580C] hover:to-[#FF6B00] text-white text-xs font-bold rounded-xl shadow-lg shadow-orange-500/20 transition-all cursor-pointer" title="Download Blueprint Image">
                   <Download className="w-3.5 h-3.5" />
                   Download
                 </button>
@@ -269,9 +269,9 @@ export default function Campus() {
             </div>
 
             {/* Quick Location Categories Bar */}
-            <div className="bg-white rounded-3xl border border-[#E5E7EB] p-6 md:p-8 mb-8 shadow-xs">
+            <div className="bg-white rounded-2xl border border-[#E9E5EE] p-6 md:p-8 mb-8 shadow-[0_4px_20px_-4px_rgba(19,9,36,0.04)]">
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>Quick Location Categories</h3>
+                <h3 className="text-xl font-bold text-[#1A0B2E]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Quick Location Categories</h3>
                 {activeCategory && (
                   <button onClick={() => setActiveCategory(null)} className="text-xs font-semibold text-orange-500 hover:text-orange-600 flex items-center gap-1 cursor-pointer"><X className="w-3.5 h-3.5" /> Clear Spot Filter</button>
                 )}
@@ -282,10 +282,10 @@ export default function Campus() {
                   const isCatActive = activeCategory === loc.id;
                   return (
                     <motion.button key={loc.id} whileHover={{ y: -3 }} whileTap={{ scale: 0.95 }} onClick={() => handleCategoryClick(loc.id)} className={`flex flex-col items-center gap-2.5 p-3 rounded-2xl transition-all border cursor-pointer group ${isCatActive ? 'border-orange-500 bg-orange-500 text-white shadow-lg ring-2 ring-orange-400/30' : 'border-transparent hover:border-[#FED7AA] hover:bg-orange-50/50'}`}>
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center border transition-colors ${isCatActive ? 'bg-white text-orange-500 border-white' : 'bg-[#F8FAFC] group-hover:bg-orange-100 text-[#F97316] border-[#E5E7EB] group-hover:border-orange-300'}`}>
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center border transition-colors ${isCatActive ? 'bg-white text-orange-500 border-white' : 'bg-[#FAF9FC] group-hover:bg-orange-100 text-[#FF6B00] border-[#E9E5EE] group-hover:border-orange-300'}`}>
                         {Icon && <Icon className="w-5 h-5" />}
                       </div>
-                      <span className={`text-[11px] font-semibold text-center leading-tight ${isCatActive ? 'text-white' : 'text-[#475569] group-hover:text-[#F97316]'}`} style={{ fontFamily: 'Inter, sans-serif' }}>{loc.name}</span>
+                      <span className={`text-[11px] font-semibold text-center leading-tight ${isCatActive ? 'text-white' : 'text-[#4A3E5E] group-hover:text-[#FF6B00]'}`} style={{ fontFamily: 'Inter, sans-serif' }}>{loc.name}</span>
                     </motion.button>
                   );
                 })}
@@ -293,16 +293,16 @@ export default function Campus() {
             </div>
 
             {/* Blueprint Legend & Color Key */}
-            <div className="bg-white rounded-3xl border border-[#E5E7EB] p-6 md:p-8 mb-8 shadow-xs">
+            <div className="bg-white rounded-2xl border border-[#E9E5EE] p-6 md:p-8 mb-8 shadow-[0_4px_20px_-4px_rgba(19,9,36,0.04)]">
               <div className="flex items-center gap-2 mb-5">
-                <Layers className="w-5 h-5 text-[#F97316]" />
-                <h3 className="text-xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>Blueprint Map Legend</h3>
+                <Layers className="w-5 h-5 text-[#FF6B00]" />
+                <h3 className="text-xl font-bold text-[#1A0B2E]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Blueprint Map Legend</h3>
               </div>
               <div className="flex flex-wrap gap-3">
                 {BLUEPRINT_LEGEND.map((item) => {
                   const isActive = activeLegend === item.id;
                   return (
-                    <button key={item.id} onClick={() => { setActiveLegend(item.id); setActiveCategory(null); setSelectedFacility(null); scrollToMap(); }} className={`flex items-center gap-2.5 px-4 py-2 rounded-full border transition-all cursor-pointer ${isActive ? 'border-[#F97316] bg-orange-500 text-white shadow-md scale-105' : `${item.border} ${item.bg} ${item.text} hover:scale-105`}`}>
+                    <button key={item.id} onClick={() => { setActiveLegend(item.id); setActiveCategory(null); setSelectedFacility(null); scrollToMap(); }} className={`flex items-center gap-2.5 px-4 py-2 rounded-full border transition-all cursor-pointer ${isActive ? 'border-[#FF6B00] bg-orange-500 text-white shadow-md scale-105' : `${item.border} ${item.bg} ${item.text} hover:scale-105`}`}>
                       <span className="w-3.5 h-3.5 rounded-full shrink-0 shadow-xs border border-black/10" style={{ backgroundColor: isActive ? 'white' : item.color }} />
                       <span className="text-xs font-semibold" style={{ fontFamily: 'Inter, sans-serif' }}>{item.label}</span>
                     </button>
@@ -312,28 +312,28 @@ export default function Campus() {
             </div>
 
             {/* Blueprint Facilities Index */}
-            <div className="bg-white rounded-3xl border border-[#E5E7EB] p-6 md:p-8 mb-8 shadow-xs">
+            <div className="bg-white rounded-2xl border border-[#E9E5EE] p-6 md:p-8 mb-8 shadow-[0_4px_20px_-4px_rgba(19,9,36,0.04)]">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-6">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-[#F97316]" />
-                    <h3 className="text-xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>Campus Blocks & Facilities Index</h3>
+                    <Building2 className="w-5 h-5 text-[#FF6B00]" />
+                    <h3 className="text-xl font-bold text-[#1A0B2E]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Campus Blocks & Facilities Index</h3>
                   </div>
-                  <p className="text-xs text-[#64748B] mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>Click any facility card below to spot its exact location on the campus map image.</p>
+                  <p className="text-xs text-[#9E91B6] mt-1" style={{ fontFamily: 'Inter, sans-serif' }}>Click any facility card below to spot its exact location on the campus map image.</p>
                 </div>
-                <span className="text-xs font-semibold text-[#F97316] bg-orange-50 px-3.5 py-1.5 rounded-full border border-orange-200">{filteredFacilities.length} Locations Mapped</span>
+                <span className="text-xs font-semibold text-[#FF6B00] bg-orange-50 px-3.5 py-1.5 rounded-full border border-orange-200">{filteredFacilities.length} Locations Mapped</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {filteredFacilities.map((facility) => {
                   const isSelected = selectedFacility?.name === facility.name;
                   const isHighlighted = highlightedSpotNames.has(facility.name);
                   return (
-                    <motion.button key={facility.name} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => { if (isSelected) setSelectedFacility(null); else { setSelectedFacility(facility); setActiveCategory(null); scrollToMap(); } }} className={`text-left p-4 rounded-2xl border transition-all cursor-pointer ${isSelected ? 'border-[#F97316] bg-orange-500 text-white shadow-lg ring-2 ring-orange-400/40' : isHighlighted ? 'border-[#F97316] bg-orange-50/90 shadow-md' : 'border-[#E5E7EB] bg-[#F8FAFC] hover:bg-white hover:border-orange-200 hover:shadow-xs'}`}>
+                    <motion.button key={facility.name} whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => { if (isSelected) setSelectedFacility(null); else { setSelectedFacility(facility); setActiveCategory(null); scrollToMap(); } }} className={`text-left p-4 rounded-2xl border transition-all cursor-pointer ${isSelected ? 'border-[#FF6B00] bg-orange-500 text-white shadow-lg ring-2 ring-orange-400/40' : isHighlighted ? 'border-[#FF6B00] bg-orange-50/90 shadow-md' : 'border-[#E9E5EE] bg-[#FAF9FC] hover:bg-white hover:border-orange-200 hover:shadow-xs'}`}>
                       <div className="flex items-start justify-between gap-1 mb-1.5">
-                        <span className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-[#1E293B]'}`} style={{ fontFamily: 'Poppins, sans-serif' }}>{facility.name}</span>
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 border ${isSelected ? 'bg-white/20 border-white/30 text-white' : 'bg-white border-[#E5E7EB] text-[#475569]'}`}>{facility.area}</span>
+                        <span className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-[#1A0B2E]'}`} style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{facility.name}</span>
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 border ${isSelected ? 'bg-white/20 border-white/30 text-white' : 'bg-white border-[#E9E5EE] text-[#4A3E5E]'}`}>{facility.area}</span>
                       </div>
-                      <p className={`text-xs line-clamp-1 ${isSelected ? 'text-orange-100' : 'text-[#64748B]'}`} style={{ fontFamily: 'Inter, sans-serif' }}>{facility.desc}</p>
+                      <p className={`text-xs line-clamp-1 ${isSelected ? 'text-orange-100' : 'text-[#9E91B6]'}`} style={{ fontFamily: 'Inter, sans-serif' }}>{facility.desc}</p>
                     </motion.button>
                   );
                 })}

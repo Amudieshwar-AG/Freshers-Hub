@@ -2,14 +2,12 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, BookOpen, Bot, GraduationCap,
-  CheckCircle, Zap, Shield, Trophy, Award, Cpu, Users, MapPin, Sparkles
+  CheckCircle, Zap, Shield, Trophy, Award, Cpu, Users, Sparkles
 } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import FeatureCard from '@/components/FeatureCard/FeatureCard';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
-import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
-import { FEATURES, CAMPUS_LOCATIONS } from '@/constants';
-import * as LucideIcons from 'lucide-react';
+import { FEATURES } from '@/constants';
 
 import LazyVideoHero from '@/components/LazyVideoHero/LazyVideoHero';
 
@@ -33,7 +31,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-3xl md:text-5xl font-medium tracking-wide mb-2"
-            style={{ color: '#FFFFFF', fontFamily: 'Playfair Display, serif', textShadow: '0 2px 14px rgba(0,0,0,0.95)' }}
+            style={{ color: '#FFFFFF', fontFamily: 'Plus Jakarta Sans, sans-serif', textShadow: '0 2px 14px rgba(0,0,0,0.95)' }}
           >
             Welcome to
           </motion.h1>
@@ -42,8 +40,8 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-black leading-tight mb-6"
-            style={{ color: '#FFFFFF', fontFamily: 'Playfair Display, serif', textShadow: '0 4px 24px rgba(0,0,0,0.95)' }}
+            className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight mb-6"
+            style={{ color: '#FFFFFF', fontFamily: 'Plus Jakarta Sans, sans-serif', textShadow: '0 4px 24px rgba(0,0,0,0.95)' }}
           >
             RIT Freshers Hub
           </motion.h2>
@@ -67,12 +65,12 @@ export default function Home() {
           >
             <a href="#built-for-freshers">
               <motion.button
-                whileHover={{ scale: 1.04, boxShadow: '0 10px 30px -5px rgba(249,115,22,0.4)' }}
+                whileHover={{ scale: 1.04, boxShadow: '0 10px 30px -5px rgba(255,107,0,0.4)' }}
                 whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 px-8 py-3.5 rounded-xl text-white font-semibold text-sm cursor-pointer shadow-md"
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl text-white font-bold text-sm cursor-pointer shadow-md"
                 style={{
-                  fontFamily: 'Poppins, sans-serif',
-                  background: 'linear-gradient(135deg, #F97316, #FB923C)',
+                  fontFamily: 'Plus Jakarta Sans, sans-serif',
+                  background: 'linear-gradient(135deg, #FF6B00, #F97316)',
                 }}
               >
                 <BookOpen className="w-4 h-4" />
@@ -83,12 +81,12 @@ export default function Home() {
 
             <Link to="/ai-assistant">
               <motion.button
-                whileHover={{ scale: 1.04, borderColor: '#F97316', backgroundColor: 'rgba(255,255,255,0.2)' }}
+                whileHover={{ scale: 1.04, borderColor: '#FF6B00', backgroundColor: 'rgba(255,255,255,0.2)' }}
                 whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm border-2 border-white/40 text-white bg-black/30 backdrop-blur-md transition-all cursor-pointer shadow-2xs"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm border-2 border-white/40 text-white bg-black/30 backdrop-blur-md transition-all cursor-pointer shadow-2xs"
+                style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
               >
-                <Bot className="w-4 h-4 text-[#F97316]" />
+                <Bot className="w-4 h-4 text-[#FF6B00]" />
                 Ask Assistant
               </motion.button>
             </Link>
@@ -98,7 +96,7 @@ export default function Home() {
                 whileHover={{ scale: 1.04, boxShadow: '0 10px 30px -5px rgba(233,30,99,0.5)' }}
                 whileTap={{ scale: 0.96 }}
                 className="flex items-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-rose-500 to-pink-600 border border-white/30 backdrop-blur-md transition-all cursor-pointer shadow-lg shadow-pink-500/20"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
+                style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
               >
                 <Sparkles className="w-4 h-4 text-amber-200" />
                 Pitch your Idea - RAISE
@@ -117,7 +115,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="rounded-3xl border border-[#E5E7EB] p-6 md:p-8 bg-white shadow-[0_20px_50px_-15px_rgba(0,0,0,0.06)]"
+            className="rounded-2xl border border-[#E9E5EE] p-6 md:p-8 bg-white shadow-[0_4px_20px_-4px_rgba(19,9,36,0.05)]"
           >
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 text-center">
               {[
@@ -129,16 +127,16 @@ export default function Home() {
               ].map((stat, i) => (
                 <div key={i} className="flex flex-col items-center justify-center p-3">
                   <div className="w-10 h-10 rounded-xl bg-[#FFF7ED] flex items-center justify-center mb-2.5">
-                    <stat.icon className="w-5 h-5 text-[#F97316]" />
+                    <stat.icon className="w-5 h-5 text-[#FF6B00]" />
                   </div>
                   <div 
-                    className="text-2xl md:text-3xl font-black text-[#1E293B] mb-0.5"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
+                    className="text-2xl md:text-3xl font-extrabold text-[#1A0B2E] mb-0.5"
+                    style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
                   >
                     {stat.value}
                   </div>
                   <div 
-                    className="text-[11px] font-bold tracking-wider text-[#94A3B8] uppercase"
+                    className="text-[11px] font-bold tracking-wider text-[#9E91B6] uppercase"
                     style={{ fontFamily: 'Inter, sans-serif' }}
                   >
                     {stat.label}
@@ -167,80 +165,6 @@ export default function Home() {
               </StaggerItem>
             ))}
           </StaggerContainer>
-        </div>
-      </section>
-
-      {/* ─── Campus Quick Nav ─────────────────────────────────────────────────── */}
-      <section className="section-padding relative z-20 bg-white border-y border-[#E5E7EB]">
-        <div className="container-custom">
-          <SectionTitle
-            tag="Navigate Campus"
-            title="Explore"
-            highlight="RIT Campus"
-            subtitle="Find your way around campus — departments, labs, library, and key locations."
-          />
-
-          <AnimatedContainer>
-            <div className="bg-white rounded-3xl border border-[#E5E7EB] overflow-hidden shadow-sm">
-              {/* Map Teaser Header */}
-              <div
-                className="h-52 flex items-center justify-center relative overflow-hidden"
-                style={{ background: 'linear-gradient(135deg, #1E293B, #0F172A)' }}
-              >
-                <div
-                  className="absolute inset-0 opacity-15"
-                  style={{
-                    backgroundImage: 'linear-gradient(rgba(249,115,22,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(249,115,22,0.4) 1px, transparent 1px)',
-                    backgroundSize: '28px 28px',
-                  }}
-                />
-                
-                <div className="relative z-10 text-center px-4">
-                  <div className="w-12 h-12 rounded-2xl bg-[#F97316]/20 border border-[#F97316]/30 flex items-center justify-center mx-auto mb-3">
-                    <MapPin className="w-6 h-6 text-[#F97316]" />
-                  </div>
-                  <h3 className="text-white text-lg font-bold mb-1" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    Interactive Campus Map
-                  </h3>
-                  <p className="text-slate-400 text-xs mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
-                    Locate all major campus blocks, labs, library & amenities.
-                  </p>
-                  <Link to="/campus">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="px-5 py-2 rounded-xl text-white text-xs font-semibold shadow-sm cursor-pointer"
-                      style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', fontFamily: 'Poppins, sans-serif' }}
-                    >
-                      Open Full Map
-                    </motion.button>
-                  </Link>
-                </div>
-              </div>
-
-              {/* Quick Nav Grid */}
-              <div className="p-5 grid grid-cols-3 sm:grid-cols-7 gap-3 bg-[#FAFAFA]">
-                {CAMPUS_LOCATIONS.map((loc) => {
-                  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[loc.icon];
-                  return (
-                    <Link to="/campus" key={loc.id}>
-                      <motion.div
-                        whileHover={{ y: -3, backgroundColor: '#FFF7ED' }}
-                        className="flex flex-col items-center gap-2 p-3 rounded-xl cursor-pointer transition-all border border-transparent hover:border-[#FED7AA] bg-white shadow-2xs"
-                      >
-                        <div className="w-9 h-9 rounded-xl bg-[#FFF7ED] flex items-center justify-center">
-                          {Icon && <Icon className="w-4.5 h-4.5 text-[#F97316]" />}
-                        </div>
-                        <span className="text-[11px] text-[#475569] text-center font-medium leading-tight" style={{ fontFamily: 'Inter, sans-serif' }}>
-                          {loc.name}
-                        </span>
-                      </motion.div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          </AnimatedContainer>
         </div>
       </section>
     </div>

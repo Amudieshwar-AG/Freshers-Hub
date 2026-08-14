@@ -109,17 +109,17 @@ export default function AIAssistant() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAFA]">
+    <div className="min-h-screen flex flex-col bg-[#FAF9FC]">
       {/* Header */}
-      <div className="bg-white border-b border-[#E5E7EB] py-4 relative z-10 shadow-xs">
+      <div className="bg-white border-b border-[#E9E5EE] py-4 relative z-10 shadow-xs">
         <div className="container-custom flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm" style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)' }}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md shadow-orange-500/20" style={{ background: 'linear-gradient(135deg, #FF6B00, #F97316)' }}>
               <Bot className="w-5.5 h-5.5 text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-[#1E293B] text-base" style={{ fontFamily: 'Poppins, sans-serif' }}>RIT Assistant</h1>
-              <div className="flex items-center gap-1.5 text-xs text-[#64748B]">
+              <h1 className="font-extrabold text-[#1A0B2E] text-base" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>RIT Assistant</h1>
+              <div className="flex items-center gap-1.5 text-xs text-[#9E91B6]">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 Campus Knowledge Engine Online
               </div>
@@ -187,8 +187,8 @@ export default function AIAssistant() {
         {/* Chat Container */}
         <div
           ref={chatContainerRef}
-          className="flex-1 bg-white rounded-3xl border border-[#E5E7EB] p-4 sm:p-6 flex flex-col gap-4 overflow-y-auto"
-          style={{ minHeight: '420px', maxHeight: '65vh', boxShadow: '0 8px 30px -6px rgba(0,0,0,0.04)' }}
+          className="flex-1 bg-white rounded-2xl border border-[#E9E5EE] p-4 sm:p-6 flex flex-col gap-4 overflow-y-auto"
+          style={{ minHeight: '420px', maxHeight: '65vh', boxShadow: '0 4px 20px_-4px_rgba(19,9,36,0.04)' }}
         >
           {messages.map((msg) => (
             <motion.div
@@ -199,17 +199,17 @@ export default function AIAssistant() {
               className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
             >
               {msg.role === 'assistant' && (
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-1 shadow-xs" style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)' }}>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-1 shadow-sm" style={{ background: 'linear-gradient(135deg, #FF6B00, #F97316)' }}>
                   <Bot className="w-4 h-4 text-white" />
                 </div>
               )}
               <div
                 className="max-w-[85%] sm:max-w-[78%] px-4 py-3 text-sm leading-relaxed"
                 style={{
-                  background: msg.role === 'user' ? 'linear-gradient(135deg, #F97316, #EA580C)' : '#F8FAFC',
-                  color: msg.role === 'user' ? 'white' : '#1E293B',
+                  background: msg.role === 'user' ? 'linear-gradient(135deg, #FF6B00, #F97316)' : '#FFFFFF',
+                  color: msg.role === 'user' ? 'white' : '#1A0B2E',
                   borderRadius: msg.role === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                  border: msg.role === 'assistant' ? '1px solid #E5E7EB' : 'none',
+                  border: msg.role === 'assistant' ? '1px solid #E9E5EE' : 'none',
                   fontFamily: 'Inter, sans-serif',
                 }}
                 dangerouslySetInnerHTML={{ __html: formatContent(msg.content) }}
