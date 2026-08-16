@@ -121,7 +121,7 @@ export default function Home() {
               {[
                 { value: '20+', label: 'SPORTS', icon: Trophy },
                 { value: '100+', label: 'FACULTY', icon: GraduationCap },
-                { value: '18', label: 'CLUBS', icon: Award },
+                { value: '33+', label: 'CLUBS & CENTERS', icon: Award },
                 { value: '24/7', label: 'ASSISTANT', icon: Cpu },
                 { value: '5000+', label: 'STUDENTS', icon: Users },
               ].map((stat, i) => (

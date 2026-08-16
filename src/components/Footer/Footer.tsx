@@ -16,7 +16,7 @@ const exploreLinks = [
 const campusLinks = [
   { label: 'Campus Map', path: '/campus', icon: Map },
   { label: 'Bus Routes', path: '/bus-routes', icon: Bus },
-  { label: 'Student Clubs', path: '/events', icon: Users },
+  { label: 'Clubs & Centers', path: '/events', icon: Users },
   { label: 'Freshers Q&A', path: '/community', icon: MessageCircle },
   { label: 'Dev Collab Hub', path: '/collab', icon: Code2 },
 ];

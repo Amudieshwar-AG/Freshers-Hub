@@ -102,7 +102,7 @@ export interface Event {
   isUpcoming: boolean;
 }
 
-// ─── Clubs ───────────────────────────────────────────────────────────────────
+// ─── Clubs & Centers ──────────────────────────────────────────────────────────
 export interface ClubSocialLinks {
   instagram?: string;
   linkedin?: string;
@@ -118,6 +118,7 @@ export interface Club {
   description: string;
   details?: string;
   category: string;
+  type?: 'Club' | 'Center';
   members: number;
   presidentName?: string;
   vicePresidentName?: string;

@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, Tag, X, Mail, Phone, UserCheck, GraduationCap, Info,
   Atom, Wifi, Printer, Zap, Languages, Calculator, HeartHandshake,
   Rocket, Camera, Sparkles, Mic, Target, ArrowRight, RotateCcw,
-  MessageCircle, ExternalLink, CheckCircle2, Compass, Globe, BookOpen, Heart
+  MessageCircle, ExternalLink, CheckCircle2, Compass, Globe, BookOpen, Heart,
+  Building2, Search, Cpu, Smartphone, Bot, SlidersHorizontal, Layers, Activity, Brain
 } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
@@ -17,6 +18,7 @@ const CLUB_CATEGORY_COLORS: Record<string, string> = {
   Cultural: '#EC4899',
   Social: '#10B981',
   Creative: '#F59E0B',
+  'Center of Excellence': '#8B5CF6',
 };
 
 const CLUB_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -34,9 +36,14 @@ const CLUB_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>>
   BookOpen,
   Globe,
   Users,
+  Cpu,
+  Smartphone,
+  Bot,
+  Brain,
+  Activity,
 };
 
-// ─── Inline Brand SVG Icons for Feature 5 ──────────────────────────────────────
+// ─── Inline Brand SVG Icons ──────────────────────────────────────────────────────
 const InstagramIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
     <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
@@ -60,62 +67,79 @@ const YoutubeIcon = ({ className = 'w-4 h-4' }: { className?: string }) => (
   </svg>
 );
 
-// ─── Quiz Questions Data for Feature 1 (3-Question Matcher) ─────────────────────
-const QUIZ_QUESTIONS = [
+// ─── Quiz Questions Data (Supporting Clubs, Centers, and Hybrid Matching) ───────
+const QUIZ_QUESTIONS_ALL = [
   {
-    id: 'interest',
-    title: '1. What topics or domains are you most interested in?',
+    id: 'domain',
+    title: '1. What technology or activity domain excites you the most?',
     options: [
-      { label: '⚙️ AI Quests, Chip Design, RobochipX & STEM', clubIds: ['steam', 'wistem', 'techspark'] },
-      { label: '🎙️ Radio, Podcasting, Storytelling & RJing', clubIds: ['podx', 'mediastic'] },
-      { label: '🤝 Community Service, Village Development & NSS Drives', clubIds: ['nss', 'unnat_bharat', 'rotaract'] },
-      { label: '🩸 Blood Donation, Health Camps & Humanitarian Relief', clubIds: ['yrc', 'nss', 'rotaract'] },
-      { label: '🎭 Dance, Music, Band & Cultural Arts', clubIds: ['artist_league', 'podx'] },
-      { label: '🧮 Fast Calculation, PiDoku, Logic & Mathematics', clubIds: ['infinitus', 'steam'] },
-      { label: '✍️ Tamil Literature, Debates & Cultural Heritage', clubIds: ['vaarithi', 'fusion'] },
-      { label: '🏛️ Telugu Culture, Festival Celebrations & Heritage', clubIds: ['telugu', 'fusion'] },
-      { label: '🌸 Japanese Culture, Anime, Manga & Foreign Languages', clubIds: ['nippon', 'fusion'] },
-      { label: '📷 Photo/Video Production & Social Media Content', clubIds: ['mediastic', 'helios', 'podx'] },
-      { label: '✨ Women Empowerment, Leadership & Career Vision', clubIds: ['wec', 'wistem'] },
-      { label: '🚀 Youth Leadership, Yi Networking & National Summits', clubIds: ['yuva', 'rotaract'] },
+      { label: '🤖 AI, Machine Learning, Neural Networks & Data Science', clubIds: ['center_ai', 'center_data_science', 'wistem'] },
+      { label: '⚡ Semiconductor VLSI, Microchip Architecture & Hardware', clubIds: ['center_semiconductor', 'steam'] },
+      { label: '📱 Apple iOS, SwiftUI & Mobile Ecosystem', clubIds: ['center_apple_tech', 'techspark'] },
+      { label: '🕶️ AR/VR, Metaverse, Spatial Computing & 3D Interactive Media', clubIds: ['center_ar_vr', 'mediastic'] },
+      { label: '🔒 Cybersecurity, Ethical Hacking & Cryptography', clubIds: ['center_cybersecurity', 'techspark'] },
+      { label: '🏥 Healthcare AI, RADAR Medical Diagnostics & Patient Care', clubIds: ['center_radar_healthcare', 'yrc'] },
+      { label: '📡 IoT, Smart Automation & Embedded Sensors', clubIds: ['center_iot', 'steam'] },
+      { label: '🚗 Electric Vehicles, Battery Systems & Autonomous Tech', clubIds: ['center_ev_energy', 'center_zf_transportation'] },
+      { label: '☁️ Cloud Architecture, DevOps & Distributed Systems', clubIds: ['center_cloud_computing', 'techspark'] },
+      { label: '🚀 Aerospace, Satellite Tech & Space Robotics', clubIds: ['center_space', 'steam'] },
+      { label: '⚛️ Quantum Computing, Quantum Search & Grover Algorithms', clubIds: ['grover_center_quantum', 'infinitus'] },
+      { label: '🎙️ Radio, Podcasting, Live Media & Content Creation', clubIds: ['podx', 'mediastic', 'helios'] },
+      { label: '🤝 Community Service, Village Adoption & NSS Drives', clubIds: ['nss', 'unnat_bharat', 'rotaract'] },
+      { label: '🎭 Cultural Arts, Dance, Music, Band & Drama', clubIds: ['artist_league', 'vaarithi', 'fusion'] },
     ],
   },
   {
-    id: 'skills',
-    title: '2. What skills do you currently have or want to develop?',
+    id: 'skill',
+    title: '2. What practical skill do you want to master at RIT?',
     options: [
-      { label: '💻 Web3, AI Tools, Circuit Design & Coding Hackathons', clubIds: ['wistem', 'steam', 'techspark'] },
-      { label: '🎙️ Public Speaking, Interviewing & Voice Recording', clubIds: ['podx', 'mediastic'] },
-      { label: '🤝 Social Work, Environmental Protection & Leadership', clubIds: ['nss', 'unnat_bharat', 'rotaract'] },
-      { label: '🩸 Health Awareness, Blood Drive Logistics & Disaster Relief', clubIds: ['yrc', 'nss'] },
-      { label: '🕺 Stage Performance, Singing, Dance & Rap', clubIds: ['artist_league'] },
-      { label: '📐 Analytical Thinking, Logic Puzzles & Aptitude', clubIds: ['infinitus'] },
-      { label: '📝 Essay Writing, Tamil/Telugu/English Oratory & Literature', clubIds: ['vaarithi', 'telugu', 'fusion'] },
-      { label: '🎥 Camera Operations, Video Editing & Digital Media', clubIds: ['mediastic', 'helios'] },
-      { label: '🌟 Women Leadership, Self Defense & Mentorship', clubIds: ['wec', 'wistem'] },
-      { label: '👑 Youth Representation, Project Management & Event Planning', clubIds: ['yuva', 'rotaract'] },
+      { label: '📊 Predictive Analytics, Python ML Pipelines & Data Modeling', clubIds: ['center_data_science', 'center_ai', 'center_zf_transportation'] },
+      { label: '💻 Microchip IC Layout, Verilog/VHDL & FPGA Prototyping', clubIds: ['center_semiconductor', 'steam'] },
+      { label: '🍎 Native iOS SwiftUI Coding & macOS Enterprise Apps', clubIds: ['center_apple_tech', 'techspark'] },
+      { label: '🥽 Unity 3D, Spatial Audio & Metaverse Experience Design', clubIds: ['center_ar_vr', 'mediastic'] },
+      { label: '🛡️ Network Security Audit, Cyber Threat Defense & Ethical Hacking', clubIds: ['center_cybersecurity'] },
+      { label: '🩺 Medical Signal Processing & AI Diagnosis Tools', clubIds: ['center_radar_healthcare', 'center_image_processing'] },
+      { label: '🔌 Smart Sensors, ESP32/Arduino, Edge Computing & CAN Bus', clubIds: ['center_iot', 'center_ev_energy'] },
+      { label: '🎙️ Voice Recording, Public Speaking & Event Management', clubIds: ['podx', 'yuva', 'artist_league'] },
+      { label: '🌱 Sustainable Rural Development & Eco-System Restoration', clubIds: ['unnat_bharat', 'nss', 'rotaract'] },
     ],
   },
   {
     id: 'goal',
-    title: '3. What is your main goal for joining a club at RIT?',
+    title: '3. What is your primary career aspiration during college?',
     options: [
-      { label: '🤖 Build hackathon projects, chip designs & STEM innovations', clubIds: ['steam', 'wistem', 'techspark'] },
-      { label: '🌟 Share inspiring stories & host campus podcasts', clubIds: ['podx', 'mediastic'] },
-      { label: '👥 Drive social change & serve rural communities', clubIds: ['nss', 'unnat_bharat'] },
-      { label: '🩸 Organize blood donation drives & health protection campaigns', clubIds: ['yrc', 'rotaract'] },
-      { label: '🏆 Perform live at cultural fests & stage shows', clubIds: ['artist_league', 'vaarithi'] },
-      { label: '📖 Master new languages & explore world/regional cultures', clubIds: ['nippon', 'telugu', 'vaarithi', 'fusion'] },
-      { label: '💪 Empower women in STEM & corporate leadership', clubIds: ['wec', 'wistem'] },
-      { label: '💼 Connect with Young Indians (Yi), CII & Industry Leaders', clubIds: ['yuva', 'rotaract'] },
+      { label: '🔬 Lead innovative research in a specialized Future Tech Center (CoE)', clubIds: ['center_ai', 'center_semiconductor', 'grover_center_quantum', 'center_apple_tech', 'center_space'] },
+      { label: '🏆 Win technical hackathons & build product prototypes', clubIds: ['steam', 'wistem', 'techspark', 'center_data_science'] },
+      { label: '🌟 Build a strong personal brand, public speaking & media portfolio', clubIds: ['podx', 'mediastic', 'helios'] },
+      { label: '🤝 Drive impactful social initiatives & community leadership', clubIds: ['nss', 'rotaract', 'yuva', 'wec'] },
+      { label: '💼 Connect with industry leaders, CII, and top startup networks', clubIds: ['yuva', 'wec', 'center_cloud_computing'] },
     ],
   },
 ];
 
 export default function Events() {
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [selectedType, setSelectedType] = useState<'All' | 'Club' | 'Center'>('All');
 
-  // ─── Interactive Like / Favorite System State ─────────────────────────────
+  // Compute counts dynamically
+  const { totalCount, centersCount, clubsCount } = useMemo(() => {
+    let centers = 0;
+    let clubs = 0;
+    CLUBS_DATA.forEach((item) => {
+      const isCenter =
+        item.type === 'Center' ||
+        item.category === 'Center of Excellence' ||
+        item.id.startsWith('center_') ||
+        item.id.includes('grover_center');
+      if (isCenter) centers++;
+      else clubs++;
+    });
+    return { totalCount: CLUBS_DATA.length, centersCount: centers, clubsCount: clubs };
+  }, []);
+
+  // ─── Interactive Like System ─────────────────────────────────────────────
   const [likedClubs, setLikedClubs] = useState<Set<string>>(() => {
     try {
       localStorage.removeItem('rit_freshers_liked_clubs');
@@ -152,8 +176,9 @@ export default function Events() {
     } catch {}
   };
 
-  // ─── Club Matcher Quiz State (Feature 1) ─────────────────────────────────
+  // ─── Quiz Matcher State ──────────────────────────────────────────────────
   const [isQuizOpen, setIsQuizOpen] = useState(false);
+  const [matcherTarget, setMatcherTarget] = useState<'All' | 'Club' | 'Center'>('All');
   const [quizStep, setQuizStep] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [quizResults, setQuizResults] = useState<{ club: Club; score: number }[] | null>(null);
@@ -163,7 +188,7 @@ export default function Events() {
     updated[quizStep] = optionIdx;
     setSelectedAnswers(updated);
 
-    if (quizStep < QUIZ_QUESTIONS.length - 1) {
+    if (quizStep < QUIZ_QUESTIONS_ALL.length - 1) {
       setQuizStep(quizStep + 1);
     } else {
       calculateQuizResults(updated);
@@ -175,16 +200,31 @@ export default function Events() {
     CLUBS_DATA.forEach((c) => (scoreMap[c.id] = 0));
 
     answers.forEach((ansIdx, qIdx) => {
-      const option = QUIZ_QUESTIONS[qIdx].options[ansIdx];
-      option.clubIds.forEach((clubId, idx) => {
-        scoreMap[clubId] = (scoreMap[clubId] || 0) + (3 - idx);
-      });
+      const option = QUIZ_QUESTIONS_ALL[qIdx].options[ansIdx];
+      if (option && option.clubIds) {
+        option.clubIds.forEach((clubId, idx) => {
+          scoreMap[clubId] = (scoreMap[clubId] || 0) + (5 - idx);
+        });
+      }
     });
 
-    const ranked = CLUBS_DATA.map((club) => ({
-      club,
-      score: scoreMap[club.id] || 0,
-    })).sort((a, b) => b.score - a.score);
+    const pool = CLUBS_DATA.filter((c) => {
+      const isCenter =
+        c.type === 'Center' ||
+        c.category === 'Center of Excellence' ||
+        c.id.startsWith('center_') ||
+        c.id.includes('grover_center');
+      if (matcherTarget === 'Club') return !isCenter;
+      if (matcherTarget === 'Center') return isCenter;
+      return true;
+    });
+
+    const ranked = pool
+      .map((club) => ({
+        club,
+        score: scoreMap[club.id] || 0,
+      }))
+      .sort((a, b) => b.score - a.score);
 
     setQuizResults(ranked.slice(0, 3));
   };
@@ -195,27 +235,85 @@ export default function Events() {
     setQuizResults(null);
   };
 
+  // ─── Filter Selection Handlers ───────────────────────────────────────────
+  const handleTypeSelect = (type: 'All' | 'Club' | 'Center') => {
+    setSelectedType(type);
+    setSelectedCategory('All');
+  };
+
+  const handleCategorySelect = (cat: string) => {
+    setSelectedCategory(cat);
+    if (cat === 'Center of Excellence') {
+      setSelectedType('Center');
+    } else if (cat !== 'All') {
+      setSelectedType('Club');
+    } else {
+      setSelectedType('All');
+    }
+  };
+
+  // ─── Robust Filter Logic ──────────────────────────────────────────────────
+  const filteredData = useMemo(() => {
+    return CLUBS_DATA.filter((item) => {
+      const isCenter =
+        item.type === 'Center' ||
+        item.category === 'Center of Excellence' ||
+        item.id.startsWith('center_') ||
+        item.id.includes('grover_center');
+
+      // 1. Type Filter check
+      if (selectedType === 'Club' && isCenter) return false;
+      if (selectedType === 'Center' && !isCenter) return false;
+
+      // 2. Category Filter check
+      if (selectedCategory !== 'All') {
+        if (selectedCategory === 'Center of Excellence' && !isCenter) return false;
+        if (selectedCategory !== 'Center of Excellence' && item.category !== selectedCategory) return false;
+      }
+
+      // 3. Search Query check
+      const q = searchQuery.toLowerCase().trim();
+      if (q) {
+        const matchesSearch =
+          item.name.toLowerCase().includes(q) ||
+          item.description.toLowerCase().includes(q) ||
+          (item.details && item.details.toLowerCase().includes(q)) ||
+          (item.presidentName && item.presidentName.toLowerCase().includes(q)) ||
+          (item.coordinatorName && item.coordinatorName.toLowerCase().includes(q));
+        if (!matchesSearch) return false;
+      }
+
+      return true;
+    });
+  }, [searchQuery, selectedCategory, selectedType]);
+
+  const categoriesList = ['All', 'Center of Excellence', 'Technical', 'Social', 'Creative'];
+
   return (
     <div className="min-h-screen bg-[#FAF9FC]">
       {/* Header */}
       <div className="bg-white border-b border-[#E9E5EE] py-10">
         <div className="container-custom">
-          <h1 className="text-3xl md:text-4xl font-extrabold text-[#1A0B2E] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-            Student{' '}
-            <span style={{ background: 'linear-gradient(135deg, #FF6B00, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              Clubs
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-50 border border-orange-200 text-[#F97316] text-xs font-bold uppercase tracking-wider mb-3">
+            <Building2 className="w-3.5 h-3.5" />
+            <span>RIT Official Directory</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+            Student Clubs &{' '}
+            <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              Centers of Excellence
             </span>
           </h1>
-          <p className="text-[#4A3E5E]" style={{ fontFamily: 'Inter, sans-serif' }}>
-            Explore official RIT student clubs & societies, leadership details, and community links.
+          <p className="text-[#475569] max-w-3xl text-sm md:text-base" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Explore official RIT student clubs, societies, and 15 Future Tech Centers of Excellence (CoEs), including faculty coordinators, research domains, and contact channels.
           </p>
         </div>
       </div>
 
-      <div className="container-custom pt-10 pb-20 md:pb-28">
+      <div className="container-custom pt-8 pb-20 md:pb-28">
 
-        {/* ─── Feature 1: "Find My Ideal Club" Banner ────────────────────────── */}
-        <AnimatedContainer className="mb-14">
+        {/* ─── Interactive Matcher Banner ─────────────────────────────────── */}
+        <AnimatedContainer className="mb-10">
           <div
             className="rounded-2xl p-6 md:p-8 text-white relative overflow-hidden border border-[#3A1968] flex flex-col md:flex-row items-center justify-between gap-6"
             style={{ background: 'linear-gradient(135deg, #130924, #1E0C36)' }}
@@ -229,142 +327,231 @@ export default function Events() {
             <div className="relative z-10 max-w-xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 text-xs font-semibold mb-3 border border-orange-500/30">
                 <Target className="w-3.5 h-3.5" />
-                <span>Interactive Club Matcher</span>
+                <span>AI-Powered Matcher Quiz</span>
               </div>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                Not sure which club to join?
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+                Find Your Ideal Club or Future Tech Center!
               </h2>
-              <p className="text-purple-200/80 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Take our 3-step AI-powered Club Matcher quiz to get instant recommendations tailored to your interests, skills, and goals!
+              <p className="text-slate-300 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
+                Take our 3-step Matcher quiz to discover which of the 18 Student Clubs or 15 Future Tech Centers best match your skills, technology interests, and career goals!
               </p>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => { resetQuiz(); setIsQuizOpen(true); }}
-              className="relative z-10 px-6 py-3.5 rounded-2xl text-white font-semibold text-sm flex items-center gap-2.5 shadow-lg shrink-0 cursor-pointer"
-              style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', fontFamily: 'Poppins, sans-serif' }}
-            >
-              <Sparkles className="w-4 h-4" />
-              Find My Ideal Club
-              <ArrowRight className="w-4 h-4" />
-            </motion.button>
+            <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 relative z-10 w-full sm:w-auto">
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => { setMatcherTarget('Center'); resetQuiz(); setIsQuizOpen(true); }}
+                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer border border-purple-400/40"
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
+                <Cpu className="w-4 h-4" />
+                Match Centers (CoEs)
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={() => { setMatcherTarget('All'); resetQuiz(); setIsQuizOpen(true); }}
+                className="w-full sm:w-auto px-5 py-3 rounded-2xl text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', fontFamily: 'Poppins, sans-serif' }}
+              >
+                <Sparkles className="w-4 h-4" />
+                Match All Directory
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
+            </div>
           </div>
         </AnimatedContainer>
 
-        {/* Clubs Directory Section */}
-        <SectionTitle tag="Official Directory" title="Student" highlight="Clubs" subtitle="Explore official RIT clubs & societies. Click any club to view full details, leadership, and community social links." />
-        
-        {(() => {
-          const fullGridCount = Math.floor(CLUBS_DATA.length / 3) * 3;
-          const mainGridClubs = CLUBS_DATA.slice(0, fullGridCount);
-          const remainingClubs = CLUBS_DATA.slice(fullGridCount);
+        {/* ─── Search & Category Filters Bar ───────────────────────────────── */}
+        <div className="mb-10 space-y-5">
+          <SectionTitle tag="Official Directory" title="Clubs &" highlight="Centers" subtitle="Browse or search 18 official RIT clubs and 15 Future Tech Centers of Excellence. Click any card for faculty lead and details." />
 
-          const renderClubCard = (club: Club) => {
-            const IconComponent = (club.icon && CLUB_ICON_MAP[club.icon]) || Atom;
-            const categoryColor = CLUB_CATEGORY_COLORS[club.category] || '#F97316';
-            const isLiked = likedClubs.has(club.id);
-            const likesCount = likesMap[club.id] || 0;
-
-            return (
-              <motion.div
-                whileHover={{ y: -4 }}
-                onClick={() => setSelectedClub(club)}
-                className="bg-white rounded-2xl border border-[#E5E7EB] p-5 cursor-pointer hover:border-[#F97316] transition-all flex flex-col justify-between h-full group"
-                style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
-              >
-                <div>
-                  {/* Top Row: Tech Icon / Club Logo & Interactive Heart Like Button */}
-                  <div className="flex items-center justify-between mb-3">
-                    {club.logoUrl ? (
-                      <div className="w-12 h-12 rounded-full border border-slate-100 p-0.5 shadow-sm bg-white overflow-hidden shrink-0 transition-transform group-hover:scale-105">
-                        <img src={club.logoUrl} alt={club.name} className="w-full h-full object-cover rounded-full" />
-                      </div>
-                    ) : (
-                      <div
-                        className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105"
-                        style={{
-                          background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}DD)`,
-                        }}
-                      >
-                        <IconComponent className="w-5 h-5 text-white" />
-                      </div>
-                    )}
-
-                    {/* Like Button */}
-                    <div className="flex items-center gap-2">
-                      <motion.button
-                        whileHover={{ scale: 1.08 }}
-                        whileTap={{ scale: 0.85 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleLike(club.id);
-                        }}
-                        className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
-                          isLiked
-                            ? 'bg-rose-50 border-rose-200 text-rose-600 shadow-2xs'
-                            : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-rose-300 hover:text-rose-500'
-                        }`}
-                      >
-                        <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
-                        <span>{likesCount}</span>
-                      </motion.button>
-                    </div>
-                  </div>
-
-                  {/* Club Title & Description */}
-                  <h3 className="font-semibold text-[#1E293B] mb-1 group-hover:text-[#F97316] transition-colors" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    {club.name}
-                  </h3>
-                  <p className="text-xs text-[#64748B] mb-3 line-clamp-2" style={{ fontFamily: 'Inter, sans-serif' }}>{club.description}</p>
-                </div>
-
-                {/* Bottom Row: Category Tag & View Details Button */}
-                <div className="flex items-center justify-between mt-auto pt-2 border-t border-slate-100">
-                  <span className="flex items-center gap-1 text-xs font-medium" style={{ color: categoryColor }}>
-                    <Tag className="w-3 h-3" />
-                    {club.category}
-                  </span>
-                  <motion.button
-                    whileHover={{ scale: 1.04 }}
-                    className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white flex items-center gap-1 cursor-pointer"
-                    style={{ fontFamily: 'Poppins, sans-serif', background: 'linear-gradient(135deg, #F97316, #FB923C)' }}
-                  >
-                    View Details
-                  </motion.button>
-                </div>
-              </motion.div>
-            );
-          };
-
-          return (
-            <StaggerContainer className="pb-8 space-y-6 md:space-y-7">
-              {/* 3-Column Grid for Full Rows */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
-                {mainGridClubs.map((club) => (
-                  <StaggerItem key={club.id} className="w-full h-full">
-                    {renderClubCard(club)}
-                  </StaggerItem>
-                ))}
-              </div>
-
-              {/* Centered Flex Row for Remaining Clubs (WiSTEM & STEAM) */}
-              {remainingClubs.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-6 md:gap-7">
-                  {remainingClubs.map((club) => (
-                    <StaggerItem key={club.id} className="w-full sm:w-[calc(50%-0.875rem)] lg:w-[calc(33.333%-1.167rem)]">
-                      {renderClubCard(club)}
-                    </StaggerItem>
-                  ))}
-                </div>
+          {/* Search & Type Toggle Controls */}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+            {/* Search Input */}
+            <div className="relative w-full md:w-80">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search name, faculty lead, domain..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-none focus:border-[#F97316] transition-colors"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                  <X className="w-3.5 h-3.5" />
+                </button>
               )}
-            </StaggerContainer>
-          );
-        })()}
+            </div>
+
+            {/* Type Pills Toggle (All / Clubs / Centers) */}
+            <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl w-full md:w-auto overflow-x-auto">
+              {[
+                { label: `All (${totalCount})`, value: 'All' },
+                { label: `Clubs (${clubsCount})`, value: 'Club' },
+                { label: `Centers of Excellence (${centersCount})`, value: 'Center' },
+              ].map((t) => (
+                <button
+                  key={t.value}
+                  onClick={() => handleTypeSelect(t.value as any)}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                    selectedType === t.value
+                      ? 'bg-white text-[#1E293B] shadow-2xs border border-slate-200'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Category Filter Tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            <span className="text-xs font-semibold text-slate-400 flex items-center gap-1 shrink-0 pr-1">
+              <SlidersHorizontal className="w-3.5 h-3.5" /> Filter:
+            </span>
+            {categoriesList.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => handleCategorySelect(cat)}
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border ${
+                  selectedCategory === cat
+                    ? 'bg-[#1E293B] text-white border-[#1E293B] shadow-xs'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                }`}
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ─── Directory Grid ──────────────────────────────────────────────── */}
+        {filteredData.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center my-8">
+            <Layers className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+            <h3 className="text-lg font-bold text-slate-700">No matching items found</h3>
+            <p className="text-xs text-slate-400 mt-1 mb-4">Try adjusting your search terms or filter selections.</p>
+            <button
+              onClick={() => { setSearchQuery(''); setSelectedCategory('All'); setSelectedType('All'); }}
+              className="px-4 py-2 bg-orange-500 text-white rounded-xl text-xs font-bold hover:bg-orange-600 transition-colors cursor-pointer"
+            >
+              Reset Filters
+            </button>
+          </div>
+        ) : (
+          <StaggerContainer className="pb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
+              {filteredData.map((club) => {
+                const IconComponent = (club.icon && CLUB_ICON_MAP[club.icon]) || Atom;
+                const isCenter =
+                  club.type === 'Center' ||
+                  club.category === 'Center of Excellence' ||
+                  club.id.startsWith('center_') ||
+                  club.id.includes('grover_center');
+                const categoryColor = CLUB_CATEGORY_COLORS[club.category] || (isCenter ? '#8B5CF6' : '#F97316');
+                const isLiked = likedClubs.has(club.id);
+                const likesCount = likesMap[club.id] || 0;
+
+                return (
+                  <StaggerItem key={club.id} className="w-full h-full">
+                    <motion.div
+                      whileHover={{ y: -4 }}
+                      onClick={() => setSelectedClub(club)}
+                      className="bg-white rounded-2xl border border-[#E5E7EB] p-5 cursor-pointer hover:border-[#F97316] transition-all flex flex-col justify-between h-full group relative overflow-hidden"
+                      style={{ boxShadow: '0 2px 15px -3px rgba(0,0,0,0.07)' }}
+                    >
+                      <div>
+                        {/* Top Row: Icon/Logo + Badge + Heart Like Button */}
+                        <div className="flex items-center justify-between mb-3">
+                          {club.logoUrl ? (
+                            <div className="w-12 h-12 rounded-full border border-slate-100 p-0.5 shadow-sm bg-white overflow-hidden shrink-0 transition-transform group-hover:scale-105">
+                              <img src={club.logoUrl} alt={club.name} className="w-full h-full object-cover rounded-full" />
+                            </div>
+                          ) : (
+                            <div
+                              className="w-11 h-11 rounded-full flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105"
+                              style={{
+                                background: isCenter
+                                  ? 'linear-gradient(135deg, #8B5CF6, #6366F1)'
+                                  : `linear-gradient(135deg, ${categoryColor}, ${categoryColor}DD)`,
+                              }}
+                            >
+                              <IconComponent className="w-5 h-5 text-white" />
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-2">
+                            {/* Type Badge */}
+                            {isCenter ? (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
+                                CENTER OF EXCELLENCE
+                              </span>
+                            ) : (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100">
+                                CLUB
+                              </span>
+                            )}
+
+                            {/* Like Button */}
+                            <motion.button
+                              whileHover={{ scale: 1.08 }}
+                              whileTap={{ scale: 0.85 }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleLike(club.id);
+                              }}
+                              className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer border ${
+                                isLiked
+                                  ? 'bg-rose-50 border-rose-200 text-rose-600 shadow-2xs'
+                                  : 'bg-slate-50 border-slate-200 text-slate-500 hover:border-rose-300 hover:text-rose-500'
+                              }`}
+                            >
+                              <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-rose-500 text-rose-500' : ''}`} />
+                              <span>{likesCount}</span>
+                            </motion.button>
+                          </div>
+                        </div>
+
+                        {/* Title & Description */}
+                        <h3 className="font-semibold text-[#1E293B] mb-1 group-hover:text-[#F97316] transition-colors line-clamp-2 text-sm md:text-base" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          {club.name}
+                        </h3>
+                        <p className="text-xs text-[#64748B] mb-3 line-clamp-2" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          {club.description}
+                        </p>
+                      </div>
+
+                      {/* Bottom Row: Category/Coordinator Tag & View Details Button */}
+                      <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100">
+                        <span className="flex items-center gap-1 text-xs font-medium truncate max-w-[60%]" style={{ color: categoryColor }}>
+                          {isCenter ? <GraduationCap className="w-3.5 h-3.5 shrink-0 text-purple-600" /> : <Tag className="w-3 h-3 shrink-0" />}
+                          <span className="truncate">{isCenter && club.coordinatorName ? club.coordinatorName : club.category}</span>
+                        </span>
+                        <motion.button
+                          whileHover={{ scale: 1.04 }}
+                          className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white flex items-center gap-1 cursor-pointer shrink-0"
+                          style={{ fontFamily: 'Poppins, sans-serif', background: isCenter ? 'linear-gradient(135deg, #8B5CF6, #6366F1)' : 'linear-gradient(135deg, #F97316, #FB923C)' }}
+                        >
+                          View Details
+                        </motion.button>
+                      </div>
+                    </motion.div>
+                  </StaggerItem>
+                );
+              })}
+            </div>
+          </StaggerContainer>
+        )}
       </div>
 
-      {/* ─── Club Matcher Quiz Modal (Feature 1) ─────────────────────────────── */}
+      {/* ─── Matcher Quiz Modal ────────────────────────────────────────────── */}
       <AnimatePresence>
         {isQuizOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
@@ -384,37 +571,43 @@ export default function Events() {
 
               {!quizResults ? (
                 <div>
+                  {/* Quiz Target Selector Header */}
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <div className="flex items-center gap-2 text-[#F97316]">
+                      <Compass className="w-5 h-5" />
+                      <span className="text-xs font-bold uppercase tracking-wider">
+                        {matcherTarget === 'Center' ? 'Future Tech Center Matcher' : matcherTarget === 'Club' ? 'Student Club Matcher' : 'Interactive Directory Matcher'}
+                      </span>
+                    </div>
+                  </div>
+
                   {/* Quiz Progress */}
                   <div className="flex items-center justify-between text-xs text-slate-500 mb-2 font-medium">
-                    <span>Question {quizStep + 1} of {QUIZ_QUESTIONS.length}</span>
-                    <span>Step {quizStep + 1} / {QUIZ_QUESTIONS.length}</span>
+                    <span>Question {quizStep + 1} of {QUIZ_QUESTIONS_ALL.length}</span>
+                    <span>Step {quizStep + 1} / {QUIZ_QUESTIONS_ALL.length}</span>
                   </div>
                   <div className="w-full h-1.5 bg-slate-100 rounded-full mb-6 overflow-hidden">
                     <div
                       className="h-full bg-[#F97316] transition-all duration-300 rounded-full"
-                      style={{ width: `${((quizStep + 1) / QUIZ_QUESTIONS.length) * 100}%` }}
+                      style={{ width: `${((quizStep + 1) / QUIZ_QUESTIONS_ALL.length) * 100}%` }}
                     />
                   </div>
 
                   {/* Question Header */}
-                  <div className="flex items-center gap-2 mb-2 text-[#F97316]">
-                    <Compass className="w-5 h-5" />
-                    <span className="text-xs font-bold uppercase tracking-wider">Club Matcher Quiz</span>
-                  </div>
                   <h3 className="text-xl font-bold text-[#1E293B] mb-5" style={{ fontFamily: 'Playfair Display, serif' }}>
-                    {QUIZ_QUESTIONS[quizStep].title}
+                    {QUIZ_QUESTIONS_ALL[quizStep].title}
                   </h3>
 
                   {/* Options List */}
-                  <div className="space-y-3 mb-6">
-                    {QUIZ_QUESTIONS[quizStep].options.map((opt, idx) => (
+                  <div className="space-y-2.5 mb-6 max-h-[50vh] overflow-y-auto pr-1">
+                    {QUIZ_QUESTIONS_ALL[quizStep].options.map((opt, idx) => (
                       <button
                         key={idx}
                         onClick={() => handleSelectOption(idx)}
-                        className="w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-[#F97316] hover:bg-orange-50/50 transition-all flex items-center justify-between text-sm font-medium text-slate-700 cursor-pointer group"
+                        className="w-full text-left p-3.5 rounded-2xl border border-slate-200 hover:border-[#F97316] hover:bg-orange-50/50 transition-all flex items-center justify-between text-xs sm:text-sm font-medium text-slate-700 cursor-pointer group"
                       >
                         <span>{opt.label}</span>
-                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#F97316] group-hover:translate-x-1 transition-all" />
+                        <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-[#F97316] group-hover:translate-x-1 transition-all shrink-0 ml-2" />
                       </button>
                     ))}
                   </div>
@@ -436,17 +629,22 @@ export default function Events() {
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
                     <h3 className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
-                      Your Ideal Club Matches!
+                      Your Recommended Matches!
                     </h3>
-                    <p className="text-xs text-slate-500 mt-1">Based on your interests & goals, here are your top recommended RIT clubs:</p>
+                    <p className="text-xs text-slate-500 mt-1">Based on your selections, here are your top recommended RIT entities:</p>
                   </div>
 
                   {/* Top 3 Matches */}
                   <div className="space-y-3 mb-6">
                     {quizResults.map((item, i) => {
                       const IconComponent = (item.club.icon && CLUB_ICON_MAP[item.club.icon]) || Atom;
-                      const catColor = CLUB_CATEGORY_COLORS[item.club.category] || '#F97316';
-                      const matchPercent = i === 0 ? '98%' : i === 1 ? '91%' : '84%';
+                      const isCenter =
+                        item.club.type === 'Center' ||
+                        item.club.category === 'Center of Excellence' ||
+                        item.club.id.startsWith('center_') ||
+                        item.club.id.includes('grover_center');
+                      const catColor = CLUB_CATEGORY_COLORS[item.club.category] || (isCenter ? '#8B5CF6' : '#F97316');
+                      const matchPercent = i === 0 ? '98%' : i === 1 ? '92%' : '85%';
 
                       return (
                         <div
@@ -455,9 +653,9 @@ export default function Events() {
                             setIsQuizOpen(false);
                             setSelectedClub(item.club);
                           }}
-                          className="p-4 rounded-2xl border border-slate-200 hover:border-[#F97316] bg-slate-50 hover:bg-white cursor-pointer transition-all flex items-center justify-between"
+                          className="p-4 rounded-2xl border border-slate-200 hover:border-[#F97316] bg-slate-50 hover:bg-white cursor-pointer transition-all flex items-center justify-between gap-3"
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
                             {item.club.logoUrl ? (
                               <div className="w-10 h-10 rounded-full border border-slate-100 p-0.5 shadow-sm bg-white overflow-hidden shrink-0">
                                 <img src={item.club.logoUrl} alt={item.club.name} className="w-full h-full object-cover rounded-full" />
@@ -465,21 +663,23 @@ export default function Events() {
                             ) : (
                               <div
                                 className="w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0"
-                                style={{ background: `linear-gradient(135deg, ${catColor}, ${catColor}DD)` }}
+                                style={{ background: isCenter ? 'linear-gradient(135deg, #8B5CF6, #6366F1)' : `linear-gradient(135deg, ${catColor}, ${catColor}DD)` }}
                               >
                                 <IconComponent className="w-5 h-5 text-white" />
                               </div>
                             )}
-                            <div>
+                            <div className="min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold text-sm text-[#1E293B]">{item.club.name}</span>
-                                {i === 0 && <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">Top Match 🏆</span>}
+                                <span className="font-bold text-xs sm:text-sm text-[#1E293B] truncate">{item.club.name}</span>
+                                {i === 0 && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-100 text-amber-700 shrink-0">Top Match 🏆</span>}
                               </div>
-                              <span className="text-xs text-slate-500">{item.club.category} Club</span>
+                              <span className="text-[11px] text-slate-500 truncate block">
+                                {isCenter ? (item.club.coordinatorName ? `CoE Lead: ${item.club.coordinatorName}` : 'Center of Excellence') : `${item.club.category} Club`}
+                              </span>
                             </div>
                           </div>
-                          <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 shrink-0">
-                            {matchPercent} Match
+                          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 shrink-0">
+                            {matchPercent}
                           </span>
                         </div>
                       );
@@ -498,7 +698,7 @@ export default function Events() {
                       onClick={() => setIsQuizOpen(false)}
                       className="flex-1 py-3 rounded-xl text-white font-semibold text-xs bg-[#F97316] hover:bg-[#EA580C] transition-all cursor-pointer"
                     >
-                      Explore All Clubs
+                      Explore Directory
                     </button>
                   </div>
                 </div>
@@ -508,7 +708,7 @@ export default function Events() {
         )}
       </AnimatePresence>
 
-      {/* ─── Club Details Modal (Featuring Feature 5: Social Link Hub) ───────── */}
+      {/* ─── Detailed View Modal ───────────────────────────────────────────── */}
       <AnimatePresence>
         {selectedClub && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -530,7 +730,12 @@ export default function Events() {
               {/* Modal Header */}
               {(() => {
                 const IconComponent = (selectedClub.icon && CLUB_ICON_MAP[selectedClub.icon]) || Atom;
-                const categoryColor = CLUB_CATEGORY_COLORS[selectedClub.category] || '#F97316';
+                const isCenter =
+                  selectedClub.type === 'Center' ||
+                  selectedClub.category === 'Center of Excellence' ||
+                  selectedClub.id.startsWith('center_') ||
+                  selectedClub.id.includes('grover_center');
+                const categoryColor = CLUB_CATEGORY_COLORS[selectedClub.category] || (isCenter ? '#8B5CF6' : '#F97316');
                 const isLiked = likedClubs.has(selectedClub.id);
                 const likesCount = likesMap[selectedClub.id] || 0;
 
@@ -544,25 +749,32 @@ export default function Events() {
                       ) : (
                         <div
                           className="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-sm shrink-0"
-                          style={{ background: `linear-gradient(135deg, ${categoryColor}, ${categoryColor}DD)` }}
+                          style={{ background: isCenter ? 'linear-gradient(135deg, #8B5CF6, #6366F1)' : `linear-gradient(135deg, ${categoryColor}, ${categoryColor}DD)` }}
                         >
                           <IconComponent className="w-7 h-7 text-white" />
                         </div>
                       )}
                       <div>
-                        <span
-                          className="px-2.5 py-0.5 rounded-full text-xs font-semibold"
-                          style={{ backgroundColor: `${categoryColor}15`, color: categoryColor, fontFamily: 'Poppins, sans-serif' }}
-                        >
-                          {selectedClub.category}
-                        </span>
-                        <h2 className="text-2xl font-bold text-[#1E293B] mt-1" style={{ fontFamily: 'Playfair Display, serif' }}>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span
+                            className="px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                            style={{ backgroundColor: `${categoryColor}15`, color: categoryColor, fontFamily: 'Poppins, sans-serif' }}
+                          >
+                            {selectedClub.category}
+                          </span>
+                          {isCenter && (
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">
+                              CENTER OF EXCELLENCE
+                            </span>
+                          )}
+                        </div>
+                        <h2 className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
                           {selectedClub.name}
                         </h2>
                       </div>
                     </div>
 
-                    {/* Interactive Like Button in Modal */}
+                    {/* Interactive Like Button */}
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.92 }}
@@ -574,37 +786,56 @@ export default function Events() {
                       }`}
                     >
                       <Heart className={`w-4 h-4 ${isLiked ? 'fill-white' : 'text-rose-500'}`} />
-                      <span>{isLiked ? 'Liked' : 'Like Club'} ({likesCount})</span>
+                      <span>{isLiked ? 'Liked' : 'Like'} ({likesCount})</span>
                     </motion.button>
                   </div>
                 );
               })()}
 
-              {/* Club Detailed Description */}
+              {/* Detailed Description */}
               <div className="mb-5 bg-gradient-to-r from-orange-50/70 via-amber-50/40 to-slate-50 border border-orange-200/80 rounded-2xl p-4.5">
                 <div className="flex items-center gap-2 text-xs font-bold text-[#F97316] uppercase tracking-wider mb-2">
                   <Info className="w-4 h-4 text-[#F97316]" />
-                  <span>About the Club</span>
+                  <span>About {selectedClub.type === 'Center' || selectedClub.category === 'Center of Excellence' ? 'the Center of Excellence' : 'the Club'}</span>
                 </div>
                 <p className="text-slate-700 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
                   {selectedClub.details || selectedClub.description}
                 </p>
               </div>
 
-              {/* Leadership & Contact Information - Icon Based Color Cards */}
+              {/* Leadership & Contact Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6">
-                {/* President Card - Indigo Theme */}
-                <div className="bg-indigo-50/80 border border-indigo-100 hover:border-indigo-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white flex items-center justify-center shadow-xs shadow-indigo-200 shrink-0">
-                    <UserCheck className="w-5 h-5 text-white" />
+                {/* Faculty Coordinator Card */}
+                {selectedClub.coordinatorName && (
+                  <div className="bg-amber-50/80 border border-amber-100 hover:border-amber-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center shadow-xs shadow-amber-200 shrink-0">
+                      <GraduationCap className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-amber-600 font-semibold block">
+                        {selectedClub.type === 'Center' || selectedClub.category === 'Center of Excellence' ? 'Faculty Co-ordinator' : 'Faculty Coordinator'}
+                      </span>
+                      <span className="text-sm font-bold text-amber-950">{selectedClub.coordinatorName}</span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-[11px] text-indigo-500 font-semibold block">President / Student Lead</span>
-                    <span className="text-sm font-bold text-indigo-950">{selectedClub.presidentName || 'Student President'}</span>
-                  </div>
-                </div>
+                )}
 
-                {/* Vice President Card - Violet Theme */}
+                {/* President / Student Lead Card */}
+                {selectedClub.presidentName && (
+                  <div className="bg-indigo-50/80 border border-indigo-100 hover:border-indigo-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 text-white flex items-center justify-center shadow-xs shadow-indigo-200 shrink-0">
+                      <UserCheck className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="text-[11px] text-indigo-500 font-semibold block">
+                        {selectedClub.type === 'Center' || selectedClub.category === 'Center of Excellence' ? 'Research / Student Lead' : 'President / Student Lead'}
+                      </span>
+                      <span className="text-sm font-bold text-indigo-950">{selectedClub.presidentName}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Vice President Card */}
                 {selectedClub.vicePresidentName && (
                   <div className="bg-violet-50/80 border border-violet-100 hover:border-violet-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 text-white flex items-center justify-center shadow-xs shadow-violet-200 shrink-0">
@@ -617,56 +848,40 @@ export default function Events() {
                   </div>
                 )}
 
-                {/* Coordinator Card - Amber Theme */}
-                {selectedClub.coordinatorName && (
-                  <div className="bg-amber-50/80 border border-amber-100 hover:border-amber-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center shadow-xs shadow-amber-200 shrink-0">
-                      <GraduationCap className="w-5 h-5 text-white" />
+                {/* Contact Email */}
+                {selectedClub.contactEmail && (
+                  <div className="bg-emerald-50/80 border border-emerald-100 hover:border-emerald-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3 col-span-1 sm:col-span-2">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center shadow-xs shadow-emerald-200 shrink-0">
+                      <Mail className="w-5 h-5 text-white" />
                     </div>
-                    <div>
-                      <span className="text-[11px] text-amber-600 font-semibold block">Faculty Coordinator</span>
-                      <span className="text-sm font-bold text-amber-950">{selectedClub.coordinatorName}</span>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-[11px] text-emerald-500 font-semibold block">Contact Email</span>
+                      <a href={`mailto:${selectedClub.contactEmail}`} className="text-sm font-bold text-emerald-700 hover:text-emerald-800 hover:underline truncate block">
+                        {selectedClub.contactEmail}
+                      </a>
                     </div>
                   </div>
                 )}
-
-{selectedClub.contactEmail && (
-  <div className="bg-emerald-50/80 border border-emerald-100 hover:border-emerald-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 text-white flex items-center justify-center shadow-xs shadow-emerald-200 shrink-0">
-      <Mail className="w-5 h-5 text-white" />
-    </div>
-    <div className="min-w-0 flex-1">
-      <span className="text-[11px] text-emerald-500 font-semibold block">Contact Email</span>
-      <a href={`mailto:${selectedClub.contactEmail}`} className="text-sm font-bold text-emerald-700 hover:text-emerald-800 hover:underline truncate block">
-        {selectedClub.contactEmail}
-      </a>
-    </div>
-  </div>
-)}
-
-                {/* Phone Card - Sky Theme */}
-                <div className="bg-sky-50/80 border border-sky-100 hover:border-sky-300 transition-colors rounded-2xl p-3.5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-sky-600 text-white flex items-center justify-center shadow-xs shadow-sky-200 shrink-0">
-                    <Phone className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <span className="text-[11px] text-sky-500 font-semibold block">Contact Phone</span>
-                    <span className="text-sm font-bold text-sky-950">{selectedClub.contactPhone || '+91 98765 43210'}</span>
-                  </div>
-                </div>
               </div>
 
-              {/* ─── Feature 5: Social & Community Link Hub (Dummy Links) ─────── */}
-              <div className="mb-6 bg-orange-50/60 border border-orange-200/80 rounded-2xl p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#F97316] uppercase tracking-wider">
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    <span>Community & Social Links</span>
+              {/* Social & Community Links */}
+              {Boolean(
+                selectedClub.socialLinks?.instagram ||
+                selectedClub.socialLinks?.linkedin ||
+                selectedClub.socialLinks?.whatsapp ||
+                selectedClub.socialLinks?.youtube
+              ) && (
+                <div className="mb-6 bg-orange-50/60 border border-orange-200/80 rounded-2xl p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2 text-xs font-bold text-[#F97316] uppercase tracking-wider">
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>Social & Community Links</span>
+                    </div>
+                    <span className="text-[10px] text-emerald-600 font-medium">✓ Verified RIT Entity</span>
                   </div>
-                  <span className="text-[10px] text-emerald-600 font-medium">✓ Verified RIT Handle</span>
-                </div>
 
-                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="grid grid-cols-2 gap-2.5">
+
                   {selectedClub.socialLinks?.instagram && (
                     <a
                       href={selectedClub.socialLinks.instagram}
@@ -676,18 +891,6 @@ export default function Events() {
                     >
                       <InstagramIcon className="w-4 h-4 text-pink-500 shrink-0" />
                       <span className="truncate">Instagram</span>
-                    </a>
-                  )}
-
-                  {selectedClub.socialLinks?.website && (
-                    <a
-                      href={selectedClub.socialLinks.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-orange-500 hover:text-orange-600 transition-all text-xs font-medium text-slate-700"
-                    >
-                      <Globe className="w-4 h-4 text-orange-500 shrink-0" />
-                      <span className="truncate">Linktree Hub</span>
                     </a>
                   )}
 
@@ -728,6 +931,7 @@ export default function Events() {
                   )}
                 </div>
               </div>
+              )}
 
               {/* Close Button */}
               <div>
