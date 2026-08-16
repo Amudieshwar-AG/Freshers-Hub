@@ -7,11 +7,12 @@ import {
   TrendingUp, UserCheck, ClipboardList, ShoppingCart, Cpu, Activity, LayoutGrid,
   Layers, Zap, Settings, Gauge, Radio, Wifi, Bot, Sun, Wrench, Binary, BatteryCharging,
   CircuitBoard, ShieldCheck, BrainCircuit, FlaskConical, Lock, Terminal, Dna, Microscope,
-  Sparkles, Smartphone, Monitor, Server, CheckCircle2, Database, Briefcase, AlertTriangle, RefreshCw
+  Sparkles, Smartphone, Monitor, Server, CheckCircle2, Database, Briefcase, AlertTriangle, RefreshCw, Calculator,
+  Building2, GraduationCap, Plus, Trash2
 } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
-import { TOOLKIT_ITEMS } from '@/constants';
+import { TOOLKIT_ITEMS, DEPARTMENTS } from '@/constants';
 
 const TOOLKIT_ICONS: Record<string, { icon: React.ComponentType<{ className?: string }>; bg: string; color: string }> = {
   'CS tools': { icon: Code, bg: '#EFF6FF', color: '#3B82F6' },
@@ -20,6 +21,7 @@ const TOOLKIT_ICONS: Record<string, { icon: React.ComponentType<{ className?: st
   'AI tools': { icon: BrainCircuit, bg: '#FDF2F8', color: '#EC4899' },
   'Electrical and Electronic tools': { icon: Zap, bg: '#FEF3C7', color: '#D97706' },
   'Biotech tools': { icon: Dna, bg: '#ECFEFF', color: '#06B6D4' },
+  'GPA and internal calculator': { icon: Calculator, bg: '#FEF2F2', color: '#EF4444' },
 };
 
 const PROGRAMMING_LANGUAGES_GUIDES = [
@@ -650,8 +652,105 @@ const BIOTECH_TOOLS_CATEGORIES = [
       { name: 'FASTQC', desc: 'Quality control tool for high-throughput sequence data.', url: 'https://www.bioinformatics.babraham.ac.uk/projects/fastqc/' },
       { name: 'IGV (Integrative Genomics Viewer)', desc: 'High-performance interactive visualization tool for genomic data.', url: 'https://igv.org/' }
     ]
-  }
+const PROFESSIONAL_ELECTIVES_LIST: Array<{ code: string; name: string; credits: number }> = [
+  { code: 'AD23V11', name: 'Agriculture Data Analytics', credits: 3 },
+  { code: 'AD23V12', name: 'Big Data Analytics', credits: 3 },
+  { code: 'AD23V13', name: 'Data warehousing and Data Mining', credits: 3 },
+  { code: 'AD23V14', name: 'Health Care Analytics', credits: 3 },
+  { code: 'AD23V15', name: 'Image and Video Analytics', credits: 3 },
+  { code: 'AD23V16', name: 'Web and Social Media Analytics', credits: 3 },
+  { code: 'AD23V17', name: 'Predictive Analytics', credits: 3 },
+  { code: 'AD23V18', name: 'Sentiment Analysis', credits: 3 },
+  { code: 'AD23V21', name: 'AI in IoT', credits: 3 },
+  { code: 'AD23V22', name: 'Applied Machine Learning', credits: 3 },
+  { code: 'AD23V23', name: 'Cognitive Computing', credits: 3 },
+  { code: 'AD23V24', name: 'Computer Vision', credits: 3 },
+  { code: 'AD23V25', name: 'Ethics For AI', credits: 3 },
+  { code: 'AD23V26', name: 'Game Theory', credits: 3 },
+  { code: 'AD23V27', name: 'Quantum Computing Techniques', credits: 3 },
+  { code: 'AD23V28', name: 'Responsive AI', credits: 3 },
 ];
+
+const AIDS_CURRICULUM: Record<number, Array<{ code: string; name: string; credits: number; isElective?: boolean; electiveSlot?: number }>> = {
+  1: [
+    { code: 'HS23111', name: 'Communicative English', credits: 3 },
+    { code: 'MA23111', name: 'Matrices and Calculus', credits: 4 },
+    { code: 'PH23111', name: 'Physics for Information Science', credits: 3 },
+    { code: 'GE23111', name: 'Problem Solving and C Programming', credits: 3 },
+    { code: 'GE23113', name: 'Basic Electrical and Electronics Engineering', credits: 3 },
+    { code: 'GE23112', name: 'Heritage of Tamils', credits: 0 },
+    { code: 'PH23121', name: 'Physics Laboratory', credits: 1 },
+    { code: 'GE23121', name: 'Problem Solving and C Programming Laboratory', credits: 1 },
+    { code: 'GE23122', name: 'Engineering Practices Laboratory', credits: 1 },
+  ],
+  2: [
+    { code: 'HS23211', name: 'Professional English', credits: 2 },
+    { code: 'CY23211', name: 'Engineering Chemistry', credits: 3 },
+    { code: 'MA23211', name: 'Statistics and Numerical Methods', credits: 4 },
+    { code: 'AD23211', name: 'Python for Data Science', credits: 3 },
+    { code: 'GE23213', name: 'Tamils and Technology', credits: 0 },
+    { code: 'GE23231', name: 'Engineering Graphics', credits: 4 },
+    { code: 'AD23231', name: 'Data Structures Design', credits: 4 },
+    { code: 'CY23221', name: 'Chemistry Laboratory', credits: 1 },
+    { code: 'AD23221', name: 'Python for Data Science Laboratory', credits: 1 },
+    { code: 'GE23221', name: 'Communication Laboratory / Foreign Language', credits: 1 },
+  ],
+  3: [
+    { code: 'MA23311', name: 'Discrete Mathematics', credits: 4 },
+    { code: 'AL23311', name: 'Artificial Intelligence', credits: 3 },
+    { code: 'CS23312', name: 'Object Oriented Programming', credits: 3 },
+    { code: 'CS23411', name: 'Database Management Systems', credits: 3 },
+    { code: 'EC23331', name: 'Digital Principles and Computer Organization', credits: 4 },
+    { code: 'AL23321', name: 'Artificial Intelligence Laboratory', credits: 1 },
+    { code: 'CS23421', name: 'Database Management Systems Laboratory', credits: 1 },
+    { code: 'CS23322', name: 'Object Oriented Programming Laboratory', credits: 1 },
+    { code: 'AD23IC1', name: 'Data Wrangling', credits: 1 },
+  ],
+  4: [
+    { code: 'GE23411', name: 'Environmental Science and Sustainability', credits: 2 },
+    { code: 'MA23411', name: 'Probability and Statistics', credits: 4 },
+    { code: 'AD23411', name: 'Data Analytics', credits: 3 },
+    { code: 'AL23411', name: 'Machine Learning', credits: 3 },
+    { code: 'CS23412', name: 'Operating Systems', credits: 3 },
+    { code: 'CS23431', name: 'Design and Analysis of Algorithms', credits: 4 },
+    { code: 'AD23421', name: 'Data Analytics Laboratory', credits: 1 },
+    { code: 'AL23421', name: 'Machine Learning Laboratory', credits: 1 },
+    { code: 'CS23422', name: 'Operating Systems Laboratory', credits: 1 },
+    { code: 'AD23IC2', name: 'Introduction to AZURE Machine Learning', credits: 1 },
+  ],
+  5: [
+    { code: 'AD23511', name: 'Deep Learning', credits: 3 },
+    { code: 'CS23511', name: 'Computer Networks', credits: 3 },
+    { code: 'PEC01', name: 'Professional Elective I', credits: 3, isElective: true, electiveSlot: 1 },
+    { code: 'PEC02', name: 'Professional Elective II', credits: 3, isElective: true, electiveSlot: 2 },
+    { code: 'CB23531', name: 'Business Analytics', credits: 4 },
+    { code: 'AD23532', name: 'Data Exploration and Visualization', credits: 4 },
+    { code: 'AD23521', name: 'Deep Learning Laboratory', credits: 1 },
+    { code: 'CS23521', name: 'Computer Networks Laboratory', credits: 1 },
+    { code: 'AD23IC3', name: 'Tableau - Data Visualization', credits: 1 },
+  ],
+  6: [
+    { code: 'PEC03', name: 'Professional Elective III', credits: 3, isElective: true, electiveSlot: 3 },
+    { code: 'PEC04', name: 'Professional Elective IV', credits: 3, isElective: true, electiveSlot: 4 },
+    { code: 'OEC01', name: 'Open Elective I', credits: 3 },
+    { code: 'OEC02', name: 'Open Elective II', credits: 3 },
+    { code: 'EC23631', name: 'Embedded Systems and IoT', credits: 4 },
+    { code: 'CS23631', name: 'Object Oriented Software Engineering', credits: 4 },
+    { code: 'AD23621', name: 'Mini Project', credits: 2 },
+  ],
+  7: [
+    { code: 'GE23711', name: 'Human Values and Ethics', credits: 2 },
+    { code: 'MGT01', name: 'Elective - Management', credits: 3 },
+    { code: 'CB23511', name: 'Data and Information Security', credits: 3 },
+    { code: 'PEC05', name: 'Professional Elective V', credits: 3, isElective: true, electiveSlot: 5 },
+    { code: 'PEC06', name: 'Professional Elective VI', credits: 3, isElective: true, electiveSlot: 6 },
+    { code: 'AD23721', name: 'Internship / Certification Course', credits: 2 },
+  ],
+  8: [
+    { code: 'OEC03', name: 'Open Elective III', credits: 3 },
+    { code: 'AD23821', name: 'Project Work', credits: 10 },
+  ],
+};
 
 export default function Toolkit() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -659,6 +758,71 @@ export default function Toolkit() {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<number | null>(null);
   const [selectedTool, setSelectedTool] = useState<{ name: string; desc: string; url: string; category: string; bg: string; color: string } | null>(null);
+  const [gpaDepartment, setGpaDepartment] = useState('');
+  const [gpaSemester, setGpaSemester] = useState('');
+  const [calculationType, setCalculationType] = useState<'gpa' | 'internal' | null>(null);
+  const [gpaStep, setGpaStep] = useState<1 | 2>(1);
+  const [calculatedScore, setCalculatedScore] = useState<string | null>(null);
+  const [subjects, setSubjects] = useState([
+    { name: 'Subject 1', credits: 4, grade: 'O', cat1: '45', cat2: '48', assignment: '10', attendance: '95' },
+    { name: 'Subject 2', credits: 3, grade: 'A+', cat1: '42', cat2: '44', assignment: '9', attendance: '92' },
+    { name: 'Subject 3', credits: 3, grade: 'A', cat1: '38', cat2: '40', assignment: '8', attendance: '88' },
+    { name: 'Subject 4', credits: 4, grade: 'O', cat1: '46', cat2: '47', assignment: '10', attendance: '96' },
+    { name: 'Subject 5', credits: 2, grade: 'A+', cat1: '44', cat2: '45', assignment: '9', attendance: '94' },
+  ]);
+
+  const handleProceedToStep2 = (type: 'gpa' | 'internal') => {
+    if (!gpaDepartment || !gpaSemester) return;
+    setCalculationType(type);
+
+    const semNum = parseInt(gpaSemester.replace(/\D/g, ''), 10) || 1;
+    const isAIDS = gpaDepartment.toLowerCase().includes('artificial intelligence') || gpaDepartment.toLowerCase().includes('data science');
+
+    if (isAIDS && AIDS_CURRICULUM[semNum]) {
+      const loaded = AIDS_CURRICULUM[semNum]
+        .filter((s) => type === 'internal' || s.credits > 0)
+        .map((s) => {
+          if (s.isElective) {
+            const defaultCode = s.code === 'PEC01' ? 'AD23V11' : s.code === 'PEC02' ? 'AD23V12' : s.code === 'PEC03' ? 'AD23V13' : s.code === 'PEC04' ? 'AD23V14' : s.code === 'PEC05' ? 'AD23V15' : 'AD23V16';
+            const defaultObj = PROFESSIONAL_ELECTIVES_LIST.find((e) => e.code === defaultCode);
+            return {
+              name: defaultObj ? `${defaultObj.code} - ${defaultObj.name}` : `${s.code} - ${s.name}`,
+              credits: s.credits,
+              grade: 'O',
+              cat1: '45',
+              cat2: '45',
+              assignment: '9',
+              attendance: '95',
+              isElective: true,
+              electiveSlot: s.electiveSlot,
+              electiveCode: defaultCode,
+            };
+          }
+          return {
+            name: `${s.code} - ${s.name}`,
+            credits: s.credits,
+            grade: 'O',
+            cat1: '45',
+            cat2: '45',
+            assignment: '9',
+            attendance: '95',
+            isElective: false,
+          };
+        });
+      setSubjects(loaded);
+    } else {
+      setSubjects([
+        { name: 'Subject 1', credits: 4, grade: 'O', cat1: '45', cat2: '48', assignment: '10', attendance: '95' },
+        { name: 'Subject 2', credits: 3, grade: 'A+', cat1: '42', cat2: '44', assignment: '9', attendance: '92' },
+        { name: 'Subject 3', credits: 3, grade: 'A', cat1: '38', cat2: '40', assignment: '8', attendance: '88' },
+        { name: 'Subject 4', credits: 4, grade: 'O', cat1: '46', cat2: '47', assignment: '10', attendance: '96' },
+        { name: 'Subject 5', credits: 2, grade: 'A+', cat1: '44', cat2: '45', assignment: '9', attendance: '94' },
+      ]);
+    }
+
+    setGpaStep(2);
+    setCalculatedScore(null);
+  };
 
   const setSelectedToolkit = (value: string | null) => {
     if (value) {
@@ -666,11 +830,21 @@ export default function Toolkit() {
       setSelectedCategory(null);
       setSelectedLanguage(null);
       setSelectedTool(null);
+      setGpaDepartment('');
+      setGpaSemester('');
+      setCalculationType(null);
+      setGpaStep(1);
+      setCalculatedScore(null);
     } else {
       setSearchParams({});
       setSelectedCategory(null);
       setSelectedLanguage(null);
       setSelectedTool(null);
+      setGpaDepartment('');
+      setGpaSemester('');
+      setCalculationType(null);
+      setGpaStep(1);
+      setCalculatedScore(null);
     }
   };
 
@@ -712,6 +886,7 @@ export default function Toolkit() {
               cybersecurity: { categories: CYBERSECURITY_TOOLS_CATEGORIES, label: 'Cybersecurity' },
               ai: { categories: AI_TOOLS_CATEGORIES, label: 'Artificial Intelligence' },
               biotech: { categories: BIOTECH_TOOLS_CATEGORIES, label: 'Biotechnology' },
+              gpa: { categories: [], label: 'GPA and Internal Calculator' },
             };
             const current = TOOLKIT_MAP[selectedToolkit];
             if (!current) return null;
@@ -759,12 +934,395 @@ export default function Toolkit() {
                       ? `Complete beginner guide, core concepts, use cases, and resources for ${PROGRAMMING_LANGUAGES_GUIDES[selectedLanguage].name}.`
                       : selectedCategory !== null
                       ? `Browse essential ${categories[selectedCategory].title} software, guides, and developer resources.`
+                      : selectedToolkit === 'gpa'
+                      ? 'Select your department and semester for GPA and internal score calculations.'
                       : `Explore all categories and tools curated for ${label} students.`}
                   </p>
                 </motion.div>
 
                 {/* Main Content Area */}
-                {selectedLanguage !== null ? (
+                {selectedToolkit === 'gpa' ? (
+                  <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-3xl mx-auto">
+                    {gpaStep === 1 ? (
+                      /* ── STEP 1: Department and Semester Selection ── */
+                      <div className="bg-white p-8 md:p-10 rounded-3xl border border-[#E5E7EB] shadow-xl relative overflow-hidden">
+                        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#FF6B00] via-[#EF4444] to-[#F97316]" />
+
+                        <div className="flex items-center gap-4 mb-6">
+                          <div className="w-14 h-14 rounded-2xl bg-[#FEF2F2] text-[#EF4444] flex items-center justify-center font-bold shadow-xs">
+                            <Calculator className="w-7 h-7" />
+                          </div>
+                          <div>
+                            <h3 className="text-2xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                              GPA & Internal Calculator
+                            </h3>
+                            <p className="text-sm text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              Step 1 of 2: Select your department and semester to begin.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-6">
+                          {/* Department Input */}
+                          <div>
+                            <label className="block text-sm font-bold text-[#1E293B] mb-2 flex items-center gap-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                              <Building2 className="w-4 h-4 text-[#F97316]" /> Department
+                            </label>
+                            <select
+                              value={gpaDepartment}
+                              onChange={(e) => setGpaDepartment(e.target.value)}
+                              className="w-full px-4 py-3.5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] focus:border-[#F97316] focus:ring-2 focus:ring-[#F97316]/20 text-[#1E293B] text-sm font-medium transition-all outline-none cursor-pointer"
+                              style={{ fontFamily: 'Inter, sans-serif' }}
+                            >
+                              <option value="" disabled>Select Department</option>
+                              {DEPARTMENTS.filter(d => d !== 'All Departments').map((dept, idx) => (
+                                <option key={idx} value={dept}>{dept}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Semester Input */}
+                          <div>
+                            <label className="block text-sm font-bold text-[#1E293B] mb-2 flex items-center gap-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                              <GraduationCap className="w-4 h-4 text-[#F97316]" /> Semester
+                            </label>
+                            <select
+                              value={gpaSemester}
+                              onChange={(e) => setGpaSemester(e.target.value)}
+                              className="w-full px-4 py-3.5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] focus:border-[#F97316] focus:ring-2 focus:ring-[#F97316]/20 text-[#1E293B] text-sm font-medium transition-all outline-none cursor-pointer"
+                              style={{ fontFamily: 'Inter, sans-serif' }}
+                            >
+                              <option value="" disabled>Select Semester</option>
+                              {['1st Semester', '2nd Semester', '3rd Semester', '4th Semester', '5th Semester', '6th Semester', '7th Semester', '8th Semester'].map((sem, idx) => (
+                                <option key={idx} value={sem}>{sem}</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Two Action Buttons to proceed to Step 2 */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            <button
+                              onClick={() => handleProceedToStep2('internal')}
+                              disabled={!gpaDepartment || !gpaSemester}
+                              className={`py-3.5 px-5 rounded-2xl text-sm font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
+                                gpaDepartment && gpaSemester
+                                  ? 'bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] hover:from-[#7C3AED] hover:to-[#6D28D9] text-white shadow-purple-500/20 hover:scale-[1.01]'
+                                  : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed shadow-none'
+                              }`}
+                              style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                            >
+                              <BarChart3 className="w-4 h-4" />
+                              Calculate Internal
+                            </button>
+
+                            <button
+                              onClick={() => handleProceedToStep2('gpa')}
+                              disabled={!gpaDepartment || !gpaSemester}
+                              className={`py-3.5 px-5 rounded-2xl text-sm font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
+                                gpaDepartment && gpaSemester
+                                  ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] hover:from-[#EA580C] hover:to-[#DD6B20] text-white shadow-orange-500/20 hover:scale-[1.01]'
+                                  : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed shadow-none'
+                              }`}
+                              style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                            >
+                              <Calculator className="w-4 h-4" />
+                              Calculate GPA
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      /* ── STEP 2: Subject Input and Marks Section ── */
+                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="space-y-6">
+                        <div className="bg-white p-6 md:p-8 rounded-3xl border border-[#E5E7EB] shadow-xl relative overflow-hidden">
+                          <div className="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-[#F1F5F9]">
+                            <div>
+                              <button
+                                onClick={() => setGpaStep(1)}
+                                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FF6B00] hover:text-[#EA580C] transition-colors mb-2 cursor-pointer"
+                              >
+                                <ArrowLeft className="w-3.5 h-3.5" /> Back to Selection
+                              </button>
+                              <h3 className="text-xl md:text-2xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                                {calculationType === 'gpa' ? 'GPA Calculation' : 'Internal Marks Calculation'}
+                              </h3>
+                              <p className="text-xs font-semibold text-[#64748B] mt-0.5">
+                                {gpaDepartment} — <span className="text-[#FF6B00]">{gpaSemester}</span>
+                              </p>
+                            </div>
+                            <div className="w-12 h-12 rounded-2xl bg-[#FFF7ED] text-[#FF6B00] flex items-center justify-center font-bold shrink-0">
+                              {calculationType === 'gpa' ? <Calculator className="w-6 h-6" /> : <BarChart3 className="w-6 h-6" />}
+                            </div>
+                          </div>
+
+                          {calculationType === 'gpa' ? (
+                            /* ── Clean 2-Column GPA Layout (Fixed Credits, Grade Input Only) ── */
+                            <div className="space-y-3 mb-6">
+                              <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#94A3B8] px-1 mb-2">
+                                <span>Subject & Credits</span>
+                                <span>Grade Achieved</span>
+                              </div>
+
+                              {(() => {
+                                const selectedElectiveCodes = new Set(subjects.filter((s) => s.isElective && s.electiveCode).map((s) => s.electiveCode));
+
+                                return subjects.filter(s => s.credits > 0).map((sub, idx) => (
+                                  <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#CBD5E1] transition-all">
+                                    <div className="flex-1 min-w-0 pr-2">
+                                      {sub.isElective ? (
+                                        <div className="space-y-1">
+                                          <div className="text-[11px] font-bold text-[#FF6B00] uppercase tracking-wider">
+                                            Professional Elective {sub.electiveSlot}
+                                          </div>
+                                          <select
+                                            value={sub.electiveCode}
+                                            onChange={(e) => {
+                                              const newCode = e.target.value;
+                                              const found = PROFESSIONAL_ELECTIVES_LIST.find((el) => el.code === newCode);
+                                              const updated = [...subjects];
+                                              updated[idx].electiveCode = newCode;
+                                              updated[idx].name = found ? `${found.code} - ${found.name}` : newCode;
+                                              setSubjects(updated);
+                                              setCalculatedScore(null);
+                                            }}
+                                            className="w-full px-3 py-2 rounded-xl bg-white border border-[#CBD5E1] focus:border-[#FF6B00] text-xs font-bold text-[#1E293B] outline-none cursor-pointer"
+                                            style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                                          >
+                                            {PROFESSIONAL_ELECTIVES_LIST.filter((opt) => opt.code === sub.electiveCode || !selectedElectiveCodes.has(opt.code)).map((opt) => (
+                                              <option key={opt.code} value={opt.code}>
+                                                {opt.code} - {opt.name}
+                                              </option>
+                                            ))}
+                                          </select>
+                                        </div>
+                                      ) : (
+                                        <p className="text-sm font-bold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                                          {sub.name}
+                                        </p>
+                                      )}
+                                      <span className="inline-block mt-1 px-2.5 py-0.5 rounded-md bg-[#FFF7ED] text-[#FF6B00] text-[11px] font-bold border border-[#FFEDD5]">
+                                        {sub.credits} {sub.credits === 1 ? 'Credit' : 'Credits'}
+                                      </span>
+                                    </div>
+                                    <div className="w-full sm:w-60 shrink-0">
+                                      <select
+                                        value={sub.grade}
+                                        onChange={(e) => {
+                                          const updated = [...subjects];
+                                          updated[idx].grade = e.target.value;
+                                          setSubjects(updated);
+                                          setCalculatedScore(null);
+                                        }}
+                                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#CBD5E1] focus:border-[#FF6B00] focus:ring-2 focus:ring-[#FF6B00]/20 text-xs font-bold text-[#1E293B] outline-none cursor-pointer shadow-2xs"
+                                        style={{ fontFamily: 'Inter, sans-serif' }}
+                                      >
+                                        <option value="O">O</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A">A</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                        <option value="UA">UA</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                ));
+                              })()}
+                            </div>
+                          ) : (
+                            /* ── Internal Marks Layout ── */
+                            <div className="space-y-4 mb-6">
+                              <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
+                                <span>Subject Details</span>
+                                <span>{subjects.length} Subjects</span>
+                              </div>
+
+                              {subjects.map((sub, idx) => (
+                                <div key={idx} className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-3">
+                                  <div className="flex items-center justify-between gap-2">
+                                    <input
+                                      type="text"
+                                      value={sub.name}
+                                      onChange={(e) => {
+                                        const updated = [...subjects];
+                                        updated[idx].name = e.target.value;
+                                        setSubjects(updated);
+                                        setCalculatedScore(null);
+                                      }}
+                                      placeholder={`Subject ${idx + 1} Name`}
+                                      className="flex-1 px-3 py-2 rounded-xl bg-white border border-[#CBD5E1] text-xs font-bold text-[#1E293B] focus:border-[#FF6B00] outline-none"
+                                    />
+                                    {subjects.length > 1 && (
+                                      <button
+                                        onClick={() => {
+                                          setSubjects(subjects.filter((_, i) => i !== idx));
+                                          setCalculatedScore(null);
+                                        }}
+                                        className="p-2 rounded-xl text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
+                                        title="Remove subject"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </button>
+                                    )}
+                                  </div>
+
+                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    <div>
+                                      <label className="block text-[10px] font-semibold text-[#64748B] mb-1">CAT 1 (/50)</label>
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        max="50"
+                                        value={sub.cat1}
+                                        onChange={(e) => {
+                                          const updated = [...subjects];
+                                          updated[idx].cat1 = e.target.value;
+                                          setSubjects(updated);
+                                          setCalculatedScore(null);
+                                        }}
+                                        className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-[#CBD5E1] text-xs font-medium text-[#1E293B] outline-none"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-[10px] font-semibold text-[#64748B] mb-1">CAT 2 (/50)</label>
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        max="50"
+                                        value={sub.cat2}
+                                        onChange={(e) => {
+                                          const updated = [...subjects];
+                                          updated[idx].cat2 = e.target.value;
+                                          setSubjects(updated);
+                                          setCalculatedScore(null);
+                                        }}
+                                        className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-[#CBD5E1] text-xs font-medium text-[#1E293B] outline-none"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-[10px] font-semibold text-[#64748B] mb-1">Assignment (/10)</label>
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        max="10"
+                                        value={sub.assignment}
+                                        onChange={(e) => {
+                                          const updated = [...subjects];
+                                          updated[idx].assignment = e.target.value;
+                                          setSubjects(updated);
+                                          setCalculatedScore(null);
+                                        }}
+                                        className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-[#CBD5E1] text-xs font-medium text-[#1E293B] outline-none"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-[10px] font-semibold text-[#64748B] mb-1">Attendance %</label>
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        value={sub.attendance}
+                                        onChange={(e) => {
+                                          const updated = [...subjects];
+                                          updated[idx].attendance = e.target.value;
+                                          setSubjects(updated);
+                                          setCalculatedScore(null);
+                                        }}
+                                        className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-[#CBD5E1] text-xs font-medium text-[#1E293B] outline-none"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+
+                              <button
+                                onClick={() => {
+                                  setSubjects([
+                                    ...subjects,
+                                    { name: `Subject ${subjects.length + 1}`, credits: 3, grade: 'A', cat1: '40', cat2: '40', assignment: '8', attendance: '90' }
+                                  ]);
+                                  setCalculatedScore(null);
+                                }}
+                                className="w-full py-2.5 rounded-2xl border-2 border-dashed border-[#CBD5E1] hover:border-[#FF6B00] text-xs font-bold text-[#64748B] hover:text-[#FF6B00] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                              >
+                                <Plus className="w-3.5 h-3.5" /> Add Subject
+                              </button>
+                            </div>
+                          )}
+
+                          {/* Submit Button for Step 2 */}
+                          <button
+                            onClick={() => {
+                              if (calculationType === 'gpa') {
+                                const GRADE_MAP: Record<string, number> = { 'O': 10, 'A+': 9, 'A': 8, 'B+': 7, 'B': 6, 'C': 5, 'UA': 0, 'RA': 0 };
+                                let totalPts = 0;
+                                let totalCreds = 0;
+                                subjects.forEach(s => {
+                                  const pts = GRADE_MAP[s.grade] ?? 0;
+                                  const cred = Number(s.credits) || 0;
+                                  totalPts += pts * cred;
+                                  totalCreds += cred;
+                                });
+                                setCalculatedScore(totalCreds > 0 ? (totalPts / totalCreds).toFixed(2) : '0.00');
+                              } else {
+                                let total = 0;
+                                subjects.forEach(s => {
+                                  const c1 = (Number(s.cat1) || 0) / 50 * 15;
+                                  const c2 = (Number(s.cat2) || 0) / 50 * 15;
+                                  const ass = (Number(s.assignment) || 0) / 10 * 5;
+                                  const att = (Number(s.attendance) || 0) >= 80 ? 5 : 3;
+                                  total += (c1 + c2 + ass + att);
+                                });
+                                setCalculatedScore(subjects.length > 0 ? (total / subjects.length).toFixed(1) : '0.0');
+                              }
+                            }}
+                            className={`w-full py-4 rounded-2xl text-sm font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
+                              calculationType === 'gpa'
+                                ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] hover:from-[#EA580C] hover:to-[#DD6B20] text-white shadow-orange-500/20 hover:scale-[1.01]'
+                                : 'bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] hover:from-[#7C3AED] hover:to-[#6D28D9] text-white shadow-purple-500/20 hover:scale-[1.01]'
+                            }`}
+                            style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                            {calculationType === 'gpa' ? 'Calculate Final GPA' : 'Calculate Total Internal Marks'}
+                          </button>
+
+                          {/* Calculated Result Card */}
+                          {calculatedScore !== null && (
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.96, y: 10 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              className="mt-6 p-6 rounded-3xl bg-gradient-to-br from-[#FFF7ED] to-[#FFFBEB] border border-[#FED7AA] shadow-sm space-y-3"
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold uppercase tracking-wider text-[#EA580C]">
+                                  {calculationType === 'gpa' ? 'Calculated SGPA' : 'Average Internal Score'}
+                                </span>
+                                <span className="px-3 py-1 rounded-full bg-[#FF6B00]/10 text-[#FF6B00] text-xs font-bold">
+                                  {gpaSemester}
+                                </span>
+                              </div>
+
+                              <div className="p-4 rounded-2xl bg-white border border-[#FFEDD5] flex items-baseline justify-between">
+                                <div>
+                                  <p className="text-xs font-semibold text-[#64748B] mb-1">{gpaDepartment}</p>
+                                  <span className="text-4xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                                    {calculatedScore} {calculationType === 'gpa' ? '/ 10.00' : '/ 40.0'}
+                                  </span>
+                                </div>
+                                <span className="px-3 py-1.5 rounded-xl bg-[#ECFDF5] text-[#10B981] text-xs font-bold">
+                                  {calculationType === 'gpa'
+                                    ? (Number(calculatedScore) >= 9.0 ? 'First Class with Distinction (O)' : Number(calculatedScore) >= 8.5 ? 'First Class with Distinction' : Number(calculatedScore) >= 7.0 ? 'First Class' : Number(calculatedScore) >= 5.0 ? 'Second Class' : 'UA / Reappear')
+                                    : (Number(calculatedScore) >= 35 ? 'Excellent' : 'Good')}
+                                </span>
+                              </div>
+                            </motion.div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                ) : selectedLanguage !== null ? (
                   /* ── Detailed Programming Language Guide View ── */
                   (() => {
                     const guide = PROGRAMMING_LANGUAGES_GUIDES[selectedLanguage];
@@ -942,6 +1500,8 @@ export default function Toolkit() {
                           setSelectedToolkit('ai');
                         } else if (item.title === 'Biotech tools') {
                           setSelectedToolkit('biotech');
+                        } else if (item.title === 'GPA and internal calculator') {
+                          setSelectedToolkit('gpa');
                         } else if (item.url && item.url !== '#') {
                           window.open(item.url, '_blank');
                         }

@@ -3757,6 +3757,7 @@ export const TOOLKIT_ITEMS: ToolkitItem[] = [
   { id: '4', title: 'AI tools', description: 'Configure machine learning frameworks, deep learning libraries, Jupyter environments, dataset download scripts, and pre-trained model APIs.', type: 'link', url: '#', icon: 'Brain', category: 'Engineering' },
   { id: '5', title: 'Electrical and Electronic tools', description: 'Access circuit design simulators, MATLAB packages, microcontroller IDE setups, hardware debugging guides, and lab calculation spreadsheets.', type: 'link', url: '#', icon: 'Cpu', category: 'Engineering' },
   { id: '6', title: 'Biotech tools', description: 'Find biology lab guidelines, chemical structure tools, bioinformatics databases tutorials, genetic sequence analysis resources, and safety manuals.', type: 'link', url: '#', icon: 'FlaskConical', category: 'Engineering' },
+  { id: '7', title: 'GPA and internal calculator', description: 'Access GPA, CGPA, and internal marks calculator utilities.', type: 'link', url: '#', icon: 'Calculator', category: 'Engineering' },
 ];
 
 // ─── Campus Locations ────────────────────────────────────────────────────────
@@ -3785,18 +3786,13 @@ export const AI_SUGGESTED_PROMPTS = [
 // ─── Departments ─────────────────────────────────────────────────────────────
 export const DEPARTMENTS = [
   'All Departments',
-  'Computer Science & Engineering',
-  'Computer Science & Business Systems',
-  'Artificial Intelligence & Machine Learning',
-  'Electronics & Communication Engineering',
-  'Mechanical Engineering',
-  'Civil Engineering',
   'Artificial Intelligence & Data Science',
-  'Electrical & Electronics Engineering',
+  'Artificial Intelligence & Machine Learning',
+  'Biotechnology',
   'Communication and Computer Engineering',
+  'Computer Science & Business Systems',
+  'Computer Science & Engineering',
+  'Electronics & Communication Engineering',
   'Electronics Engineering VLSI (Design and Technology)',
-  'Humanities & Sciences',
-  'M.Tech (Data Science)',
-  'Mathematics',
-  'M.E. (VLSI Design)',
+  'Mechanical Engineering',
 ];
