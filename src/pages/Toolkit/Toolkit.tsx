@@ -652,6 +652,9 @@ const BIOTECH_TOOLS_CATEGORIES = [
       { name: 'FASTQC', desc: 'Quality control tool for high-throughput sequence data.', url: 'https://www.bioinformatics.babraham.ac.uk/projects/fastqc/' },
       { name: 'IGV (Integrative Genomics Viewer)', desc: 'High-performance interactive visualization tool for genomic data.', url: 'https://igv.org/' }
     ]
+  }
+];
+
 const PROFESSIONAL_ELECTIVES_LIST: Array<{ code: string; name: string; credits: number }> = [
   { code: 'AD23V11', name: 'Agriculture Data Analytics', credits: 3 },
   { code: 'AD23V12', name: 'Big Data Analytics', credits: 3 },
