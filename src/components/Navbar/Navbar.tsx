@@ -1,33 +1,76 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, LogIn, LogOut, ShieldCheck, ChevronDown, Rocket, Sparkles } from 'lucide-react';
-import { NAV_LINKS } from '@/constants';
+import {
+  Menu,
+  X,
+  LogIn,
+  LogOut,
+  ShieldCheck,
+  ChevronDown,
+  Map,
+  Bus,
+  UserCheck,
+  MessageCircle,
+  Rocket,
+  BookOpen,
+  Wrench,
+  Bot,
+  Users,
+  Code2,
+  Trophy,
+  Home as HomeIcon,
+} from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
+interface NavItem {
+  label: string;
+  path: string;
+  icon?: any;
+}
+
+const PRIMARY_LINKS: NavItem[] = [
+  { label: 'Home', path: '/', icon: HomeIcon },
+  { label: 'Notes', path: '/notes', icon: BookOpen },
+  { label: 'Toolkit', path: '/toolkit', icon: Wrench },
+  { label: 'Chatbot', path: '/ai-assistant', icon: Bot },
+  { label: 'Clubs & Centers', path: '/events', icon: Users },
+  { label: 'Dev Collab', path: '/collab', icon: Code2 },
+  { label: 'LeetCode', path: '/leetcode', icon: Trophy },
+];
+
+const MORE_LINKS: NavItem[] = [
+  { label: 'Campus Map', path: '/campus', icon: Map },
+  { label: 'Bus Routes', path: '/bus-routes', icon: Bus },
+  { label: 'Faculty Directory', path: '/faculty', icon: UserCheck },
+  { label: 'Community', path: '/community', icon: MessageCircle },
+  { label: 'RAISE Incubator', path: '/raise', icon: Rocket },
+];
+
+const ALL_MOBILE_LINKS: NavItem[] = [...PRIMARY_LINKS, ...MORE_LINKS];
+
 export default function Navbar() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const location = useLocation();
   const { user, isAuthenticated, isVerifiedStudent, loginWithGoogle, logout } = useAuth();
   const profileRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const moreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsMobileOpen(false);
+    setIsMoreOpen(false);
   }, [location.pathname]);
 
-  // Close profile dropdown when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
         setIsProfileOpen(false);
+      }
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setIsMoreOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -36,84 +79,240 @@ export default function Navbar() {
 
   const checkIsActive = (linkPath: string) => {
     const [pathName] = linkPath.split('?');
-    return location.pathname === pathName;
+    if (pathName === '/') return location.pathname === '/';
+    return location.pathname.startsWith(pathName);
   };
+
+  const isMoreActive = MORE_LINKS.some((link) => checkIsActive(link.path));
 
   return (
     <>
-      {/* Fixed Header Layout Wrapper */}
-      <div className="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[96%] xl:w-[97%] max-w-[1560px] flex items-start justify-between gap-2.5 lg:gap-3.5 pointer-events-none px-1 lg:px-2">
-        {/* Grey Rectangular Capsule Container (Logo + Links ending with LeetCode) */}
+      {/* Unified Floating Navbar Container */}
+      <header className="fixed top-3.5 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-[1440px] pointer-events-none">
         <motion.nav
-          initial={{ y: -100, opacity: 0 }}
+          initial={{ y: -60, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="pointer-events-auto flex items-center justify-between flex-1 min-w-0 pl-2.5 pr-4 lg:pl-3.5 lg:pr-5 py-2 transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.25)]"
-          style={{
-            background: 'linear-gradient(to right, rgba(19, 9, 36, 0.88) 0%, rgba(30, 12, 54, 0.82) 50%, rgba(19, 9, 36, 0.88) 100%)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            borderRadius: '20px',
-            border: '1px solid rgba(255, 255, 255, 0.12)',
-          }}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+          className="pointer-events-auto flex items-center justify-between gap-2 lg:gap-4 px-3 sm:px-4 py-2 rounded-2xl bg-slate-950/90 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.35)] transition-all"
         >
-          {/* Logo - RIT Event Hub Style */}
-          <a href="/" className="flex items-center gap-1.5 lg:gap-2 group shrink-0">
-            {/* Logo Image */}
+          {/* Left: Logo & College Brand */}
+          <Link to="/" className="flex items-center gap-2.5 group shrink-0">
             <motion.img
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.06 }}
               src="/logo.png"
               alt="RIT Logo"
               className="w-8 h-8 lg:w-9 lg:h-9 object-contain rounded-full shrink-0"
             />
-            
             <div className="flex items-center">
-              <span className="font-extrabold text-white text-lg lg:text-xl xl:text-2xl tracking-tighter" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+              <span
+                className="font-extrabold text-white text-lg lg:text-xl tracking-tight group-hover:text-[#FF6B00] transition-colors"
+                style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+              >
                 rit
               </span>
-              <div className="h-5 lg:h-6 w-[1px] bg-white/20 mx-1 lg:mx-1.5" />
-              <div className="hidden sm:flex flex-col text-[7.5px] lg:text-[8px] xl:text-[8.5px] font-bold text-slate-200 leading-tight tracking-wider" style={{ fontFamily: 'Inter, sans-serif' }}>
-                <span>RAJALAKSHMI</span>
-                <span>INSTITUTE OF</span>
-                <span>TECHNOLOGY</span>
+              <div className="h-4 lg:h-5 w-[1px] bg-white/20 mx-2" />
+              <div
+                className="hidden xl:flex flex-col text-[7.5px] lg:text-[8px] font-bold text-slate-300 leading-[1.15] tracking-wider uppercase"
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                <span>Rajalakshmi</span>
+                <span>Institute of</span>
+                <span>Technology</span>
               </div>
             </div>
-          </a>
+          </Link>
 
-          {/* Desktop Nav - Ends with LeetCode */}
-          <div className="hidden md:flex items-center gap-0.5 lg:gap-0.5 xl:gap-1">
-            {NAV_LINKS.map((link) => {
+          {/* Center: Desktop Navigation Links */}
+          <div className="hidden lg:flex items-center gap-1 xl:gap-1.5 min-w-0">
+            {PRIMARY_LINKS.map((link) => {
               const isActive = checkIsActive(link.path);
               return (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className="relative px-1 lg:px-1.5 xl:px-2 2xl:px-2.5 py-1.5 rounded-lg text-[8.5px] lg:text-[9px] xl:text-[10px] 2xl:text-[11px] font-semibold uppercase tracking-wider transition-all duration-200 whitespace-nowrap shrink-0"
-                  style={{
-                    fontFamily: 'Plus Jakarta Sans, sans-serif',
-                    color: isActive ? '#FFFFFF' : '#CBD5E1',
-                  }}
+                  className={`relative px-2.5 xl:px-3 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-200 whitespace-nowrap ${
+                    isActive ? 'text-white' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                  }`}
+                  style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
                 >
                   {isActive && (
                     <motion.div
-                      layoutId="nav-active"
-                      className="absolute inset-0 rounded-xl"
-                      style={{ background: 'linear-gradient(135deg, #FF6B00, #F97316)' }}
-                      transition={{ type: 'spring', bounce: 0.2, duration: 0.4 }}
+                      layoutId="nav-pill-active"
+                      className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#FF6B00] to-[#F97316] shadow-sm"
+                      transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }}
                     />
                   )}
                   <span className="relative z-10">{link.label}</span>
                 </Link>
               );
             })}
+
+            {/* "More" Dropdown Menu */}
+            <div className="relative" ref={moreRef}>
+              <button
+                onClick={() => setIsMoreOpen(!isMoreOpen)}
+                className={`relative flex items-center gap-1 px-2.5 xl:px-3 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all cursor-pointer ${
+                  isMoreActive ? 'text-white' : 'text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+                style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+              >
+                {isMoreActive && (
+                  <motion.div
+                    layoutId="nav-pill-active"
+                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#FF6B00] to-[#F97316] shadow-sm"
+                    transition={{ type: 'spring', bounce: 0.15, duration: 0.35 }}
+                  />
+                )}
+                <span className="relative z-10">More</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 relative z-10 transition-transform duration-200 ${
+                    isMoreOpen ? 'rotate-180 text-white' : 'text-slate-400'
+                  }`}
+                />
+              </button>
+
+              <AnimatePresence>
+                {isMoreOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-full mt-2 w-52 bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-1.5 z-50 overflow-hidden"
+                  >
+                    {MORE_LINKS.map((item) => {
+                      const IconComponent = item.icon;
+                      const active = checkIsActive(item.path);
+                      return (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          onClick={() => setIsMoreOpen(false)}
+                          className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
+                            active
+                              ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white font-bold'
+                              : 'text-slate-300 hover:text-white hover:bg-white/10'
+                          }`}
+                          style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                        >
+                          {IconComponent && <IconComponent className="w-4 h-4 shrink-0 text-slate-300" />}
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
 
-          {/* Mobile Toggle */}
-          <div className="md:hidden flex items-center">
+          {/* Right: Auth Profile / Sign In */}
+          <div className="hidden lg:flex items-center gap-2 shrink-0">
+            {isAuthenticated && user ? (
+              <div className="relative" ref={profileRef}>
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-white/10 transition-all cursor-pointer"
+                >
+                  {user.pictureUrl ? (
+                    <img
+                      src={user.pictureUrl}
+                      alt={user.name}
+                      className="w-6 h-6 rounded-full border border-white/30 object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FF6B00] to-[#F97316] flex items-center justify-center text-white font-bold text-xs">
+                      {user.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span
+                    className="text-white text-xs font-semibold max-w-[100px] truncate"
+                    style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                  >
+                    {user.name.split(' ')[0]}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                </button>
+
+                {/* Profile Dropdown */}
+                <AnimatePresence>
+                  {isProfileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-2 w-64 bg-slate-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50"
+                    >
+                      <div className="p-4 border-b border-white/10">
+                        <div className="flex items-center gap-3">
+                          {user.pictureUrl ? (
+                            <img
+                              src={user.pictureUrl}
+                              alt={user.name}
+                              className="w-10 h-10 rounded-full border-2 border-orange-500/40 object-cover"
+                              referrerPolicy="no-referrer"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF6B00] to-[#F97316] flex items-center justify-center text-white font-bold text-lg">
+                              {user.name.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white text-sm font-bold truncate">{user.name}</p>
+                            <p className="text-slate-400 text-[11px] truncate">{user.email}</p>
+                          </div>
+                        </div>
+                        {isVerifiedStudent ? (
+                          <div className="mt-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/25">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                            <span className="text-[11px] font-bold text-emerald-400">Verified RIT Student</span>
+                          </div>
+                        ) : (
+                          <div className="mt-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/25">
+                            <span className="text-[11px] font-semibold text-amber-400">
+                              Sign in with @ritchennai.edu.in
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-2">
+                        <button
+                          onClick={() => {
+                            logout();
+                            setIsProfileOpen(false);
+                          }}
+                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-red-500/15 text-xs font-semibold transition-all cursor-pointer"
+                        >
+                          <LogOut className="w-4 h-4 text-red-400" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                onClick={loginWithGoogle}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-white text-xs font-bold bg-white/10 hover:bg-white/15 border border-white/15 transition-all cursor-pointer"
+                style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+              >
+                <LogIn className="w-3.5 h-3.5 text-[#FF6B00]" />
+                <span>Sign In</span>
+              </motion.button>
+            )}
+          </div>
+
+          {/* Mobile Hamburger Toggle */}
+          <div className="lg:hidden flex items-center">
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-200 hover:text-white bg-slate-800/60 hover:bg-slate-700/60 border border-slate-700/50 transition-all active:scale-95"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-200 hover:text-white bg-slate-800/80 border border-white/10 transition-all active:scale-95"
               aria-label="Toggle menu"
             >
               {isMobileOpen ? <X className="w-5 h-5 stroke-[2.5]" /> : <Menu className="w-5 h-5 stroke-[2.5]" />}
@@ -128,189 +327,69 @@ export default function Navbar() {
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.25 }}
-                className="absolute left-0 top-full mt-2 w-full overflow-hidden md:hidden max-h-[80vh] overflow-y-auto z-50"
+                className="absolute left-0 top-full mt-2 w-full overflow-hidden lg:hidden max-h-[82vh] overflow-y-auto z-50 rounded-2xl border border-white/10 bg-slate-950/95 backdrop-blur-2xl shadow-2xl"
               >
-                <div className="px-4 pb-5 pt-3 grid grid-cols-2 gap-2 border border-white/10 bg-slate-950/95 backdrop-blur-2xl rounded-2xl shadow-2xl">
-                  {NAV_LINKS.map((link) => {
-                    const isActive = checkIsActive(link.path);
-                    return (
-                      <Link
-                        key={link.path}
-                        to={link.path}
-                        onClick={() => setIsMobileOpen(false)}
-                        className="px-3.5 py-3 rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center justify-center text-center transition-all min-h-[44px]"
-                        style={{
-                          fontFamily: 'Poppins, sans-serif',
-                          color: isActive ? '#FFFFFF' : '#CBD5E1',
-                          backgroundColor: isActive ? '#F97316' : 'rgba(255, 255, 255, 0.05)',
-                          border: isActive ? '1px solid #FB923C' : '1px solid rgba(255, 255, 255, 0.08)',
-                        }}
-                      >
-                        {link.label}
-                      </Link>
-                    );
-                  })}
-
-                  {/* Mobile RAISE Button */}
-                  <Link
-                    to="/raise"
-                    onClick={() => setIsMobileOpen(false)}
-                    className="col-span-2 mt-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-bold bg-gradient-to-r from-rose-500 to-pink-600 border border-rose-400/40 shadow-md shadow-rose-500/20 transition-all active:scale-95"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
-                  >
-                    <Sparkles className="w-4 h-4 text-amber-200" />
-                    Pitch your Idea - RAISE Incubator
-                  </Link>
+                <div className="p-4 space-y-3">
+                  <div className="grid grid-cols-2 gap-2">
+                    {ALL_MOBILE_LINKS.map((link) => {
+                      const isActive = checkIsActive(link.path);
+                      const IconComp = link.icon;
+                      return (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={() => setIsMobileOpen(false)}
+                          className={`px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
+                            isActive
+                              ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white shadow-sm'
+                              : 'bg-white/5 text-slate-200 hover:bg-white/10 border border-white/5'
+                          }`}
+                          style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                        >
+                          {IconComp && <IconComp className="w-3.5 h-3.5 opacity-80" />}
+                          <span className="truncate">{link.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
 
                   {/* Mobile Auth Button */}
-                  {!isAuthenticated ? (
-                    <button
-                      onClick={() => {
-                        loginWithGoogle();
-                        setIsMobileOpen(false);
-                      }}
-                      className="col-span-2 mt-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-white text-xs font-semibold border border-orange-500/40 bg-orange-500/10 hover:bg-orange-500/20 transition-all cursor-pointer"
-                      style={{ fontFamily: 'Poppins, sans-serif' }}
-                    >
-                      <LogIn className="w-4 h-4" />
-                      Sign In with Google
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        logout();
-                        setIsMobileOpen(false);
-                      }}
-                      className="col-span-2 mt-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-red-400 text-xs font-semibold border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition-all cursor-pointer"
-                      style={{ fontFamily: 'Poppins, sans-serif' }}
-                    >
-                      <LogOut className="w-4 h-4" />
-                      Sign Out ({user?.name.split(' ')[0]})
-                    </button>
-                  )}
+                  <div className="pt-2 border-t border-white/10">
+                    {!isAuthenticated ? (
+                      <button
+                        onClick={() => {
+                          loginWithGoogle();
+                          setIsMobileOpen(false);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-semibold border border-orange-500/40 bg-orange-500/15 hover:bg-orange-500/25 transition-all cursor-pointer"
+                        style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                      >
+                        <LogIn className="w-4 h-4 text-orange-400" />
+                        Sign In with Google
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          logout();
+                          setIsMobileOpen(false);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-red-400 text-xs font-semibold border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition-all cursor-pointer"
+                        style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out ({user?.name.split(' ')[0]})
+                      </button>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </motion.nav>
+      </header>
 
-        {/* Separate Top Right Section: Sign In on Top, RAISE Incubator Below */}
-        <motion.div
-          initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: 'easeOut', delay: 0.05 }}
-          className="hidden md:flex flex-col items-center gap-2 pointer-events-auto shrink-0"
-        >
-          {/* Sign Option (Top Right, Centered) */}
-          {isAuthenticated && user ? (
-            <div className="relative" ref={profileRef}>
-              <button
-                onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-slate-900/90 backdrop-blur-md border border-slate-700/80 hover:border-orange-500/50 hover:bg-slate-800/95 shadow-lg transition-all cursor-pointer min-w-[120px]"
-              >
-                {user.pictureUrl ? (
-                  <img
-                    src={user.pictureUrl}
-                    alt={user.name}
-                    className="w-6 h-6 rounded-full border border-white/30 object-cover"
-                    referrerPolicy="no-referrer"
-                  />
-                ) : (
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-xs">
-                    {user.name.charAt(0).toUpperCase()}
-                  </div>
-                )}
-                <span className="text-white text-xs lg:text-sm font-semibold max-w-[100px] truncate" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {user.name.split(' ')[0]}
-                </span>
-                <ChevronDown className="w-4 h-4 text-slate-400" />
-              </button>
-
-              {/* Profile Dropdown */}
-              <AnimatePresence>
-                {isProfileOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full mt-2 w-64 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden z-50"
-                  >
-                    <div className="p-4 border-b border-slate-700/60">
-                      <div className="flex items-center gap-3">
-                        {user.pictureUrl ? (
-                          <img
-                            src={user.pictureUrl}
-                            alt={user.name}
-                            className="w-10 h-10 rounded-full border-2 border-orange-500/40 object-cover"
-                            referrerPolicy="no-referrer"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-bold text-lg">
-                            {user.name.charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white text-sm font-bold truncate">{user.name}</p>
-                          <p className="text-slate-400 text-[11px] truncate">{user.email}</p>
-                        </div>
-                      </div>
-                      {isVerifiedStudent ? (
-                        <div className="mt-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/25">
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                          <span className="text-[11px] font-bold text-emerald-400">Verified RIT Student</span>
-                        </div>
-                      ) : (
-                        <div className="mt-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/25">
-                          <span className="text-[11px] font-semibold text-amber-400">
-                            Sign in with @ritchennai.edu.in for verified badge
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-2">
-                      <button
-                        onClick={() => {
-                          logout();
-                          setIsProfileOpen(false);
-                        }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-red-500/15 text-xs font-semibold transition-all cursor-pointer"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        Sign Out
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ) : (
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={loginWithGoogle}
-              className="flex items-center justify-center gap-2 px-5 py-2 rounded-xl text-white text-xs lg:text-sm font-bold bg-slate-900/90 backdrop-blur-md border border-slate-700/80 hover:border-orange-500/60 hover:bg-slate-800/95 shadow-lg shadow-black/30 transition-all cursor-pointer min-w-[120px]"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
-            >
-              <LogIn className="w-4 h-4 text-orange-400" />
-              <span className="text-white">Sign In</span>
-            </motion.button>
-          )}
-
-          {/* RAISE Incubator Module (Below Sign Option) */}
-          <Link
-            to="/raise"
-            className="flex items-center justify-center gap-1.5 px-3.5 py-1.5 lg:px-4 lg:py-2 rounded-xl bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 hover:from-rose-600 hover:to-pink-600 text-white text-[10.5px] lg:text-[11.5px] font-bold shadow-lg shadow-rose-500/25 border border-white/20 transition-all duration-200 hover:scale-[1.03] active:scale-95 whitespace-nowrap"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-200 shrink-0" />
-            <span>Pitch your Idea - RAISE Incubator</span>
-          </Link>
-        </motion.div>
-      </div>
-
-      {/* Spacer */}
-      <div className="h-24" />
+      {/* Spacer to prevent content overlap */}
+      <div className="h-20" />
     </>
   );
 }

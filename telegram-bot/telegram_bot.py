@@ -6,7 +6,6 @@ import time
 import logging
 import requests
 import asyncio
-import discord
 from typing import Optional
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -53,7 +52,6 @@ def load_config():
 config = load_config()
 COMMUNITY_BOT_TOKEN = os.environ.get("COMMUNITY_BOT_TOKEN") or config.get("community_bot_token", "8859374355:AAH0dhwstkTBhRerRTjzmb2RG2fjPbigzvo")
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN") or config.get("telegram_bot_token")
-DISCORD_TOKEN = os.environ.get("DISCORD_BOT_TOKEN") or config.get("discord_bot_token")
 BACKEND_URL = os.environ.get("SPRING_BACKEND_URL") or config.get("spring_backend_url", "http://localhost:8085")
 
 # Database Setup
@@ -611,292 +609,8 @@ def telegram_polling_thread():
             logging.error(f"Error in 24/7 chatbot polling loop: {e}")
             time.sleep(5)
 
-# Discord Action View for Collaboration Applications
-class DiscordCollabActionView(discord.ui.View):
-    def __init__(self, application_id: int, applicant_contact: str):
-        super().__init__(timeout=86400)
-        self.application_id = application_id
-        self.applicant_contact = applicant_contact
-
-    @discord.ui.button(label="Accept Collaboration", style=discord.ButtonStyle.success, emoji="✅")
-    async def accept_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        try:
-            requests.put(f"{BACKEND_URL}/api/collab/applications/{self.application_id}/status?status=ACCEPTED", timeout=5)
-            await interaction.response.send_message(
-                f"✅ **Collaboration Request Accepted!**\nDirect contact details: **{self.applicant_contact}**",
-                ephemeral=False
-            )
-            for item in self.children:
-                item.disabled = True
-            await interaction.message.edit(view=self)
-        except Exception as e:
-            await interaction.response.send_message(f"❌ Error updating status: {e}", ephemeral=True)
-
-    @discord.ui.button(label="Decline Request", style=discord.ButtonStyle.danger, emoji="❌")
-    async def decline_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        try:
-            requests.put(f"{BACKEND_URL}/api/collab/applications/{self.application_id}/status?status=REJECTED", timeout=5)
-            await interaction.response.send_message("❌ **Collaboration Request Declined.**", ephemeral=False)
-            for item in self.children:
-                item.disabled = True
-            await interaction.message.edit(view=self)
-        except Exception as e:
-            await interaction.response.send_message(f"❌ Error updating status: {e}", ephemeral=True)
-
-async def broadcast_discord_collab_application(application_id: int, project_idea: str, tag: str, applicant_name: str, applicant_dept: str, applicant_year: str, applicant_contact: str, message: str, user_ids: list):
-    formatted_msg = (
-        f"🤝 **New Collaboration Request for your Project!**\n\n"
-        f"📌 **Project Idea:** {project_idea}\n"
-        f"🏷️ **Tag:** `{tag}`\n\n"
-        f"👤 **Applicant:** {applicant_name} ({applicant_dept}, {applicant_year})\n"
-        f"💬 **Message:** {message or 'No message provided'}\n"
-        f"📱 **Contact Info:** {applicant_contact}\n\n"
-        f"Click a button below to respond:"
-    )
-    view = DiscordCollabActionView(application_id, applicant_contact)
-    for user_id_val in user_ids:
-        try:
-            user_id = int(user_id_val)
-            user = await discord_client.fetch_user(user_id)
-            if user:
-                await user.send(content=formatted_msg, view=view)
-                logging.info(f"Sent Discord collab notification DM to user {user_id}")
-        except Exception as e:
-            logging.error(f"Failed to send Discord collab DM to {user_id_val}: {e}")
-
-# Discord Remove Select View
-class DiscordCollabRemoveSelect(discord.ui.Select):
-    def __init__(self, active_requests: list):
-        options = []
-        for req in active_requests:
-            req_id = str(req["id"])
-            snippet = req.get("projectIdea", "Project")[:45]
-            options.append(discord.SelectOption(
-                label=f"Cancel: {snippet}",
-                value=req_id,
-                description=f"Tag: {req.get('tag')} | Dept: {req.get('department')}",
-                emoji="❌"
-            ))
-        super().__init__(placeholder="Select a request to remove...", min_values=1, max_values=1, options=options)
-
-    async def callback(self, interaction: discord.Interaction):
-        req_id = self.values[0]
-        try:
-            res = requests.delete(f"{BACKEND_URL}/api/collab/{req_id}", timeout=5)
-            if res.status_code in [200, 204]:
-                await interaction.response.send_message("✅ **Collaboration Request cancelled and removed from RIT Dev Hub.**", ephemeral=False)
-            else:
-                await interaction.response.send_message("❌ Failed to cancel request.", ephemeral=True)
-        except Exception as e:
-            await interaction.response.send_message(f"❌ Error: {e}", ephemeral=True)
-
-class DiscordCollabRemoveView(discord.ui.View):
-    def __init__(self, active_requests: list):
-        super().__init__(timeout=180)
-        self.add_item(DiscordCollabRemoveSelect(active_requests))
-
-# Discord Native Interactive UI Components (Modal & Dropdown View)
-class CollabModal(discord.ui.Modal, title="Post Collaboration Request"):
-    author_name = discord.ui.TextInput(label="1) Your Name", placeholder="e.g. Priyan Sharma", required=True)
-    dept_and_year = discord.ui.TextInput(label="2) Dept & Year", placeholder="e.g. CSE, 1st Year", required=True, default="CSE, 1st Year")
-    collaborators_needed = discord.ui.TextInput(label="3) Collaborators Needed", placeholder="e.g. 2", required=True, default="1")
-    project_idea = discord.ui.TextInput(label="4) Project Idea & Details", style=discord.TextStyle.paragraph, placeholder="Describe your project idea...", required=True)
-    github_link = discord.ui.TextInput(label="5) GitHub Link (Optional)", placeholder="https://github.com/...", required=False)
-
-    def __init__(self, tag: str):
-        super().__init__()
-        self.selected_tag = tag
-
-    async def on_submit(self, interaction: discord.Interaction):
-        try:
-            num_needed = int(self.collaborators_needed.value)
-        except ValueError:
-            num_needed = 1
-
-        dept_val = "CSE"
-        year_val = "1st Year"
-        if "," in self.dept_and_year.value:
-            parts = [p.strip() for p in self.dept_and_year.value.split(",", 1)]
-            dept_val = parts[0]
-            year_val = parts[1]
-        else:
-            dept_val = self.dept_and_year.value.strip()
-
-        payload = {
-            "authorName": self.author_name.value,
-            "department": dept_val,
-            "year": year_val,
-            "collaboratorsNeeded": num_needed,
-            "tag": self.selected_tag,
-            "projectIdea": self.project_idea.value,
-            "githubLink": self.github_link.value or None,
-            "contactInfo": f"Discord: {interaction.user.name}",
-            "discordUserId": str(interaction.user.id)
-        }
-        try:
-            res = requests.post(f"{BACKEND_URL}/api/collab", json=payload, timeout=10)
-            if res.status_code in [200, 201]:
-                await interaction.response.send_message(
-                    f"🎉 **Collaboration Request posted live to RIT Dev Hub!**\n"
-                    f"👤 **Author:** {self.author_name.value} ({dept_val}, {year_val})\n"
-                    f"📌 **Project:** {self.project_idea.value}\n"
-                    f"🏷️ **Tag:** `{self.selected_tag}`\n"
-                    f"👥 **Collaborators Needed:** `{num_needed}`",
-                    ephemeral=False
-                )
-            else:
-                await interaction.response.send_message(f"❌ Failed to save request (Status: {res.status_code})", ephemeral=True)
-        except Exception as e:
-            await interaction.response.send_message(f"❌ Error connecting to backend: {e}", ephemeral=True)
-
-class CollabTagSelect(discord.ui.Select):
-    def __init__(self):
-        options = [
-            discord.SelectOption(
-                label="Co-developing from scratch",
-                value="looking for co-developing a project from scratch",
-                description="Build a brand new project from scratch together",
-                emoji="🚀"
-            ),
-            discord.SelectOption(
-                label="Beta Testers needed",
-                value="looking for beta testers",
-                description="Test early builds and provide user feedback",
-                emoji="🧪"
-            ),
-            discord.SelectOption(
-                label="Open-Source Contributors",
-                value="looking for Open-source Collaborators/Contributers",
-                description="Open repository seeking PRs and contributors",
-                emoji="🌐"
-            ),
-        ]
-        super().__init__(placeholder="Scroll down to select a tag for your request...", min_values=1, max_values=1, options=options)
-
-    async def callback(self, interaction: discord.Interaction):
-        selected_tag = self.values[0]
-        modal = CollabModal(tag=selected_tag)
-        await interaction.response.send_modal(modal)
-
-class CollabView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=180)
-        self.add_item(CollabTagSelect())
-
-# Discord Bot Client Setup
-intents = discord.Intents.default()
-intents.messages = True
-intents.message_content = True
-
-discord_client = discord.Client(intents=intents)
-discord_loop = None
-
-@discord_client.event
-async def on_ready():
-    logging.info(f"Discord Bot logged in as {discord_client.user}!")
-
-@discord_client.event
-async def on_message(message):
-    if message.author == discord_client.user:
-        return
-
-    is_dm = isinstance(message.channel, discord.DMChannel)
-    is_mention = discord_client.user in message.mentions
-
-    if not is_dm and not is_mention:
-        return
-
-    content = message.content
-    if is_mention:
-        mention_str = f"<@{discord_client.user.id}>"
-        mention_nick_str = f"<@!{discord_client.user.id}>"
-        content = content.replace(mention_str, "").replace(mention_nick_str, "").strip()
-
-    # Discord /collab & /remove commands disabled as requested
-    if content.lower().startswith("/collab") or content.lower().startswith("/remove") or content.lower().startswith("/cancel"):
-        await message.reply("ℹ️ **Dev Hub collaboration requests via Discord are currently disabled.** Please use the RIT Dev Hub website (https://rit-services.in/dev-collab) or the Telegram bot (@Ritchatbot_bot).")
-        return
-
-    # Check if this message is a reply to a question DM sent to a helper
-    if message.reference and message.reference.message_id:
-        question_id = get_question_id(message.author.id, message.reference.message_id)
-        if question_id:
-            author_name = message.author.display_name or message.author.name or "Senior Helper"
-            logging.info(f"Submitting answer for question {question_id} by Discord helper '{author_name}'")
-            backend_endpoint = f"{BACKEND_URL}/api/questions/{question_id}/answers"
-            answer_payload = {
-                "body": content,
-                "author": author_name
-            }
-            try:
-                def call_backend():
-                    return requests.post(backend_endpoint, json=answer_payload, timeout=10)
-
-                loop = asyncio.get_event_loop()
-                res = await loop.run_in_executor(None, call_backend)
-                if res.status_code in [200, 201]:
-                    await message.reply("✅ **Answer posted successfully to the Q&A board!**")
-                else:
-                    await message.reply(f"❌ **Failed to post answer to backend.** (Status: {res.status_code})")
-            except Exception as e:
-                logging.error(f"Error calling backend endpoint {backend_endpoint}: {e}")
-                await message.reply(f"❌ **Connection error to backend.** ({e})")
-            return
-
-    # Direct query fallback to Go chatbot service
-    if not content.strip():
-        return
-
-    logging.info(f"Querying Go chatbot service for Discord user {message.author.id}: '{content}'")
-    chatbot_service_url = "http://localhost:8081/api/chat"
-    try:
-        def call_chatbot():
-            return requests.post(chatbot_service_url, json={"message": content}, timeout=10)
-
-        loop = asyncio.get_event_loop()
-        res = await loop.run_in_executor(None, call_chatbot)
-        
-        if res.status_code == 200:
-            ans_data = res.json()
-            bot_response = ans_data.get("answer", "I am having trouble processing that question.")
-            await message.reply(bot_response)
-        else:
-            logging.error(f"Go chatbot API returned status code {res.status_code}")
-            await message.reply("⚠️ The RIT Chatbot service is currently experiencing issues. Please try again later.")
-    except Exception as e:
-        logging.error(f"Failed to connect to Go chatbot service: {e}")
-        await message.reply("⚠️ I cannot connect to the RIT Chatbot database right now. Please make sure the service is online.")
-
-async def broadcast_discord_question(question_id: int, title: str, body: str, author: str, user_ids: list):
-    formatted_msg = (
-        f"❓ **New Student Question!**\n\n"
-        f"👤 **Author:** {author}\n"
-        f"📌 **Topic:** {title}\n"
-        f"📝 **Details:** {body}\n\n"
-        f"💬 **Reply directly to this message to submit your answer.**"
-    )
-    for user_id_val in user_ids:
-        try:
-            user_id = int(user_id_val)
-            user = await discord_client.fetch_user(user_id)
-            if user:
-                msg = await user.send(formatted_msg)
-                save_mapping(user_id, msg.id, question_id)
-                logging.info(f"Sent Discord DM to helper {user_id}")
-        except Exception as e:
-            logging.error(f"Failed to send Discord DM to helper {user_id_val}: {e}")
-
-async def run_discord_bot():
-    global discord_loop
-    logging.info("Starting Discord bot...")
-    discord_loop = asyncio.get_running_loop()
-    try:
-        await discord_client.start(DISCORD_TOKEN)
-    except Exception as e:
-        logging.error(f"Discord Bot failed to run: {e}")
-
 # FastAPI Web Server Setup
-app = FastAPI(title="RIT Telegram & Discord Intermediary Bot HTTP Server")
+app = FastAPI(title="RIT Telegram Intermediary Bot HTTP Server")
 
 app.add_middleware(
     CORSMiddleware,
@@ -920,7 +634,6 @@ class CollabApplicationPayload(BaseModel):
     author_name: str
     contact_info: Optional[str] = None
     telegram_chat_id: Optional[int] = None
-    discord_user_id: Optional[str] = None
     applicant_name: str
     applicant_dept: str
     applicant_year: str
@@ -932,7 +645,7 @@ def send_question(payload: QuestionPayload):
     current_config = load_config()
     comm_token = os.environ.get("COMMUNITY_BOT_TOKEN") or current_config.get("community_bot_token", COMMUNITY_BOT_TOKEN)
     
-    # 1. Telegram Broadcast via Senior Helper Community Bot
+    # Telegram Broadcast via Senior Helper Community Bot
     telegram_helpers = current_config.get("helper_chat_ids", [])
     telegram_sent = 0
     if telegram_helpers and comm_token:
@@ -951,27 +664,9 @@ def send_question(payload: QuestionPayload):
                 save_mapping(chat_id, message_id, payload.question_id)
                 telegram_sent += 1
 
-    # 2. Discord Broadcast
-    discord_helpers = current_config.get("discord_helper_user_ids", [])
-    discord_sent = 0
-    if discord_helpers and DISCORD_TOKEN:
-        logging.info(f"Broadcasting question {payload.question_id} to {len(discord_helpers)} Discord helpers.")
-        if discord_loop:
-            try:
-                asyncio.run_coroutine_threadsafe(
-                    broadcast_discord_question(payload.question_id, payload.title, payload.body, payload.author, discord_helpers),
-                    discord_loop
-                )
-                discord_sent = len(discord_helpers)
-            except Exception as e:
-                logging.error(f"Error scheduling Discord broadcast: {e}")
-        else:
-            logging.warning("Discord loop not running. Skipping Discord broadcast.")
-
     return {
         "status": "success",
-        "telegram_delivered_to": telegram_sent,
-        "discord_queued_for": discord_sent
+        "telegram_delivered_to": telegram_sent
     }
 
 @app.post("/send_collab_application")
@@ -980,9 +675,8 @@ def send_collab_application(payload: CollabApplicationPayload):
     bot_token = os.environ.get("TELEGRAM_BOT_TOKEN") or current_config.get("telegram_bot_token")
     
     telegram_sent = False
-    discord_sent = False
 
-    # 1. Telegram Notification strictly to Person A (the project author)
+    # Telegram Notification strictly to Person A (the project author)
     chat_id = payload.telegram_chat_id
 
     if chat_id:
@@ -1009,13 +703,9 @@ def send_collab_application(payload: CollabApplicationPayload):
     else:
         logging.info(f"Skipping Telegram notification for collab application {payload.application_id}: No telegram_chat_id provided for author.")
 
-    # 2. Discord Broadcast - Disabled as requested
-    discord_sent = False
-
     return {
         "status": "success",
-        "telegram_sent": telegram_sent,
-        "discord_sent": discord_sent
+        "telegram_sent": telegram_sent
     }
 
 async def run_uvicorn():
@@ -1030,14 +720,7 @@ async def main():
     chat_thread = threading.Thread(target=telegram_polling_thread, daemon=True)
     chat_thread.start()
 
-    tasks = []
-    if DISCORD_TOKEN:
-        tasks.append(run_discord_bot())
-    else:
-        logging.warning("Discord Bot Token is empty. Skipping Discord bot startup.")
-        
-    tasks.append(run_uvicorn())
-    await asyncio.gather(*tasks)
+    await run_uvicorn()
 
 if __name__ == "__main__":
     try:

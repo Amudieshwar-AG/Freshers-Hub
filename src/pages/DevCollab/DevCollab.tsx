@@ -24,7 +24,6 @@ export interface CollabRequestItem {
   acceptedCount?: number;
   contactInfo?: string;
   telegramChatId?: number;
-  discordUserId?: string;
   status: string;
   applicationsCount: number;
   createdAt: string;

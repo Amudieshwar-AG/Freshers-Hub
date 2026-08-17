@@ -309,7 +309,7 @@ const CS_TOOLS_CATEGORIES = [
     bg: '#FEFCE8',
     tools: [
       { name: 'Documentation', desc: 'Confluence, Notion, MkDocs, and Docusaurus.', url: 'https://docusaurus.io/' },
-      { name: 'Team Communication', desc: 'Slack, Microsoft Teams, Discord, and Mattermost.', url: 'https://slack.com/' },
+      { name: 'Team Communication', desc: 'Slack, Microsoft Teams, and Mattermost.', url: 'https://slack.com/' },
       { name: 'Project Management', desc: 'Jira, Trello, Asana, and Linear ticket tracking.', url: 'https://linear.app/' },
       { name: 'Whiteboarding', desc: 'Miro, FigJam, Excalidraw, and Lucidchart.', url: 'https://excalidraw.com/' },
       { name: 'Knowledge Management', desc: 'Obsidian, Notion, and Slite workspace wiki.', url: 'https://obsidian.md/' }

@@ -46,9 +46,6 @@ public class CollabRequest {
     @Column(name = "telegram_chat_id")
     private Long telegramChatId;
 
-    @Column(name = "discord_user_id")
-    private String discordUserId;
-
     @Column(name = "status")
     @Builder.Default
     private String status = "OPEN";

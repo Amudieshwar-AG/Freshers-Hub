@@ -139,19 +139,6 @@ export default function AIAssistant() {
               <Send className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Telegram Bot</span>
             </a>
-            <a
-              href="https://discord.com/api/oauth2/authorize?client_id=1476942599167414506&permissions=8&scope=bot"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium text-white transition-all shadow-xs hover:brightness-105 active:scale-95"
-              style={{
-                background: 'linear-gradient(135deg, #5865F2, #7289DA)',
-                fontFamily: 'Inter, sans-serif'
-              }}
-            >
-              <Bot className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Discord Bot</span>
-            </a>
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}

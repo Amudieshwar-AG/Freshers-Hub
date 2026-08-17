@@ -101,7 +101,7 @@ public class CollabController {
             request.setApplicationsCount(request.getApplicationsCount() + 1);
             collabRequestRepository.save(request);
 
-            // Notify Telegram/Discord intermediary bot asynchronously
+            // Notify Telegram intermediary bot asynchronously
             new Thread(() -> {
                 try {
                     Map<String, Object> payload = new HashMap<>();
@@ -112,7 +112,6 @@ public class CollabController {
                     payload.put("author_name", request.getAuthorName());
                     payload.put("contact_info", request.getContactInfo());
                     payload.put("telegram_chat_id", request.getTelegramChatId());
-                    payload.put("discord_user_id", request.getDiscordUserId());
                     payload.put("applicant_name", savedApp.getApplicantName());
                     payload.put("applicant_email", savedApp.getApplicantEmail());
                     payload.put("applicant_dept", savedApp.getApplicantDept());
@@ -170,11 +169,6 @@ public class CollabController {
     @GetMapping("/active/telegram/{chatId}")
     public List<CollabRequest> getActiveRequestsByTelegram(@PathVariable Long chatId) {
         return collabRequestRepository.findByTelegramChatIdAndStatusOrderByCreatedAtDesc(chatId, "OPEN");
-    }
-
-    @GetMapping("/active/discord/{userId}")
-    public List<CollabRequest> getActiveRequestsByDiscord(@PathVariable String userId) {
-        return collabRequestRepository.findByDiscordUserIdAndStatusOrderByCreatedAtDesc(userId, "OPEN");
     }
 
     @DeleteMapping("/{id}")
