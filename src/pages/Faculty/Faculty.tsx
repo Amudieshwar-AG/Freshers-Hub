@@ -1,10 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Users, Filter, ArrowUpDown, BookOpen, ChevronRight, AlertTriangle } from 'lucide-react';
+import { Search, Users, Filter, ArrowUpDown, BookOpen, ChevronRight, AlertTriangle, Sparkles, X } from 'lucide-react';
 import FacultyCard from '@/components/FacultyCard/FacultyCard';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { FACULTY_DATA, DEPARTMENTS } from '@/constants';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import { getStoredImsSession } from '@/services/imsService';
 
 const DEPT_MAP: Record<string, { abrv: string; full: string }> = {
   'Computer Science & Engineering': { abrv: 'CSE', full: 'Computer Science and Engineering' },
@@ -23,10 +24,56 @@ const DEPT_MAP: Record<string, { abrv: string; full: string }> = {
   'M.E. (VLSI Design)': { abrv: 'MEVLSI', full: 'M.E. (VLSI Design)' },
 };
 
+function normalizeDepartmentName(input?: string | null): string | null {
+  if (!input) return null;
+  const cleaned = input.trim();
+  
+  // Exact match
+  if (DEPARTMENTS.includes(cleaned)) return cleaned;
+
+  // Search by abbreviation or substring
+  const upper = cleaned.toUpperCase();
+  for (const [full, info] of Object.entries(DEPT_MAP)) {
+    if (info.abrv.toUpperCase() === upper || full.toUpperCase() === upper || full.toLowerCase().includes(cleaned.toLowerCase())) {
+      return full;
+    }
+  }
+
+  return null;
+}
+
 export default function Faculty() {
+  const [searchParams] = useSearchParams();
   const [searchFaculty, setSearchFaculty] = useState('');
-  const [selectedDept, setSelectedDept] = useState('All Departments');
   const [sortBy, setSortBy] = useState('Name A-Z');
+
+  // Initial department detection (from URL query string or logged-in IMS student session)
+  const initialDepartment = useMemo(() => {
+    const queryDept = searchParams.get('dept');
+    const matchedQuery = normalizeDepartmentName(queryDept);
+    if (matchedQuery) return matchedQuery;
+
+    const session = getStoredImsSession();
+    if (session?.student?.department) {
+      const matchedSession = normalizeDepartmentName(session.student.department);
+      if (matchedSession) return matchedSession;
+    }
+
+    return 'All Departments';
+  }, [searchParams]);
+
+  const [selectedDept, setSelectedDept] = useState<string>(initialDepartment);
+
+  // Update selectedDept if URL parameter changes
+  useEffect(() => {
+    setSelectedDept(initialDepartment);
+  }, [initialDepartment]);
+
+  const studentSession = useMemo(() => getStoredImsSession(), []);
+  const isStudentDeptAutoFiltered = selectedDept !== 'All Departments' && (
+    selectedDept === studentSession?.student?.department || 
+    searchParams.has('dept')
+  );
 
   const filteredAndSortedFaculty = useMemo(() => {
     const filtered = FACULTY_DATA.filter((f) => {
@@ -96,7 +143,36 @@ export default function Faculty() {
           </div>
         </div>
 
-        <div className="container-custom pt-8 pb-20 md:pb-28 space-y-8">
+        <div className="container-custom pt-8 pb-20 md:pb-28 space-y-6">
+          
+          {/* Active Student Department Filter Badge */}
+          {isStudentDeptAutoFiltered && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-orange-50 border border-orange-200 rounded-2xl p-4 flex items-center justify-between gap-3 text-orange-950 shadow-xs"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5 text-[#FF6B00]" />
+                </div>
+                <div>
+                  <div className="text-xs font-bold uppercase tracking-wider text-orange-700">Student Department Auto-Filter</div>
+                  <div className="text-xs font-medium text-orange-950">
+                    Showing faculty for your department: <strong>{selectedDept}</strong>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedDept('All Departments')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-orange-300 text-xs font-bold text-orange-800 hover:bg-orange-100 transition-colors cursor-pointer shrink-0"
+              >
+                <span>View All Departments</span>
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </motion.div>
+          )}
+
           {/* Under Development Banner */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -118,6 +194,7 @@ export default function Faculty() {
               Mock Data Active
             </span>
           </motion.div>
+
           {/* Faculty Hero Section */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             <div className="lg:col-span-5 bg-white rounded-2xl p-8 border border-[#E9E5EE] shadow-[0_4px_20px_-4px_rgba(19,9,36,0.04)] flex flex-col justify-center relative overflow-hidden">
@@ -153,14 +230,23 @@ export default function Faculty() {
                   { abrv: 'MEVLSI', full: 'M.E. (VLSI Design)', color: 'rose' },
                 ].filter(d => FACULTY_DATA.filter(f => f.department === d.full).length > 0).map(d => {
                   const count = FACULTY_DATA.filter(f => f.department === d.full).length;
+                  const isSelected = selectedDept === d.full;
                   return (
-                    <div key={d.abrv} className={`p-4 rounded-2xl bg-${d.color}-50 border border-${d.color}-100 flex flex-col gap-1 transition-transform hover:scale-105 cursor-default`}>
+                    <button
+                      key={d.abrv}
+                      onClick={() => setSelectedDept(d.full)}
+                      className={`p-4 rounded-2xl border flex flex-col gap-1 transition-all text-left cursor-pointer ${
+                        isSelected 
+                          ? 'bg-[#FF6B00] text-white border-[#FF6B00] shadow-md' 
+                          : `bg-${d.color}-50 border-${d.color}-100 hover:scale-102`
+                      }`}
+                    >
                       <div className="flex justify-between items-center">
-                        <span className={`text-xs font-bold text-${d.color}-700`} style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{d.abrv}</span>
-                        <BookOpen className={`w-3.5 h-3.5 text-${d.color}-400`} />
+                        <span className={`text-xs font-bold ${isSelected ? 'text-white' : `text-${d.color}-700`}`} style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{d.abrv}</span>
+                        <BookOpen className={`w-3.5 h-3.5 ${isSelected ? 'text-white/80' : `text-${d.color}-400`}`} />
                       </div>
-                      <span className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{count}</span>
-                    </div>
+                      <span className={`text-2xl font-bold ${isSelected ? 'text-white' : 'text-[#1E293B]'}`} style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{count}</span>
+                    </button>
                   );
                 })}
               </div>
@@ -256,7 +342,7 @@ export default function Faculty() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }} 
               animate={{ opacity: 1, y: 0 }} 
-              className="px-6 py-3 bg-white/80 backdrop-blur-md border border-[#E8ECF4] shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-full flex items-center gap-2"
+              className="px-6 py-3 bg-white/80 backdrop-blur-md border border-[#E8ECF4] shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-full flex items-center gap-2 pointer-events-auto"
             >
               <span className="text-lg">👥</span>
               <span className="text-sm font-semibold text-[#1E293B]" style={{ fontFamily: 'Inter, sans-serif' }}>

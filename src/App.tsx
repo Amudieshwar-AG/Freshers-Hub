@@ -17,6 +17,7 @@ import DevCollab from '@/pages/DevCollab/DevCollab';
 import LeetcodeLeaderboard from '@/pages/LeetcodeLeaderboard/LeetcodeLeaderboard';
 import AdminDashboard from '@/pages/Admin/AdminDashboard';
 import Raise from '@/pages/Raise/Raise';
+import StudentDashboard from '@/pages/StudentDashboard/StudentDashboard';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,6 +61,9 @@ function App() {
               <Route path="/bus-routes" element={<BusRoutes />} />
               <Route path="/faculty" element={<Faculty />} />
               <Route path="/events" element={<Events />} />
+
+              {/* Student Dashboard — Timetable, Staff, Location (IMS Reg No & Password) */}
+              <Route path="/dashboard" element={<StudentDashboard />} />
 
               {/* Protected Routes — Require Google Sign-In */}
               <Route
