@@ -1414,6 +1414,42 @@ export default function Notes() {
     return matchSearch && matchSem && matchDept && matchType && matchSubject;
   });
 
+  const portalParam = searchParams.get('portal');
+  let headerBreadcrumb = 'Notes & PYQs';
+  let headerTitle = (
+    <>
+      Notes &{' '}
+      <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+        PYQs
+      </span>
+    </>
+  );
+  let headerSubtitle = 'Access semester-wise notes, previous year question papers, and study materials.';
+
+  if (portalParam === 'gatepass') {
+    headerBreadcrumb = 'Student Gate Pass';
+    headerTitle = (
+      <>
+        Student{' '}
+        <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          Gate Pass
+        </span>
+      </>
+    );
+    headerSubtitle = 'Official digital campus out-pass system for day scholars and hostellers.';
+  } else if (portalParam === 'proficiency') {
+    headerBreadcrumb = 'Student Proficiency';
+    headerTitle = (
+      <>
+        Student{' '}
+        <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          Proficiency
+        </span>
+      </>
+    );
+    headerSubtitle = 'Official RIT skill evaluation platform for tracking domain competencies and certifications.';
+  }
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FAFAFA' }}>
       {/* Header */}
@@ -1424,16 +1460,13 @@ export default function Notes() {
               <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
                 <span>Home</span>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-[#F97316]">Notes & PYQs</span>
+                <span className="text-[#F97316]">{headerBreadcrumb}</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
-                Notes &{' '}
-                <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  PYQs
-                </span>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-[#1E293B] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                {headerTitle}
               </h1>
               <p className="text-[#475569]" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Access semester-wise notes, previous year question papers, and study materials.
+                {headerSubtitle}
               </p>
             </motion.div>
           </div>
@@ -1493,7 +1526,7 @@ export default function Notes() {
                       : 'Back to Toolkit'}
                   </button>
 
-                  <h2 className="text-3xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-[#1E293B] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                     {selectedTool !== null ? (
                       <>
                         {selectedTool.name}{' '}
@@ -1555,7 +1588,7 @@ export default function Notes() {
                         </div>
                         <div>
                           <div className="flex items-center gap-3">
-                            <h3 className="text-2xl md:text-3xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                            <h3 className="text-2xl md:text-3xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                               {selectedTool.name}
                             </h3>
                             <span
@@ -1682,7 +1715,7 @@ export default function Notes() {
                             </div>
                             <div>
                               <div className="flex items-center gap-3">
-                                <h3 className="text-2xl md:text-3xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                                <h3 className="text-2xl md:text-3xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                                   {PROGRAMMING_LANGUAGES_GUIDES[selectedLanguage].name}
                                 </h3>
                                 <span
@@ -1946,7 +1979,7 @@ export default function Notes() {
                       <span>Official RIT Learning Management System</span>
                     </div>
 
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E293B] mb-4 leading-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-[#1E293B] mb-4 leading-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                       Access Academic Notes & Study Materials on{' '}
                       <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                         Moodle
@@ -2044,7 +2077,7 @@ export default function Notes() {
                       <span>Official RIT Campus Gate Pass Portal</span>
                     </div>
 
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E293B] mb-4 leading-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-[#1E293B] mb-4 leading-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                       Request & Manage Out-Passes on{' '}
                       <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                         Student Gate Pass
@@ -2142,7 +2175,7 @@ export default function Notes() {
                       <span>Official RIT Skill Evaluation & Readiness System</span>
                     </div>
 
-                    <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E293B] mb-4 leading-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-[#1E293B] mb-4 leading-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                       Track Skill Milestones & Credentials on{' '}
                       <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                         Student Proficiency

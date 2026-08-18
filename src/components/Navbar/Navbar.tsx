@@ -89,14 +89,14 @@ export default function Navbar() {
 
   const checkIsActive = (linkPath: string) => {
     if (linkPath === '/') return location.pathname === '/';
-    if (linkPath === '/notes') return location.pathname === '/notes';
+    if (linkPath === '/notes') return location.pathname === '/notes' && !location.search.includes('portal=');
     if (linkPath.includes('?')) {
       return location.pathname + location.search === linkPath;
     }
     return location.pathname.startsWith(linkPath);
   };
 
-  const isMoreActive = MORE_LINKS.some((link) => !link.path.startsWith('/notes') && checkIsActive(link.path));
+  const isMoreActive = false;
 
   return (
     <>
@@ -410,12 +410,12 @@ export default function Navbar() {
             )}
           </AnimatePresence>
 
-          {/* Floating RAISE Incubator Button directly below Sign In at right corner */}
+          {/* Floating RAISE Incubator Button directly below right side of navbar */}
           <motion.div
             initial={{ y: -10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
-            className="absolute right-3 lg:right-4 top-[calc(100%+8px)] pointer-events-auto hidden lg:block z-40"
+            className="absolute right-0 sm:right-1 lg:right-1 top-[calc(100%+8px)] pointer-events-auto hidden lg:block z-40"
           >
             <Link
               to="/raise"

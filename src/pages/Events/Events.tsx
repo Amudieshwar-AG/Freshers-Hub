@@ -299,7 +299,7 @@ export default function Events() {
             <Building2 className="w-3.5 h-3.5" />
             <span>RIT Official Directory</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#1E293B] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
             Student Clubs &{' '}
             <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               Centers of Excellence
@@ -330,7 +330,7 @@ export default function Events() {
                 <Target className="w-3.5 h-3.5" />
                 <span>AI-Powered Matcher Quiz</span>
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                 Find Your Ideal Club or Future Tech Center!
               </h2>
               <p className="text-slate-300 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -595,7 +595,7 @@ export default function Events() {
                   </div>
 
                   {/* Question Header */}
-                  <h3 className="text-xl font-bold text-[#1E293B] mb-5" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  <h3 className="text-xl font-extrabold text-[#1E293B] mb-5" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                     {QUIZ_QUESTIONS_ALL[quizStep].title}
                   </h3>
 
@@ -629,7 +629,7 @@ export default function Events() {
                     <div className="w-14 h-14 rounded-2xl bg-orange-100 text-[#F97316] flex items-center justify-center mx-auto mb-3">
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
-                    <h3 className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    <h3 className="text-2xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                       Your Recommended Matches!
                     </h3>
                     <p className="text-xs text-slate-500 mt-1">Based on your selections, here are your top recommended RIT entities:</p>
@@ -769,7 +769,7 @@ export default function Events() {
                             </span>
                           )}
                         </div>
-                        <h2 className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                        <h2 className="text-2xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                           {selectedClub.name}
                         </h2>
                       </div>
