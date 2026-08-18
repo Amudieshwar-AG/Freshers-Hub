@@ -13,6 +13,7 @@ import {
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { TOOLKIT_ITEMS, DEPARTMENTS } from '@/constants';
+import { DEPARTMENT_CURRICULUM, DEPARTMENT_CODE_MAP, PROFESSIONAL_ELECTIVES_LIST } from '@/constants/departmentCurriculum';
 
 const TOOLKIT_ICONS: Record<string, { icon: React.ComponentType<{ className?: string }>; bg: string; color: string }> = {
   'CS tools': { icon: Code, bg: '#EFF6FF', color: '#3B82F6' },
@@ -655,105 +656,7 @@ const BIOTECH_TOOLS_CATEGORIES = [
   }
 ];
 
-const PROFESSIONAL_ELECTIVES_LIST: Array<{ code: string; name: string; credits: number }> = [
-  { code: 'AD23V11', name: 'Agriculture Data Analytics', credits: 3 },
-  { code: 'AD23V12', name: 'Big Data Analytics', credits: 3 },
-  { code: 'AD23V13', name: 'Data warehousing and Data Mining', credits: 3 },
-  { code: 'AD23V14', name: 'Health Care Analytics', credits: 3 },
-  { code: 'AD23V15', name: 'Image and Video Analytics', credits: 3 },
-  { code: 'AD23V16', name: 'Web and Social Media Analytics', credits: 3 },
-  { code: 'AD23V17', name: 'Predictive Analytics', credits: 3 },
-  { code: 'AD23V18', name: 'Sentiment Analysis', credits: 3 },
-  { code: 'AD23V21', name: 'AI in IoT', credits: 3 },
-  { code: 'AD23V22', name: 'Applied Machine Learning', credits: 3 },
-  { code: 'AD23V23', name: 'Cognitive Computing', credits: 3 },
-  { code: 'AD23V24', name: 'Computer Vision', credits: 3 },
-  { code: 'AD23V25', name: 'Ethics For AI', credits: 3 },
-  { code: 'AD23V26', name: 'Game Theory', credits: 3 },
-  { code: 'AD23V27', name: 'Quantum Computing Techniques', credits: 3 },
-  { code: 'AD23V28', name: 'Responsive AI', credits: 3 },
-];
 
-const AIDS_CURRICULUM: Record<number, Array<{ code: string; name: string; credits: number; isElective?: boolean; electiveSlot?: number }>> = {
-  1: [
-    { code: 'HS23111', name: 'Communicative English', credits: 3 },
-    { code: 'MA23111', name: 'Matrices and Calculus', credits: 4 },
-    { code: 'PH23111', name: 'Physics for Information Science', credits: 3 },
-    { code: 'GE23111', name: 'Problem Solving and C Programming', credits: 3 },
-    { code: 'GE23113', name: 'Basic Electrical and Electronics Engineering', credits: 3 },
-    { code: 'GE23112', name: 'Heritage of Tamils', credits: 0 },
-    { code: 'PH23121', name: 'Physics Laboratory', credits: 1 },
-    { code: 'GE23121', name: 'Problem Solving and C Programming Laboratory', credits: 1 },
-    { code: 'GE23122', name: 'Engineering Practices Laboratory', credits: 1 },
-  ],
-  2: [
-    { code: 'HS23211', name: 'Professional English', credits: 2 },
-    { code: 'CY23211', name: 'Engineering Chemistry', credits: 3 },
-    { code: 'MA23211', name: 'Statistics and Numerical Methods', credits: 4 },
-    { code: 'AD23211', name: 'Python for Data Science', credits: 3 },
-    { code: 'GE23213', name: 'Tamils and Technology', credits: 0 },
-    { code: 'GE23231', name: 'Engineering Graphics', credits: 4 },
-    { code: 'AD23231', name: 'Data Structures Design', credits: 4 },
-    { code: 'CY23221', name: 'Chemistry Laboratory', credits: 1 },
-    { code: 'AD23221', name: 'Python for Data Science Laboratory', credits: 1 },
-    { code: 'GE23221', name: 'Communication Laboratory / Foreign Language', credits: 1 },
-  ],
-  3: [
-    { code: 'MA23311', name: 'Discrete Mathematics', credits: 4 },
-    { code: 'AL23311', name: 'Artificial Intelligence', credits: 3 },
-    { code: 'CS23312', name: 'Object Oriented Programming', credits: 3 },
-    { code: 'CS23411', name: 'Database Management Systems', credits: 3 },
-    { code: 'EC23331', name: 'Digital Principles and Computer Organization', credits: 4 },
-    { code: 'AL23321', name: 'Artificial Intelligence Laboratory', credits: 1 },
-    { code: 'CS23421', name: 'Database Management Systems Laboratory', credits: 1 },
-    { code: 'CS23322', name: 'Object Oriented Programming Laboratory', credits: 1 },
-    { code: 'AD23IC1', name: 'Data Wrangling', credits: 1 },
-  ],
-  4: [
-    { code: 'GE23411', name: 'Environmental Science and Sustainability', credits: 2 },
-    { code: 'MA23411', name: 'Probability and Statistics', credits: 4 },
-    { code: 'AD23411', name: 'Data Analytics', credits: 3 },
-    { code: 'AL23411', name: 'Machine Learning', credits: 3 },
-    { code: 'CS23412', name: 'Operating Systems', credits: 3 },
-    { code: 'CS23431', name: 'Design and Analysis of Algorithms', credits: 4 },
-    { code: 'AD23421', name: 'Data Analytics Laboratory', credits: 1 },
-    { code: 'AL23421', name: 'Machine Learning Laboratory', credits: 1 },
-    { code: 'CS23422', name: 'Operating Systems Laboratory', credits: 1 },
-    { code: 'AD23IC2', name: 'Introduction to AZURE Machine Learning', credits: 1 },
-  ],
-  5: [
-    { code: 'AD23511', name: 'Deep Learning', credits: 3 },
-    { code: 'CS23511', name: 'Computer Networks', credits: 3 },
-    { code: 'PEC01', name: 'Professional Elective I', credits: 3, isElective: true, electiveSlot: 1 },
-    { code: 'PEC02', name: 'Professional Elective II', credits: 3, isElective: true, electiveSlot: 2 },
-    { code: 'CB23531', name: 'Business Analytics', credits: 4 },
-    { code: 'AD23532', name: 'Data Exploration and Visualization', credits: 4 },
-    { code: 'AD23521', name: 'Deep Learning Laboratory', credits: 1 },
-    { code: 'CS23521', name: 'Computer Networks Laboratory', credits: 1 },
-    { code: 'AD23IC3', name: 'Tableau - Data Visualization', credits: 1 },
-  ],
-  6: [
-    { code: 'PEC03', name: 'Professional Elective III', credits: 3, isElective: true, electiveSlot: 3 },
-    { code: 'PEC04', name: 'Professional Elective IV', credits: 3, isElective: true, electiveSlot: 4 },
-    { code: 'OEC01', name: 'Open Elective I', credits: 3 },
-    { code: 'OEC02', name: 'Open Elective II', credits: 3 },
-    { code: 'EC23631', name: 'Embedded Systems and IoT', credits: 4 },
-    { code: 'CS23631', name: 'Object Oriented Software Engineering', credits: 4 },
-    { code: 'AD23621', name: 'Mini Project', credits: 2 },
-  ],
-  7: [
-    { code: 'GE23711', name: 'Human Values and Ethics', credits: 2 },
-    { code: 'MGT01', name: 'Elective - Management', credits: 3 },
-    { code: 'CB23511', name: 'Data and Information Security', credits: 3 },
-    { code: 'PEC05', name: 'Professional Elective V', credits: 3, isElective: true, electiveSlot: 5 },
-    { code: 'PEC06', name: 'Professional Elective VI', credits: 3, isElective: true, electiveSlot: 6 },
-    { code: 'AD23721', name: 'Internship / Certification Course', credits: 2 },
-  ],
-  8: [
-    { code: 'OEC03', name: 'Open Elective III', credits: 3 },
-    { code: 'AD23821', name: 'Project Work', credits: 10 },
-  ],
-};
 
 export default function Toolkit() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -792,17 +695,20 @@ export default function Toolkit() {
     setCalculationType(type);
 
     const semNum = parseInt(gpaSemester.replace(/\D/g, ''), 10) || 1;
-    const isAIDS = gpaDepartment.toLowerCase().includes('artificial intelligence') || gpaDepartment.toLowerCase().includes('data science');
+    const deptKey = DEPARTMENT_CODE_MAP[gpaDepartment] || '';
+    const rawCurriculum = DEPARTMENT_CURRICULUM[deptKey]?.[semNum];
 
-    if (isAIDS && AIDS_CURRICULUM[semNum]) {
-      const loaded = AIDS_CURRICULUM[semNum]
+    if (rawCurriculum && rawCurriculum.length > 0) {
+      let electiveCounter = 1;
+      const loaded = rawCurriculum
         .filter((s) => type === 'internal' || s.credits > 0)
         .map((s) => {
-          if (s.isElective) {
-            const defaultCode = s.code === 'PEC01' ? 'AD23V11' : s.code === 'PEC02' ? 'AD23V12' : s.code === 'PEC03' ? 'AD23V13' : s.code === 'PEC04' ? 'AD23V14' : s.code === 'PEC05' ? 'AD23V15' : 'AD23V16';
-            const defaultObj = PROFESSIONAL_ELECTIVES_LIST.find((e) => e.code === defaultCode);
+          const isElective = !!s.isElective;
+          if (isElective) {
+            const slot = s.electiveSlot || electiveCounter++;
+            const defaultElectiveObj = PROFESSIONAL_ELECTIVES_LIST[(slot - 1) % PROFESSIONAL_ELECTIVES_LIST.length] || PROFESSIONAL_ELECTIVES_LIST[0];
             return {
-              name: defaultObj ? `${defaultObj.code} - ${defaultObj.name}` : `${s.code} - ${s.name}`,
+              name: `${defaultElectiveObj.code} - ${defaultElectiveObj.name}`,
               credits: s.credits,
               grade: 'O',
               cat1: '45',
@@ -810,12 +716,12 @@ export default function Toolkit() {
               assignment: '9',
               attendance: '95',
               isElective: true,
-              electiveSlot: s.electiveSlot,
-              electiveCode: defaultCode,
+              electiveSlot: slot,
+              electiveCode: defaultElectiveObj.code,
             };
           }
           return {
-            name: `${s.code} - ${s.name}`,
+            name: s.name,
             credits: s.credits,
             grade: 'O',
             cat1: '45',
