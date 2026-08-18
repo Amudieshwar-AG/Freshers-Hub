@@ -1404,6 +1404,65 @@ export default function Toolkit() {
             <SectionTitle tag="Useful Downloads" title="Student" highlight="Toolkit" align="left" />
             <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-20">
               {TOOLKIT_ITEMS.map((item) => {
+                if (item.title === 'GPA and internal calculator') {
+                  return (
+                    <StaggerItem key={item.id} className="col-span-1 md:col-span-2 flex">
+                      <motion.div
+                        onClick={() => setSelectedToolkit('gpa')}
+                        whileHover={{ y: -4, boxShadow: '0 20px 40px -12px rgba(239,68,68,0.22)' }}
+                        className="relative w-full p-7 md:p-8 bg-gradient-to-r from-[#FFF7ED] via-[#FEF2F2] to-[#FFF1F2] rounded-[26px] border-2 border-[#FECACA] hover:border-[#FCA5A5] cursor-pointer group transition-all shadow-md hover:shadow-xl overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+                      >
+                        {/* Top Gradient Bar */}
+                        <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#FF6B00] via-[#EF4444] to-[#F97316]" />
+
+                        <div className="flex items-start md:items-center gap-5 flex-1 min-w-0 z-10">
+                          <div className="w-16 h-16 md:w-18 md:h-18 rounded-2xl bg-gradient-to-tr from-[#EF4444] via-[#F97316] to-[#FF6B00] text-white flex items-center justify-center shrink-0 font-bold shadow-lg shadow-rose-500/25 group-hover:scale-105 transition-transform">
+                            <Calculator className="w-8 h-8 md:w-9 md:h-9" />
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
+                              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-gradient-to-r from-[#EF4444] to-[#F97316] text-white shadow-xs tracking-wide uppercase">
+                                <Sparkles className="w-3.5 h-3.5 animate-pulse" /> POPULAR UTILITY
+                              </span>
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/90 text-[#991B1B] border border-red-200 shadow-2xs">
+                                RIT Regulations
+                              </span>
+                            </div>
+
+                            <h3 className="text-xl md:text-2xl font-extrabold text-[#1E293B] group-hover:text-[#EF4444] transition-colors mb-1.5" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                              GPA, CGPA & Internal Marks Calculator
+                            </h3>
+
+                            <p className="text-sm text-[#475569] leading-relaxed max-w-2xl" style={{ fontFamily: 'Inter, sans-serif' }}>
+                              Calculate your semester GPA, overall CGPA, and internal assessment marks based on official department course regulations and grade points.
+                            </p>
+
+                            <div className="flex flex-wrap items-center gap-3 mt-3 text-xs font-medium text-[#64748B]">
+                              <span className="flex items-center gap-1.5 text-rose-700 font-semibold bg-rose-50 px-2.5 py-1 rounded-lg border border-rose-200/80">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-rose-500" /> Semester GPA
+                              </span>
+                              <span className="flex items-center gap-1.5 text-orange-700 font-semibold bg-orange-50 px-2.5 py-1 rounded-lg border border-orange-200/80">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-orange-500" /> Cumulative CGPA
+                              </span>
+                              <span className="flex items-center gap-1.5 text-amber-700 font-semibold bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/80">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-amber-500" /> Internal Score
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 z-10 self-end md:self-center shrink-0">
+                          <button className="px-6 py-3 bg-gradient-to-r from-[#EF4444] via-[#F97316] to-[#FF6B00] hover:from-[#DC2626] hover:to-[#EA580C] text-white font-bold text-sm rounded-xl shadow-md group-hover:shadow-lg group-hover:scale-105 transition-all flex items-center gap-2">
+                            Calculate Now
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                          </button>
+                        </div>
+                      </motion.div>
+                    </StaggerItem>
+                  );
+                }
+
                 const iconConfig = TOOLKIT_ICONS[item.title] || { icon: Code, bg: '#FFF7ED', color: '#F97316' };
                 const IconComponent = iconConfig.icon;
                 return (
@@ -1422,8 +1481,6 @@ export default function Toolkit() {
                           setSelectedToolkit('ai');
                         } else if (item.title === 'Biotech tools') {
                           setSelectedToolkit('biotech');
-                        } else if (item.title === 'GPA and internal calculator') {
-                          setSelectedToolkit('gpa');
                         } else if (item.url && item.url !== '#') {
                           window.open(item.url, '_blank');
                         }

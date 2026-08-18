@@ -19,6 +19,8 @@ import {
   Users,
   Code2,
   Trophy,
+  Ticket,
+  Award,
   GraduationCap,
   LayoutDashboard,
   Home as HomeIcon,
@@ -38,19 +40,24 @@ const PRIMARY_LINKS: NavItem[] = [
   { label: 'Toolkit', path: '/toolkit', icon: Wrench },
   { label: 'Chatbot', path: '/ai-assistant', icon: Bot },
   { label: 'Clubs & Centers', path: '/events', icon: Users },
-  { label: 'Dev Collab', path: '/collab', icon: Code2 },
-  { label: 'LeetCode', path: '/leetcode', icon: Trophy },
-];
-
-const MORE_LINKS: NavItem[] = [
   { label: 'Campus Map', path: '/campus', icon: Map },
   { label: 'Bus Routes', path: '/bus-routes', icon: Bus },
   { label: 'Faculty Directory', path: '/faculty', icon: UserCheck },
   { label: 'Community', path: '/community', icon: MessageCircle },
-  { label: 'RAISE Incubator', path: '/raise', icon: Rocket },
 ];
 
-const ALL_MOBILE_LINKS: NavItem[] = [...PRIMARY_LINKS, ...MORE_LINKS];
+const MORE_LINKS: NavItem[] = [
+  { label: 'Dev Collab', path: '/collab', icon: Code2 },
+  { label: 'LeetCode', path: '/leetcode', icon: Trophy },
+  { label: 'Student Gate Pass', path: '/notes?portal=gatepass', icon: Ticket },
+  { label: 'Student Proficiency', path: '/notes?portal=proficiency', icon: Award },
+];
+
+const ALL_MOBILE_LINKS: NavItem[] = [
+  ...PRIMARY_LINKS,
+  ...MORE_LINKS,
+  { label: 'RAISE Incubator', path: '/raise', icon: Rocket },
+];
 
 export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -81,12 +88,15 @@ export default function Navbar() {
   }, []);
 
   const checkIsActive = (linkPath: string) => {
-    const [pathName] = linkPath.split('?');
-    if (pathName === '/') return location.pathname === '/';
-    return location.pathname.startsWith(pathName);
+    if (linkPath === '/') return location.pathname === '/';
+    if (linkPath === '/notes') return location.pathname === '/notes';
+    if (linkPath.includes('?')) {
+      return location.pathname + location.search === linkPath;
+    }
+    return location.pathname.startsWith(linkPath);
   };
 
-  const isMoreActive = MORE_LINKS.some((link) => checkIsActive(link.path));
+  const isMoreActive = MORE_LINKS.some((link) => !link.path.startsWith('/notes') && checkIsActive(link.path));
 
   return (
     <>
@@ -96,7 +106,7 @@ export default function Navbar() {
           initial={{ y: -60, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.45, ease: 'easeOut' }}
-          className="pointer-events-auto flex items-center justify-between gap-2 lg:gap-4 px-3 sm:px-4 py-2 rounded-2xl bg-slate-950/90 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.35)] transition-all"
+          className="relative pointer-events-auto flex items-center justify-between gap-2 lg:gap-4 px-3 sm:px-4 py-2 rounded-2xl bg-slate-950/90 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.35)] transition-all"
         >
           {/* Left: Logo & College Brand */}
           <Link to="/" className="flex items-center gap-2.5 group shrink-0">
@@ -193,12 +203,12 @@ export default function Navbar() {
                           onClick={() => setIsMoreOpen(false)}
                           className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all ${
                             active
-                              ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white font-bold'
+                              ? 'bg-white/15 text-orange-400 font-semibold'
                               : 'text-slate-300 hover:text-white hover:bg-white/10'
                           }`}
                           style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
                         >
-                          {IconComponent && <IconComponent className="w-4 h-4 shrink-0 text-slate-300" />}
+                          {IconComponent && <IconComponent className={`w-4 h-4 shrink-0 ${active ? 'text-orange-400' : 'text-slate-300'}`} />}
                           <span>{item.label}</span>
                         </Link>
                       );
@@ -344,6 +354,7 @@ export default function Navbar() {
                   <div className="grid grid-cols-2 gap-2">
                     {ALL_MOBILE_LINKS.map((link) => {
                       const isActive = checkIsActive(link.path);
+                      const isRaise = link.path === '/raise';
                       const IconComp = link.icon;
                       return (
                         <Link
@@ -351,7 +362,9 @@ export default function Navbar() {
                           to={link.path}
                           onClick={() => setIsMobileOpen(false)}
                           className={`px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
-                            isActive
+                            isRaise
+                              ? 'bg-gradient-to-r from-[#EC4899] via-[#F43F5E] to-[#E11D48] text-white font-bold shadow-md shadow-pink-500/30 col-span-2 justify-center'
+                              : isActive
                               ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white shadow-sm'
                               : 'bg-white/5 text-slate-200 hover:bg-white/10 border border-white/5'
                           }`}
@@ -396,6 +409,27 @@ export default function Navbar() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Floating RAISE Incubator Button directly below Sign In at right corner */}
+          <motion.div
+            initial={{ y: -10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
+            className="absolute right-3 lg:right-4 top-[calc(100%+8px)] pointer-events-auto hidden lg:block z-40"
+          >
+            <Link
+              to="/raise"
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-extrabold text-white transition-all shadow-lg hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xl ${
+                checkIsActive('/raise')
+                  ? 'bg-gradient-to-r from-pink-600 via-rose-600 to-pink-700 ring-2 ring-pink-300 shadow-pink-500/50'
+                  : 'bg-gradient-to-r from-[#EC4899] via-[#F43F5E] to-[#E11D48] hover:from-[#DB2777] hover:to-[#BE123C] shadow-pink-500/40 border border-pink-400/40'
+              }`}
+              style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+            >
+              <Rocket className="w-4 h-4 text-white animate-pulse" />
+              <span>RAISE Incubator</span>
+            </Link>
+          </motion.div>
         </motion.nav>
       </header>
 

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Users, Filter, ArrowUpDown, BookOpen, ChevronRight, AlertTriangle, Sparkles, X } from 'lucide-react';
+import { Search, Users, Filter, ArrowUpDown, BookOpen, ChevronRight, Sparkles, X } from 'lucide-react';
 import FacultyCard from '@/components/FacultyCard/FacultyCard';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { FACULTY_DATA, DEPARTMENTS } from '@/constants';
@@ -8,17 +8,17 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { getStoredImsSession } from '@/services/imsService';
 
 const DEPT_MAP: Record<string, { abrv: string; full: string }> = {
-  'Computer Science & Engineering': { abrv: 'CSE', full: 'Computer Science and Engineering' },
-  'Computer Science & Business Systems': { abrv: 'CSBS', full: 'Computer Science and Business Systems' },
-  'Artificial Intelligence & Machine Learning': { abrv: 'AIML', full: 'Artificial Intelligence and Machine Learning' },
-  'Electronics & Communication Engineering': { abrv: 'ECE', full: 'Electronics and Communication Engineering' },
+  'Computer Science & Engineering': { abrv: 'CSE', full: 'Computer Science & Engineering' },
+  'Computer Science & Business Systems': { abrv: 'CSBS', full: 'Computer Science & Business Systems' },
+  'Artificial Intelligence & Machine Learning': { abrv: 'AIML', full: 'Artificial Intelligence & Machine Learning' },
+  'Electronics & Communication Engineering': { abrv: 'ECE', full: 'Electronics & Communication Engineering' },
   'Mechanical Engineering': { abrv: 'MECH', full: 'Mechanical Engineering' },
   'Civil Engineering': { abrv: 'CIVIL', full: 'Civil Engineering' },
-  'Artificial Intelligence & Data Science': { abrv: 'AI&DS', full: 'Artificial Intelligence and Data Science' },
-  'Electrical & Electronics Engineering': { abrv: 'EEE', full: 'Electrical and Electronics Engineering' },
+  'Artificial Intelligence & Data Science': { abrv: 'AI & DS', full: 'Artificial Intelligence & Data Science' },
+  'Electrical & Electronics Engineering': { abrv: 'EEE', full: 'Electrical & Electronics Engineering' },
   'Communication and Computer Engineering': { abrv: 'CCE', full: 'Communication and Computer Engineering' },
-  'Electronics Engineering VLSI (Design and Technology)': { abrv: 'EE VLSI (D&T)', full: 'Electronics Engineering (VLSI Design and Technology)' },
-  'Humanities & Sciences': { abrv: 'H&S', full: 'Humanities and Sciences' },
+  'Electronics Engineering VLSI (Design and Technology)': { abrv: 'EE VLSI (D&T)', full: 'Electronics Engineering VLSI (Design and Technology)' },
+  'Humanities & Sciences': { abrv: 'H&S', full: 'Humanities & Sciences' },
   'M.Tech (Data Science)': { abrv: 'M.TECH-DS', full: 'M.Tech (Data Science)' },
   'Mathematics': { abrv: 'MATHS', full: 'Mathematics' },
   'M.E. (VLSI Design)': { abrv: 'MEVLSI', full: 'M.E. (VLSI Design)' },
@@ -109,8 +109,13 @@ export default function Faculty() {
   }, [filteredAndSortedFaculty]);
 
   const departmentOrder = useMemo(() => {
-    return DEPARTMENTS.filter(d => d !== 'All Departments');
-  }, []);
+    const presentDepts = Object.keys(groupedFaculty);
+    const sorted = DEPARTMENTS.filter(d => d !== 'All Departments');
+    presentDepts.forEach(d => {
+      if (!sorted.includes(d)) sorted.push(d);
+    });
+    return sorted;
+  }, [groupedFaculty]);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#F8FAFC]">
@@ -173,27 +178,6 @@ export default function Faculty() {
             </motion.div>
           )}
 
-          {/* Under Development Banner */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-amber-900 shadow-2xs"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-5 h-5 text-amber-600" />
-              </div>
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-amber-700" style={{ fontFamily: 'Inter, sans-serif' }}>Under Development</div>
-                <div className="text-xs font-medium text-amber-900" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  Currently displaying sample mock faculty profiles. Official RIT faculty directory integration is in progress.
-                </div>
-              </div>
-            </div>
-            <span className="px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-[11px] font-bold text-amber-800 shrink-0">
-              Mock Data Active
-            </span>
-          </motion.div>
 
           {/* Faculty Hero Section */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">

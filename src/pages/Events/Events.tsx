@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, Tag, X, Mail, Phone, UserCheck, GraduationCap, Info,
@@ -869,7 +870,8 @@ export default function Events() {
                 selectedClub.socialLinks?.instagram ||
                 selectedClub.socialLinks?.linkedin ||
                 selectedClub.socialLinks?.whatsapp ||
-                selectedClub.socialLinks?.youtube
+                selectedClub.socialLinks?.youtube ||
+                selectedClub.socialLinks?.website
               ) && (
                 <div className="mb-6 bg-orange-50/60 border border-orange-200/80 rounded-2xl p-4">
                   <div className="flex items-center justify-between mb-3">
@@ -881,6 +883,16 @@ export default function Events() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-2.5">
+                    {selectedClub.socialLinks?.website && (
+                      <Link
+                        to={selectedClub.socialLinks.website}
+                        onClick={() => setSelectedClub(null)}
+                        className="flex items-center gap-2 p-2.5 rounded-xl bg-gradient-to-r from-[#EC4899] via-[#F43F5E] to-[#E11D48] text-white hover:from-pink-600 hover:to-rose-600 transition-all text-xs font-bold shadow-xs col-span-2 justify-center"
+                      >
+                        <Rocket className="w-4 h-4 text-white shrink-0 animate-pulse" />
+                        <span>Launch RAISE Incubator Portal →</span>
+                      </Link>
+                    )}
 
                   {selectedClub.socialLinks?.instagram && (
                     <a
