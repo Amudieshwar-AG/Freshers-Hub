@@ -269,7 +269,7 @@ export default function Events() {
       // 2. Category Filter check
       if (selectedCategory !== 'All') {
         if (selectedCategory === 'Center of Excellence' && !isCenter) return false;
-        if (selectedCategory !== 'Center of Excellence' && item.category !== selectedCategory) return false;
+        if (selectedCategory !== 'Center of Excellence' && item.category.toLowerCase() !== selectedCategory.toLowerCase()) return false;
       }
 
       // 3. Search Query check
@@ -447,7 +447,7 @@ export default function Events() {
             </button>
           </div>
         ) : (
-          <StaggerContainer className="pb-8">
+          <StaggerContainer key={`${selectedType}-${selectedCategory}-${searchQuery}`} className="pb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
               {filteredData.map((club) => {
                 const IconComponent = (club.icon && CLUB_ICON_MAP[club.icon]) || Atom;
