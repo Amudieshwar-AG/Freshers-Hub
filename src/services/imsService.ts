@@ -906,7 +906,7 @@ export async function fetchImsCatMarks(_token: string, _regNumber: string, _forc
 export function getExactSubjectCredits(deptCodeOrName: string, _semester: number, subjectCode: string, subjectName: string): number {
   const deptKey = DEPARTMENT_CODE_MAP[deptCodeOrName] || deptCodeOrName.toUpperCase();
   
-  // Extract course code (e.g. GE23121 from subjectCode or parenthesized subjectName)
+  // Extract course code (e.g. AD23IC2 from subjectCode or parenthesized subjectName)
   let cleanCode = (subjectCode || '').replace(/[^A-Z0-9]/gi, '').toUpperCase();
   if (!cleanCode && subjectName) {
     const codeInParen = subjectName.match(/\(([A-Z0-9]+)\)/i)?.[1];
@@ -916,15 +916,17 @@ export function getExactSubjectCredits(deptCodeOrName: string, _semester: number
   const rawName = (subjectName || '').toLowerCase().trim();
   const isLabSubject = rawName.includes('lab') || rawName.includes('laboratory');
 
-  // 0. Priority check for Anna University Mandatory Non-Credit 0-credit courses
+  // ─── RULE 0: MANDATORY NON-CREDIT COURSES (0 CREDITS) ───
   if (
     cleanCode === 'GE23112' || cleanCode === 'GE23213' || cleanCode === 'GE2112' || cleanCode === 'GE2211' ||
+    cleanCode.startsWith('MX') || cleanCode.startsWith('MC') ||
     rawName.includes('heritage of tamil') ||
     rawName.includes('tamil & technology') ||
     rawName.includes('tamil and technology') ||
     rawName.includes('heritage') ||
     rawName.includes('mandatory') ||
     rawName.includes('audit course') ||
+    rawName.includes('disaster risk') ||
     rawName.includes('essence of indian') ||
     rawName.includes('constitution of india') ||
     rawName.includes('induction program')
@@ -932,7 +934,27 @@ export function getExactSubjectCredits(deptCodeOrName: string, _semester: number
     return 0;
   }
 
-  // 1. EXACT COURSE CODE MATCH across ALL department curricula (Codes like GE23121 vs GE23111 are unique!)
+  // ─── RULE 1: INDUSTRY COURSES & VALUE-ADDED COURSES (1 CREDIT) ───
+  // Anna University 2021 Regulation at RIT:
+  // All 'IC' codes (AD23IC1, AD23IC2, AD23IC3, EC23IC1, CS23IC1, CB23IC1, EE23IC1...) = Industry Certified Courses = 1 CREDIT!
+  // All 'VA' / 'VAC' codes (AD23VA1, CS23VA1, EC23VA1...) = Value-Added Courses = 1 CREDIT!
+  if (
+    cleanCode.includes('IC') ||
+    cleanCode.includes('VAC') ||
+    cleanCode.includes('VA') ||
+    rawName.includes('industry course') ||
+    rawName.includes('value added')
+  ) {
+    return 1;
+  }
+
+  // ─── RULE 2: LAB / PRACTICAL COURSES (1 CREDIT) ───
+  // Codes ending in 21, 22 or having 5th digit '2' for lab (e.g. AD23521, CS23521, GE23121, GE23122, PH23121)
+  if (isLabSubject || /[A-Z]{2,4}\d{2,3}2[1-9]$/i.test(cleanCode) || /21$|22$/i.test(cleanCode)) {
+    return 1;
+  }
+
+  // ─── RULE 3: EXACT COURSE CODE MATCH IN CURRICULUM REGISTRY ───
   if (cleanCode && cleanCode.length >= 4) {
     const electiveMatch = PROFESSIONAL_ELECTIVES_LIST.find(e => e.code.toUpperCase() === cleanCode);
     if (electiveMatch) return electiveMatch.credits;
@@ -952,7 +974,7 @@ export function getExactSubjectCredits(deptCodeOrName: string, _semester: number
     }
   }
 
-  // 2. SUBJECT TITLE MATCH (Strict Lab vs Theory isolation!)
+  // ─── RULE 4: SUBJECT TITLE MATCH (Strict Lab vs Theory isolation) ───
   if (rawName && rawName.length > 3) {
     const electiveNameMatch = PROFESSIONAL_ELECTIVES_LIST.find(e => rawName.includes(e.name.toLowerCase()));
     if (electiveNameMatch) return electiveNameMatch.credits;
@@ -968,7 +990,6 @@ export function getExactSubjectCredits(deptCodeOrName: string, _semester: number
           const itemNameClean = itemRaw.split('(')[0].trim();
           const itemIsLab = itemRaw.includes('lab') || itemRaw.includes('laboratory');
 
-          // CRITICAL: A Lab subject must NEVER match a Theory subject, and vice versa!
           if (isLabSubject !== itemIsLab) continue;
 
           if (itemNameClean.length > 3 && (rawName === itemNameClean || rawName.includes(itemNameClean) || itemNameClean.includes(rawName))) {
@@ -979,9 +1000,7 @@ export function getExactSubjectCredits(deptCodeOrName: string, _semester: number
     }
   }
 
-  // 3. Fallback Heuristics based on subject type
-  if (isLabSubject) return 1;
-
+  // ─── RULE 5: 4-CREDIT SUBJECTS (MATH / ENGINEERING GRAPHICS / DESIGN) ───
   if (
     rawName.includes('mathematics') ||
     rawName.includes('calculus') ||
