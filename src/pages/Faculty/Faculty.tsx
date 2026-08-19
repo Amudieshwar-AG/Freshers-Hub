@@ -6,6 +6,7 @@ import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/An
 import { FACULTY_DATA, DEPARTMENTS } from '@/constants';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getBackendUrl } from '@/lib/utils';
+import { getStoredImsSession } from '@/services/imsService';
 
 const DEPT_MAP: Record<string, { abrv: string; full: string }> = {
   'Computer Science & Engineering': { abrv: 'CSE', full: 'Computer Science & Engineering' },

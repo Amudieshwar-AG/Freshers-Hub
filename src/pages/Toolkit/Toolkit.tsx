@@ -715,8 +715,8 @@ export default function Toolkit() {
     if (rawCurriculum && rawCurriculum.length > 0) {
       let electiveCounter = 1;
       const loaded = rawCurriculum
-        .filter((s) => type === 'internal' || s.credits > 0)
-        .map((s) => {
+        .filter((s: any) => type === 'internal' || s.credits > 0)
+        .map((s: any) => {
           const isElective = !!s.isElective;
           if (isElective) {
             const slot = s.electiveSlot || electiveCounter++;

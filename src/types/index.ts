@@ -179,3 +179,9 @@ export interface ApiResponse<T> {
   message: string;
   success: boolean;
 }
+
+declare global {
+  interface Window {
+    google?: any;
+  }
+}

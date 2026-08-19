@@ -239,7 +239,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Direct local check for Admin credentials fallback
     if (
-      (cleanedUser.equalsIgnoreCase?.('Transport') || cleanedUser.toLowerCase() === 'transport') &&
+      cleanedUser.toLowerCase() === 'transport' &&
       cleanedPass === 'RIT@2026'
     ) {
       const role = 'ROLE_TRANSPORT';

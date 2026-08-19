@@ -72,8 +72,10 @@ interface QuestionItem {
   body: string;
   authorName: string;
   authorEmail: string;
-  tags: string[];
-  votes: number;
+  tags?: string[];
+  votes?: number;
+  createdAt?: string;
+  status?: string;
 }
 
 export default function AdminDashboard() {
@@ -209,9 +211,7 @@ export default function AdminDashboard() {
     if (!isLoggedIn) return;
     if (activeTab === 'transport') fetchRoutes();
     if (activeTab === 'telegram') fetchTelegramConfig();
-    if (activeTab === 'notes') fetchNotes();
     if (activeTab === 'community') fetchQuestions();
-    if (activeTab === 'subscribers') fetchRecipients();
     if (activeTab === 'faculty') fetchFaculty();
     if (activeTab === 'clubs') fetchClubs();
     if (activeTab === 'curriculum') fetchCurriculum();
@@ -611,8 +611,8 @@ export default function AdminDashboard() {
       .catch(() => {
         if (!saved) {
           const initialQuestions: QuestionItem[] = [
-            { id: 1, title: "When is the fresher's orientation?", content: "I couldn't find the exact date for the CSE orientation.", authorName: "Karthik", authorEmail: "karthik.2024@ritchennai.edu.in", createdAt: new Date().toISOString(), status: "PENDING", tags: ["orientation"], votes: 0 },
-            { id: 2, title: "Are laptops mandatory in first year?", content: "Just wondering if we need to bring laptops to college every day.", authorName: "Sneha", authorEmail: "sneha.2024@ritchennai.edu.in", createdAt: new Date(Date.now() - 86400000).toISOString(), status: "APPROVED", tags: ["academics"], votes: 5 }
+            { id: 1, title: "When is the fresher's orientation?", body: "I couldn't find the exact date for the CSE orientation.", authorName: "Karthik", authorEmail: "karthik.2024@ritchennai.edu.in", createdAt: new Date().toISOString(), status: "PENDING", tags: ["orientation"], votes: 0 },
+            { id: 2, title: "Are laptops mandatory in first year?", body: "Just wondering if we need to bring laptops to college every day.", authorName: "Sneha", authorEmail: "sneha.2024@ritchennai.edu.in", createdAt: new Date(Date.now() - 86400000).toISOString(), status: "APPROVED", tags: ["academics"], votes: 5 }
           ];
           setQuestions(initialQuestions);
           localStorage.setItem(QUESTIONS_STORAGE_KEY, JSON.stringify(initialQuestions));
@@ -1391,76 +1391,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ───────────────────────────────────────────────────────────── */}
-        {/* TAB 3: NOTES & STUDY MATERIALS                                */}
-        {/* ───────────────────────────────────────────────────────────── */}
-        {activeTab === 'notes' && (
-          <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 shadow-xl space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <BookOpen className="w-5 h-5 text-orange-400" />
-                  Notes & Study Materials Library ({notes.length})
-                </h3>
-                <p className="text-xs text-slate-400">View and remove student-accessible notes and previous year question papers.</p>
-              </div>
 
-              <button
-                onClick={fetchNotes}
-                className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10"
-              >
-                <RefreshCw className={`w-4 h-4 ${loadingNotes ? 'animate-spin' : ''}`} />
-              </button>
-            </div>
-
-            {loadingNotes ? (
-              <div className="py-12 text-center text-xs text-slate-400">Loading notes from database...</div>
-            ) : notes.length === 0 ? (
-              <div className="py-12 text-center text-xs text-slate-400 bg-slate-950/40 rounded-2xl">
-                No study materials found in database.
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {notes.map((note) => (
-                  <div
-                    key={note.id}
-                    className="bg-slate-950/60 border border-white/10 rounded-2xl p-4 flex items-center justify-between gap-4"
-                  >
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-white">{note.title}</span>
-                        <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-white/10 text-orange-400 uppercase font-mono">
-                          {note.fileType}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-slate-400 mt-0.5">
-                        {note.subject} • {note.department} (Sem {note.semester})
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={note.downloadUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 hover:text-white transition-colors"
-                      >
-                        Preview
-                      </a>
-                      <button
-                        onClick={() => handleDeleteNote(note.id, note.title)}
-                        className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white transition-colors"
-                        title="Delete note"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
         {/* ───────────────────────────────────────────────────────────── */}
         {/* TAB 4: COMMUNITY QUESTIONS MODERATION                        */}
