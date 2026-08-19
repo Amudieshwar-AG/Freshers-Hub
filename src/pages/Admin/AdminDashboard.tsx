@@ -581,6 +581,57 @@ export default function AdminDashboard() {
 
 
   // ─────────────────────────────────────────────────────────────
+  // COMMUNITY QUESTIONS
+  // ─────────────────────────────────────────────────────────────
+  const fetchQuestions = () => {
+    setLoadingQuestions(true);
+    const saved = localStorage.getItem(QUESTIONS_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setQuestions(parsed);
+          setLoadingQuestions(false);
+          return;
+        }
+      } catch {}
+    }
+
+    fetch(getBackendUrl('/api/admin/questions'))
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setQuestions(data);
+          localStorage.setItem(QUESTIONS_STORAGE_KEY, JSON.stringify(data));
+        }
+      })
+      .catch(() => {
+        if (!saved) {
+          const initialQuestions: QuestionItem[] = [
+            { id: 1, title: "When is the fresher's orientation?", content: "I couldn't find the exact date for the CSE orientation.", authorName: "Karthik", authorEmail: "karthik.2024@ritchennai.edu.in", createdAt: new Date().toISOString(), status: "PENDING", tags: ["orientation"], votes: 0 },
+            { id: 2, title: "Are laptops mandatory in first year?", content: "Just wondering if we need to bring laptops to college every day.", authorName: "Sneha", authorEmail: "sneha.2024@ritchennai.edu.in", createdAt: new Date(Date.now() - 86400000).toISOString(), status: "APPROVED", tags: ["academics"], votes: 5 }
+          ];
+          setQuestions(initialQuestions);
+          localStorage.setItem(QUESTIONS_STORAGE_KEY, JSON.stringify(initialQuestions));
+        }
+      })
+      .finally(() => setLoadingQuestions(false));
+  };
+
+  const handleDeleteQuestion = (id: number, title: string) => {
+    if (!confirm(`Delete student question "${title}"?`)) return;
+    const updated = questions.filter((q) => q.id !== id);
+    setQuestions(updated);
+    localStorage.setItem(QUESTIONS_STORAGE_KEY, JSON.stringify(updated));
+    showToast('success', `Question "${title}" deleted.`);
+
+    fetch(getBackendUrl(`/api/admin/questions/${id}`), { method: 'DELETE' }).catch(() => {});
+  };
+
+  // ─────────────────────────────────────────────────────────────
   // FACULTY MANAGEMENT HANDLERS
   // ─────────────────────────────────────────────────────────────
   const fetchFaculty = () => {
