@@ -452,7 +452,7 @@ export default function Community() {
 
                                     <h3 className={`font-bold text-[#1E293B] mb-1 hover:text-[#F97316] transition-colors tracking-tight ${isFeatured ? 'text-base md:text-lg' : 'text-sm md:text-base'
                                       }`}
-                                      style={{ fontFamily: 'Playfair Display, serif' }}>
+                                      style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                                       {q.title}
                                     </h3>
 

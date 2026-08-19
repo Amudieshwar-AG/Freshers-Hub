@@ -117,13 +117,22 @@ export const FEATURES: Feature[] = [
     bgColor: '#FFFBEB',
   },
   {
-    id: 'raise',
-    icon: 'Rocket',
-    title: 'RAISE Incubator',
-    description: 'Pitch startup ideas, get incubation support, seed funding opportunities, and entrepreneurial mentoring.',
-    path: '/raise',
-    color: '#EC4899',
-    bgColor: '#FDF2F8',
+    id: 'gatepass',
+    icon: 'Ticket',
+    title: 'Student Gate Pass',
+    description: 'Request digital campus out-pass, track warden approvals, and present clearance QR codes.',
+    path: '/notes?portal=gatepass',
+    color: '#10B981',
+    bgColor: '#ECFDF5',
+  },
+  {
+    id: 'proficiency',
+    icon: 'Award',
+    title: 'Student Proficiency',
+    description: 'Track domain competency scores, placement readiness analytics, and verified skill certifications.',
+    path: '/notes?portal=proficiency',
+    color: '#8B5CF6',
+    bgColor: '#F5F3FF',
   },
 ];
 
@@ -3105,6 +3114,26 @@ export const EVENTS_DATA: Event[] = [
 // ─── Clubs ───────────────────────────────────────────────────────────────────
 export const CLUBS_DATA: Club[] = [
   {
+    id: 'center_raise',
+    name: 'RAISE INCUBATOR',
+    description: 'Pitch startup ideas, get incubation support, seed funding opportunities, and entrepreneurial mentoring.',
+    details: 'RAISE Incubator is a dedicated Section 8 (not-for-profit) company situated directly within the Rajalakshmi Institute of Technology campus. We transform engineering ideas into market-viable products with seed funding, mentoring, and patent support.',
+    category: 'Center of Excellence',
+    type: 'Center',
+    members: 2450,
+    presidentName: 'Incubation Director',
+    vicePresidentName: 'Startup Lead',
+    coordinatorName: 'Dr. RIT Innovation Cell',
+    year: 'Campus Incubation Center',
+    contactEmail: 'incubator@ritchennai.edu.in',
+    contactPhone: '+91 44 6718 1600',
+    icon: 'Rocket',
+    logoUrl: '/logo.png',
+    socialLinks: {
+      website: '/raise',
+    },
+  },
+  {
     id: 'nss',
     name: 'NSS OF RIT',
     description: 'National Service Scheme – "Not Me, But You." Official Social Service Club of RIT.',
@@ -3760,13 +3789,13 @@ export const QUESTIONS_DATA: Question[] = [
 
 // ─── Toolkit Items ───────────────────────────────────────────────────────────
 export const TOOLKIT_ITEMS: ToolkitItem[] = [
+  { id: '7', title: 'GPA and internal calculator', description: 'Access GPA, CGPA, and internal marks calculator utilities.', type: 'link', url: '#', icon: 'Calculator', category: 'Engineering' },
   { id: '1', title: 'CS tools', description: 'Access specialized development environments, IDE configurations, compiler guides, GitHub setup instructions, and essential documentation for Computer Science students.', type: 'link', url: '#', icon: 'Code', category: 'Engineering' },
   { id: '2', title: 'Business tools', description: 'Explore enterprise resource planning (ERP) guides, financial spreadsheets, management templates, and business analytics tools for CSBS and management students.', type: 'link', url: '#', icon: 'Briefcase', category: 'Engineering' },
   { id: '3', title: 'Cybersecurity tools', description: 'Discover network simulators, virtualization setup guides, penetration testing tutorials, cryptography tools, and security lab blueprints.', type: 'link', url: '#', icon: 'Shield', category: 'Engineering' },
   { id: '4', title: 'AI tools', description: 'Configure machine learning frameworks, deep learning libraries, Jupyter environments, dataset download scripts, and pre-trained model APIs.', type: 'link', url: '#', icon: 'Brain', category: 'Engineering' },
   { id: '5', title: 'Electrical and Electronic tools', description: 'Access circuit design simulators, MATLAB packages, microcontroller IDE setups, hardware debugging guides, and lab calculation spreadsheets.', type: 'link', url: '#', icon: 'Cpu', category: 'Engineering' },
   { id: '6', title: 'Biotech tools', description: 'Find biology lab guidelines, chemical structure tools, bioinformatics databases tutorials, genetic sequence analysis resources, and safety manuals.', type: 'link', url: '#', icon: 'FlaskConical', category: 'Engineering' },
-  { id: '7', title: 'GPA and internal calculator', description: 'Access GPA, CGPA, and internal marks calculator utilities.', type: 'link', url: '#', icon: 'Calculator', category: 'Engineering' },
 ];
 
 // ─── Campus Locations ────────────────────────────────────────────────────────
@@ -3803,5 +3832,9 @@ export const DEPARTMENTS = [
   'Computer Science & Engineering',
   'Electronics & Communication Engineering',
   'Electronics Engineering VLSI (Design and Technology)',
+  'Humanities & Sciences',
+  'M.E. (VLSI Design)',
+  'M.Tech (Data Science)',
+  'Mathematics',
   'Mechanical Engineering',
 ];

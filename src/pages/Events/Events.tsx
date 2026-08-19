@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Users, Tag, X, Mail, Phone, UserCheck, GraduationCap, Info,
@@ -12,6 +13,13 @@ import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/An
 import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
 import { CLUBS_DATA } from '@/constants';
 import type { Club } from '@/types';
+import { useAuth } from '@/context/AuthContext';
+import {
+  getClubUserIdentifier,
+  fetchClubLikes,
+  fetchUserLikedClubs,
+  toggleClubLikeInDb,
+} from '@/services/clubService';
 
 const CLUB_CATEGORY_COLORS: Record<string, string> = {
   Technical: '#3B82F6',
@@ -118,6 +126,9 @@ const QUIZ_QUESTIONS_ALL = [
 ];
 
 export default function Events() {
+  const { user } = useAuth();
+  const userIdentifier = useMemo(() => getClubUserIdentifier(user?.email), [user?.email]);
+
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -139,7 +150,7 @@ export default function Events() {
     return { totalCount: CLUBS_DATA.length, centersCount: centers, clubsCount: clubs };
   }, []);
 
-  // ─── Interactive Like System ─────────────────────────────────────────────
+  // ─── Database-Backed Interactive Like System ─────────────────────────────
   const [likedClubs, setLikedClubs] = useState<Set<string>>(() => {
     try {
       localStorage.removeItem('rit_freshers_liked_clubs');
@@ -158,10 +169,45 @@ export default function Events() {
     return initialMap;
   });
 
-  const toggleLike = (clubId: string) => {
+  // Sync likes with database backend on mount and when user identity changes
+  useEffect(() => {
+    let isMounted = true;
+
+    async function syncWithDatabase() {
+      // Fetch total like counts for all clubs from database
+      const dbLikesMap = await fetchClubLikes();
+      if (isMounted && Object.keys(dbLikesMap).length > 0) {
+        setLikesMap((prev) => {
+          const merged = { ...prev };
+          Object.entries(dbLikesMap).forEach(([id, count]) => {
+            merged[id] = count;
+          });
+          return merged;
+        });
+      }
+
+      // Fetch user's liked clubs from database
+      const userLikedList = await fetchUserLikedClubs(userIdentifier);
+      if (isMounted && userLikedList.length > 0) {
+        setLikedClubs(new Set(userLikedList));
+        try {
+          localStorage.setItem('rit_freshers_liked_clubs_v3', JSON.stringify(userLikedList));
+        } catch {}
+      }
+    }
+
+    syncWithDatabase();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userIdentifier]);
+
+  const toggleLike = async (clubId: string) => {
     const isCurrentlyLiked = likedClubs.has(clubId);
     const next = new Set(likedClubs);
 
+    // Optimistic UI update
     if (isCurrentlyLiked) {
       next.delete(clubId);
       setLikesMap((l) => ({ ...l, [clubId]: Math.max(0, (l[clubId] || 1) - 1) }));
@@ -174,7 +220,23 @@ export default function Events() {
     try {
       localStorage.setItem('rit_freshers_liked_clubs_v3', JSON.stringify(Array.from(next)));
     } catch {}
+
+    // Persist like directly in PostgreSQL database backend
+    const dbResult = await toggleClubLikeInDb(clubId, userIdentifier);
+    if (dbResult) {
+      setLikesMap((l) => ({ ...l, [clubId]: dbResult.count }));
+      if (dbResult.liked) {
+        setLikedClubs((prev) => new Set([...prev, clubId]));
+      } else {
+        setLikedClubs((prev) => {
+          const updated = new Set(prev);
+          updated.delete(clubId);
+          return updated;
+        });
+      }
+    }
   };
+
 
   // ─── Quiz Matcher State ──────────────────────────────────────────────────
   const [isQuizOpen, setIsQuizOpen] = useState(false);
@@ -268,7 +330,7 @@ export default function Events() {
       // 2. Category Filter check
       if (selectedCategory !== 'All') {
         if (selectedCategory === 'Center of Excellence' && !isCenter) return false;
-        if (selectedCategory !== 'Center of Excellence' && item.category !== selectedCategory) return false;
+        if (selectedCategory !== 'Center of Excellence' && item.category.toLowerCase() !== selectedCategory.toLowerCase()) return false;
       }
 
       // 3. Search Query check
@@ -298,7 +360,7 @@ export default function Events() {
             <Building2 className="w-3.5 h-3.5" />
             <span>RIT Official Directory</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-[#1E293B] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
             Student Clubs &{' '}
             <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
               Centers of Excellence
@@ -329,7 +391,7 @@ export default function Events() {
                 <Target className="w-3.5 h-3.5" />
                 <span>AI-Powered Matcher Quiz</span>
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                 Find Your Ideal Club or Future Tech Center!
               </h2>
               <p className="text-slate-300 text-sm leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -446,7 +508,7 @@ export default function Events() {
             </button>
           </div>
         ) : (
-          <StaggerContainer className="pb-8">
+          <StaggerContainer key={`${selectedType}-${selectedCategory}-${searchQuery}`} className="pb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7">
               {filteredData.map((club) => {
                 const IconComponent = (club.icon && CLUB_ICON_MAP[club.icon]) || Atom;
@@ -594,7 +656,7 @@ export default function Events() {
                   </div>
 
                   {/* Question Header */}
-                  <h3 className="text-xl font-bold text-[#1E293B] mb-5" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  <h3 className="text-xl font-extrabold text-[#1E293B] mb-5" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                     {QUIZ_QUESTIONS_ALL[quizStep].title}
                   </h3>
 
@@ -628,7 +690,7 @@ export default function Events() {
                     <div className="w-14 h-14 rounded-2xl bg-orange-100 text-[#F97316] flex items-center justify-center mx-auto mb-3">
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
-                    <h3 className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    <h3 className="text-2xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                       Your Recommended Matches!
                     </h3>
                     <p className="text-xs text-slate-500 mt-1">Based on your selections, here are your top recommended RIT entities:</p>
@@ -768,7 +830,7 @@ export default function Events() {
                             </span>
                           )}
                         </div>
-                        <h2 className="text-2xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                        <h2 className="text-2xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                           {selectedClub.name}
                         </h2>
                       </div>
@@ -869,7 +931,8 @@ export default function Events() {
                 selectedClub.socialLinks?.instagram ||
                 selectedClub.socialLinks?.linkedin ||
                 selectedClub.socialLinks?.whatsapp ||
-                selectedClub.socialLinks?.youtube
+                selectedClub.socialLinks?.youtube ||
+                selectedClub.socialLinks?.website
               ) && (
                 <div className="mb-6 bg-orange-50/60 border border-orange-200/80 rounded-2xl p-4">
                   <div className="flex items-center justify-between mb-3">
@@ -881,6 +944,16 @@ export default function Events() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-2.5">
+                    {selectedClub.socialLinks?.website && (
+                      <Link
+                        to={selectedClub.socialLinks.website}
+                        onClick={() => setSelectedClub(null)}
+                        className="flex items-center gap-2 p-2.5 rounded-xl bg-gradient-to-r from-[#EC4899] via-[#F43F5E] to-[#E11D48] text-white hover:from-pink-600 hover:to-rose-600 transition-all text-xs font-bold shadow-xs col-span-2 justify-center"
+                      >
+                        <Rocket className="w-4 h-4 text-white shrink-0 animate-pulse" />
+                        <span>Launch RAISE Incubator Portal →</span>
+                      </Link>
+                    )}
 
                   {selectedClub.socialLinks?.instagram && (
                     <a

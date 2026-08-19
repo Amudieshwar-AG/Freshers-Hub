@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Download, Filter, BookOpen, FileText, ScrollText, BookMarked, ChevronRight, ArrowLeft, ExternalLink, Code, Globe, GitBranch, Cloud, Palette, Shield, DollarSign, BarChart3, Users, Megaphone, TrendingUp, UserCheck, ClipboardList, ShoppingCart, Cpu, Activity, LayoutGrid, Layers, Zap, Settings, Gauge, Radio, Wifi, Bot, Sun, Wrench, Binary, BatteryCharging, CircuitBoard, ShieldCheck, BrainCircuit, FlaskConical, Lock, Terminal, Dna, Microscope, Sparkles, Smartphone, Monitor, Server, CheckCircle2, Database, Briefcase, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Search, Download, Filter, BookOpen, FileText, ScrollText, BookMarked, ChevronRight, ArrowLeft, ExternalLink, Code, Globe, GitBranch, Cloud, Palette, Shield, DollarSign, BarChart3, Users, Megaphone, TrendingUp, UserCheck, ClipboardList, ShoppingCart, Cpu, Activity, LayoutGrid, Layers, Zap, Settings, Gauge, Radio, Wifi, Bot, Sun, Wrench, Binary, BatteryCharging, CircuitBoard, ShieldCheck, BrainCircuit, FlaskConical, Lock, Terminal, Dna, Microscope, Sparkles, Smartphone, Monitor, Server, CheckCircle2, Database, Briefcase, AlertTriangle, RefreshCw, Ticket, Award, QrCode } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 
 const MOODLE_URL = 'http://182.74.17.142/moodle/login/index.php';
+const GATE_PASS_URL = 'http://182.74.17.142/gatepass/login';
+const PROFICIENCY_URL = 'http://182.74.17.142/proficiency/login';
 import { getBackendUrl } from '@/lib/utils';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { TOOLKIT_ITEMS, DEPARTMENTS } from '@/constants';
@@ -1329,6 +1331,7 @@ export default function Notes() {
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<number | null>(null);
   const [selectedTool, setSelectedTool] = useState<{ name: string; desc: string; url: string; category: string; bg: string; color: string } | null>(null);
+  const [activePortalTab, setActivePortalTab] = useState<'moodle' | 'gatepass' | 'proficiency'>('moodle');
 
   const [notes, setNotes] = useState<any[]>([]);
 
@@ -1363,6 +1366,10 @@ export default function Notes() {
   }, []);
 
   useEffect(() => {
+    const portalParam = searchParams.get('portal');
+    if (portalParam === 'gatepass' || portalParam === 'proficiency' || portalParam === 'moodle') {
+      setActivePortalTab(portalParam as any);
+    }
     if (searchParams.get('section') === 'toolkit') {
       setTimeout(() => {
         toolkitRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1407,6 +1414,42 @@ export default function Notes() {
     return matchSearch && matchSem && matchDept && matchType && matchSubject;
   });
 
+  const portalParam = searchParams.get('portal');
+  let headerBreadcrumb = 'Notes & PYQs';
+  let headerTitle = (
+    <>
+      Notes &{' '}
+      <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+        PYQs
+      </span>
+    </>
+  );
+  let headerSubtitle = 'Access semester-wise notes, previous year question papers, and study materials.';
+
+  if (portalParam === 'gatepass') {
+    headerBreadcrumb = 'Student Gate Pass';
+    headerTitle = (
+      <>
+        Student{' '}
+        <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          Gate Pass
+        </span>
+      </>
+    );
+    headerSubtitle = 'Official digital campus out-pass system for day scholars and hostellers.';
+  } else if (portalParam === 'proficiency') {
+    headerBreadcrumb = 'Student Proficiency';
+    headerTitle = (
+      <>
+        Student{' '}
+        <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          Proficiency
+        </span>
+      </>
+    );
+    headerSubtitle = 'Official RIT skill evaluation platform for tracking domain competencies and certifications.';
+  }
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#FAFAFA' }}>
       {/* Header */}
@@ -1417,16 +1460,13 @@ export default function Notes() {
               <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
                 <span>Home</span>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-[#F97316]">Notes & PYQs</span>
+                <span className="text-[#F97316]">{headerBreadcrumb}</span>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
-                Notes &{' '}
-                <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                  PYQs
-                </span>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-[#1E293B] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                {headerTitle}
               </h1>
               <p className="text-[#475569]" style={{ fontFamily: 'Inter, sans-serif' }}>
-                Access semester-wise notes, previous year question papers, and study materials.
+                {headerSubtitle}
               </p>
             </motion.div>
           </div>
@@ -1486,7 +1526,7 @@ export default function Notes() {
                       : 'Back to Toolkit'}
                   </button>
 
-                  <h2 className="text-3xl font-bold text-[#1E293B] mb-2" style={{ fontFamily: 'Playfair Display, serif' }}>
+                  <h2 className="text-2xl md:text-3xl font-extrabold text-[#1E293B] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                     {selectedTool !== null ? (
                       <>
                         {selectedTool.name}{' '}
@@ -1548,7 +1588,7 @@ export default function Notes() {
                         </div>
                         <div>
                           <div className="flex items-center gap-3">
-                            <h3 className="text-2xl md:text-3xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                            <h3 className="text-2xl md:text-3xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                               {selectedTool.name}
                             </h3>
                             <span
@@ -1675,7 +1715,7 @@ export default function Notes() {
                             </div>
                             <div>
                               <div className="flex items-center gap-3">
-                                <h3 className="text-2xl md:text-3xl font-bold text-[#1E293B]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                                <h3 className="text-2xl md:text-3xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                                   {PROGRAMMING_LANGUAGES_GUIDES[selectedLanguage].name}
                                 </h3>
                                 <span
@@ -1919,114 +1959,304 @@ export default function Notes() {
         ) : (
           <div>
             <div className="mb-12">
-            {/* Moodle Academic Portal Hero Hub */}
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="bg-white rounded-3xl border border-[#E5E7EB] p-8 md:p-10 shadow-sm relative overflow-hidden mb-8"
-              style={{ boxShadow: '0 4px 25px -5px rgba(0,0,0,0.05)' }}
-            >
-              {/* Subtle Decorative Background Glow */}
-              <div className="absolute -right-20 -top-20 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
-              <div className="relative z-10 max-w-3xl mx-auto text-center">
-                {/* Header Badge */}
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-xs font-bold text-[#F97316] mb-6">
-                  <BookOpen className="w-4 h-4 text-[#F97316]" />
-                  <span>Official RIT Learning Management System</span>
-                </div>
 
-                {/* Main Heading */}
-                <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E293B] mb-4 leading-tight" style={{ fontFamily: 'Playfair Display, serif' }}>
-                  Access Academic Notes & Study Materials on{' '}
-                  <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-                    Moodle
-                  </span>
-                </h2>
+              {/* 1. MOODLE LMS CARD */}
+              {activePortalTab === 'moodle' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="bg-white rounded-3xl border border-[#E5E7EB] p-8 md:p-10 shadow-sm relative overflow-hidden mb-8"
+                  style={{ boxShadow: '0 4px 25px -5px rgba(0,0,0,0.05)' }}
+                >
+                  <div className="absolute -right-20 -top-20 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
-                <p className="text-base text-[#64748B] mb-8 leading-relaxed max-w-2xl mx-auto" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  All official semester notes, previous year question papers (PYQs), syllabus data, and lab manuals are hosted directly on the official Rajalakshmi Institute of Technology Moodle server.
-                </p>
-
-                {/* Primary Launch Action Buttons */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
-                  <a
-                    href={MOODLE_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl text-base font-bold text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer"
-                    style={{
-                      fontFamily: 'Poppins, sans-serif',
-                      background: 'linear-gradient(135deg, #F97316, #FB923C)',
-                    }}
-                  >
-                    <ExternalLink className="w-5 h-5" />
-                    Launch Official RIT Moodle Portal
-                  </a>
-
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(MOODLE_URL);
-                      alert('Moodle URL copied to clipboard!');
-                    }}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-[#E5E7EB] hover:border-[#F97316] bg-[#F8FAFC] hover:bg-white text-sm font-semibold text-[#475569] hover:text-[#F97316] transition-all cursor-pointer"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
-                  >
-                    <Globe className="w-4 h-4 text-[#64748B]" />
-                    Copy Moodle Direct URL
-                  </button>
-                </div>
-
-                {/* Feature Highlights Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left border-t border-[#F1F5F9] pt-8">
-                  <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E5E7EB]/70 flex flex-col gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600">
-                      <ShieldCheck className="w-4 h-4" />
+                  <div className="relative z-10 max-w-3xl mx-auto text-center">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-xs font-bold text-[#F97316] mb-6">
+                      <BookOpen className="w-4 h-4 text-[#F97316]" />
+                      <span>Official RIT Learning Management System</span>
                     </div>
-                    <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      100% Direct & Secure
+
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-[#1E293B] mb-4 leading-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                      Access Academic Notes & Study Materials on{' '}
+                      <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                        Moodle
+                      </span>
+                    </h2>
+
+                    <p className="text-base text-[#64748B] mb-8 leading-relaxed max-w-2xl mx-auto" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      All official semester notes, previous year question papers (PYQs), syllabus data, and lab manuals are hosted directly on the official Rajalakshmi Institute of Technology Moodle server.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+                      <a
+                        href={MOODLE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl text-base font-bold text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer"
+                        style={{
+                          fontFamily: 'Poppins, sans-serif',
+                          background: 'linear-gradient(135deg, #F97316, #FB923C)',
+                        }}
+                      >
+                        <ExternalLink className="w-5 h-5" />
+                        Launch Official RIT Moodle Portal
+                      </a>
+
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(MOODLE_URL);
+                          alert('Moodle URL copied to clipboard!');
+                        }}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-[#E5E7EB] hover:border-[#F97316] bg-[#F8FAFC] hover:bg-white text-sm font-semibold text-[#475569] hover:text-[#F97316] transition-all cursor-pointer"
+                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                      >
+                        <Globe className="w-4 h-4 text-[#64748B]" />
+                        Copy Moodle Direct URL
+                      </button>
                     </div>
-                    <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      Authenticates directly on official college server <code className="bg-slate-200/80 px-1 py-0.5 rounded text-[10px]">182.74.17.142</code>.
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left border-t border-[#F1F5F9] pt-8">
+                      <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E5E7EB]/70 flex flex-col gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600">
+                          <ShieldCheck className="w-4 h-4" />
+                        </div>
+                        <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          100% Direct & Secure
+                        </div>
+                        <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Authenticates directly on official college server <code className="bg-slate-200/80 px-1 py-0.5 rounded text-[10px]">182.74.17.142</code>.
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E5E7EB]/70 flex flex-col gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600">
+                          <FileText className="w-4 h-4" />
+                        </div>
+                        <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          Official Semester Notes
+                        </div>
+                        <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Complete 1st to 8th Semester course notes, PYQs, and assignments.
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E5E7EB]/70 flex flex-col gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600">
+                          <Lock className="w-4 h-4" />
+                        </div>
+                        <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          Student Login
+                        </div>
+                        <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Log in using your RIT Register Number and official Moodle password.
+                        </div>
+                      </div>
                     </div>
                   </div>
+                </motion.div>
+              )}
 
-                  <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E5E7EB]/70 flex flex-col gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600">
-                      <FileText className="w-4 h-4" />
+              {/* 2. STUDENT GATE PASS CARD */}
+              {activePortalTab === 'gatepass' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="bg-white rounded-3xl border border-[#E5E7EB] p-8 md:p-10 shadow-sm relative overflow-hidden mb-8"
+                  style={{ boxShadow: '0 4px 25px -5px rgba(0,0,0,0.05)' }}
+                >
+                  <div className="absolute -right-20 -top-20 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+
+                  <div className="relative z-10 max-w-3xl mx-auto text-center">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-xs font-bold text-[#F97316] mb-6">
+                      <Ticket className="w-4 h-4 text-[#F97316]" />
+                      <span>Official RIT Campus Gate Pass Portal</span>
                     </div>
-                    <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      Official Semester Notes
+
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-[#1E293B] mb-4 leading-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                      Request & Manage Out-Passes on{' '}
+                      <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                        Student Gate Pass
+                      </span>
+                    </h2>
+
+                    <p className="text-base text-[#64748B] mb-8 leading-relaxed max-w-2xl mx-auto" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Official digital campus out-pass system for day scholars and hostellers. Submit leave requests, track warden approvals, and present digital QR passes to campus security.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+                      <button
+                        onClick={() => {
+                          alert('Student Gate Pass Portal dummy link triggered! You can provide the live URL anytime to connect it.');
+                        }}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl text-base font-bold text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer"
+                        style={{
+                          fontFamily: 'Poppins, sans-serif',
+                          background: 'linear-gradient(135deg, #F97316, #FB923C)',
+                        }}
+                      >
+                        <ExternalLink className="w-5 h-5" />
+                        Launch Student Gate Pass Portal
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(GATE_PASS_URL);
+                          alert('Student Gate Pass URL copied to clipboard!');
+                        }}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-[#E5E7EB] hover:border-[#F97316] bg-[#F8FAFC] hover:bg-white text-sm font-semibold text-[#475569] hover:text-[#F97316] transition-all cursor-pointer"
+                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                      >
+                        <Globe className="w-4 h-4 text-[#64748B]" />
+                        Copy Gate Pass Direct URL
+                      </button>
                     </div>
-                    <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      Complete 1st to 8th Semester course notes, PYQs, and assignments.
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left border-t border-[#F1F5F9] pt-8">
+                      <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex flex-col gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-600">
+                          <QrCode className="w-4 h-4" />
+                        </div>
+                        <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          Digital QR Clearance
+                        </div>
+                        <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Generate real-time encrypted QR code for security verification at campus gates.
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex flex-col gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-600">
+                          <CheckCircle2 className="w-4 h-4" />
+                        </div>
+                        <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          Warden & Parent Approval
+                        </div>
+                        <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Automated SMS and email notifications to wardens, mentors, and registered guardians.
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex flex-col gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-600">
+                          <ShieldCheck className="w-4 h-4" />
+                        </div>
+                        <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          Verified RIT Student ID
+                        </div>
+                        <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Authenticates securely with official college Roll Number & registered portal password.
+                        </div>
+                      </div>
                     </div>
                   </div>
+                </motion.div>
+              )}
 
-                  <div className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E5E7EB]/70 flex flex-col gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600">
-                      <Lock className="w-4 h-4" />
+              {/* 3. STUDENT PROFICIENCY CARD */}
+              {activePortalTab === 'proficiency' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  className="bg-white rounded-3xl border border-[#E5E7EB] p-8 md:p-10 shadow-sm relative overflow-hidden mb-8"
+                  style={{ boxShadow: '0 4px 25px -5px rgba(0,0,0,0.05)' }}
+                >
+                  <div className="absolute -right-20 -top-20 w-80 h-80 bg-orange-500/5 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+
+                  <div className="relative z-10 max-w-3xl mx-auto text-center">
+                    <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-orange-50 border border-orange-200 text-xs font-bold text-[#F97316] mb-6">
+                      <Award className="w-4 h-4 text-[#F97316]" />
+                      <span>Official RIT Skill Evaluation & Readiness System</span>
                     </div>
-                    <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      Student Login
+
+                    <h2 className="text-2xl md:text-3xl font-extrabold text-[#1E293B] mb-4 leading-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                      Track Skill Milestones & Credentials on{' '}
+                      <span style={{ background: 'linear-gradient(135deg, #F97316, #FB923C)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+                        Student Proficiency
+                      </span>
+                    </h2>
+
+                    <p className="text-base text-[#64748B] mb-8 leading-relaxed max-w-2xl mx-auto" style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Official RIT skill evaluation platform for tracking domain competencies, technical certifications, placement readiness scores, and verified proficiency badges.
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
+                      <button
+                        onClick={() => {
+                          alert('Student Proficiency Portal dummy link triggered! You can provide the live URL anytime to connect it.');
+                        }}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl text-base font-bold text-white shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer"
+                        style={{
+                          fontFamily: 'Poppins, sans-serif',
+                          background: 'linear-gradient(135deg, #F97316, #FB923C)',
+                        }}
+                      >
+                        <ExternalLink className="w-5 h-5" />
+                        Launch Student Proficiency Portal
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(PROFICIENCY_URL);
+                          alert('Student Proficiency URL copied to clipboard!');
+                        }}
+                        className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-[#E5E7EB] hover:border-[#F97316] bg-[#F8FAFC] hover:bg-white text-sm font-semibold text-[#475569] hover:text-[#F97316] transition-all cursor-pointer"
+                        style={{ fontFamily: 'Poppins, sans-serif' }}
+                      >
+                        <Globe className="w-4 h-4 text-[#64748B]" />
+                        Copy Proficiency Direct URL
+                      </button>
                     </div>
-                    <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
-                      Log in using your RIT Register Number and official Moodle password.
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left border-t border-[#F1F5F9] pt-8">
+                      <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-100 flex flex-col gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-600">
+                          <TrendingUp className="w-4 h-4" />
+                        </div>
+                        <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          Skill Radar & Domain Scores
+                        </div>
+                        <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Visualize competency scores across programming, core engineering, and analytical reasoning.
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-100 flex flex-col gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-600">
+                          <Sparkles className="w-4 h-4" />
+                        </div>
+                        <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          Placement Readiness
+                        </div>
+                        <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Live feedback on mock interview performances, coding assessments, and company cutoffs.
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-100 flex flex-col gap-2">
+                        <div className="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-600">
+                          <Award className="w-4 h-4" />
+                        </div>
+                        <div className="text-xs font-bold text-[#1E293B]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                          Verified Credentials
+                        </div>
+                        <div className="text-[11px] text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                          Upload, verify, and generate shareable badges for NPTEL, Coursera & RIT certification credits.
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                {/* Technical Security Note */}
-                <div className="mt-6 text-[11px] text-[#94A3B8] leading-relaxed" style={{ fontFamily: 'Inter, sans-serif' }}>
-                  ℹ️ <span className="font-semibold text-[#64748B]">Security Note:</span> To protect student session privacy and prevent clickjacking attacks, RIT&apos;s Moodle server enforces opening the portal directly in a secure browser tab rather than inside third-party frames (<code className="bg-slate-100 px-1 py-0.5 rounded text-[10px]">X-Frame-Options: SAMEORIGIN</code>).
-                </div>
-              </div>
-            </motion.div>
+                </motion.div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
     </div>
   );

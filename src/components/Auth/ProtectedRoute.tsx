@@ -53,8 +53,8 @@ export default function ProtectedRoute({
         </div>
 
         <h1
-          className="text-2xl sm:text-3xl font-bold text-[#1E293B] mb-3"
-          style={{ fontFamily: 'Playfair Display, serif' }}
+          className="text-2xl sm:text-3xl font-extrabold text-[#1E293B] mb-3"
+          style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
         >
           {title}
         </h1>
