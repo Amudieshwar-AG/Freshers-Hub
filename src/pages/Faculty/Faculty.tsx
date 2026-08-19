@@ -5,7 +5,7 @@ import FacultyCard from '@/components/FacultyCard/FacultyCard';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { FACULTY_DATA, DEPARTMENTS } from '@/constants';
 import { Link, useSearchParams } from 'react-router-dom';
-import { getBackendUrl } from '@/config/api';
+import { getBackendUrl } from '@/lib/utils';
 
 const DEPT_MAP: Record<string, { abrv: string; full: string }> = {
   'Computer Science & Engineering': { abrv: 'CSE', full: 'Computer Science & Engineering' },
