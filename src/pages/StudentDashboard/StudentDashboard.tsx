@@ -4,7 +4,7 @@ import {
   GraduationCap, Clock, MapPin, Users,
   Calendar, Building, ShieldCheck, 
   Sparkles, KeyRound, ArrowRight, LogOut,
-  AlertCircle, User, HelpCircle, Compass, ExternalLink, ChevronRight
+  AlertCircle, User, HelpCircle, Compass, ChevronRight
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -107,7 +107,7 @@ export default function StudentDashboard() {
               <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-3" style={{ fontFamily: 'Inter, sans-serif' }}>
                 <Link to="/" className="hover:text-[#F97316]">Home</Link>
                 <ChevronRight className="w-3 h-3" />
-                <span className="text-[#F97316]">Student Dashboard</span>
+                <span className="text-[#F97316]">Time Table</span>
               </div>
               <h1 className="text-3xl md:text-4xl font-extrabold text-[#1E293B] mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                 IMS Student{' '}
@@ -286,14 +286,6 @@ export default function StudentDashboard() {
             </div>
 
             <div className="flex items-center gap-2.5 self-start md:self-auto">
-              <Link
-                to={`/faculty?dept=${encodeURIComponent(data?.student.department || '')}`}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-orange-50 hover:bg-orange-100 text-[#F97316] border border-orange-200 text-xs font-bold transition-all cursor-pointer"
-                style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
-              >
-                <span>Faculty Directory</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </Link>
               <button
                 onClick={handleLogoutIms}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white hover:bg-rose-50 text-[#64748B] hover:text-rose-600 border border-[#E5E7EB] hover:border-rose-200 text-xs font-semibold transition-all cursor-pointer"

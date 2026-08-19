@@ -35,7 +35,7 @@ interface NavItem {
 
 const PRIMARY_LINKS: NavItem[] = [
   { label: 'Home', path: '/', icon: HomeIcon },
-  { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+  { label: 'Time table', path: '/dashboard', icon: LayoutDashboard },
   { label: 'Notes', path: '/notes', icon: BookOpen },
   { label: 'Toolkit', path: '/toolkit', icon: Wrench },
   { label: 'Chatbot', path: '/ai-assistant', icon: Bot },
@@ -297,7 +297,7 @@ export default function Navbar() {
                           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-orange-500/15 hover:border-orange-500/20 text-xs font-semibold transition-all cursor-pointer"
                         >
                           <GraduationCap className="w-4 h-4 text-orange-400" />
-                          My Student Dashboard
+                          My Time Table
                         </Link>
                         <button
                           onClick={() => {
