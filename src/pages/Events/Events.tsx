@@ -927,33 +927,51 @@ export default function Events() {
               </div>
 
               {/* Social & Community Links */}
-              {Boolean(
-                selectedClub.socialLinks?.instagram ||
-                selectedClub.socialLinks?.linkedin ||
-                selectedClub.socialLinks?.whatsapp ||
-                selectedClub.socialLinks?.youtube ||
-                selectedClub.socialLinks?.website
-              ) && (
-                <div className="mb-6 bg-orange-50/60 border border-orange-200/80 rounded-2xl p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2 text-xs font-bold text-[#F97316] uppercase tracking-wider">
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      <span>Social & Community Links</span>
-                    </div>
-                    <span className="text-[10px] text-emerald-600 font-medium">✓ Verified RIT Entity</span>
-                  </div>
+              {(() => {
+                const isRaiseIncubator = selectedClub.id === 'center_raise' || selectedClub.socialLinks?.website === '/raise';
+                const hasSocials = Boolean(
+                  selectedClub.socialLinks?.instagram ||
+                  selectedClub.socialLinks?.linkedin ||
+                  selectedClub.socialLinks?.whatsapp ||
+                  selectedClub.socialLinks?.youtube ||
+                  selectedClub.socialLinks?.website
+                );
 
-                  <div className="grid grid-cols-2 gap-2.5">
-                    {selectedClub.socialLinks?.website && (
-                      <Link
-                        to={selectedClub.socialLinks.website}
-                        onClick={() => setSelectedClub(null)}
-                        className="flex items-center gap-2 p-2.5 rounded-xl bg-gradient-to-r from-[#EC4899] via-[#F43F5E] to-[#E11D48] text-white hover:from-pink-600 hover:to-rose-600 transition-all text-xs font-bold shadow-xs col-span-2 justify-center"
-                      >
-                        <Rocket className="w-4 h-4 text-white shrink-0 animate-pulse" />
-                        <span>Launch RAISE Incubator Portal →</span>
-                      </Link>
-                    )}
+                if (!hasSocials) return null;
+
+                return (
+                  <div className="mb-6 bg-orange-50/60 border border-orange-200/80 rounded-2xl p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2 text-xs font-bold text-[#F97316] uppercase tracking-wider">
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Social & Community Links</span>
+                      </div>
+                      <span className="text-[10px] text-emerald-600 font-medium">✓ Verified RIT Entity</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {isRaiseIncubator && selectedClub.socialLinks?.website && (
+                        <Link
+                          to={selectedClub.socialLinks.website}
+                          onClick={() => setSelectedClub(null)}
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-gradient-to-r from-[#EC4899] via-[#F43F5E] to-[#E11D48] text-white hover:from-pink-600 hover:to-rose-600 transition-all text-xs font-bold shadow-xs col-span-2 justify-center"
+                        >
+                          <Rocket className="w-4 h-4 text-white shrink-0 animate-pulse" />
+                          <span>Launch RAISE Incubator Portal →</span>
+                        </Link>
+                      )}
+
+                      {!isRaiseIncubator && selectedClub.socialLinks?.website && selectedClub.socialLinks.website.startsWith('http') && (
+                        <a
+                          href={selectedClub.socialLinks.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-orange-500 hover:text-orange-600 transition-all text-xs font-medium text-slate-700"
+                        >
+                          <Globe className="w-4 h-4 text-orange-500 shrink-0" />
+                          <span className="truncate">Official Website</span>
+                        </a>
+                      )}
 
                   {selectedClub.socialLinks?.instagram && (
                     <a
@@ -1002,9 +1020,10 @@ export default function Events() {
                       <span className="truncate">YouTube Channel</span>
                     </a>
                   )}
+                  </div>
                 </div>
-              </div>
-              )}
+              );
+            })()}
 
               {/* Close Button */}
               <div>
