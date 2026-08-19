@@ -8,12 +8,13 @@ import {
   Layers, Zap, Settings, Gauge, Radio, Wifi, Bot, Sun, Wrench, Binary, BatteryCharging,
   CircuitBoard, ShieldCheck, BrainCircuit, FlaskConical, Lock, Terminal, Dna, Microscope,
   Sparkles, Smartphone, Monitor, Server, CheckCircle2, Database, Briefcase, AlertTriangle, RefreshCw, Calculator,
-  Building2, GraduationCap, Plus, Trash2
+  Building2, GraduationCap, Plus, Trash2, Award
 } from 'lucide-react';
 import SectionTitle from '@/components/SectionTitle/SectionTitle';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { TOOLKIT_ITEMS, DEPARTMENTS } from '@/constants';
 import { DEPARTMENT_CURRICULUM, DEPARTMENT_CODE_MAP, PROFESSIONAL_ELECTIVES_LIST } from '@/constants/departmentCurriculum';
+import { getStoredImsSession, fetchStudentDashboard } from '@/services/imsService';
 
 const TOOLKIT_ICONS: Record<string, { icon: React.ComponentType<{ className?: string }>; bg: string; color: string }> = {
   'CS tools': { icon: Code, bg: '#EFF6FF', color: '#3B82F6' },
@@ -669,6 +670,29 @@ export default function Toolkit() {
   const [calculationType, setCalculationType] = useState<'gpa' | 'internal' | null>(null);
   const [gpaStep, setGpaStep] = useState<1 | 2>(1);
   const [calculatedScore, setCalculatedScore] = useState<string | null>(null);
+  const [imsData, setImsData] = useState<any>(null);
+  const [isImsAutoFilled, setIsImsAutoFilled] = useState(false);
+
+  useEffect(() => {
+    const session = getStoredImsSession();
+    if (session?.student) {
+      const st = session.student;
+      const matchingDept = DEPARTMENTS.find(d => 
+        d.toLowerCase().includes(st.department?.toLowerCase() || '') ||
+        (st.departmentCode && d.toUpperCase().includes(st.departmentCode.toUpperCase()))
+      );
+      if (matchingDept) {
+        setGpaDepartment(matchingDept);
+      }
+      const sem = st.semester || 1;
+      setGpaSemester(`${sem}${sem === 1 ? 'st' : sem === 2 ? 'nd' : sem === 3 ? 'rd' : 'th'} Semester`);
+
+      fetchStudentDashboard(st.regNumber).then((d) => {
+        setImsData(d);
+      }).catch(() => {});
+    }
+  }, [selectedToolkit]);
+
   interface SubjectItem {
     name: string;
     credits: number;
@@ -714,20 +738,49 @@ export default function Toolkit() {
 
     if (rawCurriculum && rawCurriculum.length > 0) {
       let electiveCounter = 1;
+      const imsGrades = imsData?.results?.[0]?.subjects || [];
+      const imsCatMarks = imsData?.catMarks?.subjects || [];
+      let foundAnyImsMatch = false;
+
       const loaded = rawCurriculum
         .filter((s: any) => type === 'internal' || s.credits > 0)
         .map((s: any) => {
           const isElective = !!s.isElective;
+          const sName = s.name.toLowerCase();
+          const sCode = s.code ? s.code.toLowerCase() : '';
+          
+          // Match real grade if available
+          const matchedGrade = imsGrades.find((g: any) => 
+            (sCode && g.code && g.code.toLowerCase() === sCode) ||
+            (g.name && sName.includes(g.name.toLowerCase())) ||
+            (g.name && g.name.toLowerCase().includes(sName))
+          );
+
+          // Match CAT marks if available
+          const matchedCat = imsCatMarks.find((c: any) => 
+            (sCode && c.code && c.code.toLowerCase() === sCode) ||
+            (c.name && sName.includes(c.name.toLowerCase()))
+          );
+
+          if (matchedGrade || matchedCat) {
+            foundAnyImsMatch = true;
+          }
+
+          const gradeVal = matchedGrade?.grade || 'O';
+          const cat1Val = matchedCat?.cat1 ? String(matchedCat.cat1) : '45';
+          const cat2Val = matchedCat?.cat2 ? String(matchedCat.cat2) : '45';
+          const assgnVal = matchedCat?.assignment ? String(matchedCat.assignment) : '9';
+
           if (isElective) {
             const slot = s.electiveSlot || electiveCounter++;
             const defaultElectiveObj = PROFESSIONAL_ELECTIVES_LIST[(slot - 1) % PROFESSIONAL_ELECTIVES_LIST.length] || PROFESSIONAL_ELECTIVES_LIST[0];
             return {
               name: `${defaultElectiveObj.code} - ${defaultElectiveObj.name}`,
               credits: s.credits,
-              grade: 'O',
-              cat1: '45',
-              cat2: '45',
-              assignment: '9',
+              grade: gradeVal,
+              cat1: cat1Val,
+              cat2: cat2Val,
+              assignment: assgnVal,
               attendance: '95',
               isElective: true,
               electiveSlot: slot,
@@ -737,15 +790,30 @@ export default function Toolkit() {
           return {
             name: s.name,
             credits: s.credits,
-            grade: 'O',
-            cat1: '45',
-            cat2: '45',
-            assignment: '9',
+            grade: gradeVal,
+            cat1: cat1Val,
+            cat2: cat2Val,
+            assignment: assgnVal,
             attendance: '95',
             isElective: false,
           };
         });
       setSubjects(loaded);
+
+      if (type === 'gpa') {
+        setIsImsAutoFilled(foundAnyImsMatch || imsGrades.length > 0);
+        let totalCredits = 0;
+        let totalPoints = 0;
+        const GRADE_POINTS: Record<string, number> = { 'O': 10, 'A+': 9, 'A': 8, 'B+': 7, 'B': 6, 'C': 5, 'RA': 0 };
+        loaded.forEach((sub: any) => {
+          const pts = GRADE_POINTS[sub.grade] ?? 10;
+          totalCredits += sub.credits;
+          totalPoints += pts * sub.credits;
+        });
+        if (totalCredits > 0) {
+          setCalculatedScore((totalPoints / totalCredits).toFixed(2));
+        }
+      }
     } else {
       setSubjects([
         { name: 'Subject 1', credits: 4, grade: 'O', cat1: '45', cat2: '48', assignment: '10', attendance: '95' },
@@ -757,7 +825,6 @@ export default function Toolkit() {
     }
 
     setGpaStep(2);
-    setCalculatedScore(null);
   };
 
   const setSelectedToolkit = (value: string | null) => {
@@ -990,6 +1057,26 @@ export default function Toolkit() {
                               {calculationType === 'gpa' ? <Calculator className="w-6 h-6" /> : <BarChart3 className="w-6 h-6" />}
                             </div>
                           </div>
+
+                          {isImsAutoFilled && calculationType === 'gpa' && (
+                            <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-orange-50 via-amber-50 to-orange-50 border border-orange-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-8 h-8 rounded-xl bg-[#FF6B00] text-white flex items-center justify-center shrink-0">
+                                  <Sparkles className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <p className="text-xs font-bold text-[#1E293B]">Official RIT IMS Grades Loaded</p>
+                                  <p className="text-[11px] text-[#64748B]">Pre-populated from student records. Adjust any course below to test target GPA.</p>
+                                </div>
+                              </div>
+                              {calculatedScore && (
+                                <div className="px-3.5 py-1.5 rounded-xl bg-white border border-orange-200 text-center shrink-0">
+                                  <p className="text-[9px] uppercase font-bold text-[#94A3B8]">Calculated SGPA</p>
+                                  <p className="text-sm font-black text-[#FF6B00]">{calculatedScore} / 10.00</p>
+                                </div>
+                              )}
+                            </div>
+                          )}
 
                           {calculationType === 'gpa' ? (
                             /* ── Clean 2-Column GPA Layout (Fixed Credits, Grade Input Only) ── */
