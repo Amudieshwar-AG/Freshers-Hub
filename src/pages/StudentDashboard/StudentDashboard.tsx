@@ -6,7 +6,7 @@ import {
   Sparkles, KeyRound, ArrowRight, LogOut,
   AlertCircle, User, HelpCircle, Compass, ChevronRight, ExternalLink,
   Award, CheckCircle2, AlertTriangle, FileText, Calculator, TrendingUp,
-  Layers, BookOpen, Check, Mail, Phone, RefreshCw, Edit2, Save, FlaskConical
+  Layers, BookOpen, Check, Mail, Phone, RefreshCw, Edit2, Save, FlaskConical, Search, RotateCw
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -35,7 +35,8 @@ export default function StudentDashboard() {
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<'timetable' | 'attendance' | 'marks' | 'grades' | 'faculties'>('timetable');
-  const [selectedDay, setSelectedDay] = useState<'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday'>('monday');
+  const [selectedDayFilter, setSelectedDayFilter] = useState<'all' | 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'>('all');
+  const [ttSearchQuery, setTtSearchQuery] = useState('');
   const [selectedSemFilter, setSelectedSemFilter] = useState<number>(0);
 
   // Loaded Data States
@@ -67,13 +68,6 @@ export default function StudentDashboard() {
     }
   }, [session?.token]);
 
-  // Set default day to today (Mon-Fri)
-  useEffect(() => {
-    const dayNames: (keyof WeeklySchedule)[] = ['monday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'friday'];
-    const today = dayNames[new Date().getDay()] || 'monday';
-    setSelectedDay(today);
-  }, []);
-
   const loadInitialData = async (token: string, force = false) => {
     setIsInitialLoading(true);
     setError(null);
@@ -82,18 +76,6 @@ export default function StudentDashboard() {
       const p = await fetchImsProfile(token, reg, force);
       setProfile(p);
       const tt = await fetchImsTimetable(token, p.registerNumber, force);
-      setTimetable(tt);
-
-      const dayNames: (keyof WeeklySchedule)[] = ['monday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'friday'];
-      const today = dayNames[new Date().getDay()] || 'monday';
-      if (tt && tt[today] && tt[today].length > 0) {
-        setSelectedDay(today);
-      } else if (tt) {
-        const firstActive = (['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const).find(
-          d => tt[d] && tt[d].length > 0
-        );
-        if (firstActive) setSelectedDay(firstActive);
-      }
     } catch (err: any) {
       console.error('Error loading initial IMS data:', err);
       setError(err.message || 'Failed to load timetable.');
@@ -372,7 +354,6 @@ export default function StudentDashboard() {
   // ─────────────────────────────────────────────────────────────
   // VIEW 2: AUTHENTICATED STUDENT DASHBOARD
   // ─────────────────────────────────────────────────────────────
-  const currentPeriods = (timetable && timetable[selectedDay]) || [];
   const filteredGrades = gradesData?.results ? (
     selectedSemFilter === 0
       ? gradesData.results
@@ -731,108 +712,196 @@ export default function StudentDashboard() {
         {/* ─── 1. TIMETABLE TAB ─── */}
         {activeTab === 'timetable' && (
           <div className="space-y-6">
-            {/* Day Switcher */}
+            {/* Header Title & Subtitle */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-[#E5E7EB] shadow-sm">
+              <div>
+                <h2 className="text-2xl font-extrabold text-[#1E293B] tracking-tight">Class Time Table</h2>
+                <p className="text-xs font-semibold text-[#64748B] mt-1">
+                  Weekly class schedule for Class : <span className="text-[#1E293B] font-bold">{profile?.department || 'B.Tech. AI & DS'} / {profile?.semester || 5} / E</span>
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  CLASS Class : {profile?.department || 'B.Tech. AI & DS'} / {profile?.semester || 5} / E
+                </span>
+              </div>
+            </div>
+
+            {/* Toolbar: Day Filter Pills, Search Bar, Refresh */}
             <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-[#E5E7EB] shadow-sm">
-              <div className="flex items-center gap-2 overflow-x-auto py-1">
-                {(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const).map((dayKey) => {
-                  const count = timetable?.[dayKey]?.length || 0;
-                  const isSelected = selectedDay === dayKey;
+              {/* Day Filter Pills */}
+              <div className="flex items-center gap-1.5 overflow-x-auto py-1">
+                {[
+                  { key: 'all', label: 'All Days' },
+                  { key: 'monday', label: 'Mon' },
+                  { key: 'tuesday', label: 'Tue' },
+                  { key: 'wednesday', label: 'Wed' },
+                  { key: 'thursday', label: 'Thu' },
+                  { key: 'friday', label: 'Fri' },
+                  { key: 'saturday', label: 'Sat' },
+                ].map((day) => {
+                  const isSelected = selectedDayFilter === day.key;
+                  const currentDayName = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][new Date().getDay()];
+                  const isToday = day.key === currentDayName;
                   return (
                     <button
-                      key={dayKey}
-                      onClick={() => setSelectedDay(dayKey)}
-                      className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer capitalize ${
+                      key={day.key}
+                      onClick={() => setSelectedDayFilter(day.key as any)}
+                      className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                         isSelected
                           ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white shadow-md shadow-orange-500/20'
                           : 'bg-slate-100 hover:bg-slate-200 text-[#64748B]'
                       }`}
                     >
-                      <span>{dayKey}</span>
-                      <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono ${isSelected ? 'bg-white/20 text-white' : 'bg-white text-[#64748B] border border-[#E5E7EB]'}`}>
-                        {count}
-                      </span>
+                      <span>{day.label}</span>
+                      {isToday && (
+                        <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-[#F97316]'}`} />
+                      )}
                     </button>
                   );
                 })}
               </div>
 
-              <span className="text-xs text-emerald-600 font-bold flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Live IMS Timetable
-              </span>
+              {/* Right Toolbar Controls */}
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className="relative flex-1 sm:flex-initial">
+                  <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={ttSearchQuery}
+                    onChange={(e) => setTtSearchQuery(e.target.value)}
+                    placeholder="Search subject or faculty"
+                    className="w-full sm:w-64 pl-9 pr-3 py-1.5 rounded-xl text-xs bg-slate-50 border border-[#E5E7EB] focus:outline-none focus:border-[#F97316] text-gray-800 placeholder-gray-400 font-medium"
+                  />
+                </div>
+
+                <button
+                  onClick={() => session?.token && loadInitialData(session.token, true)}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-[#64748B] transition-all cursor-pointer"
+                >
+                  <RotateCw className="w-3.5 h-3.5" />
+                  <span>Refresh</span>
+                </button>
+              </div>
             </div>
 
+            {/* Timetable Grid Matrix */}
             {isInitialLoading ? (
               <div className="flex flex-col items-center justify-center py-20 gap-3 bg-white rounded-3xl border border-[#E5E7EB]">
                 <div className="w-8 h-8 border-3 border-[#F97316] border-t-transparent rounded-full animate-spin" />
                 <p className="text-xs text-[#64748B]">Fetching timetable from RIT IMS...</p>
               </div>
-            ) : currentPeriods.length === 0 ? (
-              <div className="bg-white border border-[#E5E7EB] rounded-3xl p-12 text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-orange-50 text-[#F97316] flex items-center justify-center mx-auto">
-                  <Calendar className="w-6 h-6" />
-                </div>
-                <h3 className="text-base font-bold text-[#1E293B]">
-                  No classes scheduled for {selectedDay.toUpperCase()}
-                </h3>
-                <p className="text-xs text-[#64748B] max-w-sm mx-auto">
-                  Select another day of the week above to view your timetable periods and staff.
-                </p>
-              </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {currentPeriods.map((period) => (
-                  <motion.div
-                    key={period.periodNumber}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-2xl p-5 border border-[#E5E7EB] hover:border-slate-300 shadow-sm transition-all"
-                  >
-                    {/* Header */}
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-lg bg-slate-100 text-[#1E293B] font-bold text-xs flex items-center justify-center">
-                          P{period.periodNumber}
-                        </span>
-                        <span className="text-xs font-semibold text-[#64748B] flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-[#94A3B8]" />
-                          {period.timeSlot}
-                        </span>
-                      </div>
+              <div className="overflow-x-auto rounded-3xl border border-[#E5E7EB] bg-white shadow-sm">
+                <table className="w-full text-left border-collapse min-w-[900px]">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-[#E5E7EB]">
+                      <th className="py-4 px-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-36 border-r border-[#E5E7EB]">
+                        Period
+                      </th>
+                      {(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const)
+                        .filter(d => selectedDayFilter === 'all' || selectedDayFilter === d)
+                        .map((dayKey) => {
+                          const currentDayName = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][new Date().getDay()];
+                          const isToday = dayKey === currentDayName;
+                          return (
+                            <th key={dayKey} className="py-4 px-4 text-center text-xs font-extrabold text-gray-800 capitalize border-r border-[#E5E7EB] last:border-r-0 min-w-[160px]">
+                              <div className="flex items-center justify-center gap-1.5">
+                                <span>{dayKey}</span>
+                                {isToday && (
+                                  <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500 text-white uppercase tracking-wider">
+                                    TODAY
+                                  </span>
+                                )}
+                              </div>
+                            </th>
+                          );
+                        })}
+                    </tr>
+                  </thead>
 
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 ${
-                          period.type === 'LAB'
-                            ? 'bg-purple-100 text-purple-700 border border-purple-300'
-                            : 'bg-blue-100 text-blue-700 border border-blue-300'
-                        }`}
-                      >
-                        {period.type === 'LAB' ? <FlaskConical className="w-3 h-3 text-purple-600" /> : <BookOpen className="w-3 h-3 text-blue-600" />}
-                        {period.type}
-                      </span>
-                    </div>
+                  <tbody className="divide-y divide-[#E5E7EB]">
+                    {[1, 2, 3, 4, 5, 6, 7].map((pNum) => {
+                      const timeSlots = [
+                        '08:45 - 09:40',
+                        '09:40 - 10:35',
+                        '10:50 - 11:45',
+                        '11:45 - 12:40',
+                        '01:30 - 02:25',
+                        '02:25 - 03:20',
+                        '03:20 - 04:15',
+                      ];
+                      const slotTime = timeSlots[pNum - 1] || '';
 
-                    {/* Subject Details */}
-                    <div className="space-y-1.5 mb-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-mono font-bold text-[#F97316]">
-                          {period.subjectCode}
-                        </span>
-                      </div>
-                      <h3 className="text-base font-extrabold text-[#1E293B] line-clamp-1" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                        {period.subjectName}
-                      </h3>
-                    </div>
+                      const activeDays = (['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const)
+                        .filter(d => selectedDayFilter === 'all' || selectedDayFilter === d);
 
-                    {/* Faculty Footer */}
-                    <div className="pt-3 border-t border-[#E5E7EB] flex items-center justify-between text-xs text-[#475569]">
-                      <span className="truncate pr-2 font-medium">{period.staffName || 'Faculty Instructor'}</span>
-                      {period.staffCode && (
-                        <span className="font-mono text-[10px] text-[#94A3B8]">{period.staffCode}</span>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
+                      return (
+                        <tr key={pNum} className="hover:bg-slate-50/50 transition-colors">
+                          {/* Period Column */}
+                          <td className="py-4 px-3 text-center border-r border-[#E5E7EB] bg-slate-50/30 align-middle">
+                            <div className="font-extrabold text-xs text-emerald-600">Period {pNum}</div>
+                            <div className="text-[10px] font-medium text-gray-400 mt-0.5">{slotTime}</div>
+                          </td>
+
+                          {/* Days Columns */}
+                          {activeDays.map((dayKey) => {
+                            const daySched = timetable?.[dayKey];
+                            const rawPeriods = daySched?.[pNum] || [];
+                            const periods = rawPeriods.filter((p) => {
+                              if (!ttSearchQuery) return true;
+                              const q = ttSearchQuery.toLowerCase();
+                              return (
+                                p.subjectName.toLowerCase().includes(q) ||
+                                p.subjectCode.toLowerCase().includes(q) ||
+                                p.staffName.toLowerCase().includes(q)
+                              );
+                            });
+
+                            return (
+                              <td key={dayKey} className="p-2.5 border-r border-[#E5E7EB] last:border-r-0 align-top min-w-[170px]">
+                                {periods.length > 0 ? (
+                                  <div className="space-y-2">
+                                    {periods.map((p, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="bg-[#F8FAFC] hover:bg-slate-100 p-3 rounded-2xl border border-[#E5E7EB] shadow-xs transition-all space-y-1"
+                                      >
+                                        <div className="font-bold text-xs text-gray-900 leading-tight">
+                                          {p.subjectName}
+                                        </div>
+                                        <div className="flex items-center gap-1.5 flex-wrap">
+                                          <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-md ${
+                                            p.type === 'LAB'
+                                              ? 'bg-purple-50 text-purple-700 border border-purple-200'
+                                              : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                          }`}>
+                                            {p.subjectCode || p.type}
+                                          </span>
+                                        </div>
+                                        {p.staffName && (
+                                          <div className="text-[11px] font-medium text-gray-500 truncate">
+                                            {p.staffName}
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center justify-center h-full min-h-[64px] text-gray-300 font-bold text-sm select-none">
+                                    —
+                                  </div>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
