@@ -469,32 +469,39 @@ export default function AdminDashboard() {
       try { localConfig = JSON.parse(saved); } catch {}
     }
 
+    if (!localConfig || (!localConfig.seniorHelpers?.length && !localConfig.helper_chat_ids?.length)) {
+      localConfig = {
+        community_bot_token: '7829148291:AAH_rit_community_bot_token_sample',
+        spring_backend_url: 'https://rit-services.in/api',
+        helper_chat_ids: [971749136, 982314512],
+        seniorHelpers: [
+          { chatId: 971749136, name: 'Rahul (CSE 4th Yr)' },
+          { chatId: 982314512, name: 'Sneha (ECE 3rd Yr)' }
+        ]
+      };
+      localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(localConfig));
+    }
+
+    setTelegramConfig(localConfig);
+
     fetch(getBackendUrl('/api/admin/telegram/config'))
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch from backend');
         return res.json();
       })
       .then((data) => {
-        setTelegramConfig(data);
-        localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(data));
-      })
-      .catch(() => {
-        if (localConfig) {
-          setTelegramConfig(localConfig);
-        } else {
-          const defaultConfig: TelegramConfig = {
-            community_bot_token: '7829148291:AAH_rit_community_bot_token_sample',
-            spring_backend_url: 'https://rit-services.in/api',
-            helper_chat_ids: [971749136, 982314512],
-            seniorHelpers: [
-              { chatId: 971749136, name: 'Rahul (CSE 4th Yr)' },
-              { chatId: 982314512, name: 'Sneha (ECE 3rd Yr)' }
-            ]
+        if (data && typeof data === 'object') {
+          const merged: TelegramConfig = {
+            community_bot_token: data.community_bot_token || localConfig?.community_bot_token,
+            spring_backend_url: data.spring_backend_url || localConfig?.spring_backend_url,
+            helper_chat_ids: (data.helper_chat_ids && data.helper_chat_ids.length > 0) ? data.helper_chat_ids : localConfig?.helper_chat_ids,
+            seniorHelpers: (data.seniorHelpers && data.seniorHelpers.length > 0) ? data.seniorHelpers : localConfig?.seniorHelpers
           };
-          setTelegramConfig(defaultConfig);
-          localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(defaultConfig));
+          setTelegramConfig(merged);
+          localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(merged));
         }
       })
+      .catch(() => {})
       .finally(() => setLoadingTelegram(false));
   };
 
@@ -571,171 +578,7 @@ export default function AdminDashboard() {
       .finally(() => setSavingBotConfig(false));
   };
 
-  // ─────────────────────────────────────────────────────────────
-  // NOTES & STUDY MATERIALS
-  // ─────────────────────────────────────────────────────────────
-  const fetchNotes = () => {
-    setLoadingNotes(true);
-    const saved = localStorage.getItem(NOTES_STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setNotes(parsed);
-          setLoadingNotes(false);
-        }
-      } catch {}
-    }
 
-    fetch(getBackendUrl('/api/admin/notes'))
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setNotes(data);
-          localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(data));
-        }
-      })
-      .catch(() => {
-        if (!saved) {
-          const initialNotes: NoteItem[] = [
-            { id: 1, title: 'Data Structures Unit 1 Notes', subject: 'CS3301', authorName: 'Dr. ARTHI A.', department: 'AI&DS', fileUrl: '#', semester: 3, uploadDate: new Date().toISOString() },
-            { id: 2, title: 'Matrices PYQ 2023', subject: 'MA3151', authorName: 'Prof. Senthil', department: 'S&H', fileUrl: '#', semester: 1, uploadDate: new Date(Date.now() - 86400000).toISOString() }
-          ];
-          setNotes(initialNotes);
-          localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(initialNotes));
-        }
-      })
-      .finally(() => setLoadingNotes(false));
-  };
-
-  const handleDeleteNote = (id: number, title: string) => {
-    if (!confirm(`Delete study note "${title}"?`)) return;
-    const updated = notes.filter((n) => n.id !== id);
-    setNotes(updated);
-    localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(updated));
-    showToast('success', `Study note "${title}" deleted.`);
-
-    fetch(getBackendUrl(`/api/admin/notes/${id}`), { method: 'DELETE' }).catch(() => {});
-  };
-
-  // ─────────────────────────────────────────────────────────────
-  // COMMUNITY QUESTIONS
-  // ─────────────────────────────────────────────────────────────
-  const fetchQuestions = () => {
-    setLoadingQuestions(true);
-    const saved = localStorage.getItem(QUESTIONS_STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setQuestions(parsed);
-          setLoadingQuestions(false);
-        }
-      } catch {}
-    }
-
-    fetch(getBackendUrl('/api/admin/questions'))
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setQuestions(data);
-          localStorage.setItem(QUESTIONS_STORAGE_KEY, JSON.stringify(data));
-        }
-      })
-      .catch(() => {
-        if (!saved) {
-          const initialQuestions: QuestionItem[] = [
-            { id: 1, title: "When is the fresher's orientation?", content: "I couldn't find the exact date for the CSE orientation.", authorName: "Karthik", authorEmail: "karthik.2024@ritchennai.edu.in", createdAt: new Date().toISOString(), status: "PENDING", tags: ["orientation"], votes: 0 },
-            { id: 2, title: "Are laptops mandatory in first year?", content: "Just wondering if we need to bring laptops to college every day.", authorName: "Sneha", authorEmail: "sneha.2024@ritchennai.edu.in", createdAt: new Date(Date.now() - 86400000).toISOString(), status: "APPROVED", tags: ["academics"], votes: 5 }
-          ];
-          setQuestions(initialQuestions);
-          localStorage.setItem(QUESTIONS_STORAGE_KEY, JSON.stringify(initialQuestions));
-        }
-      })
-      .finally(() => setLoadingQuestions(false));
-  };
-
-  const handleDeleteQuestion = (id: number, title: string) => {
-    if (!confirm(`Delete student question "${title}"?`)) return;
-    const updated = questions.filter((q) => q.id !== id);
-    setQuestions(updated);
-    localStorage.setItem(QUESTIONS_STORAGE_KEY, JSON.stringify(updated));
-    showToast('success', `Question "${title}" deleted.`);
-
-    fetch(getBackendUrl(`/api/admin/questions/${id}`), { method: 'DELETE' }).catch(() => {});
-  };
-
-  // ─────────────────────────────────────────────────────────────
-  // DEPLOYMENT SUBSCRIBERS
-  // ─────────────────────────────────────────────────────────────
-  const fetchRecipients = () => {
-    setLoadingRecipients(true);
-    const saved = localStorage.getItem(RECIPIENTS_STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setRecipients(parsed);
-          setLoadingRecipients(false);
-        }
-      } catch {}
-    }
-
-    fetch(getBackendUrl('/api/admin/recipients'))
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) {
-          setRecipients(data);
-          localStorage.setItem(RECIPIENTS_STORAGE_KEY, JSON.stringify(data));
-        }
-      })
-      .catch(() => {
-        if (!saved) {
-          const initialRecipients = ['devops@ritchennai.edu.in', 'admin@ritchennai.edu.in'];
-          setRecipients(initialRecipients);
-          localStorage.setItem(RECIPIENTS_STORAGE_KEY, JSON.stringify(initialRecipients));
-        }
-      })
-      .finally(() => setLoadingRecipients(false));
-  };
-
-  const handleAddRecipient = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newEmail || !newEmail.includes('@')) {
-      showToast('error', 'Please enter a valid email address');
-      return;
-    }
-    const updated = [...recipients, newEmail.trim()];
-    setRecipients(updated);
-    localStorage.setItem(RECIPIENTS_STORAGE_KEY, JSON.stringify(updated));
-    setNewEmail('');
-    showToast('success', `Recipient ${newEmail.trim()} added!`);
-
-    fetch(getBackendUrl('/api/admin/recipients'), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: newEmail.trim() }),
-    }).catch(() => {});
-  };
-
-  const handleRemoveRecipient = (email: string) => {
-    if (!confirm(`Remove ${email} from deployment notifications?`)) return;
-    const updated = recipients.filter((r) => r !== email);
-    setRecipients(updated);
-    localStorage.setItem(RECIPIENTS_STORAGE_KEY, JSON.stringify(updated));
-    showToast('success', `Recipient ${email} removed.`);
-
-    fetch(getBackendUrl(`/api/admin/recipients?email=${encodeURIComponent(email)}`), { method: 'DELETE' }).catch(() => {});
-  };
 
   // ─────────────────────────────────────────────────────────────
   // FACULTY MANAGEMENT HANDLERS
@@ -1171,9 +1014,7 @@ export default function AdminDashboard() {
             {[
               { id: 'transport', label: 'Bus Fleet & Routes', icon: Bus },
               { id: 'telegram', label: 'Telegram Q&A Seniors', icon: Bot },
-              { id: 'notes', label: 'Notes & Study Materials', icon: BookOpen },
               { id: 'community', label: 'Community Q&A Moderation', icon: MessageCircle },
-              { id: 'subscribers', label: 'Deployment Email Alerts', icon: Mail },
               { id: 'faculty', label: 'Faculty Directory', icon: UserCheck },
               { id: 'clubs', label: 'Clubs & Centers', icon: Building2 },
               { id: 'curriculum', label: 'GPA Curriculum & Credits', icon: Calculator },
@@ -1629,72 +1470,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* ───────────────────────────────────────────────────────────── */}
-        {/* TAB 5: DEPLOYMENT EMAIL SUBSCRIBERS                          */}
-        {/* ───────────────────────────────────────────────────────────── */}
-        {activeTab === 'subscribers' && (
-          <div className="space-y-6">
-            <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 shadow-xl space-y-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Mail className="w-5 h-5 text-orange-400" />
-                Add Deployment Alert Recipient
-              </h3>
-              <p className="text-xs text-slate-400">
-                Every <code className="text-orange-400 font-mono">git push</code> automatically sends live health reports to all emails listed below.
-              </p>
 
-              <form onSubmit={handleAddRecipient} className="flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
-                  <input
-                    type="email"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                    placeholder="e.g. admin@ritchennai.edu.in"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-950 border border-white/10 text-xs text-white placeholder-slate-500 outline-none focus:border-orange-500"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={submittingEmail}
-                  className="px-6 py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-lg shadow-orange-500/20 transition-all cursor-pointer disabled:opacity-50 whitespace-nowrap"
-                >
-                  {submittingEmail ? 'Adding...' : '➕ Add Subscriber'}
-                </button>
-              </form>
-            </div>
-
-            <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 shadow-xl space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold text-white">Active Email Subscribers ({recipients.length})</h3>
-                <button onClick={fetchRecipients} className="p-2 rounded-lg text-slate-400 hover:text-white">
-                  <RefreshCw className={`w-3.5 h-3.5 ${loadingRecipients ? 'animate-spin' : ''}`} />
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                {recipients.map((email, idx) => (
-                  <div key={idx} className="bg-slate-950/60 border border-white/10 rounded-2xl p-4 flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
-                        <Send className="w-3.5 h-3.5 text-orange-400" />
-                      </div>
-                      <p className="text-xs font-mono font-bold text-white">{email}</p>
-                    </div>
-                    <button
-                      onClick={() => handleRemoveRecipient(email)}
-                      className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white text-xs font-semibold transition-colors flex items-center gap-1"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Remove</span>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* ───────────────────────────────────────────────────────────── */}
         {/* TAB 6: FACULTY DIRECTORY MANAGEMENT                           */}
