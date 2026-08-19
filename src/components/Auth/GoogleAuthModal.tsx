@@ -224,43 +224,27 @@ export default function GoogleAuthModal({ isOpen, onClose }: GoogleAuthModalProp
                   )}
                 </button>
 
-                {/* Quick Demo Fill Buttons */}
+                {/* Quick Demo Fill Buttons for Admins */}
                 <div className="pt-3 border-t border-white/10 space-y-1.5">
                   <span className="text-[10px] text-slate-400 font-semibold block text-center uppercase tracking-wider">
-                    Quick Demo Credentials:
+                    Official Admin Portals:
                   </span>
                   <div className="grid grid-cols-2 gap-1.5 text-[11px]">
                     <button
                       type="button"
-                      onClick={() => handleQuickFill('2114251001', 'rit@2026')}
-                      className="p-2 rounded-lg bg-slate-950/80 hover:bg-slate-950 border border-white/5 text-left flex items-center justify-between transition-colors cursor-pointer"
-                    >
-                      <span className="truncate">🎓 CSE Student</span>
-                      <span className="text-[9px] text-orange-400 font-mono">Fill</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleQuickFill('2114251002', 'rit@2026')}
-                      className="p-2 rounded-lg bg-slate-950/80 hover:bg-slate-950 border border-white/5 text-left flex items-center justify-between transition-colors cursor-pointer"
-                    >
-                      <span className="truncate">🎓 AI&DS Student</span>
-                      <span className="text-[9px] text-orange-400 font-mono">Fill</span>
-                    </button>
-                    <button
-                      type="button"
                       onClick={() => handleQuickFill('Transport', 'RIT@2026')}
-                      className="p-2 rounded-lg bg-slate-950/80 hover:bg-slate-950 border border-white/5 text-left flex items-center justify-between transition-colors cursor-pointer"
+                      className="p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-950 border border-white/5 text-left flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <span className="truncate">🚌 Transport Admin</span>
-                      <span className="text-[9px] text-blue-400 font-mono">Fill</span>
+                      <span className="text-[9px] text-blue-400 font-mono">Select</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => handleQuickFill('Admin', 'RIT@2026')}
-                      className="p-2 rounded-lg bg-slate-950/80 hover:bg-slate-950 border border-white/5 text-left flex items-center justify-between transition-colors cursor-pointer"
+                      className="p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-950 border border-white/5 text-left flex items-center justify-between transition-colors cursor-pointer"
                     >
                       <span className="truncate">⚡ Super Admin</span>
-                      <span className="text-[9px] text-emerald-400 font-mono">Fill</span>
+                      <span className="text-[9px] text-emerald-400 font-mono">Select</span>
                     </button>
                   </div>
                 </div>

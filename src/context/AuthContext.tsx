@@ -200,41 +200,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: false, message: 'Please enter both username/register number and password.' };
     }
 
-    // 1. First, check if credentials match Admin / Transport
-    try {
-      const adminRes = await fetch(getBackendUrl('/api/admin/login'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: cleanedUser, password: cleanedPass }),
-      });
+    const isAdminUsername = ['admin', 'transport', 'ritadmin', 'superadmin'].includes(cleanedUser.toLowerCase());
 
-      if (adminRes.ok) {
-        const data = await adminRes.json();
-        if (data.success && data.token && data.role) {
-          localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
-          localStorage.setItem(ADMIN_ROLE_KEY, data.role);
-          localStorage.setItem(ADMIN_USER_KEY, data.username);
+    // 1. First, check if credentials match Admin / Transport (only for admin accounts)
+    if (isAdminUsername) {
+      try {
+        const adminRes = await fetch(getBackendUrl('/api/admin/login'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: cleanedUser, password: cleanedPass }),
+        });
 
-          const adminUserObj: AuthUser = {
-            id: 999999,
-            name: data.username,
-            email: data.role === 'ROLE_TRANSPORT' ? 'transport@ritchennai.edu.in' : 'admin@ritchennai.edu.in',
-            verifiedStudent: false,
-            role: data.role,
-          };
-          setUser(adminUserObj);
-          setIsAuthModalOpen(false);
+        if (adminRes.ok) {
+          const data = await adminRes.json();
+          if (data.success && data.token && data.role) {
+            localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+            localStorage.setItem(ADMIN_ROLE_KEY, data.role);
+            localStorage.setItem(ADMIN_USER_KEY, data.username);
 
-          return {
-            success: true,
-            role: data.role,
-            redirectTo: '/admin',
-            message: `${data.username} logged in successfully`,
-          };
+            const adminUserObj: AuthUser = {
+              id: 999999,
+              name: data.username,
+              email: data.role === 'ROLE_TRANSPORT' ? 'transport@ritchennai.edu.in' : 'admin@ritchennai.edu.in',
+              verifiedStudent: false,
+              role: data.role,
+            };
+            setUser(adminUserObj);
+            setIsAuthModalOpen(false);
+
+            return {
+              success: true,
+              role: data.role,
+              redirectTo: '/admin',
+              message: `${data.username} logged in successfully`,
+            };
+          }
         }
+      } catch {
+        // If admin endpoint fails or is offline, check fallback
       }
-    } catch {
-      // If admin endpoint fails or is offline, check fallback
     }
 
     // Direct local check for Admin credentials fallback
@@ -295,8 +299,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return {
           success: true,
           role: 'ROLE_STUDENT',
-          redirectTo: '/dashboard',
+          redirectTo: '/timetable',
           message: 'Student login successful',
+        };
+      } else if (!imsResult.success && imsResult.message) {
+        return {
+          success: false,
+          message: imsResult.message,
         };
       }
     } catch {

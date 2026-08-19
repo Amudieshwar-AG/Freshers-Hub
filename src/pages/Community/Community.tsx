@@ -9,6 +9,8 @@ import { getBackendUrl } from '@/lib/utils';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
 
+import { useAuth } from '@/context/AuthContext';
+
 const TRENDING_TAGS = ['hostel', 'academics', 'clubs', 'campus', 'canteen', 'sports', 'placement', 'library', 'cat exam', 'semester', 'labs', 'exams'];
 
 const AVATARS: Record<string, string> = {

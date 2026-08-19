@@ -62,8 +62,9 @@ function App() {
               <Route path="/faculty" element={<Faculty />} />
               <Route path="/events" element={<Events />} />
 
-              {/* Student Dashboard — Timetable, Staff, Location (IMS Reg No & Password) */}
+              {/* Student Dashboard & Timetable — Real IMS Reg No & Password */}
               <Route path="/dashboard" element={<StudentDashboard />} />
+              <Route path="/timetable" element={<StudentDashboard />} />
 
               {/* Protected Routes — Require Google Sign-In */}
               <Route

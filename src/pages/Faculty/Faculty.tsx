@@ -45,11 +45,13 @@ function normalizeDepartmentName(input?: string | null): string | null {
 
 export default function Faculty() {
   const [searchParams] = useSearchParams();
-  const [searchFaculty, setSearchFaculty] = useState('');
+  const [searchFaculty, setSearchFaculty] = useState(() => searchParams.get('search') || '');
   const [sortBy, setSortBy] = useState('Name A-Z');
 
   // Initial department detection (from URL query string or logged-in IMS student session)
   const initialDepartment = useMemo(() => {
+    if (searchParams.has('search')) return 'All Departments';
+
     const queryDept = searchParams.get('dept');
     const matchedQuery = normalizeDepartmentName(queryDept);
     if (matchedQuery) return matchedQuery;
@@ -65,10 +67,16 @@ export default function Faculty() {
 
   const [selectedDept, setSelectedDept] = useState<string>(initialDepartment);
 
-  // Update selectedDept if URL parameter changes
+  // Update selectedDept and searchFaculty if URL parameter changes
   useEffect(() => {
-    setSelectedDept(initialDepartment);
-  }, [initialDepartment]);
+    const querySearch = searchParams.get('search');
+    if (querySearch !== null) {
+      setSearchFaculty(querySearch);
+      setSelectedDept('All Departments');
+    } else {
+      setSelectedDept(initialDepartment);
+    }
+  }, [searchParams, initialDepartment]);
 
   const studentSession = useMemo(() => getStoredImsSession(), []);
   const isStudentDeptAutoFiltered = selectedDept !== 'All Departments' && (

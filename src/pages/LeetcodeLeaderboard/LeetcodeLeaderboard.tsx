@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Trophy, Search, Plus, RefreshCw, ExternalLink, Code2,
-  Sparkles, Flame, Award, CheckCircle2, Shield, User, Filter, X, Clock
+  Sparkles, Flame, Award, CheckCircle2, Shield, User, Filter, X, Clock, Lock
 } from 'lucide-react';
 import { getBackendUrl } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
 
 interface LeetcodeProfile {
   id: number;
@@ -25,6 +26,7 @@ const DEPARTMENTS = ['All', 'CSE', 'IT', 'AI&DS', 'ECE', 'EEE', 'MECH', 'CIVIL',
 const YEARS = ['All', '1st Year', '2nd Year', '3rd Year', '4th Year'];
 
 export default function LeetcodeLeaderboard() {
+  const { isAuthenticated, openAuthModal } = useAuth();
   const [profiles, setProfiles] = useState<LeetcodeProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,8 +44,36 @@ export default function LeetcodeLeaderboard() {
   const [year, setYear] = useState('1st Year');
 
   useEffect(() => {
-    fetchLeaderboard();
-  }, []);
+    if (isAuthenticated) {
+      fetchLeaderboard();
+    }
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen pt-24 pb-16 bg-[#FAF9FC] text-[#1A0B2E] px-4 flex flex-col items-center justify-center text-center">
+        <div className="w-full max-w-md bg-white border border-[#E9E5EE] rounded-3xl p-8 shadow-xl space-y-5">
+          <div className="w-16 h-16 rounded-2xl bg-orange-100 text-[#FF6B00] flex items-center justify-center mx-auto border border-orange-200 shadow-md">
+            <Lock className="w-8 h-8" />
+          </div>
+          <div>
+            <h2 className="text-xl font-extrabold text-[#1A0B2E]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+              Student Sign In Required
+            </h2>
+            <p className="text-xs text-[#4A3E5E] mt-1.5 leading-relaxed">
+              RIT LeetCode Arena & Campus Rankings are accessible exclusively to verified RIT students. Please sign in with your student credentials to view the rankings and register your handle.
+            </p>
+          </div>
+          <button
+            onClick={openAuthModal}
+            className="w-full py-3.5 px-4 rounded-xl text-white font-bold text-xs bg-gradient-to-r from-[#FF6B00] to-[#F97316] hover:opacity-95 shadow-lg shadow-orange-500/20 transition-all cursor-pointer"
+          >
+            Sign In to LeetCode Arena
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const fetchLeaderboard = async () => {
     setLoading(true);

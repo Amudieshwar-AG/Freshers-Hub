@@ -52,6 +52,39 @@ export default defineConfig({
   ],
   server: {
     host: true,
+    proxy: {
+      '/ims': {
+        target: 'https://ims.ritchennai.edu.in',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ims/, ''),
+        secure: false,
+        configure: (proxy) => {
+          proxy.on('proxyRes', (proxyRes) => {
+            // Rewrite Location header to keep redirects through local proxy
+            const location = proxyRes.headers['location'];
+            if (location) {
+              let rewritten = location;
+              if (rewritten.includes('ims.ritchennai.edu.in')) {
+                rewritten = rewritten.replace(/https?:\/\/ims\.ritchennai\.edu\.in/gi, 'http://localhost:5173/ims');
+              } else if (rewritten.startsWith('/')) {
+                rewritten = '/ims' + rewritten;
+              }
+              proxyRes.headers['location'] = rewritten;
+            }
+            // Tweak cookies for localhost
+            const setCookie = proxyRes.headers['set-cookie'];
+            if (setCookie) {
+              proxyRes.headers['set-cookie'] = (Array.isArray(setCookie) ? setCookie : [setCookie]).map((cookie: string) =>
+                cookie
+                  .replace(/Secure/gi, '')
+                  .replace(/samesite=none/gi, 'SameSite=Lax')
+                  .replace(/domain=[^;]+/gi, '')
+              );
+            }
+          });
+        }
+      }
+    },
     watch: {
       ignored: [
         '**/backend/**',
