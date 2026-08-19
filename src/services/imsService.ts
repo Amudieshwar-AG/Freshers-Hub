@@ -28,15 +28,12 @@ export interface TimetablePeriod {
   type: 'THEORY' | 'LAB';
 }
 
-export type DaySchedule = Record<number, TimetablePeriod[]>;
-
 export interface WeeklySchedule {
-  monday: DaySchedule;
-  tuesday: DaySchedule;
-  wednesday: DaySchedule;
-  thursday: DaySchedule;
-  friday: DaySchedule;
-  saturday: DaySchedule;
+  monday: TimetablePeriod[];
+  tuesday: TimetablePeriod[];
+  wednesday: TimetablePeriod[];
+  thursday: TimetablePeriod[];
+  friday: TimetablePeriod[];
 }
 
 export interface SubjectAttendance {
@@ -68,6 +65,26 @@ export interface SubjectCatMark {
 
 export interface CatMarksReport {
   subjects: SubjectCatMark[];
+}
+
+export interface AssignmentMarkItem {
+  subjectName: string;
+  subjectCode: string;
+  facultyName: string;
+  a1: string;
+  a2: string;
+  a3: string;
+  a4: string;
+  a5: string;
+  total: string;
+}
+
+export interface LabMarkItem {
+  subjectName: string;
+  subjectCode: string;
+  facultyName: string;
+  marks: string;
+  total: string;
 }
 
 export interface SemesterGrade {
@@ -238,17 +255,8 @@ export function parseDepartmentCode(rawDept: string = ''): string {
 }
 
 export function generateCurriculumSchedule(deptCode: string, semester: number): WeeklySchedule {
-  const createDay = (list: TimetablePeriod[]): DaySchedule => {
-    const day: DaySchedule = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [] };
-    list.forEach(p => {
-      if (!day[p.periodNumber]) day[p.periodNumber] = [];
-      day[p.periodNumber].push(p);
-    });
-    return day;
-  };
-
   return {
-    monday: createDay([
+    monday: [
       { periodNumber: 1, timeSlot: '08:45 AM - 09:40 AM', startTime: '08:45', endTime: '09:40', subjectCode: 'AD23511', subjectName: 'Deep Learning', staffName: 'ARTHI A. (CS87)', type: 'THEORY' },
       { periodNumber: 2, timeSlot: '09:40 AM - 10:35 AM', startTime: '09:40', endTime: '10:35', subjectCode: 'AD23V12', subjectName: 'Big Data Analytics', staffName: 'KAVITHA V (CS253)', type: 'THEORY' },
       { periodNumber: 3, timeSlot: '10:50 AM - 11:45 AM', startTime: '10:50', endTime: '11:45', subjectCode: 'CS23511', subjectName: 'Computer Networks', staffName: 'SELVAKUMARAN S. (CS91)', type: 'THEORY' },
@@ -256,16 +264,17 @@ export function generateCurriculumSchedule(deptCode: string, semester: number): 
       { periodNumber: 5, timeSlot: '01:30 PM - 02:25 PM', startTime: '13:30', endTime: '14:25', subjectCode: 'CB23531', subjectName: 'Business Analytics', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'THEORY' },
       { periodNumber: 6, timeSlot: '02:25 PM - 03:20 PM', startTime: '14:25', endTime: '15:20', subjectCode: 'AD23532', subjectName: 'Data Exploration & Visualization', staffName: 'DR.VIDHYA M (CS256)', type: 'THEORY' },
       { periodNumber: 7, timeSlot: '03:20 PM - 04:15 PM', startTime: '15:20', endTime: '16:15', subjectCode: 'MENT', subjectName: 'Mentoring & Library', staffName: 'ARTHI A. (CS87)', type: 'THEORY' },
-    ]),
-    tuesday: createDay([
+    ],
+    tuesday: [
       { periodNumber: 1, timeSlot: '08:45 AM - 09:40 AM', startTime: '08:45', endTime: '09:40', subjectCode: 'AD23V15', subjectName: 'Image and Video Analytics', staffName: 'JOEL J (CS226)', type: 'THEORY' },
       { periodNumber: 2, timeSlot: '09:40 AM - 10:35 AM', startTime: '09:40', endTime: '10:35', subjectCode: 'AD23532', subjectName: 'Data Exploration & Visualization', staffName: 'DR.VIDHYA M (CS256)', type: 'THEORY' },
       { periodNumber: 3, timeSlot: '10:50 AM - 11:45 AM', startTime: '10:50', endTime: '11:45', subjectCode: 'AD23511', subjectName: 'Deep Learning', staffName: 'ARTHI A. (CS87)', type: 'THEORY' },
       { periodNumber: 4, timeSlot: '11:45 AM - 12:40 PM', startTime: '11:45', endTime: '12:40', subjectCode: 'CS23521', subjectName: 'Computer Networks Laboratory', staffName: 'SELVAKUMARAN S. (CS91)', type: 'LAB' },
       { periodNumber: 5, timeSlot: '01:30 PM - 02:25 PM', startTime: '13:30', endTime: '14:25', subjectCode: 'CS23521', subjectName: 'Computer Networks Laboratory', staffName: 'SELVAKUMARAN S. (CS91)', type: 'LAB' },
       { periodNumber: 6, timeSlot: '02:25 PM - 03:20 PM', startTime: '14:25', endTime: '15:20', subjectCode: 'CB23531', subjectName: 'Business Analytics', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'THEORY' },
-    ]),
-    wednesday: createDay([
+      { periodNumber: 7, timeSlot: '03:20 PM - 04:15 PM', startTime: '15:20', endTime: '16:15', subjectCode: 'MENT', subjectName: 'Mentoring & Guidance', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'THEORY' },
+    ],
+    wednesday: [
       { periodNumber: 1, timeSlot: '08:45 AM - 09:40 AM', startTime: '08:45', endTime: '09:40', subjectCode: 'AD23521', subjectName: 'Deep Learning Laboratory', staffName: 'ARTHI A. (CS87)', type: 'LAB' },
       { periodNumber: 2, timeSlot: '09:40 AM - 10:35 AM', startTime: '09:40', endTime: '10:35', subjectCode: 'AD23521', subjectName: 'Deep Learning Laboratory', staffName: 'ARTHI A. (CS87)', type: 'LAB' },
       { periodNumber: 3, timeSlot: '10:50 AM - 11:45 AM', startTime: '10:50', endTime: '11:45', subjectCode: 'AD23V15', subjectName: 'Image and Video Analytics', staffName: 'JOEL J (CS226)', type: 'THEORY' },
@@ -273,8 +282,8 @@ export function generateCurriculumSchedule(deptCode: string, semester: number): 
       { periodNumber: 5, timeSlot: '01:30 PM - 02:25 PM', startTime: '13:30', endTime: '14:25', subjectCode: 'AD23V12', subjectName: 'Big Data Analytics', staffName: 'KAVITHA V (CS253)', type: 'THEORY' },
       { periodNumber: 6, timeSlot: '02:25 PM - 03:20 PM', startTime: '14:25', endTime: '15:20', subjectCode: 'CS23511', subjectName: 'Computer Networks', staffName: 'SELVAKUMARAN S. (CS91)', type: 'THEORY' },
       { periodNumber: 7, timeSlot: '03:20 PM - 04:15 PM', startTime: '15:20', endTime: '16:15', subjectCode: 'MENT', subjectName: 'Mentoring Session', staffName: 'KAVITHA V (CS253)', type: 'THEORY' },
-    ]),
-    thursday: createDay([
+    ],
+    thursday: [
       { periodNumber: 1, timeSlot: '08:45 AM - 09:40 AM', startTime: '08:45', endTime: '09:40', subjectCode: 'CB23531', subjectName: 'Business Analytics', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'THEORY' },
       { periodNumber: 2, timeSlot: '09:40 AM - 10:35 AM', startTime: '09:40', endTime: '10:35', subjectCode: 'CS23511', subjectName: 'Computer Networks', staffName: 'SELVAKUMARAN S. (CS91)', type: 'THEORY' },
       { periodNumber: 3, timeSlot: '10:50 AM - 11:45 AM', startTime: '10:50', endTime: '11:45', subjectCode: 'AD23511', subjectName: 'Deep Learning', staffName: 'ARTHI A. (CS87)', type: 'THEORY' },
@@ -282,8 +291,8 @@ export function generateCurriculumSchedule(deptCode: string, semester: number): 
       { periodNumber: 5, timeSlot: '01:30 PM - 02:25 PM', startTime: '13:30', endTime: '14:25', subjectCode: 'AD23V12', subjectName: 'Big Data Analytics', staffName: 'KAVITHA V (CS253)', type: 'THEORY' },
       { periodNumber: 6, timeSlot: '02:25 PM - 03:20 PM', startTime: '14:25', endTime: '15:20', subjectCode: 'AD23532', subjectName: 'Data Exploration & Visualization', staffName: 'DR.VIDHYA M (CS256)', type: 'THEORY' },
       { periodNumber: 7, timeSlot: '03:20 PM - 04:15 PM', startTime: '15:20', endTime: '16:15', subjectCode: 'MENT', subjectName: 'Mentoring Hour', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'THEORY' },
-    ]),
-    friday: createDay([
+    ],
+    friday: [
       { periodNumber: 1, timeSlot: '08:45 AM - 09:40 AM', startTime: '08:45', endTime: '09:40', subjectCode: 'AD23V12', subjectName: 'Big Data Analytics', staffName: 'KAVITHA V (CS253)', type: 'THEORY' },
       { periodNumber: 2, timeSlot: '09:40 AM - 10:35 AM', startTime: '09:40', endTime: '10:35', subjectCode: 'AD23V15', subjectName: 'Image and Video Analytics', staffName: 'JOEL J (CS226)', type: 'THEORY' },
       { periodNumber: 3, timeSlot: '10:50 AM - 11:45 AM', startTime: '10:50', endTime: '11:45', subjectCode: 'AD23511', subjectName: 'Deep Learning', staffName: 'ARTHI A. (CS87)', type: 'THEORY' },
@@ -291,16 +300,7 @@ export function generateCurriculumSchedule(deptCode: string, semester: number): 
       { periodNumber: 5, timeSlot: '01:30 PM - 02:25 PM', startTime: '13:30', endTime: '14:25', subjectCode: 'AD23532', subjectName: 'Data Exploration & Visualization', staffName: 'DR.VIDHYA M (CS256)', type: 'THEORY' },
       { periodNumber: 6, timeSlot: '02:25 PM - 03:20 PM', startTime: '14:25', endTime: '15:20', subjectCode: 'CB23531', subjectName: 'Business Analytics', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'THEORY' },
       { periodNumber: 7, timeSlot: '03:20 PM - 04:15 PM', startTime: '15:20', endTime: '16:15', subjectCode: 'CB23531', subjectName: 'Business Analytics', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'THEORY' },
-    ]),
-    saturday: createDay([
-      { periodNumber: 1, timeSlot: '08:45 AM - 09:40 AM', startTime: '08:45', endTime: '09:40', subjectCode: 'MX23511', subjectName: 'Disaster Risk Reduction and Management', staffName: 'DR. SRINIVASAN M P (PH22)', type: 'THEORY' },
-      { periodNumber: 2, timeSlot: '09:40 AM - 10:35 AM', startTime: '09:40', endTime: '10:35', subjectCode: 'AD23IC3', subjectName: 'Tableau - Data Visualization', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'LAB' },
-      { periodNumber: 3, timeSlot: '10:50 AM - 11:45 AM', startTime: '10:50', endTime: '11:45', subjectCode: 'MX23511', subjectName: 'Disaster Risk Reduction and Management', staffName: 'DR. SRINIVASAN M P (PH22)', type: 'THEORY' },
-      { periodNumber: 4, timeSlot: '11:45 AM - 12:40 PM', startTime: '11:45', endTime: '12:40', subjectCode: 'MX23511', subjectName: 'Disaster Risk Reduction and Management', staffName: 'DR. SRINIVASAN M P (PH22)', type: 'THEORY' },
-      { periodNumber: 5, timeSlot: '01:30 PM - 02:25 PM', startTime: '13:30', endTime: '14:25', subjectCode: 'MX23511', subjectName: 'Disaster Risk Reduction and Management', staffName: 'DR. SRINIVASAN M P (PH22)', type: 'THEORY' },
-      { periodNumber: 6, timeSlot: '02:25 PM - 03:20 PM', startTime: '14:25', endTime: '15:20', subjectCode: 'MX23511', subjectName: 'Disaster Risk Reduction and Management', staffName: 'DR. SRINIVASAN M P (PH22)', type: 'THEORY' },
-      { periodNumber: 7, timeSlot: '03:20 PM - 04:15 PM', startTime: '15:20', endTime: '16:15', subjectCode: 'AD23IC3', subjectName: 'Tableau - Data Visualization', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'LAB' },
-    ]),
+    ],
   };
 }
 
@@ -320,25 +320,46 @@ const startTimes = ['08:45', '09:40', '10:50', '11:45', '13:30', '14:25', '15:20
 const endTimes = ['09:40', '10:35', '11:45', '12:40', '14:25', '15:20', '16:15', '17:10', '18:05', '19:00'];
 
 export function normalizeTimetableSchedule(scheduleRaw: any): WeeklySchedule {
-  const emptyDay = (): DaySchedule => ({ 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [] });
   const weekly: WeeklySchedule = {
-    monday: emptyDay(),
-    tuesday: emptyDay(),
-    wednesday: emptyDay(),
-    thursday: emptyDay(),
-    friday: emptyDay(),
-    saturday: emptyDay(),
+    monday: [],
+    tuesday: [],
+    wednesday: [],
+    thursday: [],
+    friday: [],
   };
 
   if (!scheduleRaw) return weekly;
 
   const dayAliases: Record<string, keyof WeeklySchedule> = {
-    '1': 'monday', 'mon': 'monday', 'monday': 'monday',
-    '2': 'tuesday', 'tue': 'tuesday', 'tuesday': 'tuesday',
-    '3': 'wednesday', 'wed': 'wednesday', 'wednesday': 'wednesday',
-    '4': 'thursday', 'thu': 'thursday', 'thursday': 'thursday',
-    '5': 'friday', 'fri': 'friday', 'friday': 'friday',
-    '6': 'saturday', 'sat': 'saturday', 'saturday': 'saturday',
+    '1': 'monday',
+    'mon': 'monday',
+    'monday': 'monday',
+    'day 1': 'monday',
+    'day1': 'monday',
+
+    '2': 'tuesday',
+    'tue': 'tuesday',
+    'tuesday': 'tuesday',
+    'day 2': 'tuesday',
+    'day2': 'tuesday',
+
+    '3': 'wednesday',
+    'wed': 'wednesday',
+    'wednesday': 'wednesday',
+    'day 3': 'wednesday',
+    'day3': 'wednesday',
+
+    '4': 'thursday',
+    'thu': 'thursday',
+    'thursday': 'thursday',
+    'day 4': 'thursday',
+    'day4': 'thursday',
+
+    '5': 'friday',
+    'fri': 'friday',
+    'friday': 'friday',
+    'day 5': 'friday',
+    'day5': 'friday',
   };
 
   const scheduleMap = scheduleRaw.schedule || scheduleRaw.data?.schedule || scheduleRaw.data || scheduleRaw;
@@ -352,7 +373,6 @@ export function normalizeTimetableSchedule(scheduleRaw: any): WeeklySchedule {
       if (typeof dayObj === 'object' && !Array.isArray(dayObj)) {
         Object.keys(dayObj).forEach((rawPeriod) => {
           const pNum = parseInt(rawPeriod, 10);
-          if (pNum < 1 || pNum > 7) return;
           const rawItems = dayObj[rawPeriod];
           const items = Array.isArray(rawItems) ? rawItems : [rawItems];
 
@@ -365,12 +385,11 @@ export function normalizeTimetableSchedule(scheduleRaw: any): WeeklySchedule {
             const isLab = (subName && subName.toLowerCase().includes('lab')) || subCode.includes('71') || subCode.includes('81');
 
             if (subName || subCode || staff) {
-              if (!weekly[normalizedDay][pNum]) weekly[normalizedDay][pNum] = [];
-              weekly[normalizedDay][pNum].push({
-                periodNumber: pNum,
-                timeSlot: timeSlots[pNum - 1] || `Period ${pNum}`,
-                startTime: startTimes[pNum - 1] || '08:45',
-                endTime: endTimes[pNum - 1] || '09:40',
+              weekly[normalizedDay].push({
+                periodNumber: pNum || (weekly[normalizedDay].length + 1),
+                timeSlot: timeSlots[(pNum || (weekly[normalizedDay].length + 1)) - 1] || `Period ${pNum || 1}`,
+                startTime: startTimes[(pNum || 1) - 1] || '08:45',
+                endTime: endTimes[(pNum || 1) - 1] || '09:40',
                 subjectCode: subCode || 'SUB',
                 subjectName: subName || 'Core Subject',
                 staffName: staff || 'Faculty Member',
@@ -380,7 +399,32 @@ export function normalizeTimetableSchedule(scheduleRaw: any): WeeklySchedule {
             }
           });
         });
+      } else if (Array.isArray(dayObj)) {
+        dayObj.forEach((item: any, idx: number) => {
+          if (!item) return;
+          const pNum = item.period || item.periodNumber || (idx + 1);
+          const subName = item.subjectName || item.name || item.subject || '';
+          const subCode = item.subjectCode || item.code || '';
+          const staff = item.staffName || item.staff || '';
+          const isLab = (subName && subName.toLowerCase().includes('lab')) || subCode.includes('71') || subCode.includes('81');
+
+          if (subName || subCode || staff) {
+            weekly[normalizedDay].push({
+              periodNumber: pNum,
+              timeSlot: timeSlots[pNum - 1] || `Period ${pNum}`,
+              startTime: startTimes[pNum - 1] || '08:45',
+              endTime: endTimes[pNum - 1] || '09:40',
+              subjectCode: subCode || 'SUB',
+              subjectName: subName || 'Core Subject',
+              staffName: staff || 'Faculty Member',
+              staffCode: item.staffCode,
+              type: isLab ? 'LAB' : 'THEORY',
+            });
+          }
+        });
       }
+
+      weekly[normalizedDay].sort((a, b) => a.periodNumber - b.periodNumber);
     });
   }
 
@@ -655,23 +699,22 @@ export function updateImsProfileName(newName: string): StudentProfile | null {
  *    Replicates reference site's fetchTimetable() from imsScraper.ts
  */
 export async function fetchImsTimetable(_token: string, regNumber: string, _forceRefresh = false): Promise<WeeklySchedule> {
-  const emptyDay = (): DaySchedule => ({ 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [] });
   let weeklySchedule: WeeklySchedule = {
-    monday: emptyDay(), tuesday: emptyDay(), wednesday: emptyDay(), thursday: emptyDay(), friday: emptyDay(), saturday: emptyDay(),
+    monday: [], tuesday: [], wednesday: [], thursday: [], friday: [],
   };
 
   try {
     const session = getStoredImsSession();
     let targetUrl = session?.profile?.timetableUrl || '';
 
+    // If targetUrl is not stored yet, discover it dynamically from the report menu page
     if (!targetUrl) {
       const navRes = await fetch('/ims/admin/grade/student/mark/report', { credentials: 'same-origin' });
       if (navRes.ok) {
-        const html = await navRes.text();
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        const ttLinkEl = doc.querySelector('a[href*="time-table"]');
-        if (ttLinkEl) {
-          const ttLink = ttLinkEl.getAttribute('href') || '';
+        const navHtml = await navRes.text();
+        const navDoc = new DOMParser().parseFromString(navHtml, 'text/html');
+        const ttLink = navDoc.querySelector('a[href*="student-time-table"]')?.getAttribute('href');
+        if (ttLink) {
           if (ttLink.startsWith('https://ims.ritchennai.edu.in')) {
             targetUrl = ttLink.replace('https://ims.ritchennai.edu.in', '/ims');
           } else if (ttLink.startsWith('/')) {
@@ -691,15 +734,16 @@ export async function fetchImsTimetable(_token: string, regNumber: string, _forc
     const html = await response.text();
     const doc = new DOMParser().parseFromString(html, 'text/html');
 
+    // Parse .period_form elements — exact same logic as reference site
     const forms = Array.from(doc.querySelectorAll('.period_form'));
     if (forms.length > 0) {
       const dayAliases: Record<string, keyof WeeklySchedule> = {
-        'monday': 'monday', 'mon': 'monday', '1': 'monday',
-        'tuesday': 'tuesday', 'tue': 'tuesday', '2': 'tuesday',
-        'wednesday': 'wednesday', 'wed': 'wednesday', '3': 'wednesday',
-        'thursday': 'thursday', 'thu': 'thursday', '4': 'thursday',
-        'friday': 'friday', 'fri': 'friday', '5': 'friday',
-        'saturday': 'saturday', 'sat': 'saturday', '6': 'saturday',
+        'monday': 'monday', 'tuesday': 'tuesday', 'wednesday': 'wednesday',
+        'thursday': 'thursday', 'friday': 'friday',
+      };
+
+      const periodMap: Record<string, Record<number, TimetablePeriod>> = {
+        monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {}
       };
 
       forms.forEach(form => {
@@ -708,7 +752,7 @@ export async function fetchImsTimetable(_token: string, regNumber: string, _forc
 
         const day = (dayInput?.value || '').toLowerCase().trim();
         const period = parseInt(periodInput?.value || '0', 10);
-        if (!day || !period || isNaN(period) || period < 1 || period > 7) return;
+        if (!day || !period || isNaN(period) || period < 1 || period > 10) return;
 
         const normalizedDay = dayAliases[day];
         if (!normalizedDay) return;
@@ -729,6 +773,7 @@ export async function fetchImsTimetable(_token: string, regNumber: string, _forc
           });
         }
 
+        // Fallback text check for non-standard subjects (NPTEL, Aptitude, Mentoring, Placement, Library, etc.)
         if (!rawSubject) {
           const fullTxt = form.textContent?.trim() || '';
           if (fullTxt) rawSubject = fullTxt.replace(/\s+/g, ' ').slice(0, 60);
@@ -752,29 +797,58 @@ export async function fetchImsTimetable(_token: string, regNumber: string, _forc
           staffName = `${staffMatch[1].trim()} (${staffMatch[2].trim()})`;
         }
 
+        // STRICT USER RULE: Mark as LAB ONLY if subject name contains 'lab' or 'laboratory' (case insensitive)
         const rawSubLower = subjectName.toLowerCase();
         const isLab = rawSubLower.includes('lab') || rawSubLower.includes('laboratory');
 
-        const periodItem: TimetablePeriod = {
-          periodNumber: period,
-          timeSlot: (period - 1) < timeSlots.length ? timeSlots[period - 1] : `Period ${period}`,
-          startTime: (period - 1) < startTimes.length ? startTimes[period - 1] : '',
-          endTime: (period - 1) < endTimes.length ? endTimes[period - 1] : '',
-          subjectCode,
-          subjectName,
-          staffName,
-          type: isLab ? 'LAB' : 'THEORY',
-        };
+        const periodIndex = period - 1;
+        const existing = periodMap[normalizedDay][period];
 
-        const existingList = weeklySchedule[normalizedDay][period] || [];
-        const isDuplicate = existingList.some(
-          p => p.subjectCode === subjectCode && p.staffName === staffName && p.subjectName === subjectName
-        );
-
-        if (!isDuplicate) {
-          existingList.push(periodItem);
-          weeklySchedule[normalizedDay][period] = existingList;
+        if (!existing) {
+          periodMap[normalizedDay][period] = {
+            periodNumber: period,
+            timeSlot: periodIndex < timeSlots.length ? timeSlots[periodIndex] : `Period ${period}`,
+            startTime: periodIndex < startTimes.length ? startTimes[periodIndex] : '',
+            endTime: periodIndex < endTimes.length ? endTimes[periodIndex] : '',
+            subjectCode,
+            subjectName,
+            staffName,
+            type: isLab ? 'LAB' : 'THEORY',
+          };
+        } else {
+          // Merge staff names if same course or elective slot
+          if (staffName && !existing.staffName.includes(staffName)) {
+            existing.staffName += `, ${staffName}`;
+          }
         }
+      });
+
+      // Populate weeklySchedule from periodMap (Ensure EVERY day Monday-Friday has EXACTLY 7 periods)
+      const standardDays: (keyof WeeklySchedule)[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+
+      standardDays.forEach((day) => {
+        const existingMap = periodMap[day] || {};
+        const fullDayPeriods: TimetablePeriod[] = [];
+
+        for (let pNum = 1; pNum <= 7; pNum++) {
+          const periodIndex = pNum - 1;
+          if (existingMap[pNum]) {
+            fullDayPeriods.push(existingMap[pNum]);
+          } else {
+            fullDayPeriods.push({
+              periodNumber: pNum,
+              timeSlot: timeSlots[periodIndex] || `Period ${pNum}`,
+              startTime: startTimes[periodIndex] || '',
+              endTime: endTimes[periodIndex] || '',
+              subjectCode: 'FREE',
+              subjectName: 'Free Period / Library',
+              staffName: 'Self Study',
+              type: 'THEORY',
+            });
+          }
+        }
+
+        weeklySchedule[day] = fullDayPeriods;
       });
     }
   } catch (err) {
@@ -782,9 +856,7 @@ export async function fetchImsTimetable(_token: string, regNumber: string, _forc
   }
 
   // Fallback to hardcoded schedule only if scraping returned nothing
-  const totalPeriods = Object.values(weeklySchedule).reduce((acc: number, daySched: any) => {
-    return acc + Object.values(daySched || {}).reduce((dAcc: number, pList: any) => dAcc + (pList?.length || 0), 0);
-  }, 0);
+  const totalPeriods = Object.values(weeklySchedule).reduce((acc, periods) => acc + periods.length, 0);
   if (totalPeriods === 0) {
     const deduced = deduceStudentDetails(regNumber || '0000000000000');
     weeklySchedule = generateCurriculumSchedule(deduced.departmentCode, deduced.semester);
@@ -1152,4 +1224,114 @@ export async function fetchStudentDashboard(regNumber?: string): Promise<{ resul
   if (!session?.token) return null;
   const grades = await fetchImsSemesterResults(session.token, regNumber || session.profile.registerNumber, session.profile.semester);
   return { ...grades, student: session.profile };
+}
+
+/**
+ * Fetch Assignment Marks from /ims/admin/assignment/student/mark/report
+ */
+export async function fetchImsAssignmentMarks(): Promise<AssignmentMarkItem[]> {
+  try {
+    const response = await fetch('/ims/admin/assignment/student/mark/report', {
+      method: 'GET',
+      credentials: 'same-origin',
+    });
+    if (!response.ok) return [];
+
+    const html = await response.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const table = doc.querySelector('table');
+    if (!table) return [];
+
+    const rows = Array.from(table.querySelectorAll('tr'));
+    const items: AssignmentMarkItem[] = [];
+
+    rows.forEach((row) => {
+      const tds = Array.from(row.querySelectorAll('td')).map(td => td.textContent?.trim() || '');
+      if (tds.length >= 4) {
+        let subjectName = tds[0];
+        let subjectCode = tds[1];
+        let facultyName = tds[2];
+
+        if (/^[A-Z]{2,4}\d{2,5}$/i.test(tds[0])) {
+          subjectCode = tds[0];
+          subjectName = tds[1];
+        }
+
+        const a1 = tds[3] || '-';
+        const a2 = tds[4] || '-';
+        const a3 = tds[5] || '-';
+        const a4 = tds[6] || '-';
+        const a5 = tds[7] || '-';
+        const total = tds[8] || tds[tds.length - 1] || '-';
+
+        if (subjectName || subjectCode) {
+          items.push({
+            subjectName,
+            subjectCode,
+            facultyName,
+            a1, a2, a3, a4, a5,
+            total,
+          });
+        }
+      }
+    });
+
+    return items;
+  } catch (err) {
+    console.warn('Failed to fetch assignment marks:', err);
+    return [];
+  }
+}
+
+/**
+ * Fetch LAB Marks from /ims/admin/student_lab_mark/report
+ */
+export async function fetchImsLabMarks(): Promise<LabMarkItem[]> {
+  try {
+    const response = await fetch('/ims/admin/student_lab_mark/report', {
+      method: 'GET',
+      credentials: 'same-origin',
+    });
+    if (!response.ok) return [];
+
+    const html = await response.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const table = doc.querySelector('table');
+    if (!table) return [];
+
+    const rows = Array.from(table.querySelectorAll('tr'));
+    const items: LabMarkItem[] = [];
+
+    rows.forEach((row) => {
+      const tds = Array.from(row.querySelectorAll('td')).map(td => td.textContent?.trim() || '');
+      if (tds.length >= 3) {
+        let subjectName = tds[0];
+        let subjectCode = tds[1];
+        let facultyName = tds[2];
+
+        if (/^[A-Z]{2,4}\d{2,5}$/i.test(tds[0])) {
+          subjectCode = tds[0];
+          subjectName = tds[1];
+        }
+
+        const marks = tds[3] || '-';
+        const total = tds[tds.length - 1] || '-';
+
+        if (subjectName || subjectCode) {
+          items.push({
+            subjectName,
+            subjectCode,
+            facultyName,
+            marks,
+            total,
+          });
+        }
+      }
+    });
+
+    return items;
+  } catch (err) {
+    console.warn('Failed to fetch lab marks:', err);
+    return [];
+  }
 }
