@@ -34,7 +34,6 @@ export interface WeeklySchedule {
   wednesday: TimetablePeriod[];
   thursday: TimetablePeriod[];
   friday: TimetablePeriod[];
-  saturday: TimetablePeriod[];
 }
 
 export interface SubjectAttendance {
@@ -282,15 +281,6 @@ export function generateCurriculumSchedule(deptCode: string, semester: number): 
       { periodNumber: 6, timeSlot: '02:25 PM - 03:20 PM', startTime: '14:25', endTime: '15:20', subjectCode: 'CB23531', subjectName: 'Business Analytics', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'THEORY' },
       { periodNumber: 7, timeSlot: '03:20 PM - 04:15 PM', startTime: '15:20', endTime: '16:15', subjectCode: 'CB23531', subjectName: 'Business Analytics', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'THEORY' },
     ],
-    saturday: [
-      { periodNumber: 1, timeSlot: '08:45 AM - 09:40 AM', startTime: '08:45', endTime: '09:40', subjectCode: 'AD23IC3', subjectName: 'Tableau - Data Visualization', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'LAB' },
-      { periodNumber: 2, timeSlot: '09:40 AM - 10:35 AM', startTime: '09:40', endTime: '10:35', subjectCode: 'MX23511', subjectName: 'Disaster Risk Reduction', staffName: 'DR. SRINIVASAN M P (PH22)', type: 'THEORY' },
-      { periodNumber: 3, timeSlot: '10:50 AM - 11:45 AM', startTime: '10:50', endTime: '11:45', subjectCode: 'AD23IC3', subjectName: 'Tableau - Data Visualization', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'LAB' },
-      { periodNumber: 4, timeSlot: '11:45 AM - 12:40 PM', startTime: '11:45', endTime: '12:40', subjectCode: 'AD23IC3', subjectName: 'Tableau - Data Visualization', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'LAB' },
-      { periodNumber: 5, timeSlot: '01:30 PM - 02:25 PM', startTime: '13:30', endTime: '14:25', subjectCode: 'AD23IC3', subjectName: 'Tableau - Data Visualization', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'LAB' },
-      { periodNumber: 6, timeSlot: '02:25 PM - 03:20 PM', startTime: '14:25', endTime: '15:20', subjectCode: 'AD23IC3', subjectName: 'Tableau - Data Visualization', staffName: 'FOUZIA SULTHANA K. (CS84)', type: 'LAB' },
-      { periodNumber: 7, timeSlot: '03:20 PM - 04:15 PM', startTime: '15:20', endTime: '16:15', subjectCode: 'MX23511', subjectName: 'Disaster Risk Reduction', staffName: 'DR. SRINIVASAN M P (PH22)', type: 'THEORY' },
-    ],
   };
 }
 
@@ -316,7 +306,6 @@ export function normalizeTimetableSchedule(scheduleRaw: any): WeeklySchedule {
     wednesday: [],
     thursday: [],
     friday: [],
-    saturday: [],
   };
 
   if (!scheduleRaw) return weekly;
@@ -351,12 +340,6 @@ export function normalizeTimetableSchedule(scheduleRaw: any): WeeklySchedule {
     'friday': 'friday',
     'day 5': 'friday',
     'day5': 'friday',
-
-    '6': 'saturday',
-    'sat': 'saturday',
-    'saturday': 'saturday',
-    'day 6': 'saturday',
-    'day6': 'saturday',
   };
 
   const scheduleMap = scheduleRaw.schedule || scheduleRaw.data?.schedule || scheduleRaw.data || scheduleRaw;
@@ -697,7 +680,7 @@ export function updateImsProfileName(newName: string): StudentProfile | null {
  */
 export async function fetchImsTimetable(_token: string, regNumber: string, _forceRefresh = false): Promise<WeeklySchedule> {
   let weeklySchedule: WeeklySchedule = {
-    monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [],
+    monday: [], tuesday: [], wednesday: [], thursday: [], friday: [],
   };
 
   try {
@@ -736,11 +719,11 @@ export async function fetchImsTimetable(_token: string, regNumber: string, _forc
     if (forms.length > 0) {
       const dayAliases: Record<string, keyof WeeklySchedule> = {
         'monday': 'monday', 'tuesday': 'tuesday', 'wednesday': 'wednesday',
-        'thursday': 'thursday', 'friday': 'friday', 'saturday': 'saturday',
+        'thursday': 'thursday', 'friday': 'friday',
       };
 
       const periodMap: Record<string, Record<number, TimetablePeriod>> = {
-        monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {}, saturday: {}
+        monday: {}, tuesday: {}, wednesday: {}, thursday: {}, friday: {}
       };
 
       forms.forEach(form => {

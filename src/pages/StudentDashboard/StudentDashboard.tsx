@@ -35,7 +35,7 @@ export default function StudentDashboard() {
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<'timetable' | 'attendance' | 'marks' | 'grades' | 'faculties'>('timetable');
-  const [selectedDay, setSelectedDay] = useState<'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday'>('monday');
+  const [selectedDay, setSelectedDay] = useState<'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday'>('monday');
   const [selectedSemFilter, setSelectedSemFilter] = useState<number>(0);
 
   // Loaded Data States
@@ -67,9 +67,9 @@ export default function StudentDashboard() {
     }
   }, [session?.token]);
 
-  // Set default day to today
+  // Set default day to today (Mon-Fri)
   useEffect(() => {
-    const dayNames: (keyof WeeklySchedule)[] = ['monday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const dayNames: (keyof WeeklySchedule)[] = ['monday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'friday'];
     const today = dayNames[new Date().getDay()] || 'monday';
     setSelectedDay(today);
   }, []);
@@ -84,12 +84,12 @@ export default function StudentDashboard() {
       const tt = await fetchImsTimetable(token, p.registerNumber, force);
       setTimetable(tt);
 
-      const dayNames: (keyof WeeklySchedule)[] = ['monday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+      const dayNames: (keyof WeeklySchedule)[] = ['monday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'friday'];
       const today = dayNames[new Date().getDay()] || 'monday';
       if (tt && tt[today] && tt[today].length > 0) {
         setSelectedDay(today);
       } else if (tt) {
-        const firstActive = (['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const).find(
+        const firstActive = (['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const).find(
           d => tt[d] && tt[d].length > 0
         );
         if (firstActive) setSelectedDay(firstActive);
@@ -734,9 +734,8 @@ export default function StudentDashboard() {
             {/* Day Switcher */}
             <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-[#E5E7EB] shadow-sm">
               <div className="flex items-center gap-2 overflow-x-auto py-1">
-                {(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const).map((dayKey) => {
+                {(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const).map((dayKey) => {
                   const count = timetable?.[dayKey]?.length || 0;
-                  if (dayKey === 'saturday' && count === 0) return null;
                   const isSelected = selectedDay === dayKey;
                   return (
                     <button
