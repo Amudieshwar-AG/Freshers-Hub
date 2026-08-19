@@ -134,11 +134,22 @@ export default function Events() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedType, setSelectedType] = useState<'All' | 'Club' | 'Center'>('All');
 
+  const activeClubsData = useMemo(() => {
+    try {
+      const saved = localStorage.getItem('RIT_LOCAL_CLUBS');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return CLUBS_DATA;
+  }, []);
+
   // Compute counts dynamically
   const { totalCount, centersCount, clubsCount } = useMemo(() => {
     let centers = 0;
     let clubs = 0;
-    CLUBS_DATA.forEach((item) => {
+    activeClubsData.forEach((item) => {
       const isCenter =
         item.type === 'Center' ||
         item.category === 'Center of Excellence' ||
@@ -147,8 +158,8 @@ export default function Events() {
       if (isCenter) centers++;
       else clubs++;
     });
-    return { totalCount: CLUBS_DATA.length, centersCount: centers, clubsCount: clubs };
-  }, []);
+    return { totalCount: activeClubsData.length, centersCount: centers, clubsCount: clubs };
+  }, [activeClubsData]);
 
   // ─── Database-Backed Interactive Like System ─────────────────────────────
   const [likedClubs, setLikedClubs] = useState<Set<string>>(() => {
@@ -163,7 +174,7 @@ export default function Events() {
 
   const [likesMap, setLikesMap] = useState<Record<string, number>>(() => {
     const initialMap: Record<string, number> = {};
-    CLUBS_DATA.forEach((c) => {
+    activeClubsData.forEach((c) => {
       initialMap[c.id] = 0;
     });
     return initialMap;
@@ -259,7 +270,7 @@ export default function Events() {
 
   const calculateQuizResults = (answers: number[]) => {
     const scoreMap: Record<string, number> = {};
-    CLUBS_DATA.forEach((c) => (scoreMap[c.id] = 0));
+    activeClubsData.forEach((c) => (scoreMap[c.id] = 0));
 
     answers.forEach((ansIdx, qIdx) => {
       const option = QUIZ_QUESTIONS_ALL[qIdx].options[ansIdx];
@@ -270,7 +281,7 @@ export default function Events() {
       }
     });
 
-    const pool = CLUBS_DATA.filter((c) => {
+    const pool = activeClubsData.filter((c) => {
       const isCenter =
         c.type === 'Center' ||
         c.category === 'Center of Excellence' ||
@@ -316,7 +327,7 @@ export default function Events() {
 
   // ─── Robust Filter Logic ──────────────────────────────────────────────────
   const filteredData = useMemo(() => {
-    return CLUBS_DATA.filter((item) => {
+    return activeClubsData.filter((item) => {
       const isCenter =
         item.type === 'Center' ||
         item.category === 'Center of Excellence' ||

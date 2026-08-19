@@ -696,7 +696,21 @@ export default function Toolkit() {
 
     const semNum = parseInt(gpaSemester.replace(/\D/g, ''), 10) || 1;
     const deptKey = DEPARTMENT_CODE_MAP[gpaDepartment] || '';
-    const rawCurriculum = DEPARTMENT_CURRICULUM[deptKey]?.[semNum];
+
+    let rawCurriculum = null;
+    try {
+      const saved = localStorage.getItem('RIT_LOCAL_GPA_CURRICULUM');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed[deptKey] && parsed[deptKey][semNum] && parsed[deptKey][semNum].length > 0) {
+          rawCurriculum = parsed[deptKey][semNum];
+        }
+      }
+    } catch {}
+
+    if (!rawCurriculum) {
+      rawCurriculum = DEPARTMENT_CURRICULUM[deptKey]?.[semNum];
+    }
 
     if (rawCurriculum && rawCurriculum.length > 0) {
       let electiveCounter = 1;

@@ -5,11 +5,14 @@ import {
   CheckCircle2, AlertCircle, RefreshCw, Bus, Send, 
   MessageCircle, BookOpen, Bot, Edit, MapPin, 
   Clock, Palette, KeyRound, ExternalLink, ArrowRight, 
-  Code2, Check, HelpCircle, Users, Activity
+  Code2, Check, HelpCircle, Users, Activity,
+  UserCheck, Building2, GraduationCap, Calculator, Search
 } from 'lucide-react';
 import { getBackendUrl } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
+import { FACULTY_DATA, CLUBS_DATA, DEPARTMENTS } from '@/constants';
+import { DEPARTMENT_CURRICULUM, DEPARTMENT_CODE_MAP } from '@/constants/departmentCurriculum';
 
 
 interface BusStopItem {
@@ -49,6 +52,9 @@ const TELEGRAM_STORAGE_KEY = 'RIT_LOCAL_TELEGRAM_CONFIG';
 const NOTES_STORAGE_KEY = 'RIT_LOCAL_NOTES';
 const QUESTIONS_STORAGE_KEY = 'RIT_LOCAL_QUESTIONS';
 const RECIPIENTS_STORAGE_KEY = 'RIT_LOCAL_RECIPIENTS';
+const FACULTY_STORAGE_KEY = 'RIT_LOCAL_FACULTY';
+const CLUBS_STORAGE_KEY = 'RIT_LOCAL_CLUBS';
+const CURRICULUM_STORAGE_KEY = 'RIT_LOCAL_GPA_CURRICULUM';
 
 interface NoteItem {
   id: number;
@@ -162,6 +168,9 @@ export default function AdminDashboard() {
     if (activeTab === 'notes') fetchNotes();
     if (activeTab === 'community') fetchQuestions();
     if (activeTab === 'subscribers') fetchRecipients();
+    if (activeTab === 'faculty') fetchFaculty();
+    if (activeTab === 'clubs') fetchClubs();
+    if (activeTab === 'curriculum') fetchCurriculum();
   }, [isLoggedIn, activeTab]);
 
   // ─────────────────────────────────────────────────────────────
@@ -685,6 +694,257 @@ export default function AdminDashboard() {
   };
 
   // ─────────────────────────────────────────────────────────────
+  // FACULTY MANAGEMENT HANDLERS
+  // ─────────────────────────────────────────────────────────────
+  const fetchFaculty = () => {
+    setLoadingFaculty(true);
+    const saved = localStorage.getItem(FACULTY_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setFacultyList(parsed);
+          setLoadingFaculty(false);
+          return;
+        }
+      } catch {}
+    }
+    setFacultyList(FACULTY_DATA);
+    localStorage.setItem(FACULTY_STORAGE_KEY, JSON.stringify(FACULTY_DATA));
+    setLoadingFaculty(false);
+  };
+
+  const openAddFacultyModal = () => {
+    setEditingFaculty(null);
+    setFacultyFormData({
+      name: '',
+      designation: 'Assistant Professor',
+      department: 'Computer Science & Engineering',
+      email: '',
+      office: '',
+      specialization: '',
+      isClassIncharge: false,
+    });
+    setIsFacultyModalOpen(true);
+  };
+
+  const openEditFacultyModal = (item: any) => {
+    setEditingFaculty(item);
+    setFacultyFormData({
+      name: item.name || '',
+      designation: item.designation || '',
+      department: item.department || 'Computer Science & Engineering',
+      email: item.email || '',
+      office: item.office || item.cabin || '',
+      specialization: item.specialization || '',
+      isClassIncharge: item.isClassIncharge || false,
+    });
+    setIsFacultyModalOpen(true);
+  };
+
+  const handleSaveFaculty = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!facultyFormData.name.trim() || !facultyFormData.department.trim()) {
+      showToast('error', 'Faculty Name and Department are required.');
+      return;
+    }
+
+    let updated: any[];
+    if (editingFaculty) {
+      updated = facultyList.map((f) =>
+        f.id === editingFaculty.id ? { ...f, ...facultyFormData } : f
+      );
+      showToast('success', `Faculty ${facultyFormData.name} updated!`);
+    } else {
+      const newId = `fac_${Date.now()}`;
+      const newFaculty = { id: newId, ...facultyFormData };
+      updated = [newFaculty, ...facultyList];
+      showToast('success', `Faculty ${facultyFormData.name} added!`);
+    }
+
+    setFacultyList(updated);
+    localStorage.setItem(FACULTY_STORAGE_KEY, JSON.stringify(updated));
+    setIsFacultyModalOpen(false);
+
+    fetch(getBackendUrl('/api/admin/faculty'), {
+      method: editingFaculty ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(facultyFormData),
+    }).catch(() => {});
+  };
+
+  const handleDeleteFaculty = (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete faculty member "${name}"?`)) return;
+    const updated = facultyList.filter((f) => f.id !== id);
+    setFacultyList(updated);
+    localStorage.setItem(FACULTY_STORAGE_KEY, JSON.stringify(updated));
+    showToast('success', `Faculty "${name}" deleted.`);
+
+    fetch(getBackendUrl(`/api/admin/faculty/${id}`), { method: 'DELETE' }).catch(() => {});
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // CLUBS & CENTERS MANAGEMENT HANDLERS
+  // ─────────────────────────────────────────────────────────────
+  const fetchClubs = () => {
+    setLoadingClubs(true);
+    const saved = localStorage.getItem(CLUBS_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setClubsList(parsed);
+          setLoadingClubs(false);
+          return;
+        }
+      } catch {}
+    }
+    setClubsList(CLUBS_DATA);
+    localStorage.setItem(CLUBS_STORAGE_KEY, JSON.stringify(CLUBS_DATA));
+    setLoadingClubs(false);
+  };
+
+  const openAddClubModal = () => {
+    setEditingClub(null);
+    setClubFormData({
+      name: '',
+      description: '',
+      category: 'Center of Excellence',
+      type: 'Center',
+      coordinatorName: '',
+      contactEmail: '',
+      details: '',
+    });
+    setIsClubModalOpen(true);
+  };
+
+  const openEditClubModal = (item: any) => {
+    setEditingClub(item);
+    setClubFormData({
+      name: item.name || '',
+      description: item.description || '',
+      category: item.category || 'Center of Excellence',
+      type: item.type || (item.category === 'Center of Excellence' ? 'Center' : 'Club'),
+      coordinatorName: item.coordinatorName || '',
+      contactEmail: item.contactEmail || '',
+      details: item.details || '',
+    });
+    setIsClubModalOpen(true);
+  };
+
+  const handleSaveClub = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!clubFormData.name.trim() || !clubFormData.description.trim()) {
+      showToast('error', 'Name and Description are required.');
+      return;
+    }
+
+    let updated: any[];
+    if (editingClub) {
+      updated = clubsList.map((c) =>
+        c.id === editingClub.id ? { ...c, ...clubFormData } : c
+      );
+      showToast('success', `${clubFormData.type} "${clubFormData.name}" updated!`);
+    } else {
+      const newId = `club_${Date.now()}`;
+      const newClub = { id: newId, members: 50, ...clubFormData };
+      updated = [newClub, ...clubsList];
+      showToast('success', `${clubFormData.type} "${clubFormData.name}" added!`);
+    }
+
+    setClubsList(updated);
+    localStorage.setItem(CLUBS_STORAGE_KEY, JSON.stringify(updated));
+    setIsClubModalOpen(false);
+
+    fetch(getBackendUrl('/api/admin/clubs'), {
+      method: editingClub ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(clubFormData),
+    }).catch(() => {});
+  };
+
+  const handleDeleteClub = (id: string, name: string) => {
+    if (!confirm(`Delete "${name}" from directory?`)) return;
+    const updated = clubsList.filter((c) => c.id !== id);
+    setClubsList(updated);
+    localStorage.setItem(CLUBS_STORAGE_KEY, JSON.stringify(updated));
+    showToast('success', `"${name}" removed.`);
+
+    fetch(getBackendUrl(`/api/admin/clubs/${id}`), { method: 'DELETE' }).catch(() => {});
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // GPA CALCULATOR CURRICULUM MANAGEMENT HANDLERS
+  // ─────────────────────────────────────────────────────────────
+  const fetchCurriculum = () => {
+    const saved = localStorage.getItem(CURRICULUM_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') {
+          setCurriculumMap(parsed);
+          return;
+        }
+      } catch {}
+    }
+    setCurriculumMap(DEPARTMENT_CURRICULUM as any);
+    localStorage.setItem(CURRICULUM_STORAGE_KEY, JSON.stringify(DEPARTMENT_CURRICULUM));
+  };
+
+  const openAddCourseModal = () => {
+    setEditingCourseIndex(null);
+    setCourseFormData({ name: '', credits: 3, isElective: false });
+    setIsCourseModalOpen(true);
+  };
+
+  const openEditCourseModal = (idx: number, course: any) => {
+    setEditingCourseIndex(idx);
+    setCourseFormData({
+      name: course.name || '',
+      credits: course.credits || 3,
+      isElective: !!course.isElective,
+    });
+    setIsCourseModalOpen(true);
+  };
+
+  const handleSaveCourse = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!courseFormData.name.trim()) {
+      showToast('error', 'Course name/code is required.');
+      return;
+    }
+
+    const updatedMap = { ...curriculumMap };
+    if (!updatedMap[selectedGpaDept]) updatedMap[selectedGpaDept] = {};
+    const coursesList = [...(updatedMap[selectedGpaDept][selectedGpaSem] || (DEPARTMENT_CURRICULUM[selectedGpaDept] && DEPARTMENT_CURRICULUM[selectedGpaDept][selectedGpaSem]) || [])];
+
+    if (editingCourseIndex !== null) {
+      coursesList[editingCourseIndex] = { ...courseFormData };
+      showToast('success', `Course "${courseFormData.name}" updated!`);
+    } else {
+      coursesList.push({ ...courseFormData });
+      showToast('success', `Course "${courseFormData.name}" added to ${selectedGpaDept} Sem ${selectedGpaSem}!`);
+    }
+
+    updatedMap[selectedGpaDept][selectedGpaSem] = coursesList;
+    setCurriculumMap(updatedMap);
+    localStorage.setItem(CURRICULUM_STORAGE_KEY, JSON.stringify(updatedMap));
+    setIsCourseModalOpen(false);
+  };
+
+  const handleDeleteCourse = (idx: number, name: string) => {
+    if (!confirm(`Delete course "${name}" from ${selectedGpaDept} Semester ${selectedGpaSem}?`)) return;
+    const updatedMap = { ...curriculumMap };
+    if (!updatedMap[selectedGpaDept]) updatedMap[selectedGpaDept] = {};
+    const coursesList = [...(updatedMap[selectedGpaDept][selectedGpaSem] || [])].filter((_, i) => i !== idx);
+    updatedMap[selectedGpaDept][selectedGpaSem] = coursesList;
+
+    setCurriculumMap(updatedMap);
+    localStorage.setItem(CURRICULUM_STORAGE_KEY, JSON.stringify(updatedMap));
+    showToast('success', `Course "${name}" deleted.`);
+  };
+
+  // ─────────────────────────────────────────────────────────────
   // RENDER: LOGIN VIEW
   // ─────────────────────────────────────────────────────────────
   if (!isLoggedIn) {
@@ -870,6 +1130,9 @@ export default function AdminDashboard() {
               { id: 'notes', label: 'Notes & Study Materials', icon: BookOpen },
               { id: 'community', label: 'Community Q&A Moderation', icon: MessageCircle },
               { id: 'subscribers', label: 'Deployment Email Alerts', icon: Mail },
+              { id: 'faculty', label: 'Faculty Directory', icon: UserCheck },
+              { id: 'clubs', label: 'Clubs & Centers', icon: Building2 },
+              { id: 'curriculum', label: 'GPA Curriculum & Credits', icon: Calculator },
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -1389,6 +1652,304 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* ───────────────────────────────────────────────────────────── */}
+        {/* TAB 6: FACULTY DIRECTORY MANAGEMENT                           */}
+        {/* ───────────────────────────────────────────────────────────── */}
+        {activeTab === 'faculty' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-3xl border border-white/10">
+              <div>
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <UserCheck className="w-5 h-5 text-orange-400" />
+                  Faculty Directory Management ({facultyList.length})
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Add, update, or remove faculty profiles, cabin office hours, designations, and department assignments.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={facultySearch}
+                    onChange={(e) => setFacultySearch(e.target.value)}
+                    placeholder="Search faculty..."
+                    className="bg-slate-950 border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-orange-500"
+                  />
+                </div>
+                <button
+                  onClick={openAddFacultyModal}
+                  className="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-md shadow-orange-500/20 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Faculty
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {facultyList
+                .filter((f) =>
+                  !facultySearch.trim() ||
+                  f.name.toLowerCase().includes(facultySearch.toLowerCase()) ||
+                  f.department.toLowerCase().includes(facultySearch.toLowerCase()) ||
+                  (f.designation && f.designation.toLowerCase().includes(facultySearch.toLowerCase()))
+                )
+                .map((fac) => (
+                  <div
+                    key={fac.id}
+                    className="bg-slate-900/80 border border-white/10 rounded-2xl p-4 space-y-3 hover:border-white/20 transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <h4 className="text-xs font-bold text-white">{fac.name}</h4>
+                          <span className="text-[11px] font-medium text-orange-400 block mt-0.5">{fac.designation}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => openEditFacultyModal(fac)}
+                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteFaculty(fac.id, fac.name)}
+                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-1 text-[11px] text-slate-400 pt-2 border-t border-white/10">
+                        <p>🎓 <strong className="text-slate-200">{fac.department}</strong></p>
+                        {fac.email && <p>✉️ <span className="text-slate-300">{fac.email}</span></p>}
+                        {(fac.office || fac.cabin) && <p>📍 <span className="text-slate-300">Cabin: {fac.office || fac.cabin}</span></p>}
+                        {fac.specialization && <p>⚡ <span className="text-slate-400">{fac.specialization}</span></p>}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
+        {/* ───────────────────────────────────────────────────────────── */}
+        {/* TAB 7: CLUBS & CENTERS OF EXCELLENCE MANAGEMENT               */}
+        {/* ───────────────────────────────────────────────────────────── */}
+        {activeTab === 'clubs' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-3xl border border-white/10">
+              <div>
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-orange-400" />
+                  Clubs & Centers of Excellence ({clubsList.length})
+                </h3>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Manage student clubs, 15 Future Tech Centers of Excellence (CoEs), faculty lead contacts, and descriptions.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    value={clubsSearch}
+                    onChange={(e) => setClubsSearch(e.target.value)}
+                    placeholder="Search clubs & centers..."
+                    className="bg-slate-950 border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-orange-500"
+                  />
+                </div>
+                <button
+                  onClick={openAddClubModal}
+                  className="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-md shadow-orange-500/20 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Club / Center
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {clubsList
+                .filter((c) =>
+                  !clubsSearch.trim() ||
+                  c.name.toLowerCase().includes(clubsSearch.toLowerCase()) ||
+                  c.category.toLowerCase().includes(clubsSearch.toLowerCase()) ||
+                  (c.coordinatorName && c.coordinatorName.toLowerCase().includes(clubsSearch.toLowerCase()))
+                )
+                .map((club) => (
+                  <div
+                    key={club.id}
+                    className="bg-slate-900/80 border border-white/10 rounded-2xl p-4 space-y-3 hover:border-white/20 transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                              club.type === 'Center' || club.category === 'Center of Excellence'
+                                ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                                : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                            }`}>
+                              {club.type || (club.category === 'Center of Excellence' ? 'Center' : 'Club')}
+                            </span>
+                          </div>
+                          <h4 className="text-xs font-bold text-white line-clamp-1">{club.name}</h4>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            onClick={() => openEditClubModal(club)}
+                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClub(club.id, club.name)}
+                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <p className="text-[11px] text-slate-400 line-clamp-2 mt-2">{club.description}</p>
+                    </div>
+
+                    <div className="pt-2 border-t border-white/10 text-[11px] text-slate-400 space-y-1">
+                      {club.coordinatorName && <p>👤 Lead: <strong className="text-slate-200">{club.coordinatorName}</strong></p>}
+                      {club.category && <p>🏷️ Category: <span className="text-orange-400">{club.category}</span></p>}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        )}
+
+        {/* ───────────────────────────────────────────────────────────── */}
+        {/* TAB 8: GPA CALCULATOR CURRICULUM MANAGEMENT                  */}
+        {/* ───────────────────────────────────────────────────────────── */}
+        {activeTab === 'curriculum' && (
+          <div className="space-y-6">
+            <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 shadow-xl space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Calculator className="w-5 h-5 text-orange-400" />
+                    Department Courses & Credits Management (GPA Calculator)
+                  </h3>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Assign and customize course codes, titles, and credit weightages for individual departments & semesters used in GPA calculations.
+                  </p>
+                </div>
+
+                <button
+                  onClick={openAddCourseModal}
+                  className="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Course to {selectedGpaDept} Sem {selectedGpaSem}
+                </button>
+              </div>
+
+              {/* Department & Semester Selectors */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-950 p-4 rounded-2xl border border-white/10">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1.5">Select Department</label>
+                  <select
+                    value={selectedGpaDept}
+                    onChange={(e) => setSelectedGpaDept(e.target.value)}
+                    className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white font-semibold outline-none focus:border-orange-500"
+                  >
+                    {['CSE', 'CSBS', 'AIML', 'AIDS', 'ECE', 'MECH', 'CIVIL', 'EEE', 'CCE', 'ECL', 'VLSI'].map((dept) => (
+                      <option key={dept} value={dept}>{dept} - Department</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-1.5">Select Semester</label>
+                  <select
+                    value={selectedGpaSem}
+                    onChange={(e) => setSelectedGpaSem(Number(e.target.value))}
+                    className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white font-semibold outline-none focus:border-orange-500"
+                  >
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
+                      <option key={sem} value={sem}>Semester {sem}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Courses Table for Selected Department & Semester */}
+              <div className="space-y-3 pt-2">
+                {(() => {
+                  const currentSemCourses = (curriculumMap[selectedGpaDept] && curriculumMap[selectedGpaDept][selectedGpaSem]) || (DEPARTMENT_CURRICULUM[selectedGpaDept] && DEPARTMENT_CURRICULUM[selectedGpaDept][selectedGpaSem]) || [];
+                  
+                  return (
+                    <>
+                      <span className="text-xs font-bold text-slate-300 block">
+                        Configured Courses for {selectedGpaDept} - Semester {selectedGpaSem} ({currentSemCourses.length})
+                      </span>
+
+                      <div className="space-y-2">
+                        {currentSemCourses.length > 0 ? (
+                          currentSemCourses.map((course: any, idx: number) => (
+                            <div
+                              key={idx}
+                              className="bg-slate-950/70 border border-white/10 rounded-2xl p-4 flex items-center justify-between gap-4"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 font-extrabold text-xs shrink-0">
+                                  {course.credits} Cr
+                                </div>
+                                <div>
+                                  <p className="text-xs font-bold text-white flex items-center gap-2">
+                                    {course.name}
+                                    {course.isElective && (
+                                      <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                        Elective Slot
+                                      </span>
+                                    )}
+                                  </p>
+                                  <p className="text-[10px] text-slate-400">Credit Weightage: {course.credits} Units</p>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => openEditCourseModal(idx, course)}
+                                  className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
+                                >
+                                  <Edit className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteCourse(idx, course.name)}
+                                  className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-xs text-slate-500 italic p-6 text-center bg-slate-950/40 rounded-2xl border border-white/5">
+                            No custom courses configured for {selectedGpaDept} Semester {selectedGpaSem} yet. Click "Add Course" above!
+                          </p>
+                        )}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
 
       {/* ───────────────────────────────────────────────────────────── */}
@@ -1570,6 +2131,283 @@ export default function AdminDashboard() {
                   >
                     {editingRoute ? 'Save Changes' : 'Create Route'}
                   </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* MODAL: CREATE / EDIT FACULTY                                  */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {isFacultyModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4"
+            >
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <UserCheck className="w-4 h-4 text-orange-400" />
+                  {editingFaculty ? `Edit Faculty: ${editingFaculty.name}` : 'Add New Faculty Member'}
+                </h3>
+                <button onClick={() => setIsFacultyModalOpen(false)} className="text-slate-400 hover:text-white text-sm">✕</button>
+              </div>
+
+              <form onSubmit={handleSaveFaculty} className="space-y-3 text-xs">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Full Name *</label>
+                  <input
+                    type="text"
+                    value={facultyFormData.name}
+                    onChange={(e) => setFacultyFormData({ ...facultyFormData, name: e.target.value })}
+                    placeholder="e.g. Dr. ARTHI A."
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Designation</label>
+                    <input
+                      type="text"
+                      value={facultyFormData.designation}
+                      onChange={(e) => setFacultyFormData({ ...facultyFormData, designation: e.target.value })}
+                      placeholder="e.g. Associate Professor & HOD"
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Department</label>
+                    <input
+                      type="text"
+                      value={facultyFormData.department}
+                      onChange={(e) => setFacultyFormData({ ...facultyFormData, department: e.target.value })}
+                      placeholder="Computer Science & Engineering"
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Email</label>
+                    <input
+                      type="email"
+                      value={facultyFormData.email}
+                      onChange={(e) => setFacultyFormData({ ...facultyFormData, email: e.target.value })}
+                      placeholder="arthi.a@ritchennai.edu.in"
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Cabin / Office Room</label>
+                    <input
+                      type="text"
+                      value={facultyFormData.office}
+                      onChange={(e) => setFacultyFormData({ ...facultyFormData, office: e.target.value })}
+                      placeholder="CSE HOD Cabin, 2nd Floor"
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Specialization / Domain</label>
+                  <input
+                    type="text"
+                    value={facultyFormData.specialization}
+                    onChange={(e) => setFacultyFormData({ ...facultyFormData, specialization: e.target.value })}
+                    placeholder="Machine Learning, Deep Learning, Cloud Computing"
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+                  <button type="button" onClick={() => setIsFacultyModalOpen(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300">Cancel</button>
+                  <button type="submit" className="px-5 py-2 rounded-xl bg-orange-500 font-bold text-white">Save Faculty</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* MODAL: CREATE / EDIT CLUB OR CENTER                           */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {isClubModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4"
+            >
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-orange-400" />
+                  {editingClub ? `Edit: ${editingClub.name}` : 'Add New Club / Center of Excellence'}
+                </h3>
+                <button onClick={() => setIsClubModalOpen(false)} className="text-slate-400 hover:text-white text-sm">✕</button>
+              </div>
+
+              <form onSubmit={handleSaveClub} className="space-y-3 text-xs">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Name *</label>
+                  <input
+                    type="text"
+                    value={clubFormData.name}
+                    onChange={(e) => setClubFormData({ ...clubFormData, name: e.target.value })}
+                    placeholder="e.g. Center for Artificial Intelligence & Deep Learning"
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Type</label>
+                    <select
+                      value={clubFormData.type}
+                      onChange={(e) => setClubFormData({ ...clubFormData, type: e.target.value as any })}
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-white outline-none focus:border-orange-500"
+                    >
+                      <option value="Center">Center of Excellence (CoE)</option>
+                      <option value="Club">Student Club</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Category</label>
+                    <input
+                      type="text"
+                      value={clubFormData.category}
+                      onChange={(e) => setClubFormData({ ...clubFormData, category: e.target.value })}
+                      placeholder="Center of Excellence / Technical / Cultural"
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Description *</label>
+                  <textarea
+                    rows={2}
+                    value={clubFormData.description}
+                    onChange={(e) => setClubFormData({ ...clubFormData, description: e.target.value })}
+                    placeholder="Short description of research domain or club activities..."
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Faculty Lead / Coordinator</label>
+                    <input
+                      type="text"
+                      value={clubFormData.coordinatorName}
+                      onChange={(e) => setClubFormData({ ...clubFormData, coordinatorName: e.target.value })}
+                      placeholder="e.g. Dr. ARTHI A."
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Contact Email</label>
+                    <input
+                      type="email"
+                      value={clubFormData.contactEmail}
+                      onChange={(e) => setClubFormData({ ...clubFormData, contactEmail: e.target.value })}
+                      placeholder="coe.ai@ritchennai.edu.in"
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+                  <button type="button" onClick={() => setIsClubModalOpen(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300">Cancel</button>
+                  <button type="submit" className="px-5 py-2 rounded-xl bg-orange-500 font-bold text-white">Save Entry</button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* MODAL: CREATE / EDIT GPA COURSE                               */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {isCourseModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4"
+            >
+              <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                  <Calculator className="w-4 h-4 text-orange-400" />
+                  {editingCourseIndex !== null ? 'Edit Course' : `Add Course to ${selectedGpaDept} Sem ${selectedGpaSem}`}
+                </h3>
+                <button onClick={() => setIsCourseModalOpen(false)} className="text-slate-400 hover:text-white text-sm">✕</button>
+              </div>
+
+              <form onSubmit={handleSaveCourse} className="space-y-3 text-xs">
+                <div>
+                  <label className="block text-slate-300 font-semibold mb-1">Course Code & Title *</label>
+                  <input
+                    type="text"
+                    value={courseFormData.name}
+                    onChange={(e) => setCourseFormData({ ...courseFormData, name: e.target.value })}
+                    placeholder="e.g. CS3301 - Data Structures"
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Credit Weightage (1-6)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={6}
+                      value={courseFormData.credits}
+                      onChange={(e) => setCourseFormData({ ...courseFormData, credits: Number(e.target.value) })}
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500 font-mono"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex items-center pt-5">
+                    <label className="flex items-center gap-2 text-slate-300 font-semibold cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={courseFormData.isElective}
+                        onChange={(e) => setCourseFormData({ ...courseFormData, isElective: e.target.checked })}
+                        className="rounded border-white/10 bg-slate-950 text-orange-500 focus:ring-0"
+                      />
+                      <span>Is Professional Elective</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
+                  <button type="button" onClick={() => setIsCourseModalOpen(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300">Cancel</button>
+                  <button type="submit" className="px-5 py-2 rounded-xl bg-orange-500 font-bold text-white">Save Course</button>
                 </div>
               </form>
             </motion.div>

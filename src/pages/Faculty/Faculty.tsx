@@ -75,8 +75,19 @@ export default function Faculty() {
     searchParams.has('dept')
   );
 
+  const activeFacultyList = useMemo(() => {
+    try {
+      const saved = localStorage.getItem('RIT_LOCAL_FACULTY');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return FACULTY_DATA;
+  }, []);
+
   const filteredAndSortedFaculty = useMemo(() => {
-    const filtered = FACULTY_DATA.filter((f) => {
+    const filtered = activeFacultyList.filter((f) => {
       const searchLower = searchFaculty.trim().toLowerCase();
       const matchSearch = 
         (f.name && f.name.toLowerCase().includes(searchLower)) ||
