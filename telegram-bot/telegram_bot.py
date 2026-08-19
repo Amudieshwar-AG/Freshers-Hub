@@ -37,8 +37,8 @@ CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
 def load_config():
     if not os.path.exists(CONFIG_PATH):
         default_config = {
-            "community_bot_token": "8859374355:AAH0dhwstkTBhRerRTjzmb2RG2fjPbigzvo",
-            "telegram_bot_token": "8913773505:AAHASuKLLOto3Ax573_dxg8bnvQy2ML6yLk",
+            "community_bot_token": "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY",
+            "telegram_bot_token": "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY",
             "helper_chat_ids": [],
             "spring_backend_url": "http://localhost:8085"
         }
@@ -50,7 +50,7 @@ def load_config():
         return json.load(f)
 
 config = load_config()
-COMMUNITY_BOT_TOKEN = os.environ.get("COMMUNITY_BOT_TOKEN") or config.get("community_bot_token", "8859374355:AAH0dhwstkTBhRerRTjzmb2RG2fjPbigzvo")
+COMMUNITY_BOT_TOKEN = os.environ.get("COMMUNITY_BOT_TOKEN") or config.get("community_bot_token", "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY")
 BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN") or config.get("telegram_bot_token")
 BACKEND_URL = os.environ.get("SPRING_BACKEND_URL") or config.get("spring_backend_url", "http://localhost:8085")
 

@@ -471,7 +471,7 @@ export default function AdminDashboard() {
 
     if (!localConfig || (!localConfig.seniorHelpers?.length && !localConfig.helper_chat_ids?.length)) {
       localConfig = {
-        community_bot_token: '7829148291:AAH_rit_community_bot_token_sample',
+        community_bot_token: '8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY',
         spring_backend_url: 'https://rit-services.in/api',
         helper_chat_ids: [971749136, 982314512],
         seniorHelpers: [
