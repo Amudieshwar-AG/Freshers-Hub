@@ -74,8 +74,12 @@ export default function StudentDashboard() {
     setLoginError(null);
 
     try {
-      const session = await loginWithIms(regNumberInput.trim(), passwordInput.trim());
-      setImsSession(session);
+      const res = await loginWithIms(regNumberInput.trim(), passwordInput.trim());
+      if (res.success && res.token && res.student) {
+        setImsSession({ token: res.token, student: res.student });
+      } else {
+        setLoginError(res.message || 'Invalid credentials or Register Number not found.');
+      }
     } catch (err: any) {
       setLoginError(err.message || 'Invalid credentials or Register Number not found.');
     } finally {

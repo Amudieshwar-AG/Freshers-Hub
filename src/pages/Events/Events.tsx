@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -13,6 +13,13 @@ import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/An
 import AnimatedContainer from '@/components/AnimatedContainer/AnimatedContainer';
 import { CLUBS_DATA } from '@/constants';
 import type { Club } from '@/types';
+import { useAuth } from '@/context/AuthContext';
+import {
+  getClubUserIdentifier,
+  fetchClubLikes,
+  fetchUserLikedClubs,
+  toggleClubLikeInDb,
+} from '@/services/clubService';
 
 const CLUB_CATEGORY_COLORS: Record<string, string> = {
   Technical: '#3B82F6',
@@ -119,6 +126,9 @@ const QUIZ_QUESTIONS_ALL = [
 ];
 
 export default function Events() {
+  const { user } = useAuth();
+  const userIdentifier = useMemo(() => getClubUserIdentifier(user?.email), [user?.email]);
+
   const [selectedClub, setSelectedClub] = useState<Club | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -140,7 +150,7 @@ export default function Events() {
     return { totalCount: CLUBS_DATA.length, centersCount: centers, clubsCount: clubs };
   }, []);
 
-  // ─── Interactive Like System ─────────────────────────────────────────────
+  // ─── Database-Backed Interactive Like System ─────────────────────────────
   const [likedClubs, setLikedClubs] = useState<Set<string>>(() => {
     try {
       localStorage.removeItem('rit_freshers_liked_clubs');
@@ -159,10 +169,45 @@ export default function Events() {
     return initialMap;
   });
 
-  const toggleLike = (clubId: string) => {
+  // Sync likes with database backend on mount and when user identity changes
+  useEffect(() => {
+    let isMounted = true;
+
+    async function syncWithDatabase() {
+      // Fetch total like counts for all clubs from database
+      const dbLikesMap = await fetchClubLikes();
+      if (isMounted && Object.keys(dbLikesMap).length > 0) {
+        setLikesMap((prev) => {
+          const merged = { ...prev };
+          Object.entries(dbLikesMap).forEach(([id, count]) => {
+            merged[id] = count;
+          });
+          return merged;
+        });
+      }
+
+      // Fetch user's liked clubs from database
+      const userLikedList = await fetchUserLikedClubs(userIdentifier);
+      if (isMounted && userLikedList.length > 0) {
+        setLikedClubs(new Set(userLikedList));
+        try {
+          localStorage.setItem('rit_freshers_liked_clubs_v3', JSON.stringify(userLikedList));
+        } catch {}
+      }
+    }
+
+    syncWithDatabase();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userIdentifier]);
+
+  const toggleLike = async (clubId: string) => {
     const isCurrentlyLiked = likedClubs.has(clubId);
     const next = new Set(likedClubs);
 
+    // Optimistic UI update
     if (isCurrentlyLiked) {
       next.delete(clubId);
       setLikesMap((l) => ({ ...l, [clubId]: Math.max(0, (l[clubId] || 1) - 1) }));
@@ -175,7 +220,23 @@ export default function Events() {
     try {
       localStorage.setItem('rit_freshers_liked_clubs_v3', JSON.stringify(Array.from(next)));
     } catch {}
+
+    // Persist like directly in PostgreSQL database backend
+    const dbResult = await toggleClubLikeInDb(clubId, userIdentifier);
+    if (dbResult) {
+      setLikesMap((l) => ({ ...l, [clubId]: dbResult.count }));
+      if (dbResult.liked) {
+        setLikedClubs((prev) => new Set([...prev, clubId]));
+      } else {
+        setLikedClubs((prev) => {
+          const updated = new Set(prev);
+          updated.delete(clubId);
+          return updated;
+        });
+      }
+    }
   };
+
 
   // ─── Quiz Matcher State ──────────────────────────────────────────────────
   const [isQuizOpen, setIsQuizOpen] = useState(false);

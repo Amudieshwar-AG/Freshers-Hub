@@ -135,3 +135,13 @@ CREATE TABLE IF NOT EXISTS confessions (
     reactions_count INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- 10. Club & Center Likes Table
+CREATE TABLE IF NOT EXISTS club_likes (
+    id SERIAL PRIMARY KEY,
+    club_id VARCHAR(100) NOT NULL,
+    user_identifier VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_club_user_like UNIQUE (club_id, user_identifier)
+);
+
