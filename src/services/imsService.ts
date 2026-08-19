@@ -803,11 +803,32 @@ export async function fetchImsTimetable(_token: string, regNumber: string, _forc
         }
       });
 
-      // Populate weeklySchedule from periodMap (INCLUDE ALL VALID PERIODS & DAYS)
-      Object.keys(periodMap).forEach(dayKey => {
-        const day = dayKey as keyof WeeklySchedule;
-        const dayPeriods = Object.values(periodMap[day]).sort((a, b) => a.periodNumber - b.periodNumber);
-        weeklySchedule[day] = dayPeriods;
+      // Populate weeklySchedule from periodMap (Ensure EVERY day Monday-Friday has EXACTLY 7 periods)
+      const standardDays: (keyof WeeklySchedule)[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+
+      standardDays.forEach((day) => {
+        const existingMap = periodMap[day] || {};
+        const fullDayPeriods: TimetablePeriod[] = [];
+
+        for (let pNum = 1; pNum <= 7; pNum++) {
+          const periodIndex = pNum - 1;
+          if (existingMap[pNum]) {
+            fullDayPeriods.push(existingMap[pNum]);
+          } else {
+            fullDayPeriods.push({
+              periodNumber: pNum,
+              timeSlot: timeSlots[periodIndex] || `Period ${pNum}`,
+              startTime: startTimes[periodIndex] || '',
+              endTime: endTimes[periodIndex] || '',
+              subjectCode: 'FREE',
+              subjectName: 'Free Period / Library',
+              staffName: 'Self Study',
+              type: 'THEORY',
+            });
+          }
+        }
+
+        weeklySchedule[day] = fullDayPeriods;
       });
     }
   } catch (err) {
