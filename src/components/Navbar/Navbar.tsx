@@ -22,6 +22,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   Home as HomeIcon,
+  ShieldAlert,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
@@ -57,7 +58,7 @@ export default function Navbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const location = useLocation();
-  const { user, isAuthenticated, isVerifiedStudent, loginWithGoogle, logout } = useAuth();
+  const { user, isAuthenticated, isVerifiedStudent, isAdmin, isTransportAdmin, openAuthModal, logout } = useAuth();
   const profileRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
 
@@ -209,7 +210,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Right: Auth Profile / Sign In */}
+          {/* Right: Auth Profile / Unified Sign In */}
           <div className="hidden lg:flex items-center gap-2 shrink-0">
             {isAuthenticated && user ? (
               <div className="relative" ref={profileRef}>
@@ -225,12 +226,14 @@ export default function Navbar() {
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FF6B00] to-[#F97316] flex items-center justify-center text-white font-bold text-xs">
-                      {user.name.charAt(0).toUpperCase()}
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white font-bold text-xs ${
+                      isAdmin ? 'bg-indigo-600' : 'bg-gradient-to-br from-[#FF6B00] to-[#F97316]'
+                    }`}>
+                      {isAdmin ? 'A' : user.name.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <span
-                    className="text-white text-xs font-semibold max-w-[100px] truncate"
+                    className="text-white text-xs font-semibold max-w-[120px] truncate"
                     style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
                   >
                     {user.name.split(' ')[0]}
@@ -258,8 +261,10 @@ export default function Navbar() {
                               referrerPolicy="no-referrer"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF6B00] to-[#F97316] flex items-center justify-center text-white font-bold text-lg">
-                              {user.name.charAt(0).toUpperCase()}
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg ${
+                              isAdmin ? 'bg-indigo-600' : 'bg-gradient-to-br from-[#FF6B00] to-[#F97316]'
+                            }`}>
+                              {isAdmin ? 'A' : user.name.charAt(0).toUpperCase()}
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
@@ -267,28 +272,45 @@ export default function Navbar() {
                             <p className="text-slate-400 text-[11px] truncate">{user.email}</p>
                           </div>
                         </div>
-                        {isVerifiedStudent ? (
-                          <div className="mt-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/25">
-                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                            <span className="text-[11px] font-bold text-emerald-400">Verified RIT Student</span>
-                          </div>
-                        ) : (
-                          <div className="mt-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/25">
-                            <span className="text-[11px] font-semibold text-amber-400">
-                              Sign in with @ritchennai.edu.in
+
+                        {/* Role Badges */}
+                        {isAdmin ? (
+                          <div className="mt-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-500/15 border border-indigo-500/25">
+                            <ShieldAlert className="w-3.5 h-3.5 text-indigo-400" />
+                            <span className="text-[11px] font-bold text-indigo-400">
+                              {isTransportAdmin ? 'Transport Fleet Manager' : 'System Super Admin'}
                             </span>
                           </div>
-                        )}
+                        ) : isVerifiedStudent ? (
+                          <div className="mt-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/25">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                            <span className="text-[11px] font-bold text-emerald-400">
+                              Verified Student {user.regNumber ? `(${user.regNumber})` : ''}
+                            </span>
+                          </div>
+                        ) : null}
                       </div>
+
                       <div className="p-2 space-y-1">
-                        <Link
-                          to="/dashboard"
-                          onClick={() => setIsProfileOpen(false)}
-                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-orange-500/15 hover:border-orange-500/20 text-xs font-semibold transition-all cursor-pointer"
-                        >
-                          <GraduationCap className="w-4 h-4 text-orange-400" />
-                          My Student Dashboard
-                        </Link>
+                        {isAdmin ? (
+                          <Link
+                            to="/admin"
+                            onClick={() => setIsProfileOpen(false)}
+                            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-indigo-500/15 text-xs font-semibold transition-all cursor-pointer"
+                          >
+                            <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                            Admin Console
+                          </Link>
+                        ) : (
+                          <Link
+                            to="/dashboard"
+                            onClick={() => setIsProfileOpen(false)}
+                            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-300 hover:text-white hover:bg-orange-500/15 text-xs font-semibold transition-all cursor-pointer"
+                          >
+                            <GraduationCap className="w-4 h-4 text-orange-400" />
+                            My Student Dashboard
+                          </Link>
+                        )}
                         <button
                           onClick={() => {
                             logout();
@@ -308,11 +330,11 @@ export default function Navbar() {
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                onClick={loginWithGoogle}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-white text-xs font-bold bg-white/10 hover:bg-white/15 border border-white/15 transition-all cursor-pointer"
+                onClick={openAuthModal}
+                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-white text-xs font-bold bg-gradient-to-r from-[#FF6B00] to-[#F97316] shadow-sm hover:opacity-95 transition-all cursor-pointer"
                 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
               >
-                <LogIn className="w-3.5 h-3.5 text-[#FF6B00]" />
+                <LogIn className="w-3.5 h-3.5 text-white" />
                 <span>Sign In</span>
               </motion.button>
             )}
@@ -369,27 +391,52 @@ export default function Navbar() {
                     {!isAuthenticated ? (
                       <button
                         onClick={() => {
-                          loginWithGoogle();
+                          openAuthModal();
                           setIsMobileOpen(false);
                         }}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-semibold border border-orange-500/40 bg-orange-500/15 hover:bg-orange-500/25 transition-all cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-white text-xs font-semibold border border-orange-500/40 bg-gradient-to-r from-[#FF6B00] to-[#F97316] transition-all cursor-pointer"
                         style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
                       >
-                        <LogIn className="w-4 h-4 text-orange-400" />
-                        Sign In with Google
+                        <LogIn className="w-4 h-4 text-white" />
+                        Sign In
                       </button>
                     ) : (
-                      <button
-                        onClick={() => {
-                          logout();
-                          setIsMobileOpen(false);
-                        }}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-red-400 text-xs font-semibold border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition-all cursor-pointer"
-                        style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
-                      >
-                        <LogOut className="w-4 h-4" />
-                        Sign Out ({user?.name.split(' ')[0]})
-                      </button>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between p-2 rounded-xl bg-white/5 text-xs text-slate-300">
+                          <span className="font-bold text-white">{user?.name}</span>
+                          <span className="text-[10px] text-orange-400 font-mono">
+                            {isAdmin ? 'Admin' : (user?.regNumber || 'Student')}
+                          </span>
+                        </div>
+                        {isAdmin ? (
+                          <Link
+                            to="/admin"
+                            onClick={() => setIsMobileOpen(false)}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold"
+                          >
+                            Go to Admin Console
+                          </Link>
+                        ) : (
+                          <Link
+                            to="/dashboard"
+                            onClick={() => setIsMobileOpen(false)}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-orange-500 text-white text-xs font-bold"
+                          >
+                            Go to Student Dashboard
+                          </Link>
+                        )}
+                        <button
+                          onClick={() => {
+                            logout();
+                            setIsMobileOpen(false);
+                          }}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-red-400 text-xs font-semibold border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition-all cursor-pointer"
+                          style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
+                        >
+                          <LogOut className="w-4 h-4" />
+                          Sign Out
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>

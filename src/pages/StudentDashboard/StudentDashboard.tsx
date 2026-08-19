@@ -1,56 +1,35 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
-  GraduationCap, Clock, MapPin, Users,
-  Calendar, Building, ShieldCheck, 
-  Sparkles, KeyRound, ArrowRight, LogOut,
-  AlertCircle, User, HelpCircle, Compass, ExternalLink
+  GraduationCap, Clock, MapPin,
+  Calendar, Building, ArrowRight, LogOut,
+  HelpCircle, Compass, ExternalLink, LogIn
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { 
   fetchStudentDashboard, 
-  loginWithIms,
-  fetchMockImsUsers,
   getStoredImsSession,
   clearImsSession,
-  type StudentDashboardData,
-  type MockUserCredential
+  type StudentDashboardData
 } from '@/services/imsService';
 
 export default function StudentDashboard() {
-  const { user } = useAuth();
+  const { user, openAuthModal, logout } = useAuth();
   const [data, setData] = useState<StudentDashboardData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'timetable' | 'location'>('timetable');
 
-  // IMS Authentication Session State
-  const [imsSession, setImsSession] = useState<{ token: string; student: any } | null>(getStoredImsSession());
-  const [regNumberInput, setRegNumberInput] = useState('');
-  const [passwordInput, setPasswordInput] = useState('');
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
-  const [mockUsers, setMockUsers] = useState<MockUserCredential[]>([]);
-  const [showDemoBox, setShowDemoBox] = useState(false);
-
-  // Load available mock accounts for demo helper
-  useEffect(() => {
-    fetchMockImsUsers().then((users) => {
-      setMockUsers(users);
-      if (users.length > 0 && !regNumberInput) {
-        setRegNumberInput(users[0].regNumber);
-        setPasswordInput(users[0].defaultPassword);
-      }
-    });
-  }, []);
+  const imsSession = getStoredImsSession();
+  const effectiveRegNumber = user?.regNumber || imsSession?.student?.regNumber;
 
   const loadDashboard = async () => {
-    if (!imsSession?.student?.regNumber) return;
+    if (!effectiveRegNumber) return;
     setIsLoading(true);
     setError(null);
     try {
-      const result = await fetchStudentDashboard(imsSession.student.regNumber, user?.email);
+      const result = await fetchStudentDashboard(effectiveRegNumber, user?.email);
       setData(result);
     } catch (err: any) {
       console.error('Error loading student dashboard:', err);
@@ -61,172 +40,60 @@ export default function StudentDashboard() {
   };
 
   useEffect(() => {
-    if (imsSession) {
+    if (effectiveRegNumber) {
       loadDashboard();
     } else {
       setData(null);
     }
-  }, [imsSession]);
+  }, [effectiveRegNumber, user]);
 
-  const handleImsLogin = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!regNumberInput.trim() || !passwordInput.trim()) {
-      setLoginError('Please enter both Register Number and Password.');
-      return;
-    }
-
-    setIsLoggingIn(true);
-    setLoginError(null);
-
-    try {
-      const res = await loginWithIms(regNumberInput.trim(), passwordInput.trim());
-      if (res.success && res.token && res.student) {
-        setImsSession({ token: res.token, student: res.student });
-      } else {
-        setLoginError(res.message || 'Invalid Register Number or Password.');
-      }
-    } catch (err: any) {
-      setLoginError(err?.message || 'Failed to authenticate with IMS server.');
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
-
-  const handleQuickFillMock = (mock: MockUserCredential) => {
-    setRegNumberInput(mock.regNumber);
-    setPasswordInput(mock.defaultPassword);
-  };
-
-  const handleLogoutIms = () => {
+  const handleLogout = () => {
     clearImsSession();
-    setImsSession(null);
+    logout();
     setData(null);
   };
 
   // ─────────────────────────────────────────────────────────────
-  // VIEW 1: IMS STUDENT LOGIN PORTAL (When not signed in to IMS)
+  // VIEW 1: UNAUTHENTICATED INVITATION SCREEN
   // ─────────────────────────────────────────────────────────────
-  if (!imsSession) {
+  if (!effectiveRegNumber) {
     return (
-      <div className="min-h-[85vh] bg-[#0a0f1d] text-slate-100 flex items-center justify-center py-12 px-4 sm:px-6">
-        <div className="w-full max-w-md space-y-6">
+      <div className="min-h-[80vh] bg-[#0a0f1d] text-slate-100 flex items-center justify-center py-12 px-4 sm:px-6">
+        <div className="w-full max-w-md space-y-6 text-center">
           
-          <div className="text-center space-y-2">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#F97316] p-0.5 shadow-xl shadow-orange-500/20 mx-auto">
-              <div className="w-full h-full bg-slate-950/60 rounded-[14px] flex items-center justify-center backdrop-blur-sm">
-                <GraduationCap className="w-8 h-8 text-white" />
-              </div>
+          <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-[#FF6B00] to-[#F97316] p-0.5 shadow-2xl shadow-orange-500/25 mx-auto">
+            <div className="w-full h-full bg-slate-950/70 rounded-[22px] flex items-center justify-center backdrop-blur-sm">
+              <GraduationCap className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              IMS Student Portal Sign In
+          </div>
+
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+              Student Dashboard
             </h1>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto">
-              Enter your official college Register Number and Password to access your timetable and assigned classroom venue.
+            <p className="text-xs sm:text-sm text-slate-400 max-w-sm mx-auto leading-relaxed">
+              Sign in with your student credentials to view your live daily timetable, assigned classroom, and department info.
             </p>
           </div>
 
-          {/* Login Form Card */}
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl space-y-5"
+            className="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl space-y-4"
           >
-            {loginError && (
-              <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-start gap-2.5 text-xs text-rose-300">
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
-                <span>{loginError}</span>
-              </div>
-            )}
+            <button
+              type="button"
+              onClick={openAuthModal}
+              className="w-full py-3.5 px-4 rounded-xl text-white font-bold text-sm bg-gradient-to-r from-[#FF6B00] to-[#F97316] hover:opacity-95 shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <LogIn className="w-4 h-4" />
+              <span>Sign In to Access Dashboard</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
 
-            <form onSubmit={handleImsLogin} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-orange-400" />
-                  Register Number / Roll No
-                </label>
-                <input
-                  type="text"
-                  value={regNumberInput}
-                  onChange={(e) => setRegNumberInput(e.target.value)}
-                  placeholder="e.g. 2114251001"
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 outline-none focus:border-orange-500 transition-colors font-mono"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                  <KeyRound className="w-3.5 h-3.5 text-orange-400" />
-                  IMS Password
-                </label>
-                <input
-                  type="password"
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 outline-none focus:border-orange-500 transition-colors font-mono"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoggingIn}
-                className="w-full py-3.5 px-4 rounded-xl text-white font-bold text-sm bg-gradient-to-r from-[#FF6B00] to-[#F97316] hover:opacity-95 shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                {isLoggingIn ? (
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <span>Sign In to Student Portal</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-            </form>
-
-            {/* Expandable Demo Helper */}
-            <div className="pt-3 border-t border-white/10">
-              <button
-                type="button"
-                onClick={() => setShowDemoBox(!showDemoBox)}
-                className="w-full text-center text-xs font-semibold text-orange-400 hover:underline flex items-center justify-center gap-1 cursor-pointer"
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                {showDemoBox ? 'Hide Demo Accounts' : 'Testing / Demo Accounts'}
-              </button>
-
-              <AnimatePresence>
-                {showDemoBox && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden mt-3 space-y-2"
-                  >
-                    <p className="text-[11px] text-slate-400 text-center">
-                      Click any sample student below to auto-fill the login form:
-                    </p>
-                    <div className="space-y-1.5">
-                      {mockUsers.map((mock) => (
-                        <button
-                          key={mock.regNumber}
-                          type="button"
-                          onClick={() => handleQuickFillMock(mock)}
-                          className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-950 border border-white/5 text-left text-xs transition-colors cursor-pointer"
-                        >
-                          <div>
-                            <p className="font-bold text-white">{mock.studentName}</p>
-                            <p className="text-[10px] text-slate-400">Reg: {mock.regNumber} ({mock.department})</p>
-                          </div>
-                          <span className="text-[10px] text-orange-400 font-mono">Fill Form</span>
-                        </button>
-                      ))}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            <p className="text-[11px] text-slate-500">
+              Works with Register Number (e.g. <code>2114251001</code> / <code>rit@2026</code>)
+            </p>
           </motion.div>
         </div>
       </div>
@@ -257,7 +124,7 @@ export default function StudentDashboard() {
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-                  {data?.student.name || imsSession.student.name}
+                  {data?.student.name || user?.name || imsSession?.student?.name}
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 uppercase">
                   Authenticated Student
@@ -265,11 +132,15 @@ export default function StudentDashboard() {
               </div>
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 font-medium">
-                <span>Reg No: <strong className="text-white">{data?.student.regNumber || imsSession.student.regNumber}</strong></span>
+                <span>Reg No: <strong className="text-white">{data?.student.regNumber || effectiveRegNumber}</strong></span>
                 <span>•</span>
-                <span>{data?.student.degree} {data?.student.department}</span>
-                <span>•</span>
-                <span>Year {data?.student.year}, Sem {data?.student.semester} ({data?.student.section})</span>
+                <span>{data?.student.degree || 'B.E.'} {data?.student.department || user?.department || 'Engineering'}</span>
+                {data?.student.year && (
+                  <>
+                    <span>•</span>
+                    <span>Year {data.student.year}, Sem {data.student.semester} ({data.student.section})</span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -283,7 +154,7 @@ export default function StudentDashboard() {
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
             <button
-              onClick={handleLogoutIms}
+              onClick={handleLogout}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-800 hover:bg-rose-500/15 text-slate-300 hover:text-rose-400 border border-white/10 hover:border-rose-500/30 text-xs font-semibold transition-all cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
@@ -308,7 +179,7 @@ export default function StudentDashboard() {
 
             <div className="bg-slate-900/40 border border-white/10 rounded-2xl p-4 flex items-center gap-3.5">
               <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 shrink-0">
-                <Users className="w-5 h-5" />
+                <Building className="w-5 h-5" />
               </div>
               <div className="min-w-0">
                 <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Class Incharge</p>
@@ -376,7 +247,6 @@ export default function StudentDashboard() {
               to={`/faculty?dept=${encodeURIComponent(data.student.department)}`}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-white/10 text-xs font-bold text-slate-200 hover:text-white transition-all cursor-pointer whitespace-nowrap shrink-0"
             >
-              <Users className="w-4 h-4 text-orange-400" />
               <span>View {data.student.departmentCode} Faculty Directory</span>
               <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
             </Link>
@@ -395,7 +265,7 @@ export default function StudentDashboard() {
             <p className="text-slate-400 text-xs max-w-md mx-auto">{error}</p>
             <button
               onClick={() => loadDashboard()}
-              className="px-4 py-2 bg-rose-500 text-white rounded-xl text-xs font-bold hover:bg-rose-600 transition-colors"
+              className="px-4 py-2 bg-rose-500 text-white rounded-xl text-xs font-bold hover:bg-rose-600 transition-colors cursor-pointer"
             >
               Retry Connection
             </button>

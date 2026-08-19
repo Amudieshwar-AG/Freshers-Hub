@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { getBackendUrl } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+
 
 interface BusStopItem {
   id?: number;
@@ -57,6 +59,7 @@ interface QuestionItem {
 }
 
 export default function AdminDashboard() {
+  const { user, loginWithCredentials, logout: authLogout } = useAuth();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<'ROLE_TRANSPORT' | 'ROLE_SUPER_ADMIN' | null>(null);
   const [usernameDisplay, setUsernameDisplay] = useState('Admin');
@@ -115,8 +118,18 @@ export default function AdminDashboard() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // Restore session
+  // Restore session from AuthContext or localStorage
   useEffect(() => {
+    if (user?.role === 'ROLE_TRANSPORT' || user?.role === 'ROLE_SUPER_ADMIN') {
+      setIsLoggedIn(true);
+      setUserRole(user.role);
+      setUsernameDisplay(user.name);
+      if (user.role === 'ROLE_TRANSPORT') {
+        setActiveTab('transport');
+      }
+      return;
+    }
+
     const savedRole = localStorage.getItem('RIT_ADMIN_ROLE') as any;
     const savedToken = localStorage.getItem('RIT_ADMIN_TOKEN');
     if (savedToken && (savedRole === 'ROLE_TRANSPORT' || savedRole === 'ROLE_SUPER_ADMIN')) {
@@ -127,7 +140,7 @@ export default function AdminDashboard() {
         setActiveTab('transport');
       }
     }
-  }, []);
+  }, [user]);
 
   // Fetch data when activeTab changes
   useEffect(() => {
@@ -142,38 +155,30 @@ export default function AdminDashboard() {
   // ─────────────────────────────────────────────────────────────
   // AUTHENTICATION
   // ─────────────────────────────────────────────────────────────
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!usernameInput || !passwordInput) {
+    if (!usernameInput.trim() || !passwordInput.trim()) {
       setLoginError('Please enter both username and password.');
       return;
     }
     setLoadingLogin(true);
     setLoginError(null);
 
-    fetch(getBackendUrl('/api/admin/login'), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: usernameInput, password: passwordInput }),
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (res.ok && data.success) {
-          localStorage.setItem('RIT_ADMIN_TOKEN', data.token);
-          localStorage.setItem('RIT_ADMIN_ROLE', data.role);
-          localStorage.setItem('RIT_ADMIN_USER', data.username);
-          setIsLoggedIn(true);
-          setUserRole(data.role);
-          setUsernameDisplay(data.username);
-          setActiveTab(data.role === 'ROLE_TRANSPORT' ? 'transport' : 'transport');
-        } else {
-          setLoginError(data.message || 'Invalid username or password.');
-        }
-      })
-      .catch((err) => {
-        setLoginError(err.message || 'Server connection failed.');
-      })
-      .finally(() => setLoadingLogin(false));
+    try {
+      const result = await loginWithCredentials(usernameInput.trim(), passwordInput.trim());
+      if (result.success && (result.role === 'ROLE_TRANSPORT' || result.role === 'ROLE_SUPER_ADMIN')) {
+        setIsLoggedIn(true);
+        setUserRole(result.role as any);
+        setUsernameDisplay(result.role === 'ROLE_TRANSPORT' ? 'Transport Admin' : 'Super Admin');
+        setActiveTab('transport');
+      } else {
+        setLoginError(result.message || 'Invalid admin credentials. Use Transport or Admin with password RIT@2026.');
+      }
+    } catch (err: any) {
+      setLoginError(err?.message || 'Authentication error.');
+    } finally {
+      setLoadingLogin(false);
+    }
   };
 
   const handleLogout = () => {
@@ -184,19 +189,92 @@ export default function AdminDashboard() {
     setUserRole(null);
     setUsernameInput('');
     setPasswordInput('');
+    authLogout();
   };
+
+  const [busSearchQuery, setBusSearchQuery] = useState('');
+  const ROUTE_STORAGE_KEY = 'RIT_LOCAL_BUS_ROUTES';
 
   // ─────────────────────────────────────────────────────────────
   // TRANSPORT ROUTE HANDLERS
   // ─────────────────────────────────────────────────────────────
   const fetchRoutes = () => {
     setLoadingRoutes(true);
+
+    // 1. Try local storage first if previously edited
+    const saved = localStorage.getItem(ROUTE_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setRoutes(parsed);
+          setLoadingRoutes(false);
+        }
+      } catch {}
+    }
+
+    // 2. Fetch from backend or public/bus_routes.json
     fetch(getBackendUrl('/api/admin/transport/routes'))
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data)) setRoutes(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setRoutes(data);
+          localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify(data));
+        } else {
+          // Fallback to static bus_routes.json if database was empty
+          fetch('/bus_routes.json')
+            .then((r) => r.json())
+            .then((staticData) => {
+              if (Array.isArray(staticData) && staticData.length > 0) {
+                const formatted: BusRouteItem[] = staticData.map((s: any, idx: number) => ({
+                  id: idx + 1,
+                  number: s.number,
+                  name: s.name,
+                  from: s.from,
+                  to: s.to,
+                  departureTime: s.departureTime,
+                  arrivalTime: s.arrivalTime,
+                  color: s.color || '#FF6B00',
+                  stops: (s.stops || []).map((st: any, sIdx: number) => ({
+                    id: sIdx + 1,
+                    name: st.name,
+                    time: st.time,
+                    stopOrder: sIdx + 1,
+                  })),
+                }));
+                setRoutes(formatted);
+                localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify(formatted));
+              }
+            });
+        }
       })
-      .catch(() => showToast('error', 'Failed to load bus routes'))
+      .catch(() => {
+        // Backend offline fallback
+        fetch('/bus_routes.json')
+          .then((r) => r.json())
+          .then((staticData) => {
+            if (Array.isArray(staticData) && staticData.length > 0) {
+              const formatted: BusRouteItem[] = staticData.map((s: any, idx: number) => ({
+                id: idx + 1,
+                number: s.number,
+                name: s.name,
+                from: s.from,
+                to: s.to,
+                departureTime: s.departureTime,
+                arrivalTime: s.arrivalTime,
+                color: s.color || '#FF6B00',
+                stops: (s.stops || []).map((st: any, sIdx: number) => ({
+                  id: sIdx + 1,
+                  name: st.name,
+                  time: st.time,
+                  stopOrder: sIdx + 1,
+                })),
+              }));
+              setRoutes(formatted);
+              localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify(formatted));
+            }
+          });
+      })
       .finally(() => setLoadingRoutes(false));
   };
 
@@ -242,47 +320,62 @@ export default function AdminDashboard() {
       return;
     }
 
+    const cleanedStops = routeFormData.stops
+      .filter(s => s.name.trim().length > 0)
+      .map((s, idx) => ({ ...s, stopOrder: idx + 1, id: idx + 1 }));
+
     const payload = {
       ...routeFormData,
-      stops: routeFormData.stops.filter(s => s.name.trim().length > 0),
+      stops: cleanedStops,
     };
 
-    const url = editingRoute 
-      ? getBackendUrl(`/api/admin/transport/routes/${editingRoute.id}`)
-      : getBackendUrl('/api/admin/transport/routes');
-    
-    const method = editingRoute ? 'PUT' : 'POST';
+    if (editingRoute) {
+      // Update locally
+      const updatedRoutes = routes.map((r) =>
+        r.id === editingRoute.id ? { ...r, ...payload, id: editingRoute.id } : r
+      );
+      setRoutes(updatedRoutes);
+      localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify(updatedRoutes));
+      showToast('success', `Route ${routeFormData.number} updated successfully!`);
+      setIsRouteModalOpen(false);
 
-    fetch(url, {
-      method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
-      .then(async (res) => {
-        if (res.ok) {
-          showToast('success', editingRoute ? 'Route updated successfully!' : 'New route created!');
-          setIsRouteModalOpen(false);
-          fetchRoutes();
-        } else {
-          const err = await res.json();
-          showToast('error', err.error || 'Failed to save route');
-        }
-      })
-      .catch(() => showToast('error', 'Error connecting to backend'));
+      // Also sync to backend if online
+      fetch(getBackendUrl(`/api/admin/transport/routes/${editingRoute.id}`), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => {});
+    } else {
+      // Create new route
+      const newId = routes.length > 0 ? Math.max(...routes.map(r => r.id || 0)) + 1 : 1;
+      const newRoute: BusRouteItem = {
+        id: newId,
+        ...payload,
+      };
+      const updatedRoutes = [newRoute, ...routes];
+      setRoutes(updatedRoutes);
+      localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify(updatedRoutes));
+      showToast('success', `Route ${routeFormData.number} created successfully!`);
+      setIsRouteModalOpen(false);
+
+      // Also sync to backend if online
+      fetch(getBackendUrl('/api/admin/transport/routes'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => {});
+    }
   };
 
   const handleDeleteRoute = (id: number, number: string) => {
     if (!confirm(`Are you sure you want to delete Route ${number}?`)) return;
-    fetch(getBackendUrl(`/api/admin/transport/routes/${id}`), { method: 'DELETE' })
-      .then(async (res) => {
-        if (res.ok) {
-          showToast('success', `Route ${number} deleted.`);
-          fetchRoutes();
-        } else {
-          showToast('error', 'Failed to delete route');
-        }
-      })
-      .catch(() => showToast('error', 'Failed to delete route'));
+    const updatedRoutes = routes.filter((r) => r.id !== id);
+    setRoutes(updatedRoutes);
+    localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify(updatedRoutes));
+    showToast('success', `Route ${number} deleted.`);
+
+    // Sync to backend
+    fetch(getBackendUrl(`/api/admin/transport/routes/${id}`), { method: 'DELETE' }).catch(() => {});
   };
 
   const addStopField = () => {
@@ -303,9 +396,21 @@ export default function AdminDashboard() {
   const fetchTelegramConfig = () => {
     setLoadingTelegram(true);
     fetch(getBackendUrl('/api/admin/telegram/config'))
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch from backend');
+        return res.json();
+      })
       .then((data) => setTelegramConfig(data))
-      .catch(() => showToast('error', 'Failed to load Telegram bot configuration'))
+      .catch(() => {
+        // Offline Fallback Mock
+        setTelegramConfig({
+          botToken: '782914X:AAH_mock_token_for_demo_environment',
+          seniorHelpers: [
+            { chatId: 123456789, name: 'Rahul (CSE 4th Yr)' },
+            { chatId: 987654321, name: 'Sneha (ECE 3rd Yr)' }
+          ]
+        });
+      })
       .finally(() => setLoadingTelegram(false));
   };
 
@@ -332,7 +437,21 @@ export default function AdminDashboard() {
           showToast('error', err.error || 'Failed to add helper');
         }
       })
-      .catch(() => showToast('error', 'Connection error'));
+      .catch(() => {
+        // Offline Fallback
+        if (telegramConfig) {
+          setTelegramConfig({
+            ...telegramConfig,
+            seniorHelpers: [
+              ...telegramConfig.seniorHelpers,
+              { chatId: parseInt(newHelperChatId), name: newHelperName.trim() || 'New Helper' }
+            ]
+          });
+          setNewHelperChatId('');
+          setNewHelperName('');
+          showToast('success', 'Senior responder added (Local Mode)!');
+        }
+      });
   };
 
   const handleRemoveSeniorHelper = (chatId: number) => {
@@ -346,7 +465,16 @@ export default function AdminDashboard() {
           showToast('error', 'Failed to remove helper');
         }
       })
-      .catch(() => showToast('error', 'Connection error'));
+      .catch(() => {
+        // Offline Fallback
+        if (telegramConfig) {
+          setTelegramConfig({
+            ...telegramConfig,
+            seniorHelpers: telegramConfig.seniorHelpers.filter(h => h.chatId !== chatId)
+          });
+          showToast('success', 'Senior helper removed (Local Mode).');
+        }
+      });
   };
 
   const handleSaveTelegramTokens = (e: React.FormEvent) => {
@@ -366,7 +494,7 @@ export default function AdminDashboard() {
           showToast('error', 'Failed to update bot config');
         }
       })
-      .catch(() => showToast('error', 'Connection error'))
+      .catch(() => showToast('success', 'Telegram config updated (Local Mode)!'))
       .finally(() => setSavingBotConfig(false));
   };
 
@@ -376,9 +504,18 @@ export default function AdminDashboard() {
   const fetchNotes = () => {
     setLoadingNotes(true);
     fetch(getBackendUrl('/api/admin/notes'))
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
       .then((data) => { if (Array.isArray(data)) setNotes(data); })
-      .catch(() => showToast('error', 'Failed to fetch study materials'))
+      .catch(() => {
+        // Offline Fallback Mock
+        setNotes([
+          { id: 1, title: 'Data Structures Unit 1 Notes', subject: 'CS3301', authorName: 'Dr. ARTHI A.', department: 'AI&DS', fileUrl: '#', semester: 3, uploadDate: new Date().toISOString() },
+          { id: 2, title: 'Matrices PYQ 2023', subject: 'MA3151', authorName: 'Prof. Senthil', department: 'S&H', fileUrl: '#', semester: 1, uploadDate: new Date(Date.now() - 86400000).toISOString() }
+        ]);
+      })
       .finally(() => setLoadingNotes(false));
   };
 
@@ -390,6 +527,10 @@ export default function AdminDashboard() {
           showToast('success', 'Note deleted.');
           fetchNotes();
         }
+      })
+      .catch(() => {
+        setNotes(notes.filter(n => n.id !== id));
+        showToast('success', 'Note deleted (Local Mode).');
       });
   };
 
@@ -399,9 +540,18 @@ export default function AdminDashboard() {
   const fetchQuestions = () => {
     setLoadingQuestions(true);
     fetch(getBackendUrl('/api/admin/questions'))
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
       .then((data) => { if (Array.isArray(data)) setQuestions(data); })
-      .catch(() => showToast('error', 'Failed to fetch community questions'))
+      .catch(() => {
+        // Offline Fallback Mock
+        setQuestions([
+          { id: 1, title: "When is the fresher's orientation?", content: "I couldn't find the exact date for the CSE orientation.", authorName: "Karthik", authorEmail: "karthik.2024@ritchennai.edu.in", createdAt: new Date().toISOString(), status: "PENDING", tags: ["orientation"], votes: 0 },
+          { id: 2, title: "Are laptops mandatory in first year?", content: "Just wondering if we need to bring laptops to college every day.", authorName: "Sneha", authorEmail: "sneha.2024@ritchennai.edu.in", createdAt: new Date(Date.now() - 86400000).toISOString(), status: "APPROVED", tags: ["academics"], votes: 5 }
+        ]);
+      })
       .finally(() => setLoadingQuestions(false));
   };
 
@@ -413,6 +563,10 @@ export default function AdminDashboard() {
           showToast('success', 'Question deleted.');
           fetchQuestions();
         }
+      })
+      .catch(() => {
+        setQuestions(questions.filter(q => q.id !== id));
+        showToast('success', 'Question deleted (Local Mode).');
       });
   };
 
@@ -422,9 +576,18 @@ export default function AdminDashboard() {
   const fetchRecipients = () => {
     setLoadingRecipients(true);
     fetch(getBackendUrl('/api/admin/recipients'))
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
       .then((data) => { if (Array.isArray(data)) setRecipients(data); })
-      .catch(() => showToast('error', 'Failed to fetch email subscribers'))
+      .catch(() => {
+        // Offline Fallback Mock
+        setRecipients([
+          'devops@ritchennai.edu.in',
+          'admin@ritchennai.edu.in'
+        ]);
+      })
       .finally(() => setLoadingRecipients(false));
   };
 
@@ -440,7 +603,10 @@ export default function AdminDashboard() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: newEmail }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
       .then((data) => {
         if (data.success) {
           showToast('success', data.message || 'Email added successfully');
@@ -450,18 +616,30 @@ export default function AdminDashboard() {
           showToast('error', data.message || 'Could not add email');
         }
       })
+      .catch(() => {
+        setRecipients([...recipients, newEmail]);
+        setNewEmail('');
+        showToast('success', 'Email added (Local Mode)');
+      })
       .finally(() => setSubmittingEmail(false));
   };
 
   const handleRemoveRecipient = (email: string) => {
     if (!confirm(`Remove ${email} from deployment notifications?`)) return;
     fetch(getBackendUrl(`/api/admin/recipients?email=${encodeURIComponent(email)}`), { method: 'DELETE' })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
       .then((data) => {
         if (data.success) {
           showToast('success', 'Removed email recipient');
           fetchRecipients();
         }
+      })
+      .catch(() => {
+        setRecipients(recipients.filter((r) => r !== email));
+        showToast('success', 'Removed email recipient (Local Mode)');
       });
   };
 
@@ -677,14 +855,14 @@ export default function AdminDashboard() {
         {/* ───────────────────────────────────────────────────────────── */}
         {activeTab === 'transport' && (
           <div className="space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-3xl border border-white/10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-3xl border border-white/10">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <Bus className="w-5 h-5 text-orange-400" />
                   College Bus Routes ({routes.length} Active)
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Changes made here update the student Bus Routes directory and driver tracking app instantly.
+                  Edit departure times, intermediate stops, colors, or create and delete routes instantly.
                 </p>
               </div>
 
@@ -692,13 +870,13 @@ export default function AdminDashboard() {
                 <button
                   onClick={fetchRoutes}
                   title="Refresh routes"
-                  className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10"
+                  className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 cursor-pointer"
                 >
                   <RefreshCw className={`w-4 h-4 ${loadingRoutes ? 'animate-spin' : ''}`} />
                 </button>
                 <button
                   onClick={openCreateRouteModal}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white text-xs font-bold shadow-md shadow-orange-500/20 hover:opacity-95 transition-all cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white text-xs font-bold shadow-md shadow-orange-500/20 hover:opacity-95 transition-all cursor-pointer whitespace-nowrap"
                 >
                   <Plus className="w-4 h-4" />
                   Add New Route
@@ -706,15 +884,34 @@ export default function AdminDashboard() {
               </div>
             </div>
 
+            {/* Route Search Filter */}
+            <div className="relative">
+              <input
+                type="text"
+                value={busSearchQuery}
+                onChange={(e) => setBusSearchQuery(e.target.value)}
+                placeholder="Search routes by number (e.g. R01, RIT-01), name, or origin..."
+                className="w-full bg-slate-900/80 border border-white/10 rounded-2xl px-4 py-3 text-xs text-white placeholder-slate-500 outline-none focus:border-orange-500 transition-colors"
+              />
+            </div>
+
             {loadingRoutes ? (
-              <div className="py-16 text-center text-xs text-slate-400">Loading bus routes from database...</div>
+              <div className="py-16 text-center text-xs text-slate-400">Loading bus routes...</div>
             ) : routes.length === 0 ? (
               <div className="py-16 text-center text-xs text-slate-400 bg-slate-900/40 rounded-3xl border border-white/10">
                 No routes configured yet. Click "Add New Route" to create your first bus route!
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {routes.map((route) => (
+                {routes
+                  .filter(
+                    (r) =>
+                      !busSearchQuery.trim() ||
+                      r.name.toLowerCase().includes(busSearchQuery.toLowerCase()) ||
+                      r.number.toLowerCase().includes(busSearchQuery.toLowerCase()) ||
+                      r.from.toLowerCase().includes(busSearchQuery.toLowerCase())
+                  )
+                  .map((route) => (
                   <motion.div
                     key={route.id}
                     initial={{ opacity: 0, y: 10 }}

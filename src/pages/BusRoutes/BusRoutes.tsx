@@ -15,13 +15,28 @@ export default function BusRoutes() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
+    // 0. Check local storage if edited by Transport Admin
+    const localAdminRoutes = localStorage.getItem('RIT_LOCAL_BUS_ROUTES');
+    if (localAdminRoutes) {
+      try {
+        const parsed = JSON.parse(localAdminRoutes);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setBusRoutes(parsed);
+          setSelectedBusRoute(parsed[0]);
+          setLoadingBus(false);
+        }
+      } catch {}
+    }
+
     // 1. Instantly load static bus routes (0ms loading delay)
     fetch('/bus_routes.json')
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          setBusRoutes(data);
-          setSelectedBusRoute(data[0]);
+          if (!localStorage.getItem('RIT_LOCAL_BUS_ROUTES')) {
+            setBusRoutes(data);
+            setSelectedBusRoute(data[0]);
+          }
         }
       })
       .catch((err) => console.error('Local JSON load error:', err))
