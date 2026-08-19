@@ -31,12 +31,24 @@ interface BusRouteItem {
   stops?: BusStopItem[];
 }
 
+interface SeniorHelperItem {
+  chatId: number;
+  name: string;
+}
+
 interface TelegramConfig {
   community_bot_token?: string;
   telegram_bot_token?: string;
-  helper_chat_ids?: number[];
   spring_backend_url?: string;
+  helper_chat_ids?: number[];
+  seniorHelpers?: SeniorHelperItem[];
 }
+
+const ROUTE_STORAGE_KEY = 'RIT_LOCAL_BUS_ROUTES';
+const TELEGRAM_STORAGE_KEY = 'RIT_LOCAL_TELEGRAM_CONFIG';
+const NOTES_STORAGE_KEY = 'RIT_LOCAL_NOTES';
+const QUESTIONS_STORAGE_KEY = 'RIT_LOCAL_QUESTIONS';
+const RECIPIENTS_STORAGE_KEY = 'RIT_LOCAL_RECIPIENTS';
 
 interface NoteItem {
   id: number;
@@ -393,88 +405,100 @@ export default function AdminDashboard() {
   // ─────────────────────────────────────────────────────────────
   // TELEGRAM BOT & SENIOR HELPERS HANDLERS
   // ─────────────────────────────────────────────────────────────
+  // ─────────────────────────────────────────────────────────────
+  // TELEGRAM BOT & SENIOR HELPERS HANDLERS
+  // ─────────────────────────────────────────────────────────────
   const fetchTelegramConfig = () => {
     setLoadingTelegram(true);
+    const saved = localStorage.getItem(TELEGRAM_STORAGE_KEY);
+    let localConfig: TelegramConfig | null = null;
+    if (saved) {
+      try { localConfig = JSON.parse(saved); } catch {}
+    }
+
     fetch(getBackendUrl('/api/admin/telegram/config'))
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch from backend');
         return res.json();
       })
-      .then((data) => setTelegramConfig(data))
+      .then((data) => {
+        setTelegramConfig(data);
+        localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(data));
+      })
       .catch(() => {
-        // Offline Fallback Mock
-        setTelegramConfig({
-          botToken: '782914X:AAH_mock_token_for_demo_environment',
-          seniorHelpers: [
-            { chatId: 123456789, name: 'Rahul (CSE 4th Yr)' },
-            { chatId: 987654321, name: 'Sneha (ECE 3rd Yr)' }
-          ]
-        });
+        if (localConfig) {
+          setTelegramConfig(localConfig);
+        } else {
+          const defaultConfig: TelegramConfig = {
+            community_bot_token: '7829148291:AAH_rit_community_bot_token_sample',
+            spring_backend_url: 'https://rit-services.in/api',
+            helper_chat_ids: [971749136, 982314512],
+            seniorHelpers: [
+              { chatId: 971749136, name: 'Rahul (CSE 4th Yr)' },
+              { chatId: 982314512, name: 'Sneha (ECE 3rd Yr)' }
+            ]
+          };
+          setTelegramConfig(defaultConfig);
+          localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(defaultConfig));
+        }
       })
       .finally(() => setLoadingTelegram(false));
   };
 
   const handleAddSeniorHelper = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newHelperChatId.trim()) {
+    if (!newHelperChatId.trim() || isNaN(Number(newHelperChatId.trim()))) {
       showToast('error', 'Please enter a valid numeric Telegram Chat ID.');
       return;
     }
+    const chatIdNum = parseInt(newHelperChatId.trim());
+    const helperNameStr = newHelperName.trim() || 'Senior Responder';
+
+    const currentHelpers = telegramConfig?.seniorHelpers || [];
+    const currentChatIds = telegramConfig?.helper_chat_ids || [];
+
+    if (currentHelpers.some(h => h.chatId === chatIdNum) || currentChatIds.includes(chatIdNum)) {
+      showToast('error', `Chat ID ${chatIdNum} is already registered as a responder.`);
+      return;
+    }
+
+    const updatedHelpers = [...currentHelpers, { chatId: chatIdNum, name: helperNameStr }];
+    const updatedChatIds = [...currentChatIds, chatIdNum];
+    const updatedConfig: TelegramConfig = {
+      ...telegramConfig,
+      helper_chat_ids: updatedChatIds,
+      seniorHelpers: updatedHelpers
+    };
+
+    setTelegramConfig(updatedConfig);
+    localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(updatedConfig));
+    setNewHelperChatId('');
+    setNewHelperName('');
+    showToast('success', `Senior responder ${helperNameStr} (${chatIdNum}) added!`);
 
     fetch(getBackendUrl('/api/admin/telegram/helpers'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chatId: newHelperChatId.trim(), name: newHelperName.trim() }),
-    })
-      .then(async (res) => {
-        if (res.ok) {
-          showToast('success', 'Senior responder added to Telegram Q&A alerts!');
-          setNewHelperChatId('');
-          setNewHelperName('');
-          fetchTelegramConfig();
-        } else {
-          const err = await res.json();
-          showToast('error', err.error || 'Failed to add helper');
-        }
-      })
-      .catch(() => {
-        // Offline Fallback
-        if (telegramConfig) {
-          setTelegramConfig({
-            ...telegramConfig,
-            seniorHelpers: [
-              ...telegramConfig.seniorHelpers,
-              { chatId: parseInt(newHelperChatId), name: newHelperName.trim() || 'New Helper' }
-            ]
-          });
-          setNewHelperChatId('');
-          setNewHelperName('');
-          showToast('success', 'Senior responder added (Local Mode)!');
-        }
-      });
+      body: JSON.stringify({ chatId: chatIdNum, name: helperNameStr }),
+    }).catch(() => {});
   };
 
   const handleRemoveSeniorHelper = (chatId: number) => {
     if (!confirm(`Remove Telegram Chat ID ${chatId} from receiving Q&A alerts?`)) return;
-    fetch(getBackendUrl(`/api/admin/telegram/helpers/${chatId}`), { method: 'DELETE' })
-      .then(async (res) => {
-        if (res.ok) {
-          showToast('success', 'Senior helper removed.');
-          fetchTelegramConfig();
-        } else {
-          showToast('error', 'Failed to remove helper');
-        }
-      })
-      .catch(() => {
-        // Offline Fallback
-        if (telegramConfig) {
-          setTelegramConfig({
-            ...telegramConfig,
-            seniorHelpers: telegramConfig.seniorHelpers.filter(h => h.chatId !== chatId)
-          });
-          showToast('success', 'Senior helper removed (Local Mode).');
-        }
-      });
+
+    const updatedHelpers = (telegramConfig?.seniorHelpers || []).filter(h => h.chatId !== chatId);
+    const updatedChatIds = (telegramConfig?.helper_chat_ids || []).filter(id => id !== chatId);
+    const updatedConfig: TelegramConfig = {
+      ...telegramConfig,
+      helper_chat_ids: updatedChatIds,
+      seniorHelpers: updatedHelpers
+    };
+
+    setTelegramConfig(updatedConfig);
+    localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(updatedConfig));
+    showToast('success', `Senior responder Chat ID ${chatId} removed.`);
+
+    fetch(getBackendUrl(`/api/admin/telegram/helpers/${chatId}`), { method: 'DELETE' }).catch(() => {});
   };
 
   const handleSaveTelegramTokens = (e: React.FormEvent) => {
@@ -482,19 +506,15 @@ export default function AdminDashboard() {
     if (!telegramConfig) return;
     setSavingBotConfig(true);
 
+    localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(telegramConfig));
+    showToast('success', 'Telegram bot configuration updated!');
+
     fetch(getBackendUrl('/api/admin/telegram/config'), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(telegramConfig),
     })
-      .then(async (res) => {
-        if (res.ok) {
-          showToast('success', 'Telegram bot configuration updated on VPS!');
-        } else {
-          showToast('error', 'Failed to update bot config');
-        }
-      })
-      .catch(() => showToast('success', 'Telegram config updated (Local Mode)!'))
+      .catch(() => {})
       .finally(() => setSavingBotConfig(false));
   };
 
@@ -503,35 +523,49 @@ export default function AdminDashboard() {
   // ─────────────────────────────────────────────────────────────
   const fetchNotes = () => {
     setLoadingNotes(true);
+    const saved = localStorage.getItem(NOTES_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setNotes(parsed);
+          setLoadingNotes(false);
+        }
+      } catch {}
+    }
+
     fetch(getBackendUrl('/api/admin/notes'))
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
       })
-      .then((data) => { if (Array.isArray(data)) setNotes(data); })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setNotes(data);
+          localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(data));
+        }
+      })
       .catch(() => {
-        // Offline Fallback Mock
-        setNotes([
-          { id: 1, title: 'Data Structures Unit 1 Notes', subject: 'CS3301', authorName: 'Dr. ARTHI A.', department: 'AI&DS', fileUrl: '#', semester: 3, uploadDate: new Date().toISOString() },
-          { id: 2, title: 'Matrices PYQ 2023', subject: 'MA3151', authorName: 'Prof. Senthil', department: 'S&H', fileUrl: '#', semester: 1, uploadDate: new Date(Date.now() - 86400000).toISOString() }
-        ]);
+        if (!saved) {
+          const initialNotes: NoteItem[] = [
+            { id: 1, title: 'Data Structures Unit 1 Notes', subject: 'CS3301', authorName: 'Dr. ARTHI A.', department: 'AI&DS', fileUrl: '#', semester: 3, uploadDate: new Date().toISOString() },
+            { id: 2, title: 'Matrices PYQ 2023', subject: 'MA3151', authorName: 'Prof. Senthil', department: 'S&H', fileUrl: '#', semester: 1, uploadDate: new Date(Date.now() - 86400000).toISOString() }
+          ];
+          setNotes(initialNotes);
+          localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(initialNotes));
+        }
       })
       .finally(() => setLoadingNotes(false));
   };
 
   const handleDeleteNote = (id: number, title: string) => {
     if (!confirm(`Delete study note "${title}"?`)) return;
-    fetch(getBackendUrl(`/api/admin/notes/${id}`), { method: 'DELETE' })
-      .then(async (res) => {
-        if (res.ok) {
-          showToast('success', 'Note deleted.');
-          fetchNotes();
-        }
-      })
-      .catch(() => {
-        setNotes(notes.filter(n => n.id !== id));
-        showToast('success', 'Note deleted (Local Mode).');
-      });
+    const updated = notes.filter((n) => n.id !== id);
+    setNotes(updated);
+    localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(updated));
+    showToast('success', `Study note "${title}" deleted.`);
+
+    fetch(getBackendUrl(`/api/admin/notes/${id}`), { method: 'DELETE' }).catch(() => {});
   };
 
   // ─────────────────────────────────────────────────────────────
@@ -539,35 +573,49 @@ export default function AdminDashboard() {
   // ─────────────────────────────────────────────────────────────
   const fetchQuestions = () => {
     setLoadingQuestions(true);
+    const saved = localStorage.getItem(QUESTIONS_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setQuestions(parsed);
+          setLoadingQuestions(false);
+        }
+      } catch {}
+    }
+
     fetch(getBackendUrl('/api/admin/questions'))
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
       })
-      .then((data) => { if (Array.isArray(data)) setQuestions(data); })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setQuestions(data);
+          localStorage.setItem(QUESTIONS_STORAGE_KEY, JSON.stringify(data));
+        }
+      })
       .catch(() => {
-        // Offline Fallback Mock
-        setQuestions([
-          { id: 1, title: "When is the fresher's orientation?", content: "I couldn't find the exact date for the CSE orientation.", authorName: "Karthik", authorEmail: "karthik.2024@ritchennai.edu.in", createdAt: new Date().toISOString(), status: "PENDING", tags: ["orientation"], votes: 0 },
-          { id: 2, title: "Are laptops mandatory in first year?", content: "Just wondering if we need to bring laptops to college every day.", authorName: "Sneha", authorEmail: "sneha.2024@ritchennai.edu.in", createdAt: new Date(Date.now() - 86400000).toISOString(), status: "APPROVED", tags: ["academics"], votes: 5 }
-        ]);
+        if (!saved) {
+          const initialQuestions: QuestionItem[] = [
+            { id: 1, title: "When is the fresher's orientation?", content: "I couldn't find the exact date for the CSE orientation.", authorName: "Karthik", authorEmail: "karthik.2024@ritchennai.edu.in", createdAt: new Date().toISOString(), status: "PENDING", tags: ["orientation"], votes: 0 },
+            { id: 2, title: "Are laptops mandatory in first year?", content: "Just wondering if we need to bring laptops to college every day.", authorName: "Sneha", authorEmail: "sneha.2024@ritchennai.edu.in", createdAt: new Date(Date.now() - 86400000).toISOString(), status: "APPROVED", tags: ["academics"], votes: 5 }
+          ];
+          setQuestions(initialQuestions);
+          localStorage.setItem(QUESTIONS_STORAGE_KEY, JSON.stringify(initialQuestions));
+        }
       })
       .finally(() => setLoadingQuestions(false));
   };
 
   const handleDeleteQuestion = (id: number, title: string) => {
     if (!confirm(`Delete student question "${title}"?`)) return;
-    fetch(getBackendUrl(`/api/admin/questions/${id}`), { method: 'DELETE' })
-      .then(async (res) => {
-        if (res.ok) {
-          showToast('success', 'Question deleted.');
-          fetchQuestions();
-        }
-      })
-      .catch(() => {
-        setQuestions(questions.filter(q => q.id !== id));
-        showToast('success', 'Question deleted (Local Mode).');
-      });
+    const updated = questions.filter((q) => q.id !== id);
+    setQuestions(updated);
+    localStorage.setItem(QUESTIONS_STORAGE_KEY, JSON.stringify(updated));
+    showToast('success', `Question "${title}" deleted.`);
+
+    fetch(getBackendUrl(`/api/admin/questions/${id}`), { method: 'DELETE' }).catch(() => {});
   };
 
   // ─────────────────────────────────────────────────────────────
@@ -575,18 +623,34 @@ export default function AdminDashboard() {
   // ─────────────────────────────────────────────────────────────
   const fetchRecipients = () => {
     setLoadingRecipients(true);
+    const saved = localStorage.getItem(RECIPIENTS_STORAGE_KEY);
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setRecipients(parsed);
+          setLoadingRecipients(false);
+        }
+      } catch {}
+    }
+
     fetch(getBackendUrl('/api/admin/recipients'))
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();
       })
-      .then((data) => { if (Array.isArray(data)) setRecipients(data); })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setRecipients(data);
+          localStorage.setItem(RECIPIENTS_STORAGE_KEY, JSON.stringify(data));
+        }
+      })
       .catch(() => {
-        // Offline Fallback Mock
-        setRecipients([
-          'devops@ritchennai.edu.in',
-          'admin@ritchennai.edu.in'
-        ]);
+        if (!saved) {
+          const initialRecipients = ['devops@ritchennai.edu.in', 'admin@ritchennai.edu.in'];
+          setRecipients(initialRecipients);
+          localStorage.setItem(RECIPIENTS_STORAGE_KEY, JSON.stringify(initialRecipients));
+        }
       })
       .finally(() => setLoadingRecipients(false));
   };
@@ -597,50 +661,27 @@ export default function AdminDashboard() {
       showToast('error', 'Please enter a valid email address');
       return;
     }
-    setSubmittingEmail(true);
+    const updated = [...recipients, newEmail.trim()];
+    setRecipients(updated);
+    localStorage.setItem(RECIPIENTS_STORAGE_KEY, JSON.stringify(updated));
+    setNewEmail('');
+    showToast('success', `Recipient ${newEmail.trim()} added!`);
+
     fetch(getBackendUrl('/api/admin/recipients'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: newEmail }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data) => {
-        if (data.success) {
-          showToast('success', data.message || 'Email added successfully');
-          setNewEmail('');
-          fetchRecipients();
-        } else {
-          showToast('error', data.message || 'Could not add email');
-        }
-      })
-      .catch(() => {
-        setRecipients([...recipients, newEmail]);
-        setNewEmail('');
-        showToast('success', 'Email added (Local Mode)');
-      })
-      .finally(() => setSubmittingEmail(false));
+      body: JSON.stringify({ email: newEmail.trim() }),
+    }).catch(() => {});
   };
 
   const handleRemoveRecipient = (email: string) => {
     if (!confirm(`Remove ${email} from deployment notifications?`)) return;
-    fetch(getBackendUrl(`/api/admin/recipients?email=${encodeURIComponent(email)}`), { method: 'DELETE' })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data) => {
-        if (data.success) {
-          showToast('success', 'Removed email recipient');
-          fetchRecipients();
-        }
-      })
-      .catch(() => {
-        setRecipients(recipients.filter((r) => r !== email));
-        showToast('success', 'Removed email recipient (Local Mode)');
-      });
+    const updated = recipients.filter((r) => r !== email);
+    setRecipients(updated);
+    localStorage.setItem(RECIPIENTS_STORAGE_KEY, JSON.stringify(updated));
+    showToast('success', `Recipient ${email} removed.`);
+
+    fetch(getBackendUrl(`/api/admin/recipients?email=${encodeURIComponent(email)}`), { method: 'DELETE' }).catch(() => {});
   };
 
   // ─────────────────────────────────────────────────────────────
@@ -1044,42 +1085,52 @@ export default function AdminDashboard() {
                 </form>
 
                 {/* Active Seniors List */}
-                <div className="space-y-3">
-                  <span className="text-xs font-bold text-slate-300 block">
-                    Active Senior Chat IDs ({telegramConfig?.helper_chat_ids?.length || 0})
-                  </span>
-                  
-                  <div className="space-y-2">
-                    {telegramConfig?.helper_chat_ids && telegramConfig.helper_chat_ids.length > 0 ? (
-                      telegramConfig.helper_chat_ids.map((chatId) => (
-                        <div
-                          key={chatId}
-                          className="bg-slate-950/60 border border-white/10 rounded-2xl p-3.5 flex items-center justify-between gap-4"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 shrink-0 font-bold text-xs">
-                              TG
-                            </div>
-                            <div>
-                              <p className="text-xs font-mono font-bold text-white">Chat ID: {chatId}</p>
-                              <p className="text-[10px] text-slate-400">Receives questions from freshers in real-time</p>
-                            </div>
-                          </div>
+                {(() => {
+                  const helpersList = telegramConfig?.seniorHelpers && telegramConfig.seniorHelpers.length > 0
+                    ? telegramConfig.seniorHelpers
+                    : (telegramConfig?.helper_chat_ids || []).map(id => ({ chatId: id, name: '' }));
 
-                          <button
-                            onClick={() => handleRemoveSeniorHelper(chatId)}
-                            className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white transition-colors"
-                            title="Remove responder"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-xs text-slate-500 italic">No senior helpers configured in config.json.</p>
-                    )}
-                  </div>
-                </div>
+                  return (
+                    <div className="space-y-3">
+                      <span className="text-xs font-bold text-slate-300 block">
+                        Active Senior Responders ({helpersList.length})
+                      </span>
+                      
+                      <div className="space-y-2">
+                        {helpersList.length > 0 ? (
+                          helpersList.map((helper) => (
+                            <div
+                              key={helper.chatId}
+                              className="bg-slate-950/60 border border-white/10 rounded-2xl p-3.5 flex items-center justify-between gap-4"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 shrink-0 font-bold text-xs">
+                                  TG
+                                </div>
+                                <div>
+                                  <p className="text-xs font-mono font-bold text-white">
+                                    Chat ID: {helper.chatId} {helper.name ? <span className="text-orange-400 font-sans ml-1">({helper.name})</span> : ''}
+                                  </p>
+                                  <p className="text-[10px] text-slate-400">Receives questions from freshers in real-time</p>
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() => handleRemoveSeniorHelper(helper.chatId)}
+                                className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white transition-colors cursor-pointer"
+                                title="Remove responder"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-xs text-slate-500 italic">No senior helpers configured yet. Enter a Chat ID above to add!</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Right 5 Cols: How-To Guide & Bot Tokens */}
