@@ -483,6 +483,33 @@ def telegram_polling_thread():
                 
                 logging.info(f"Received message from chat {chat_id}: '{text}'")
 
+                # Handle Community Q&A reply if this is a reply to a forwarded question
+                reply_to = message.get("reply_to_message")
+                if reply_to:
+                    original_message_id = reply_to["message_id"]
+                    question_id = get_question_id(chat_id, original_message_id)
+                    if question_id:
+                        first_name = message["from"].get("first_name", "")
+                        last_name = message["from"].get("last_name", "")
+                        author_name = f"{first_name} {last_name}".strip() or "Senior Helper"
+                        
+                        logging.info(f"Submitting answer for question {question_id} by helper '{author_name}'")
+                        backend_endpoint = f"{backend_url}/api/questions/{question_id}/answers"
+                        answer_payload = {
+                            "body": text,
+                            "author": author_name
+                        }
+                        try:
+                            res = requests.post(backend_endpoint, json=answer_payload, timeout=10)
+                            if res.status_code in [200, 201]:
+                                send_telegram_message(chat_id, "✅ *Answer posted successfully to the Q&A board!*", reply_to_message_id=message["message_id"], token=bot_token)
+                            else:
+                                send_telegram_message(chat_id, f"❌ *Failed to post answer to backend.* (Status: {res.status_code})\nResponse: {res.text[:100]}", reply_to_message_id=message["message_id"], token=bot_token)
+                        except Exception as e:
+                            logging.error(f"Error calling backend endpoint {backend_endpoint}: {e}")
+                            send_telegram_message(chat_id, f"❌ *Connection error to backend.* ({e})", reply_to_message_id=message["message_id"], token=bot_token)
+                        continue
+
                 # Handle /remove command in Telegram
                 if text.lower() in ["/remove", "/cancel"]:
                     try:
@@ -714,9 +741,16 @@ async def run_uvicorn():
     await server.serve()
 
 async def main():
-    comm_thread = threading.Thread(target=community_bot_polling_thread, daemon=True)
-    comm_thread.start()
+    current_config = load_config()
+    comm_token = os.environ.get("COMMUNITY_BOT_TOKEN") or current_config.get("community_bot_token", COMMUNITY_BOT_TOKEN)
+    bot_token = os.environ.get("TELEGRAM_BOT_TOKEN") or current_config.get("telegram_bot_token", BOT_TOKEN)
 
+    # If separate bot tokens are configured, run dedicated community polling thread
+    if comm_token and bot_token and comm_token != bot_token:
+        comm_thread = threading.Thread(target=community_bot_polling_thread, daemon=True)
+        comm_thread.start()
+
+    # Main unified thread handles Dev Collab, Chatbot, and unified Q&A
     chat_thread = threading.Thread(target=telegram_polling_thread, daemon=True)
     chat_thread.start()
 
