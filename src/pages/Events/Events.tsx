@@ -161,10 +161,37 @@ export default function Events() {
     return { totalCount: activeClubsData.length, centersCount: centers, clubsCount: clubs };
   }, [activeClubsData]);
 
-  // ─── Database-Backed Interactive Like System ─────────────────────────────
+  // ─── Database & LocalStorage Persisted Interactive Like System ───────────
+  const loadSavedLikesMap = (): Record<string, number> => {
+    const initialMap: Record<string, number> = {};
+    CLUBS_DATA.forEach((c) => {
+      initialMap[c.id] = 0;
+    });
+    try {
+      const savedCounts = localStorage.getItem('rit_freshers_likes_count_v3');
+      if (savedCounts) {
+        const parsed = JSON.parse(savedCounts);
+        Object.assign(initialMap, parsed);
+      }
+    } catch {}
+
+    try {
+      const savedLikedList = localStorage.getItem('rit_freshers_liked_clubs_v3');
+      if (savedLikedList) {
+        const likedArray: string[] = JSON.parse(savedLikedList);
+        likedArray.forEach((id) => {
+          if (!initialMap[id] || initialMap[id] < 1) {
+            initialMap[id] = 1;
+          }
+        });
+      }
+    } catch {}
+
+    return initialMap;
+  };
+
   const [likedClubs, setLikedClubs] = useState<Set<string>>(() => {
     try {
-      localStorage.removeItem('rit_freshers_liked_clubs');
       const saved = localStorage.getItem('rit_freshers_liked_clubs_v3');
       return saved ? new Set(JSON.parse(saved)) : new Set();
     } catch {
@@ -172,38 +199,38 @@ export default function Events() {
     }
   });
 
-  const [likesMap, setLikesMap] = useState<Record<string, number>>(() => {
-    const initialMap: Record<string, number> = {};
-    activeClubsData.forEach((c) => {
-      initialMap[c.id] = 0;
-    });
-    return initialMap;
-  });
+  const [likesMap, setLikesMap] = useState<Record<string, number>>(loadSavedLikesMap);
 
   // Sync likes with database backend on mount and when user identity changes
   useEffect(() => {
     let isMounted = true;
 
     async function syncWithDatabase() {
-      // Fetch total like counts for all clubs from database
+      // 1. Fetch total like counts for all clubs from database
       const dbLikesMap = await fetchClubLikes();
       if (isMounted && Object.keys(dbLikesMap).length > 0) {
         setLikesMap((prev) => {
           const merged = { ...prev };
           Object.entries(dbLikesMap).forEach(([id, count]) => {
-            merged[id] = count;
+            merged[id] = Math.max(merged[id] || 0, Number(count) || 0);
           });
+          try {
+            localStorage.setItem('rit_freshers_likes_count_v3', JSON.stringify(merged));
+          } catch {}
           return merged;
         });
       }
 
-      // Fetch user's liked clubs from database
+      // 2. Fetch user's liked clubs from database
       const userLikedList = await fetchUserLikedClubs(userIdentifier);
-      if (isMounted && userLikedList.length > 0) {
-        setLikedClubs(new Set(userLikedList));
-        try {
-          localStorage.setItem('rit_freshers_liked_clubs_v3', JSON.stringify(userLikedList));
-        } catch {}
+      if (isMounted && userLikedList && userLikedList.length > 0) {
+        setLikedClubs((prev) => {
+          const mergedSet = new Set([...Array.from(prev), ...userLikedList]);
+          try {
+            localStorage.setItem('rit_freshers_liked_clubs_v3', JSON.stringify(Array.from(mergedSet)));
+          } catch {}
+          return mergedSet;
+        });
       }
     }
 
@@ -217,32 +244,53 @@ export default function Events() {
   const toggleLike = async (clubId: string) => {
     const isCurrentlyLiked = likedClubs.has(clubId);
     const next = new Set(likedClubs);
+    let newCount = likesMap[clubId] || 0;
 
     // Optimistic UI update
     if (isCurrentlyLiked) {
       next.delete(clubId);
-      setLikesMap((l) => ({ ...l, [clubId]: Math.max(0, (l[clubId] || 1) - 1) }));
+      newCount = Math.max(0, newCount - 1);
     } else {
       next.add(clubId);
-      setLikesMap((l) => ({ ...l, [clubId]: (l[clubId] || 0) + 1 }));
+      newCount = newCount + 1;
     }
 
+    const updatedLikesMap = { ...likesMap, [clubId]: newCount };
     setLikedClubs(next);
+    setLikesMap(updatedLikesMap);
+
     try {
       localStorage.setItem('rit_freshers_liked_clubs_v3', JSON.stringify(Array.from(next)));
+      localStorage.setItem('rit_freshers_likes_count_v3', JSON.stringify(updatedLikesMap));
     } catch {}
 
-    // Persist like directly in PostgreSQL database backend
+    // Persist like directly in PostgreSQL database backend if available
     const dbResult = await toggleClubLikeInDb(clubId, userIdentifier);
     if (dbResult) {
-      setLikesMap((l) => ({ ...l, [clubId]: dbResult.count }));
+      setLikesMap((l) => {
+        const freshMap = { ...l, [clubId]: dbResult.count };
+        try {
+          localStorage.setItem('rit_freshers_likes_count_v3', JSON.stringify(freshMap));
+        } catch {}
+        return freshMap;
+      });
+
       if (dbResult.liked) {
-        setLikedClubs((prev) => new Set([...prev, clubId]));
+        setLikedClubs((prev) => {
+          const s = new Set([...Array.from(prev), clubId]);
+          try {
+            localStorage.setItem('rit_freshers_liked_clubs_v3', JSON.stringify(Array.from(s)));
+          } catch {}
+          return s;
+        });
       } else {
         setLikedClubs((prev) => {
-          const updated = new Set(prev);
-          updated.delete(clubId);
-          return updated;
+          const s = new Set(prev);
+          s.delete(clubId);
+          try {
+            localStorage.setItem('rit_freshers_liked_clubs_v3', JSON.stringify(Array.from(s)));
+          } catch {}
+          return s;
         });
       }
     }
@@ -938,84 +986,90 @@ export default function Events() {
               </div>
 
               {/* Social & Community Links */}
-              {Boolean(
-                selectedClub.socialLinks?.instagram ||
-                selectedClub.socialLinks?.linkedin ||
-                selectedClub.socialLinks?.whatsapp ||
-                selectedClub.socialLinks?.youtube ||
-                selectedClub.socialLinks?.website
-              ) && (
-                <div className="mb-6 bg-orange-50/60 border border-orange-200/80 rounded-2xl p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2 text-xs font-bold text-[#F97316] uppercase tracking-wider">
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      <span>Social & Community Links</span>
+              {(() => {
+                const isRaiseIncubator = selectedClub.id === 'center_raise' || selectedClub.socialLinks?.website === '/raise';
+                const hasSpecificSocials = Boolean(
+                  selectedClub.socialLinks?.instagram ||
+                  selectedClub.socialLinks?.linkedin ||
+                  selectedClub.socialLinks?.whatsapp ||
+                  selectedClub.socialLinks?.youtube
+                );
+
+                if (!isRaiseIncubator && !hasSpecificSocials) return null;
+
+                return (
+                  <div className="mb-6 bg-orange-50/60 border border-orange-200/80 rounded-2xl p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2 text-xs font-bold text-[#F97316] uppercase tracking-wider">
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>Social & Community Links</span>
+                      </div>
+                      <span className="text-[10px] text-emerald-600 font-medium">✓ Verified RIT Entity</span>
                     </div>
-                    <span className="text-[10px] text-emerald-600 font-medium">✓ Verified RIT Entity</span>
+
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {isRaiseIncubator && (
+                        <Link
+                          to="/raise"
+                          onClick={() => setSelectedClub(null)}
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-gradient-to-r from-[#EC4899] via-[#F43F5E] to-[#E11D48] text-white hover:from-pink-600 hover:to-rose-600 transition-all text-xs font-bold shadow-xs col-span-2 justify-center"
+                        >
+                          <Rocket className="w-4 h-4 text-white shrink-0 animate-pulse" />
+                          <span>Launch RAISE Incubator Portal →</span>
+                        </Link>
+                      )}
+
+                      {!isRaiseIncubator && selectedClub.socialLinks?.instagram && (
+                        <a
+                          href={selectedClub.socialLinks.instagram}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-pink-500 hover:text-pink-600 transition-all text-xs font-medium text-slate-700"
+                        >
+                          <InstagramIcon className="w-4 h-4 text-pink-500 shrink-0" />
+                          <span className="truncate">Instagram</span>
+                        </a>
+                      )}
+
+                      {!isRaiseIncubator && selectedClub.socialLinks?.linkedin && (
+                        <a
+                          href={selectedClub.socialLinks.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-blue-600 hover:text-blue-600 transition-all text-xs font-medium text-slate-700"
+                        >
+                          <LinkedinIcon className="w-4 h-4 text-blue-600 shrink-0" />
+                          <span className="truncate">LinkedIn</span>
+                        </a>
+                      )}
+
+                      {!isRaiseIncubator && selectedClub.socialLinks?.whatsapp && (
+                        <a
+                          href={selectedClub.socialLinks.whatsapp}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-all text-xs font-medium text-slate-700"
+                        >
+                          <MessageCircle className="w-4 h-4 text-emerald-500 shrink-0" />
+                          <span className="truncate">WhatsApp Group</span>
+                        </a>
+                      )}
+
+                      {!isRaiseIncubator && selectedClub.socialLinks?.youtube && (
+                        <a
+                          href={selectedClub.socialLinks.youtube}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-red-600 hover:text-red-600 transition-all text-xs font-medium text-slate-700"
+                        >
+                          <YoutubeIcon className="w-4 h-4 text-red-600 shrink-0" />
+                          <span className="truncate">YouTube Channel</span>
+                        </a>
+                      )}
+                    </div>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-2.5">
-                    {selectedClub.socialLinks?.website && (
-                      <Link
-                        to={selectedClub.socialLinks.website}
-                        onClick={() => setSelectedClub(null)}
-                        className="flex items-center gap-2 p-2.5 rounded-xl bg-gradient-to-r from-[#EC4899] via-[#F43F5E] to-[#E11D48] text-white hover:from-pink-600 hover:to-rose-600 transition-all text-xs font-bold shadow-xs col-span-2 justify-center"
-                      >
-                        <Rocket className="w-4 h-4 text-white shrink-0 animate-pulse" />
-                        <span>Launch RAISE Incubator Portal →</span>
-                      </Link>
-                    )}
-
-                  {selectedClub.socialLinks?.instagram && (
-                    <a
-                      href={selectedClub.socialLinks.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-pink-500 hover:text-pink-600 transition-all text-xs font-medium text-slate-700"
-                    >
-                      <InstagramIcon className="w-4 h-4 text-pink-500 shrink-0" />
-                      <span className="truncate">Instagram</span>
-                    </a>
-                  )}
-
-                  {selectedClub.socialLinks?.linkedin && (
-                    <a
-                      href={selectedClub.socialLinks.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-blue-600 hover:text-blue-600 transition-all text-xs font-medium text-slate-700"
-                    >
-                      <LinkedinIcon className="w-4 h-4 text-blue-600 shrink-0" />
-                      <span className="truncate">LinkedIn</span>
-                    </a>
-                  )}
-
-                  {selectedClub.socialLinks?.whatsapp && (
-                    <a
-                      href={selectedClub.socialLinks.whatsapp}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-all text-xs font-medium text-slate-700"
-                    >
-                      <MessageCircle className="w-4 h-4 text-emerald-500 shrink-0" />
-                      <span className="truncate">WhatsApp Group</span>
-                    </a>
-                  )}
-
-                  {selectedClub.socialLinks?.youtube && (
-                    <a
-                      href={selectedClub.socialLinks.youtube}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 p-2.5 rounded-xl bg-white border border-slate-200 hover:border-red-600 hover:text-red-600 transition-all text-xs font-medium text-slate-700"
-                    >
-                      <YoutubeIcon className="w-4 h-4 text-red-600 shrink-0" />
-                      <span className="truncate">YouTube Channel</span>
-                    </a>
-                  )}
-                </div>
-              </div>
-              )}
+                );
+              })()}
 
               {/* Close Button */}
               <div>
