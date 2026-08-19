@@ -89,7 +89,51 @@ export default function AdminDashboard() {
   const [loadingLogin, setLoadingLogin] = useState(false);
 
   // Active Tab
-  const [activeTab, setActiveTab] = useState<'transport' | 'telegram' | 'notes' | 'community' | 'subscribers'>('transport');
+  const [activeTab, setActiveTab] = useState<'transport' | 'telegram' | 'notes' | 'community' | 'subscribers' | 'faculty' | 'clubs' | 'curriculum'>('transport');
+
+  // Faculty State
+  const [facultyList, setFacultyList] = useState<any[]>([]);
+  const [loadingFaculty, setLoadingFaculty] = useState(false);
+  const [facultySearch, setFacultySearch] = useState('');
+  const [isFacultyModalOpen, setIsFacultyModalOpen] = useState(false);
+  const [editingFaculty, setEditingFaculty] = useState<any | null>(null);
+  const [facultyFormData, setFacultyFormData] = useState({
+    name: '',
+    designation: 'Assistant Professor',
+    department: 'Computer Science & Engineering',
+    email: '',
+    office: '',
+    specialization: '',
+    isClassIncharge: false,
+  });
+
+  // Clubs & Centers State
+  const [clubsList, setClubsList] = useState<any[]>([]);
+  const [loadingClubs, setLoadingClubs] = useState(false);
+  const [clubsSearch, setClubsSearch] = useState('');
+  const [isClubModalOpen, setIsClubModalOpen] = useState(false);
+  const [editingClub, setEditingClub] = useState<any | null>(null);
+  const [clubFormData, setClubFormData] = useState({
+    name: '',
+    description: '',
+    category: 'Center of Excellence',
+    type: 'Center' as 'Club' | 'Center',
+    coordinatorName: '',
+    contactEmail: '',
+    details: '',
+  });
+
+  // Curriculum & GPA State
+  const [selectedGpaDept, setSelectedGpaDept] = useState<string>('CSE');
+  const [selectedGpaSem, setSelectedGpaSem] = useState<number>(1);
+  const [curriculumMap, setCurriculumMap] = useState<Record<string, Record<number, any[]>>>({});
+  const [isCourseModalOpen, setIsCourseModalOpen] = useState(false);
+  const [editingCourseIndex, setEditingCourseIndex] = useState<number | null>(null);
+  const [courseFormData, setCourseFormData] = useState({
+    name: '',
+    credits: 3,
+    isElective: false,
+  });
 
   // Transport State
   const [routes, setRoutes] = useState<BusRouteItem[]>([]);

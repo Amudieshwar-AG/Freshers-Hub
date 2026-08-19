@@ -1337,29 +1337,39 @@ export default function Notes() {
 
   useEffect(() => {
     const fetchNotes = async () => {
+      let localFallback = NOTES_DATA;
+      try {
+        const saved = localStorage.getItem('RIT_LOCAL_NOTES');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) localFallback = parsed;
+        }
+      } catch {}
+
       try {
         const response = await fetch(getBackendUrl('/api/notes'));
         if (response.ok) {
           const data = await response.json();
-          const mappedData = data.map((n: any) => ({
-            id: String(n.id),
-            title: n.title,
-            subject: n.subject,
-            department: n.department,
-            semester: n.semester,
-            type: n.fileType,
-            downloads: n.downloadsCount || 0,
-            fileSize: n.fileSize,
-            uploadedAt: n.uploadedAt ? n.uploadedAt.split('T')[0] : '',
-            downloadUrl: n.downloadUrl
-          }));
-          setNotes(mappedData);
-        } else {
-          setNotes(NOTES_DATA);
+          if (Array.isArray(data) && data.length > 0) {
+            const mappedData = data.map((n: any) => ({
+              id: String(n.id),
+              title: n.title,
+              subject: n.subject,
+              department: n.department,
+              semester: n.semester,
+              type: n.fileType || 'notes',
+              downloads: n.downloadsCount || 0,
+              fileSize: n.fileSize || '2.4 MB',
+              uploadedAt: n.uploadedAt ? n.uploadedAt.split('T')[0] : '',
+              downloadUrl: n.downloadUrl || '#'
+            }));
+            setNotes(mappedData);
+            return;
+          }
         }
-      } catch (err) {
-        console.error('Error fetching notes:', err);
-        setNotes(NOTES_DATA);
+        setNotes(localFallback);
+      } catch {
+        setNotes(localFallback);
       }
     };
     fetchNotes();
