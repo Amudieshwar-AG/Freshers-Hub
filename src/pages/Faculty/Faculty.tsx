@@ -5,7 +5,7 @@ import FacultyCard from '@/components/FacultyCard/FacultyCard';
 import { StaggerContainer, StaggerItem } from '@/components/AnimatedContainer/AnimatedContainer';
 import { FACULTY_DATA, DEPARTMENTS } from '@/constants';
 import { Link, useSearchParams } from 'react-router-dom';
-import { getStoredImsSession } from '@/services/imsService';
+import { getBackendUrl } from '@/config/api';
 
 const DEPT_MAP: Record<string, { abrv: string; full: string }> = {
   'Computer Science & Engineering': { abrv: 'CSE', full: 'Computer Science & Engineering' },
@@ -75,7 +75,7 @@ export default function Faculty() {
     searchParams.has('dept')
   );
 
-  const activeFacultyList = useMemo(() => {
+  const [facultyList, setFacultyList] = useState<any[]>(() => {
     try {
       const saved = localStorage.getItem('RIT_LOCAL_FACULTY');
       if (saved) {
@@ -84,10 +84,25 @@ export default function Faculty() {
       }
     } catch {}
     return FACULTY_DATA;
+  });
+
+  useEffect(() => {
+    fetch(getBackendUrl('/api/faculty'))
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setFacultyList(data);
+          localStorage.setItem('RIT_LOCAL_FACULTY', JSON.stringify(data));
+        }
+      })
+      .catch(() => {});
   }, []);
 
   const filteredAndSortedFaculty = useMemo(() => {
-    const filtered = activeFacultyList.filter((f) => {
+    const filtered = facultyList.filter((f) => {
       const searchLower = searchFaculty.trim().toLowerCase();
       const matchSearch = 
         (f.name && f.name.toLowerCase().includes(searchLower)) ||
@@ -106,7 +121,7 @@ export default function Faculty() {
       if (sortBy === 'Designation') return (a.designation || '').localeCompare(b.designation || '');
       return 0;
     });
-  }, [searchFaculty, selectedDept, sortBy]);
+  }, [facultyList, searchFaculty, selectedDept, sortBy]);
 
   const groupedFaculty = useMemo(() => {
     const groups: Record<string, typeof filteredAndSortedFaculty> = {};
