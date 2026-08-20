@@ -29,15 +29,19 @@ public class CommunityQuestion {
     private String author;
 
     @Column(name = "upvotes")
+    @Builder.Default
     private Integer upvotes = 0;
 
     @Column(name = "tags", columnDefinition = "text[]")
+    @Builder.Default
     private List<String> tags = new ArrayList<>();
 
     @Column(name = "is_answered")
+    @Builder.Default
     private Boolean isAnswered = false;
 
     @Column(name = "created_at")
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

@@ -30,11 +30,14 @@ public class CommunityAnswer {
     private String author;
 
     @Column(name = "upvotes")
+    @Builder.Default
     private Integer upvotes = 0;
 
     @Column(name = "is_accepted")
+    @Builder.Default
     private Boolean isAccepted = false;
 
     @Column(name = "created_at")
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 }

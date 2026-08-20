@@ -39,8 +39,10 @@ public class NotePyq {
     private String fileSize;
 
     @Column(name = "downloads_count")
+    @Builder.Default
     private Integer downloadsCount = 0;
 
     @Column(name = "uploaded_at")
+    @Builder.Default
     private LocalDateTime uploadedAt = LocalDateTime.now();
 }
