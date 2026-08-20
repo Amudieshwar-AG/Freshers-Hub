@@ -6,7 +6,8 @@ import {
   Sparkles, KeyRound, ArrowRight, LogOut,
   AlertCircle, User, HelpCircle, Compass, ChevronRight, ExternalLink,
   Award, CheckCircle2, AlertTriangle, FileText, Calculator, TrendingUp,
-  Layers, BookOpen, Check, Mail, Phone, RefreshCw, Edit2, Save, FlaskConical
+  Layers, BookOpen, Check, Mail, Phone, RefreshCw, Edit2, Save, FlaskConical,
+  Star, Search, Filter, Grid, List, X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -42,6 +43,85 @@ export default function StudentDashboard() {
   const [selectedDay, setSelectedDay] = useState<'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday'>('monday');
   const [selectedSemFilter, setSelectedSemFilter] = useState<number>(0);
   const [marksSubTab, setMarksSubTab] = useState<'cat' | 'assignment' | 'lab'>('cat');
+
+  // Timetable Customization States (Matching Reference Agenda Layout)
+  const [ttViewMode, setTtViewMode] = useState<'grid' | 'daily'>('grid');
+  const [ttFilterType, setTtFilterType] = useState<'ALL' | 'LAB' | 'THEORY' | 'ELECTIVE' | 'FREE'>('ALL');
+  const [ttSearchQuery, setTtSearchQuery] = useState('');
+  const [starredPeriods, setStarredPeriods] = useState<Record<string, boolean>>(() => {
+    try {
+      const saved = localStorage.getItem('rit_starred_periods');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const [currentTimeMinutes, setCurrentTimeMinutes] = useState<number>(() => {
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes();
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = new Date();
+      setCurrentTimeMinutes(now.getHours() * 60 + now.getMinutes());
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const toggleStarPeriod = (key: string) => {
+    setStarredPeriods(prev => {
+      const next = { ...prev, [key]: !prev[key] };
+      try {
+        localStorage.setItem('rit_starred_periods', JSON.stringify(next));
+      } catch (err) {
+        console.warn('Failed to save starred period:', err);
+      }
+      return next;
+    });
+  };
+
+  // Agenda Timetable Helpers & Indicators
+  const dayNamesMap: Record<number, 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday'> = {
+    1: 'monday', 2: 'tuesday', 3: 'wednesday', 4: 'thursday', 5: 'friday'
+  };
+  const todayKey = dayNamesMap[new Date().getDay()] || null;
+
+  const periodTimeRanges: Record<number, { start: number; end: number }> = {
+    1: { start: 525, end: 580 },
+    2: { start: 580, end: 635 },
+    3: { start: 650, end: 705 },
+    4: { start: 705, end: 760 },
+    5: { start: 810, end: 865 },
+    6: { start: 865, end: 920 },
+    7: { start: 920, end: 975 },
+  };
+
+  const isPeriodLive = (dayKey: string, pNum: number) => {
+    if (!todayKey || todayKey !== dayKey) return false;
+    const r = periodTimeRanges[pNum];
+    if (!r) return false;
+    return currentTimeMinutes >= r.start && currentTimeMinutes < r.end;
+  };
+
+  const matchesFilter = (period: any) => {
+    if (!period) return false;
+    const query = ttSearchQuery.toLowerCase().trim();
+    if (query) {
+      const matchSub = (period.subjectName || '').toLowerCase().includes(query);
+      const matchCode = (period.subjectCode || '').toLowerCase().includes(query);
+      const matchStaff = (period.staffName || '').toLowerCase().includes(query);
+      if (!matchSub && !matchCode && !matchStaff) return false;
+    }
+
+    if (ttFilterType === 'LAB') return period.type === 'LAB';
+    if (ttFilterType === 'THEORY') return period.type === 'THEORY' && period.subjectCode !== 'FREE';
+    if (ttFilterType === 'ELECTIVE') return (period.subjectCode || '').includes('V1') || (period.subjectName || '').toLowerCase().includes('elective');
+    if (ttFilterType === 'FREE') return period.subjectCode === 'FREE';
+
+    return true;
+  };
 
   // Loaded Data States
   const [profile, setProfile] = useState<StudentProfile | null>(session?.profile || null);
@@ -741,38 +821,89 @@ export default function StudentDashboard() {
           })}
         </div>
 
-        {/* ─── 1. TIMETABLE TAB ─── */}
+        {/* ─── 1. TIMETABLE TAB (NEXT-GEN AGENDA UI) ─── */}
         {activeTab === 'timetable' && (
           <div className="space-y-6">
-            {/* Day Switcher */}
-            <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-[#E5E7EB] shadow-sm">
-              <div className="flex items-center gap-2 overflow-x-auto py-1">
-                {(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const).map((dayKey) => {
-                  const count = timetable?.[dayKey]?.length || 0;
-                  const isSelected = selectedDay === dayKey;
-                  return (
+            {/* Top Toolbar: Filter Pills & Search & View Toggle */}
+            <div className="bg-white p-4 rounded-3xl border border-[#E5E7EB] shadow-sm space-y-4">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                
+                {/* Filter Pills (Matching Screenshot Top Bar) */}
+                <div className="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar">
+                  {[
+                    { id: 'ALL', label: 'ALL', color: 'bg-slate-900 text-white' },
+                    { id: 'LAB', label: 'LABORATORY', color: 'bg-amber-500 text-white shadow-amber-500/20' },
+                    { id: 'THEORY', label: 'THEORY', color: 'bg-blue-600 text-white shadow-blue-500/20' },
+                    { id: 'ELECTIVE', label: 'ELECTIVES', color: 'bg-emerald-600 text-white shadow-emerald-500/20' },
+                    { id: 'FREE', label: 'FREE PERIODS', color: 'bg-slate-500 text-white' },
+                  ].map((filter) => {
+                    const isSelected = ttFilterType === filter.id;
+                    return (
+                      <button
+                        key={filter.id}
+                        onClick={() => setTtFilterType(filter.id as any)}
+                        className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-extrabold tracking-wide transition-all cursor-pointer ${
+                          isSelected
+                            ? `${filter.color} shadow-md scale-105`
+                            : 'bg-slate-100 text-[#64748B] hover:bg-slate-200 hover:text-[#1E293B]'
+                        }`}
+                      >
+                        <span>{filter.label}</span>
+                        {isSelected && filter.id !== 'ALL' && (
+                          <X className="w-3 h-3 hover:opacity-75" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Right Side: Search & View Switcher */}
+                <div className="flex items-center gap-3">
+                  {/* Search Input */}
+                  <div className="relative flex-1 sm:w-64">
+                    <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="text"
+                      placeholder="Search course or faculty..."
+                      value={ttSearchQuery}
+                      onChange={(e) => setTtSearchQuery(e.target.value)}
+                      className="w-full pl-9 pr-4 py-2 rounded-2xl bg-slate-50 border border-[#E5E7EB] text-xs text-[#1E293B] focus:outline-none focus:border-[#F97316] transition-all"
+                    />
+                    {ttSearchQuery && (
+                      <button onClick={() => setTtSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* View Mode Switcher */}
+                  <div className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200">
                     <button
-                      key={dayKey}
-                      onClick={() => setSelectedDay(dayKey)}
-                      className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer capitalize ${
-                        isSelected
-                          ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white shadow-md shadow-orange-500/20'
-                          : 'bg-slate-100 hover:bg-slate-200 text-[#64748B]'
+                      onClick={() => setTtViewMode('grid')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        ttViewMode === 'grid'
+                          ? 'bg-white text-[#F97316] shadow-sm'
+                          : 'text-[#64748B] hover:text-[#1E293B]'
                       }`}
                     >
-                      <span>{dayKey}</span>
-                      <span className={`px-1.5 py-0.2 rounded-md text-[10px] font-mono ${isSelected ? 'bg-white/20 text-white' : 'bg-white text-[#64748B] border border-[#E5E7EB]'}`}>
-                        {count}
-                      </span>
+                      <Grid className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Weekly Grid</span>
                     </button>
-                  );
-                })}
-              </div>
+                    <button
+                      onClick={() => setTtViewMode('daily')}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                        ttViewMode === 'daily'
+                          ? 'bg-white text-[#F97316] shadow-sm'
+                          : 'text-[#64748B] hover:text-[#1E293B]'
+                      }`}
+                    >
+                      <List className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Daily View</span>
+                    </button>
+                  </div>
+                </div>
 
-              <span className="text-xs text-emerald-600 font-bold flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Live IMS Timetable
-              </span>
+              </div>
             </div>
 
             {isInitialLoading ? (
@@ -780,72 +911,278 @@ export default function StudentDashboard() {
                 <div className="w-8 h-8 border-3 border-[#F97316] border-t-transparent rounded-full animate-spin" />
                 <p className="text-xs text-[#64748B]">Fetching timetable from RIT IMS...</p>
               </div>
-            ) : currentPeriods.length === 0 ? (
-              <div className="bg-white border border-[#E5E7EB] rounded-3xl p-12 text-center space-y-3">
-                <div className="w-12 h-12 rounded-2xl bg-orange-50 text-[#F97316] flex items-center justify-center mx-auto">
-                  <Calendar className="w-6 h-6" />
+            ) : ttViewMode === 'grid' ? (
+              /* ─── WEEKLY MATRIX AGENDA VIEW (MATCHING USER SCREENSHOT) ─── */
+              <div className="bg-white rounded-3xl border border-[#E5E7EB] shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <div className="min-w-[900px] p-6 space-y-4">
+                    
+                    {/* Matrix Header Row: Days of Week */}
+                    <div className="grid grid-cols-6 gap-3 pb-3 border-b border-slate-200 text-xs font-extrabold tracking-wider">
+                      <div className="text-slate-400 uppercase flex items-center justify-center font-mono">TIME</div>
+                      {(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const).map((dayKey) => {
+                        const isToday = todayKey === dayKey;
+                        return (
+                          <div
+                            key={dayKey}
+                            className={`py-2 px-3 rounded-2xl text-center uppercase flex items-center justify-between ${
+                              isToday
+                                ? 'bg-orange-500 text-white shadow-md shadow-orange-500/20'
+                                : 'bg-slate-50 text-slate-700 border border-slate-200'
+                            }`}
+                          >
+                            <span>{dayKey}</span>
+                            {isToday && <span className="w-2 h-2 rounded-full bg-white animate-pulse" />}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Matrix Grid Periods (P1 to P7 with Gap Rows) */}
+                    <div className="relative space-y-3">
+
+                      {[
+                        { type: 'period', pNum: 1, timeLabel: '08:45 AM' },
+                        { type: 'period', pNum: 2, timeLabel: '09:40 AM' },
+                        { type: 'gap', label: '15M TEA BREAK', timeLabel: '10:35 AM' },
+                        { type: 'period', pNum: 3, timeLabel: '10:50 AM' },
+                        { type: 'period', pNum: 4, timeLabel: '11:45 AM' },
+                        { type: 'gap', label: '50M LUNCH BREAK', timeLabel: '12:40 PM' },
+                        { type: 'period', pNum: 5, timeLabel: '01:30 PM' },
+                        { type: 'period', pNum: 6, timeLabel: '02:25 PM' },
+                        { type: 'period', pNum: 7, timeLabel: '03:20 PM' },
+                      ].map((rowItem, rIdx) => {
+                        if (rowItem.type === 'gap') {
+                          // Diagonal-Striped Gap Row (Matching Screenshot "1.5H GAP" block)
+                          return (
+                            <div key={`gap-${rIdx}`} className="grid grid-cols-6 gap-3 items-center">
+                              <div className="text-[11px] font-mono font-bold text-slate-400 text-center">
+                                {rowItem.timeLabel}
+                              </div>
+                              <div className="col-span-5 py-2.5 px-4 rounded-2xl bg-slate-50/80 border border-dashed border-slate-300 text-center flex items-center justify-center gap-2">
+                                <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                <span className="text-[11px] font-mono font-extrabold tracking-widest text-slate-500 uppercase">
+                                  {rowItem.label}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        const pNum = rowItem.pNum!;
+                        return (
+                          <div key={`prow-${pNum}`} className="grid grid-cols-6 gap-3 items-stretch">
+                            {/* Time Column Marker */}
+                            <div className="flex flex-col justify-center items-center py-2 bg-slate-50 rounded-2xl border border-slate-200">
+                              <span className="text-xs font-mono font-extrabold text-slate-700">{rowItem.timeLabel}</span>
+                              <span className="text-[10px] font-bold text-orange-600">P{pNum}</span>
+                            </div>
+
+                            {/* 5 Day Period Cells */}
+                            {(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const).map((dayKey) => {
+                              const dayList = timetable?.[dayKey] || [];
+                              const period = dayList.find((p) => p.periodNumber === pNum);
+
+                              if (!period || !matchesFilter(period)) {
+                                return (
+                                  <div
+                                    key={`${dayKey}-${pNum}`}
+                                    className="p-3 rounded-2xl bg-slate-50/50 border border-slate-100 flex items-center justify-center opacity-40"
+                                  >
+                                    <span className="text-[10px] text-slate-400 font-mono">-</span>
+                                  </div>
+                                );
+                              }
+
+                              const starKey = `${dayKey}-${pNum}`;
+                              const isStarred = starredPeriods[starKey];
+                              const isLiveNow = isPeriodLive(dayKey, pNum);
+                              const isFree = period.subjectCode === 'FREE';
+                              const isLab = period.type === 'LAB';
+                              const isElective = (period.subjectCode || '').includes('V1') || (period.subjectName || '').toLowerCase().includes('elective');
+
+                              return (
+                                <div
+                                  key={`${dayKey}-${pNum}`}
+                                  className={`relative p-3.5 rounded-2xl border transition-all flex flex-col justify-between group ${
+                                    isLiveNow
+                                      ? 'bg-orange-50 border-orange-400 ring-2 ring-orange-400/30 shadow-md'
+                                      : isFree
+                                      ? 'bg-slate-50/80 border-slate-200'
+                                      : isLab
+                                      ? 'bg-purple-50/50 border-purple-200 hover:border-purple-300'
+                                      : isElective
+                                      ? 'bg-emerald-50/50 border-emerald-200 hover:border-emerald-300'
+                                      : 'bg-white border-slate-200 hover:border-slate-300 shadow-sm hover:shadow-md'
+                                  }`}
+                                >
+                                  {/* Live Now Indicator Badge */}
+                                  {isLiveNow && (
+                                    <span className="absolute -top-2 right-3 px-2 py-0.5 rounded-full bg-red-600 text-white text-[9px] font-black uppercase tracking-wider flex items-center gap-1 shadow-sm animate-pulse">
+                                      <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                                      LIVE
+                                    </span>
+                                  )}
+
+                                  <div>
+                                    {/* Subject Title */}
+                                    <h4 className={`text-xs font-black line-clamp-2 ${
+                                      isFree ? 'text-slate-400' : isLab ? 'text-purple-900' : isElective ? 'text-emerald-900' : 'text-slate-800'
+                                    }`} style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                                      {period.subjectName}
+                                    </h4>
+
+                                    {/* Faculty Instructor */}
+                                    {!isFree && (
+                                      <p className="text-[10px] font-semibold text-slate-500 mt-1 line-clamp-1">
+                                        {period.staffName || 'Faculty Instructor'}
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  {/* Badges & Star Footer */}
+                                  <div className="flex items-center justify-between gap-1 mt-2 pt-2 border-t border-slate-100">
+                                    <div className="flex items-center gap-1 overflow-hidden">
+                                      {period.subjectCode && !isFree && (
+                                        <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                                          {period.subjectCode}
+                                        </span>
+                                      )}
+                                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase ${
+                                        isLab ? 'bg-purple-100 text-purple-700' : isElective ? 'bg-emerald-100 text-emerald-700' : 'bg-blue-100 text-blue-700'
+                                      }`}>
+                                        {period.type}
+                                      </span>
+                                    </div>
+
+                                    {/* Interactive Star Favorite Button (Matching Screenshot) */}
+                                    <button
+                                      onClick={() => toggleStarPeriod(starKey)}
+                                      className={`p-1 rounded-lg transition-all ${
+                                        isStarred ? 'text-amber-500 fill-amber-500 scale-110' : 'text-slate-300 hover:text-amber-400'
+                                      }`}
+                                      title={isStarred ? 'Unfavorite' : 'Favorite period'}
+                                    >
+                                      <Star className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+
+                    </div>
+                  </div>
                 </div>
-                <h3 className="text-base font-bold text-[#1E293B]">
-                  No classes scheduled for {selectedDay.toUpperCase()}
-                </h3>
-                <p className="text-xs text-[#64748B] max-w-sm mx-auto">
-                  Select another day of the week above to view your timetable periods and staff.
-                </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {currentPeriods.map((period) => (
-                  <motion.div
-                    key={period.periodNumber}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-2xl p-5 border border-[#E5E7EB] hover:border-slate-300 shadow-sm transition-all"
-                  >
-                    {/* Header */}
-                    <div className="flex items-center justify-between gap-2 mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-lg bg-slate-100 text-[#1E293B] font-bold text-xs flex items-center justify-center">
-                          P{period.periodNumber}
-                        </span>
-                        <span className="text-xs font-semibold text-[#64748B] flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-[#94A3B8]" />
-                          {period.timeSlot}
-                        </span>
-                      </div>
+              /* ─── DAILY CARD VIEW ─── */
+              <div className="space-y-6">
+                {/* Day Switcher */}
+                <div className="flex items-center justify-between bg-white p-4 rounded-3xl border border-[#E5E7EB] shadow-sm">
+                  <div className="flex items-center gap-2 overflow-x-auto py-1">
+                    {(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const).map((dayKey) => {
+                      const count = timetable?.[dayKey]?.length || 0;
+                      const isSelected = selectedDay === dayKey;
+                      return (
+                        <button
+                          key={dayKey}
+                          onClick={() => setSelectedDay(dayKey)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer capitalize ${
+                            isSelected
+                              ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white shadow-md shadow-orange-500/20'
+                              : 'bg-slate-100 hover:bg-slate-200 text-[#64748B]'
+                          }`}
+                        >
+                          <span>{dayKey}</span>
+                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono ${isSelected ? 'bg-white/20 text-white' : 'bg-white text-[#64748B] border border-[#E5E7EB]'}`}>
+                            {count}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
 
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 ${
-                          period.type === 'LAB'
-                            ? 'bg-purple-100 text-purple-700 border border-purple-300'
-                            : 'bg-blue-100 text-blue-700 border border-blue-300'
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {(timetable?.[selectedDay] || []).filter(matchesFilter).map((period) => {
+                    const starKey = `${selectedDay}-${period.periodNumber}`;
+                    const isStarred = starredPeriods[starKey];
+                    const isLiveNow = isPeriodLive(selectedDay, period.periodNumber);
+
+                    return (
+                      <motion.div
+                        key={period.periodNumber}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`bg-white rounded-3xl p-5 border transition-all shadow-sm flex flex-col justify-between ${
+                          isLiveNow ? 'border-orange-400 ring-2 ring-orange-400/20 bg-orange-50/30' : 'border-[#E5E7EB] hover:border-slate-300'
                         }`}
                       >
-                        {period.type === 'LAB' ? <FlaskConical className="w-3 h-3 text-purple-600" /> : <BookOpen className="w-3 h-3 text-blue-600" />}
-                        {period.type}
-                      </span>
-                    </div>
+                        {/* Header */}
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="w-7 h-7 rounded-xl bg-slate-100 text-[#1E293B] font-extrabold text-xs flex items-center justify-center">
+                              P{period.periodNumber}
+                            </span>
+                            <span className="text-xs font-bold text-[#64748B] flex items-center gap-1">
+                              <Clock className="w-3.5 h-3.5 text-[#94A3B8]" />
+                              {period.timeSlot}
+                            </span>
+                          </div>
 
-                    {/* Subject Details */}
-                    <div className="space-y-1.5 mb-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-mono font-bold text-[#F97316]">
-                          {period.subjectCode}
-                        </span>
-                      </div>
-                      <h3 className="text-base font-extrabold text-[#1E293B] line-clamp-1" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                        {period.subjectName}
-                      </h3>
-                    </div>
+                          <div className="flex items-center gap-2">
+                            {isLiveNow && (
+                              <span className="px-2 py-0.5 rounded-full bg-red-600 text-white text-[9px] font-black uppercase tracking-wider animate-pulse">
+                                LIVE
+                              </span>
+                            )}
+                            <span
+                              className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 ${
+                                period.type === 'LAB'
+                                  ? 'bg-purple-100 text-purple-700 border border-purple-300'
+                                  : 'bg-blue-100 text-blue-700 border border-blue-300'
+                              }`}
+                            >
+                              {period.type === 'LAB' ? <FlaskConical className="w-3 h-3 text-purple-600" /> : <BookOpen className="w-3 h-3 text-blue-600" />}
+                              {period.type}
+                            </span>
+                          </div>
+                        </div>
 
-                    {/* Faculty Footer */}
-                    <div className="pt-3 border-t border-[#E5E7EB] flex items-center justify-between text-xs text-[#475569]">
-                      <span className="truncate pr-2 font-medium">{period.staffName || 'Faculty Instructor'}</span>
-                      {period.staffCode && (
-                        <span className="font-mono text-[10px] text-[#94A3B8]">{period.staffCode}</span>
-                      )}
-                    </div>
-                  </motion.div>
-                ))}
+                        {/* Subject Details */}
+                        <div className="space-y-1.5 my-3">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-mono font-extrabold text-[#F97316] bg-orange-50 px-2 py-0.5 rounded-md border border-orange-200">
+                              {period.subjectCode}
+                            </span>
+                            <button
+                              onClick={() => toggleStarPeriod(starKey)}
+                              className={`p-1 rounded-lg transition-all ${
+                                isStarred ? 'text-amber-500 fill-amber-500' : 'text-slate-300 hover:text-amber-400'
+                              }`}
+                            >
+                              <Star className="w-4 h-4" />
+                            </button>
+                          </div>
+                          <h3 className="text-base font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                            {period.subjectName}
+                          </h3>
+                        </div>
+
+                        {/* Faculty Footer */}
+                        <div className="pt-3 border-t border-[#E5E7EB] flex items-center justify-between text-xs text-[#475569]">
+                          <span className="truncate pr-2 font-medium">{period.staffName || 'Faculty Instructor'}</span>
+                          {period.staffCode && (
+                            <span className="font-mono text-[10px] text-[#94A3B8]">{period.staffCode}</span>
+                          )}
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
