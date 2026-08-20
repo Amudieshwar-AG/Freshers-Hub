@@ -45,8 +45,17 @@ public class BusLocationService {
 
     public List<BusLocation> getActiveLocations() {
         Instant threshold = Instant.now().minus(STALE_DURATION);
-        // Clean up stale entries on read
+        return locationCache.values().stream()
+            .filter(loc -> !loc.getLastUpdated().isBefore(threshold))
+            .toList();
+    }
+
+    /**
+     * Periodic background eviction of stale GPS coordinates every 5 minutes
+     */
+    @org.springframework.scheduling.annotation.Scheduled(fixedRate = 300000)
+    public void evictStaleLocations() {
+        Instant threshold = Instant.now().minus(STALE_DURATION);
         locationCache.entrySet().removeIf(entry -> entry.getValue().getLastUpdated().isBefore(threshold));
-        return List.copyOf(locationCache.values());
     }
 }
