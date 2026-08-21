@@ -1,6 +1,6 @@
 {
-  "community_bot_token": "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY",
-  "telegram_bot_token": "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY",
-  "helper_chat_ids": [971749136, 5567776672, 1873240361],
-  "spring_backend_url": "http://localhost:8085"
+  "community_bot_token" : "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY",
+  "telegram_bot_token" : "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY",
+  "helper_chat_ids" : [ 1873240361, 5567776672, 8518850169, 7238144438 ],
+  "spring_backend_url" : "http://localhost:8085"
 }

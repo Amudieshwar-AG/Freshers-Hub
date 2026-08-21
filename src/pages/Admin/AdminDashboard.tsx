@@ -6,7 +6,8 @@ import {
   MessageCircle, BookOpen, Bot, Edit, MapPin, 
   Clock, Palette, KeyRound, ExternalLink, ArrowRight, 
   Code2, Check, HelpCircle, Users, Activity,
-  UserCheck, Building2, GraduationCap, Calculator, Search
+  UserCheck, Building2, GraduationCap, Calculator, Search, GitMerge,
+  Power, Play, SlidersHorizontal, ToggleLeft, ToggleRight
 } from 'lucide-react';
 import { getBackendUrl } from '@/lib/utils';
 import { Link } from 'react-router-dom';
@@ -31,6 +32,7 @@ interface BusRouteItem {
   departureTime: string;
   arrivalTime: string;
   color: string;
+  status?: 'ACTIVE' | 'STOPPED';
   stops?: BusStopItem[];
 }
 
@@ -152,6 +154,26 @@ export default function AdminDashboard() {
     color: '#FF6B00',
     stops: [{ name: '', time: '07:15 AM' }],
   });
+
+  // Merge Routes State
+  const [isMergeModalOpen, setIsMergeModalOpen] = useState(false);
+  const [selectedRouteIdsForMerge, setSelectedRouteIdsForMerge] = useState<number[]>([]);
+  const [mergedRouteFormData, setMergedRouteFormData] = useState({
+    number: '',
+    name: '',
+    from: '',
+    to: 'RIT Campus',
+    departureTime: '07:00 AM',
+    arrivalTime: '08:30 AM',
+    color: '#FF6B00',
+    deactivateOriginals: false,
+    stops: [] as { name: string; time: string; sourceRoute?: string }[],
+  });
+
+  // Bus Status Manager State
+  const [isBusStatusModalOpen, setIsBusStatusModalOpen] = useState(false);
+  const [busStatusTabFilter, setBusStatusTabFilter] = useState<'ALL' | 'ACTIVE' | 'STOPPED'>('ALL');
+  const [gridStatusFilter, setGridStatusFilter] = useState<'ALL' | 'ACTIVE' | 'STOPPED'>('ACTIVE');
 
   // Telegram Q&A State
   const [telegramConfig, setTelegramConfig] = useState<TelegramConfig | null>(null);
@@ -453,6 +475,163 @@ export default function AdminDashboard() {
   const removeStopField = (index: number) => {
     const updated = routeFormData.stops.filter((_, i) => i !== index);
     setRouteFormData({ ...routeFormData, stops: updated });
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // MERGE ROUTES HANDLERS
+  // ─────────────────────────────────────────────────────────────
+  const openMergeRoutesModal = () => {
+    setSelectedRouteIdsForMerge([]);
+    setMergedRouteFormData({
+      number: '',
+      name: '',
+      from: '',
+      to: 'RIT Campus',
+      departureTime: '07:00 AM',
+      arrivalTime: '08:30 AM',
+      color: '#FF6B00',
+      deactivateOriginals: false,
+      stops: [],
+    });
+    setIsMergeModalOpen(true);
+  };
+
+  const toggleSelectRouteForMerge = (routeId: number) => {
+    let updatedIds: number[];
+    if (selectedRouteIdsForMerge.includes(routeId)) {
+      updatedIds = selectedRouteIdsForMerge.filter((id) => id !== routeId);
+    } else {
+      updatedIds = [...selectedRouteIdsForMerge, routeId];
+    }
+    setSelectedRouteIdsForMerge(updatedIds);
+
+    // Re-calculate combined stops & default route details
+    const selectedBuses = routes.filter((r) => updatedIds.includes(r.id));
+    if (selectedBuses.length > 0) {
+      const mergedStops: { name: string; time: string; sourceRoute: string }[] = [];
+      selectedBuses.forEach((b) => {
+        (b.stops || []).forEach((st) => {
+          mergedStops.push({
+            name: st.name,
+            time: st.time || b.departureTime,
+            sourceRoute: b.number,
+          });
+        });
+      });
+
+      const routeNums = selectedBuses.map((b) => b.number).join(' + ');
+      const routeNames = selectedBuses.map((b) => b.name.replace(/ Route$/i, '')).join(' + ') + ' Combined';
+
+      setMergedRouteFormData((prev) => ({
+        ...prev,
+        number: `${selectedBuses[0].number}-MERGED`,
+        name: routeNames,
+        from: selectedBuses[0].from,
+        to: selectedBuses[selectedBuses.length - 1].to || 'RIT Campus',
+        departureTime: selectedBuses[0].departureTime,
+        arrivalTime: selectedBuses[selectedBuses.length - 1].arrivalTime || '08:30 AM',
+        stops: mergedStops,
+      }));
+    } else {
+      setMergedRouteFormData((prev) => ({
+        ...prev,
+        number: '',
+        name: '',
+        stops: [],
+      }));
+    }
+  };
+
+  const handleRemoveMergedStop = (index: number) => {
+    const updated = mergedRouteFormData.stops.filter((_, i) => i !== index);
+    setMergedRouteFormData({ ...mergedRouteFormData, stops: updated });
+  };
+
+  const handleAddMergedStopField = () => {
+    setMergedRouteFormData({
+      ...mergedRouteFormData,
+      stops: [...mergedRouteFormData.stops, { name: '', time: '07:30 AM', sourceRoute: 'Custom' }],
+    });
+  };
+
+  const handleSaveMergedRoute = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedRouteIdsForMerge.length < 2) {
+      showToast('error', 'Please select at least 2 bus routes to merge.');
+      return;
+    }
+    if (!mergedRouteFormData.number.trim() || !mergedRouteFormData.name.trim()) {
+      showToast('error', 'Please enter a Merged Route Number and Name.');
+      return;
+    }
+
+    const cleanedStops = mergedRouteFormData.stops
+      .filter((s) => s.name.trim().length > 0)
+      .map((s, idx) => ({ id: idx + 1, name: s.name, time: s.time, stopOrder: idx + 1 }));
+
+    const newId = routes.length > 0 ? Math.max(...routes.map((r) => r.id || 0)) + 1 : 1;
+    const newRoute: BusRouteItem = {
+      id: newId,
+      number: mergedRouteFormData.number,
+      name: mergedRouteFormData.name,
+      from: mergedRouteFormData.from || 'Multi-Origin',
+      to: mergedRouteFormData.to || 'RIT Campus',
+      departureTime: mergedRouteFormData.departureTime,
+      arrivalTime: mergedRouteFormData.arrivalTime,
+      color: mergedRouteFormData.color || '#FF6B00',
+      stops: cleanedStops,
+    };
+
+    let updatedRoutes = [newRoute, ...routes];
+    if (mergedRouteFormData.deactivateOriginals) {
+      updatedRoutes = updatedRoutes.map((r) =>
+        selectedRouteIdsForMerge.includes(r.id) ? { ...r, status: 'STOPPED' } : r
+      );
+    }
+
+    setRoutes(updatedRoutes);
+    localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify(updatedRoutes));
+    showToast('success', `Merged route ${mergedRouteFormData.number} created! Source routes set to STOPPED status.`);
+    setIsMergeModalOpen(false);
+
+    fetch(getBackendUrl('/api/admin/transport/routes'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newRoute),
+    }).catch(() => {});
+  };
+
+  // ─────────────────────────────────────────────────────────────
+  // BUS STATUS MANAGER HANDLERS
+  // ─────────────────────────────────────────────────────────────
+  const handleToggleRouteStatus = (routeId: number) => {
+    const updatedRoutes = routes.map((r) => {
+      if (r.id === routeId) {
+        const newStatus: 'ACTIVE' | 'STOPPED' = (r.status || 'ACTIVE') === 'ACTIVE' ? 'STOPPED' : 'ACTIVE';
+        showToast('success', `Route ${r.number} status changed to ${newStatus === 'ACTIVE' ? '🟢 Active' : '🔴 Stopped'}`);
+        return { ...r, status: newStatus };
+      }
+      return r;
+    });
+
+    setRoutes(updatedRoutes);
+    localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify(updatedRoutes));
+
+    const targetRoute = updatedRoutes.find((r) => r.id === routeId);
+    if (targetRoute) {
+      fetch(getBackendUrl(`/api/admin/transport/routes/${routeId}`), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(targetRoute),
+      }).catch(() => {});
+    }
+  };
+
+  const handleSetAllRoutesStatus = (status: 'ACTIVE' | 'STOPPED') => {
+    const updatedRoutes = routes.map((r) => ({ ...r, status }));
+    setRoutes(updatedRoutes);
+    localStorage.setItem(ROUTE_STORAGE_KEY, JSON.stringify(updatedRoutes));
+    showToast('success', `All routes set to ${status === 'ACTIVE' ? '🟢 Active' : '🔴 Stopped'}`);
   };
 
   // ─────────────────────────────────────────────────────────────
@@ -887,18 +1066,18 @@ export default function AdminDashboard() {
   // ─────────────────────────────────────────────────────────────
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-[#070b14] text-slate-100 flex items-center justify-center py-12 px-4">
-        <div className="w-full max-w-md space-y-6">
-          <div className="text-center space-y-2">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#F97316] p-0.5 shadow-xl shadow-orange-500/20 mx-auto">
-              <div className="w-full h-full bg-slate-950/60 rounded-[14px] flex items-center justify-center backdrop-blur-sm">
-                <ShieldCheck className="w-8 h-8 text-white" />
+      <div className="min-h-screen bg-slate-100 text-slate-800 flex items-center justify-center py-12 px-4 font-sans">
+        <div className="w-full max-w-md space-y-5">
+          <div className="text-center space-y-1.5">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#EA580C] p-0.5 shadow-lg shadow-orange-500/20 mx-auto">
+              <div className="w-full h-full bg-[#0F172A] rounded-[14px] flex items-center justify-center">
+                <ShieldCheck className="w-7 h-7 text-white" />
               </div>
             </div>
-            <h1 className="text-2xl font-black text-white tracking-tight">
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
               RIT System Admin Console
             </h1>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">
               Closed-loop control panel for Transport fleet, Telegram Q&A helpers, and campus services.
             </p>
           </div>
@@ -906,19 +1085,19 @@ export default function AdminDashboard() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-slate-900/90 border border-white/10 rounded-3xl p-6 shadow-2xl space-y-5"
+            className="bg-white border border-slate-200/80 rounded-3xl p-7 shadow-xl space-y-5"
           >
             {loginError && (
-              <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-start gap-2.5 text-xs text-rose-300">
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 flex items-start gap-2.5 text-xs text-rose-700 font-medium">
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                 <span>{loginError}</span>
               </div>
             )}
 
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                  <User className="w-3.5 h-3.5 text-orange-400" />
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <User className="w-3.5 h-3.5 text-[#FF6B00]" />
                   Admin Username
                 </label>
                 <input
@@ -926,14 +1105,14 @@ export default function AdminDashboard() {
                   value={usernameInput}
                   onChange={(e) => setUsernameInput(e.target.value)}
                   placeholder="e.g. Transport or Admin"
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-500 outline-none focus:border-orange-500 transition-colors"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-500/20 transition-all font-medium"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                  <KeyRound className="w-3.5 h-3.5 text-orange-400" />
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <KeyRound className="w-3.5 h-3.5 text-[#FF6B00]" />
                   Admin Password
                 </label>
                 <input
@@ -941,7 +1120,7 @@ export default function AdminDashboard() {
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-500 outline-none focus:border-orange-500 transition-colors"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-500/20 transition-all font-medium"
                   required
                 />
               </div>
@@ -949,7 +1128,7 @@ export default function AdminDashboard() {
               <button
                 type="submit"
                 disabled={loadingLogin}
-                className="w-full py-3.5 px-4 rounded-xl text-white font-bold text-xs bg-gradient-to-r from-[#FF6B00] to-[#F97316] hover:opacity-95 shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full py-3 px-4 rounded-xl text-white font-bold text-xs bg-gradient-to-r from-[#FF6B00] to-[#EA580C] hover:from-[#EA580C] hover:to-[#D97706] shadow-md shadow-orange-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 {loadingLogin ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -963,26 +1142,30 @@ export default function AdminDashboard() {
             </form>
 
             {/* Quick Demo Credentials */}
-            <div className="pt-4 border-t border-white/10 space-y-2">
-              <span className="text-[11px] font-semibold text-slate-400 block text-center">
+            <div className="pt-4 border-t border-slate-200/80 space-y-2">
+              <span className="text-[11px] font-bold text-slate-500 block text-center uppercase tracking-wider">
                 Quick Role-Based Logins:
               </span>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2.5">
                 <button
                   type="button"
                   onClick={() => { setUsernameInput('Transport'); setPasswordInput('RIT@2026'); }}
-                  className="p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-950 border border-white/5 text-left transition-colors cursor-pointer"
+                  className="p-3 rounded-xl bg-slate-50 hover:bg-orange-50/50 border border-slate-200 hover:border-orange-300 text-left transition-all cursor-pointer group"
                 >
-                  <p className="text-xs font-bold text-orange-400">🚌 Transport</p>
-                  <p className="text-[10px] text-slate-400">Pass: RIT@2026</p>
+                  <p className="text-xs font-bold text-slate-900 group-hover:text-[#FF6B00] flex items-center gap-1">
+                    <span>🚌 Transport</span>
+                  </p>
+                  <p className="text-[10px] text-slate-500 font-medium mt-0.5">Pass: RIT@2026</p>
                 </button>
                 <button
                   type="button"
                   onClick={() => { setUsernameInput('Admin'); setPasswordInput('RIT@2026'); }}
-                  className="p-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-950 border border-white/5 text-left transition-colors cursor-pointer"
+                  className="p-3 rounded-xl bg-slate-50 hover:bg-blue-50/50 border border-slate-200 hover:border-blue-300 text-left transition-all cursor-pointer group"
                 >
-                  <p className="text-xs font-bold text-emerald-400">⚡ Super Admin</p>
-                  <p className="text-[10px] text-slate-400">Pass: RIT@2026</p>
+                  <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600 flex items-center gap-1">
+                    <span>⚡ Super Admin</span>
+                  </p>
+                  <p className="text-[10px] text-slate-500 font-medium mt-0.5">Pass: RIT@2026</p>
                 </button>
               </div>
             </div>
@@ -998,43 +1181,43 @@ export default function AdminDashboard() {
   const isTransportOnly = userRole === 'ROLE_TRANSPORT';
 
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 py-6 px-4 sm:px-6 lg:px-8 font-sans">
       {/* Toast Notification */}
       {toastMessage && (
         <div
-          className={`fixed top-6 right-6 z-50 px-4 py-3 rounded-2xl border shadow-2xl flex items-center gap-2 text-xs font-semibold backdrop-blur-md ${
+          className={`fixed top-6 right-6 z-50 px-4 py-3 rounded-2xl border shadow-xl flex items-center gap-2 text-xs font-semibold backdrop-blur-md ${
             toastMessage.type === 'success'
-              ? 'bg-emerald-950/90 border-emerald-500/40 text-emerald-300'
-              : 'bg-red-950/90 border-red-500/40 text-red-300'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800'
+              : 'bg-rose-50 border-rose-300 text-rose-800'
           }`}
         >
-          {toastMessage.type === 'success' ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <AlertCircle className="w-4 h-4 text-red-400" />}
+          {toastMessage.type === 'success' ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : <AlertCircle className="w-4 h-4 text-rose-600" />}
           <span>{toastMessage.text}</span>
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-5">
         
         {/* Top Header Bar */}
-        <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#F97316] p-0.5 shadow-lg shadow-orange-500/20 shrink-0">
-              <div className="w-full h-full bg-slate-950/60 rounded-[14px] flex items-center justify-center">
-                {isTransportOnly ? <Bus className="w-6 h-6 text-white" /> : <ShieldCheck className="w-6 h-6 text-white" />}
+        <div className="bg-[#0F172A] border border-slate-800 rounded-3xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#EA580C] p-0.5 shadow-md shadow-orange-500/20 shrink-0">
+              <div className="w-full h-full bg-[#0F172A] rounded-[14px] flex items-center justify-center">
+                {isTransportOnly ? <Bus className="w-5.5 h-5.5 text-white" /> : <ShieldCheck className="w-5.5 h-5.5 text-white" />}
               </div>
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-extrabold text-white tracking-tight">
+                <h1 className="text-xl font-bold text-white tracking-tight">
                   {isTransportOnly ? 'Transport Fleet Administration' : 'RIT Closed-Loop Admin Console'}
                 </h1>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide border ${
-                  isTransportOnly ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${
+                  isTransportOnly ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-orange-500/20 text-orange-400 border-orange-500/30'
                 }`}>
                   {isTransportOnly ? 'Transport Manager' : 'Super Admin'}
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-300 font-medium mt-0.5">
                 {isTransportOnly 
                   ? 'Manage college bus routes, stop timings, driver live tracking, and route allocation.'
                   : 'Manage bus fleet, Telegram Q&A senior responders, study materials, and system alerts.'}
@@ -1042,33 +1225,90 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 self-start md:self-auto">
+          <div className="flex items-center gap-2.5 self-start md:self-auto">
             <Link
               to="/"
-              className="text-xs text-slate-400 hover:text-white px-3 py-2 rounded-xl bg-slate-800 border border-white/10 transition-colors"
+              className="text-xs font-semibold text-slate-300 hover:text-white px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors"
             >
               ← Main Site
             </Link>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white border border-rose-500/20 text-xs font-bold transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 text-xs font-bold transition-all cursor-pointer"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-3.5 h-3.5" />
               Sign Out
             </button>
           </div>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Quick KPI Stats Overview Bar */}
         {!isTransportOnly && (
-          <div className="flex items-center gap-2 border-b border-white/10 pb-3 overflow-x-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-orange-50 text-[#FF6B00] border border-orange-100 flex items-center justify-center shrink-0">
+                <Bus className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Bus Routes</p>
+                <p className="text-lg font-bold text-[#0F172A]">{routes.length}</p>
+              </div>
+            </div>
+
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+                <Bot className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Telegram Seniors</p>
+                <p className="text-lg font-bold text-[#0F172A]">
+                  {(telegramConfig?.seniorHelpers?.length || telegramConfig?.helper_chat_ids?.length || 0)}
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
+                <MessageCircle className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Q&A Queue</p>
+                <p className="text-lg font-bold text-[#0F172A]">{questions.length}</p>
+              </div>
+            </div>
+
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center shrink-0">
+                <UserCheck className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Faculty</p>
+                <p className="text-lg font-bold text-[#0F172A]">{facultyList.length}</p>
+              </div>
+            </div>
+
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3 col-span-2 sm:col-span-1">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
+                <Building2 className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Clubs & CoEs</p>
+                <p className="text-lg font-bold text-[#0F172A]">{clubsList.length}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab Navigation: Clean Static Grid (No Scrollbar Bar) */}
+        {!isTransportOnly && (
+          <div className="bg-white border border-slate-200/80 rounded-2xl p-2 shadow-sm grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
             {[
               { id: 'transport', label: 'Bus Fleet & Routes', icon: Bus },
               { id: 'telegram', label: 'Telegram Q&A Seniors', icon: Bot },
-              { id: 'community', label: 'Community Q&A Moderation', icon: MessageCircle },
+              { id: 'community', label: 'Community Q&A', icon: MessageCircle },
               { id: 'faculty', label: 'Faculty Directory', icon: UserCheck },
               { id: 'clubs', label: 'Clubs & Centers', icon: Building2 },
-              { id: 'curriculum', label: 'GPA Curriculum & Credits', icon: Calculator },
+              { id: 'curriculum', label: 'GPA Curriculum', icon: Calculator },
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -1076,14 +1316,14 @@ export default function AdminDashboard() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                  className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer text-center ${
                     isActive
-                      ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white shadow-md shadow-orange-500/20'
-                      : 'bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-white/10'
+                      ? 'bg-[#FF6B00] text-white shadow-sm shadow-orange-500/20'
+                      : 'bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200/60'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                  {tab.label}
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="truncate">{tab.label}</span>
                 </button>
               );
             })}
@@ -1094,29 +1334,44 @@ export default function AdminDashboard() {
         {/* TAB 1: TRANSPORT & BUS FLEET MANAGEMENT                       */}
         {/* ───────────────────────────────────────────────────────────── */}
         {activeTab === 'transport' && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-3xl border border-white/10">
+          <div className="space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Bus className="w-5 h-5 text-orange-400" />
-                  College Bus Routes ({routes.length} Active)
+                <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
+                  <Bus className="w-4.5 h-4.5 text-[#FF6B00]" />
+                  College Bus Routes ({routes.filter(r => (r.status || 'ACTIVE') === 'ACTIVE').length} Active, {routes.filter(r => r.status === 'STOPPED').length} Stopped)
                 </h3>
-                <p className="text-xs text-slate-400">
-                  Edit departure times, intermediate stops, colors, or create and delete routes instantly.
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  Manage active routes, merge low-occupancy buses, or toggle bus status (Active / Stopped).
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
+                <button
+                  onClick={() => setIsBusStatusModalOpen(true)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap"
+                  title="Manage operational status (Active vs Stopped) for all buses"
+                >
+                  <Power className="w-3.5 h-3.5" />
+                  Bus Status ({routes.filter(r => (r.status || 'ACTIVE') === 'ACTIVE').length} Active)
+                </button>
                 <button
                   onClick={fetchRoutes}
                   title="Refresh routes"
-                  className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10 cursor-pointer"
+                  className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer"
                 >
                   <RefreshCw className={`w-4 h-4 ${loadingRoutes ? 'animate-spin' : ''}`} />
                 </button>
                 <button
+                  onClick={openMergeRoutesModal}
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition-all cursor-pointer whitespace-nowrap"
+                >
+                  <GitMerge className="w-3.5 h-3.5 text-[#FF6B00]" />
+                  Merge Routes
+                </button>
+                <button
                   onClick={openCreateRouteModal}
-                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#FF6B00] to-[#F97316] text-white text-xs font-bold shadow-md shadow-orange-500/20 hover:opacity-95 transition-all cursor-pointer whitespace-nowrap"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-[#FF6B00] to-[#EA580C] hover:from-[#EA580C] hover:to-[#D97706] text-white text-xs font-bold shadow-md shadow-orange-500/20 transition-all cursor-pointer whitespace-nowrap"
                 >
                   <Plus className="w-4 h-4" />
                   Add New Route
@@ -1124,64 +1379,128 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            {/* Route Search Filter */}
-            <div className="relative">
-              <input
-                type="text"
-                value={busSearchQuery}
-                onChange={(e) => setBusSearchQuery(e.target.value)}
-                placeholder="Search routes by number (e.g. R01, RIT-01), name, or origin..."
-                className="w-full bg-slate-900/80 border border-white/10 rounded-2xl px-4 py-3 text-xs text-white placeholder-slate-500 outline-none focus:border-orange-500 transition-colors"
-              />
+            {/* Route Status Filter Tabs & Search */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1">Show:</span>
+                <button
+                  onClick={() => setGridStatusFilter('ACTIVE')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    gridStatusFilter === 'ACTIVE'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse" />
+                  Active ({routes.filter(r => (r.status || 'ACTIVE') === 'ACTIVE').length})
+                </button>
+                <button
+                  onClick={() => setGridStatusFilter('STOPPED')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    gridStatusFilter === 'STOPPED'
+                      ? 'bg-rose-600 text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-rose-300" />
+                  Stopped ({routes.filter(r => r.status === 'STOPPED').length})
+                </button>
+                <button
+                  onClick={() => setGridStatusFilter('ALL')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    gridStatusFilter === 'ALL'
+                      ? 'bg-[#0F172A] text-white shadow-sm'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  All Routes ({routes.length})
+                </button>
+              </div>
+
+              <div className="relative flex-1 max-w-md">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={busSearchQuery}
+                  onChange={(e) => setBusSearchQuery(e.target.value)}
+                  placeholder="Search routes by number, name, or stop..."
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
+                />
+              </div>
             </div>
 
             {loadingRoutes ? (
-              <div className="py-16 text-center text-xs text-slate-400">Loading bus routes...</div>
+              <div className="py-12 text-center text-xs text-slate-500 font-medium">Loading bus routes...</div>
             ) : routes.length === 0 ? (
-              <div className="py-16 text-center text-xs text-slate-400 bg-slate-900/40 rounded-3xl border border-white/10">
+              <div className="py-12 text-center text-xs text-slate-500 bg-white rounded-3xl border border-slate-200/80 shadow-sm font-medium">
                 No routes configured yet. Click "Add New Route" to create your first bus route!
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {routes
-                  .filter(
-                    (r) =>
+                  .filter((r) => {
+                    const statusMatch =
+                      gridStatusFilter === 'ALL' ||
+                      (gridStatusFilter === 'ACTIVE' && (r.status || 'ACTIVE') === 'ACTIVE') ||
+                      (gridStatusFilter === 'STOPPED' && r.status === 'STOPPED');
+
+                    const queryMatch =
                       !busSearchQuery.trim() ||
                       r.name.toLowerCase().includes(busSearchQuery.toLowerCase()) ||
                       r.number.toLowerCase().includes(busSearchQuery.toLowerCase()) ||
-                      r.from.toLowerCase().includes(busSearchQuery.toLowerCase())
-                  )
+                      r.from.toLowerCase().includes(busSearchQuery.toLowerCase());
+
+                    return statusMatch && queryMatch;
+                  })
                   .map((route) => (
                   <motion.div
                     key={route.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-slate-900/70 border border-white/10 rounded-3xl p-5 space-y-4 hover:border-white/20 transition-all flex flex-col justify-between"
+                    className={`bg-white border rounded-3xl p-4.5 space-y-3.5 transition-all flex flex-col justify-between shadow-sm ${
+                      route.status === 'STOPPED'
+                        ? 'border-rose-200 bg-slate-50/50 opacity-90'
+                        : 'border-slate-200/80 hover:border-orange-300 hover:shadow-md'
+                    }`}
                   >
                     <div>
                       {/* Card Header */}
-                      <div className="flex items-start justify-between gap-2 mb-3">
+                      <div className="flex items-start justify-between gap-2 mb-2.5">
                         <div className="flex items-center gap-2">
                           <span 
-                            className="px-2.5 py-1 rounded-xl text-xs font-black font-mono text-white shadow-sm"
+                            className="px-2.5 py-0.5 rounded-xl text-xs font-bold font-mono text-white shadow-sm shrink-0"
                             style={{ backgroundColor: route.color || '#FF6B00' }}
                           >
                             {route.number}
                           </span>
-                          <span className="text-xs font-bold text-white truncate max-w-[160px]">{route.name}</span>
+                          <span className="text-sm font-bold text-[#0F172A] truncate max-w-[140px]">{route.name}</span>
                         </div>
 
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
+                          {/* Toggle Status Pill */}
+                          <button
+                            onClick={() => handleToggleRouteStatus(route.id)}
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase flex items-center gap-1 border transition-all cursor-pointer ${
+                              (route.status || 'ACTIVE') === 'ACTIVE'
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
+                                : 'bg-rose-50 text-rose-700 border-rose-300 hover:bg-rose-100'
+                            }`}
+                            title="Click to toggle Active / Stopped status"
+                          >
+                            <span className={`w-1.5 h-1.5 rounded-full ${ (route.status || 'ACTIVE') === 'ACTIVE' ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500' }`} />
+                            {(route.status || 'ACTIVE') === 'ACTIVE' ? 'Active' : 'Stopped'}
+                          </button>
+
                           <button
                             onClick={() => openEditRouteModal(route)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 transition-colors"
                             title="Edit route"
                           >
                             <Edit className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteRoute(route.id, route.number)}
-                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white transition-colors"
+                            className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors"
                             title="Delete route"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1190,42 +1509,46 @@ export default function AdminDashboard() {
                       </div>
 
                       {/* Route Path */}
-                      <div className="space-y-2 text-xs py-2 border-y border-white/10">
-                        <div className="flex items-center justify-between text-slate-300">
-                          <span className="text-slate-400">Origin:</span>
-                          <strong className="text-white">{route.from} ({route.departureTime})</strong>
+                      <div className="space-y-1.5 text-xs py-2 border-y border-slate-100 font-medium">
+                        <div className="flex items-center justify-between text-slate-600">
+                          <span className="text-slate-400 font-semibold">Origin:</span>
+                          <strong className="text-[#0F172A]">{route.from} ({route.departureTime})</strong>
                         </div>
-                        <div className="flex items-center justify-between text-slate-300">
-                          <span className="text-slate-400">Destination:</span>
-                          <strong className="text-white">{route.to} ({route.arrivalTime})</strong>
+                        <div className="flex items-center justify-between text-slate-600">
+                          <span className="text-slate-400 font-semibold">Destination:</span>
+                          <strong className="text-[#0F172A]">{route.to} ({route.arrivalTime})</strong>
                         </div>
                       </div>
 
                       {/* Stops Preview */}
-                      <div className="pt-3">
-                        <span className="text-[11px] uppercase font-bold text-slate-400 block mb-2">
+                      <div className="pt-2.5">
+                        <span className="text-[11px] uppercase font-bold text-slate-400 block mb-1.5 tracking-wider">
                           Intermediate Stops ({route.stops?.length || 0})
                         </span>
-                        <div className="space-y-1.5 max-h-28 overflow-y-auto pr-1">
+                        <div className="space-y-1 max-h-28 overflow-y-auto pr-1">
                           {route.stops && route.stops.length > 0 ? (
                             route.stops.map((stop, i) => (
-                              <div key={i} className="flex items-center justify-between text-[11px] bg-slate-950/60 p-2 rounded-lg border border-white/5">
-                                <span className="text-slate-300 truncate">{stop.name}</span>
-                                <span className="text-orange-400 font-mono text-[10px] shrink-0">{stop.time}</span>
+                              <div key={i} className="flex items-center justify-between text-[11px] bg-slate-50 p-2 rounded-xl border border-slate-100">
+                                <span className="text-slate-700 font-semibold truncate">{stop.name}</span>
+                                <span className="text-[#FF6B00] font-mono font-bold text-[10px] shrink-0">{stop.time}</span>
                               </div>
                             ))
                           ) : (
-                            <p className="text-[10px] text-slate-500 italic">No intermediate stops configured</p>
+                            <p className="text-[11px] text-slate-400 italic">No intermediate stops configured</p>
                           )}
                         </div>
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-400">
-                      <span>Driver PIN: <strong className="text-white font-mono">RITDRIVER</strong></span>
-                      <span className="text-emerald-400 flex items-center gap-1 font-semibold">
-                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                        Live Sync
+                    <div className="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+                      <span>Driver PIN: <strong className="text-[#0F172A] font-mono font-bold">RITDRIVER</strong></span>
+                      <span className={`border px-2 py-0.5 rounded-full flex items-center gap-1 font-bold text-[10px] ${
+                        (route.status || 'ACTIVE') === 'ACTIVE'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80'
+                          : 'bg-rose-50 text-rose-700 border-rose-200/80'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${ (route.status || 'ACTIVE') === 'ACTIVE' ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500' }`} />
+                        {(route.status || 'ACTIVE') === 'ACTIVE' ? 'Live Sync' : 'Suspended'}
                       </span>
                     </div>
                   </motion.div>
@@ -1239,31 +1562,31 @@ export default function AdminDashboard() {
         {/* TAB 2: TELEGRAM Q&A SENIORS & BOT CONFIGURATION              */}
         {/* ───────────────────────────────────────────────────────────── */}
         {activeTab === 'telegram' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="space-y-5">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
               
               {/* Left 7 Cols: Active Senior Responders */}
-              <div className="lg:col-span-7 bg-slate-900/80 border border-white/10 rounded-3xl p-6 shadow-xl space-y-6">
+              <div className="lg:col-span-7 bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-5">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Users className="w-5 h-5 text-orange-400" />
+                  <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
+                    <Users className="w-4.5 h-4.5 text-[#FF6B00]" />
                     Telegram Senior Responders (Q&A Network)
                   </h3>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
                     When a fresher posts a question on the portal, these Telegram users receive instant alert messages and can answer directly from Telegram.
                   </p>
                 </div>
 
                 {/* Add Senior Form */}
-                <form onSubmit={handleAddSeniorHelper} className="bg-slate-950/80 p-4 rounded-2xl border border-white/10 space-y-3">
-                  <span className="text-xs font-bold text-white block">Add New Senior Responder</span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <form onSubmit={handleAddSeniorHelper} className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#0F172A] block">Add New Senior Responder</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                     <input
                       type="text"
                       value={newHelperChatId}
                       onChange={(e) => setNewHelperChatId(e.target.value)}
                       placeholder="Telegram Chat ID (e.g. 971749136)"
-                      className="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 font-mono outline-none focus:border-orange-500"
+                      className="bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 font-mono outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-500/20"
                       required
                     />
                     <input
@@ -1271,14 +1594,14 @@ export default function AdminDashboard() {
                       value={newHelperName}
                       onChange={(e) => setNewHelperName(e.target.value)}
                       placeholder="Senior Name / Note (Optional)"
-                      className="bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 outline-none focus:border-orange-500"
+                      className="bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-500/20 font-medium"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="w-full py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    className="w-full py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#EA580C] text-white font-bold text-xs shadow-sm shadow-orange-500/20 transition-all cursor-pointer flex items-center justify-center gap-1.5"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-3.5 h-3.5" />
                     Add Senior to Q&A Telegram Dispatch
                   </button>
                 </form>
@@ -1290,8 +1613,8 @@ export default function AdminDashboard() {
                     : (telegramConfig?.helper_chat_ids || []).map(id => ({ chatId: id, name: '' }));
 
                   return (
-                    <div className="space-y-3">
-                      <span className="text-xs font-bold text-slate-300 block">
+                    <div className="space-y-2.5">
+                      <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
                         Active Senior Responders ({helpersList.length})
                       </span>
                       
@@ -1300,31 +1623,31 @@ export default function AdminDashboard() {
                           helpersList.map((helper) => (
                             <div
                               key={helper.chatId}
-                              className="bg-slate-950/60 border border-white/10 rounded-2xl p-3.5 flex items-center justify-between gap-4"
+                              className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex items-center justify-between gap-3"
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 shrink-0 font-bold text-xs">
+                                <div className="w-8 h-8 rounded-xl bg-orange-50 text-[#FF6B00] border border-orange-200 flex items-center justify-center shrink-0 font-extrabold text-[11px]">
                                   TG
                                 </div>
                                 <div>
-                                  <p className="text-xs font-mono font-bold text-white">
-                                    Chat ID: {helper.chatId} {helper.name ? <span className="text-orange-400 font-sans ml-1">({helper.name})</span> : ''}
+                                  <p className="text-xs font-mono font-bold text-[#0F172A]">
+                                    Chat ID: {helper.chatId} {helper.name ? <span className="text-[#FF6B00] font-sans font-bold ml-1">({helper.name})</span> : ''}
                                   </p>
-                                  <p className="text-[10px] text-slate-400">Receives questions from freshers in real-time</p>
+                                  <p className="text-[11px] text-slate-500 font-medium">Receives questions from freshers in real-time</p>
                                 </div>
                               </div>
 
                               <button
                                 onClick={() => handleRemoveSeniorHelper(helper.chatId)}
-                                className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white transition-colors cursor-pointer"
+                                className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors cursor-pointer"
                                 title="Remove responder"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           ))
                         ) : (
-                          <p className="text-xs text-slate-500 italic">No senior helpers configured yet. Enter a Chat ID above to add!</p>
+                          <p className="text-xs text-slate-400 italic bg-slate-50 p-3.5 rounded-xl text-center">No senior helpers configured yet. Enter a Chat ID above to add!</p>
                         )}
                       </div>
                     </div>
@@ -1333,14 +1656,14 @@ export default function AdminDashboard() {
               </div>
 
               {/* Right 5 Cols: How-To Guide & Bot Tokens */}
-              <div className="lg:col-span-5 space-y-6">
+              <div className="lg:col-span-5 space-y-5">
                 {/* Guide Card */}
-                <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 shadow-xl space-y-4">
-                  <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                    <HelpCircle className="w-4 h-4 text-orange-400" />
+                <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-3">
+                  <h4 className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
+                    <HelpCircle className="w-4 h-4 text-[#FF6B00]" />
                     How Seniors Get Their Chat ID
                   </h4>
-                  <ol className="space-y-2 text-xs text-slate-300 list-decimal list-inside leading-relaxed">
+                  <ol className="space-y-2 text-xs text-slate-600 font-medium list-decimal list-inside leading-relaxed">
                     <li>Open Telegram and search for <strong>@userinfobot</strong>.</li>
                     <li>Click <strong>Start</strong> or send any message.</li>
                     <li>Copy the numeric <strong>Id</strong> (e.g. <code>971749136</code>).</li>
@@ -1350,36 +1673,36 @@ export default function AdminDashboard() {
 
                 {/* Live Config Editor */}
                 {telegramConfig && (
-                  <form onSubmit={handleSaveTelegramTokens} className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 shadow-xl space-y-4">
-                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
-                      <Bot className="w-4 h-4 text-orange-400" />
+                  <form onSubmit={handleSaveTelegramTokens} className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-3">
+                    <h4 className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
+                      <Bot className="w-4 h-4 text-[#FF6B00]" />
                       Live Telegram Bot Config (VPS)
                     </h4>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-400 mb-1">Community Bot Token</label>
+                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Community Bot Token</label>
                       <input
                         type="text"
                         value={telegramConfig.community_bot_token || ''}
                         onChange={(e) => setTelegramConfig({ ...telegramConfig, community_bot_token: e.target.value })}
-                        className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-xs font-mono text-white outline-none focus:border-orange-500"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00]"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-slate-400 mb-1">Backend Webhook URL</label>
+                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Backend Webhook URL</label>
                       <input
                         type="text"
                         value={telegramConfig.spring_backend_url || ''}
                         onChange={(e) => setTelegramConfig({ ...telegramConfig, spring_backend_url: e.target.value })}
-                        className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-xs font-mono text-white outline-none focus:border-orange-500"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00]"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={savingBotConfig}
-                      className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-white/10 transition-colors cursor-pointer"
+                      className="w-full py-2.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer"
                     >
                       {savingBotConfig ? 'Saving...' : '💾 Save Bot Configuration to VPS'}
                     </button>
@@ -1391,34 +1714,32 @@ export default function AdminDashboard() {
           </div>
         )}
 
-
-
         {/* ───────────────────────────────────────────────────────────── */}
-        {/* TAB 4: COMMUNITY QUESTIONS MODERATION                        */}
+        {/* TAB 3: COMMUNITY QUESTIONS MODERATION                        */}
         {/* ───────────────────────────────────────────────────────────── */}
         {activeTab === 'community' && (
-          <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 shadow-xl space-y-6">
+          <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-5">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <MessageCircle className="w-5 h-5 text-orange-400" />
+                <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
+                  <MessageCircle className="w-4.5 h-4.5 text-[#FF6B00]" />
                   Community Q&A Questions ({questions.length})
                 </h3>
-                <p className="text-xs text-slate-400">Moderate and delete inappropriate or spam questions.</p>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">Moderate and delete inappropriate or spam questions.</p>
               </div>
 
               <button
                 onClick={fetchQuestions}
-                className="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10"
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors cursor-pointer"
               >
                 <RefreshCw className={`w-4 h-4 ${loadingQuestions ? 'animate-spin' : ''}`} />
               </button>
             </div>
 
             {loadingQuestions ? (
-              <div className="py-12 text-center text-xs text-slate-400">Loading community questions...</div>
+              <div className="py-12 text-center text-xs text-slate-500 font-medium">Loading community questions...</div>
             ) : questions.length === 0 ? (
-              <div className="py-12 text-center text-xs text-slate-400 bg-slate-950/40 rounded-2xl">
+              <div className="py-12 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl font-medium">
                 No community questions found in database.
               </div>
             ) : (
@@ -1426,24 +1747,24 @@ export default function AdminDashboard() {
                 {questions.map((q) => (
                   <div
                     key={q.id}
-                    className="bg-slate-950/60 border border-white/10 rounded-2xl p-4 flex items-start justify-between gap-4"
+                    className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-start justify-between gap-3.5 hover:border-slate-300 transition-all"
                   >
                     <div className="space-y-1 min-w-0">
-                      <h4 className="text-sm font-bold text-white">{q.title}</h4>
-                      <p className="text-xs text-slate-400 line-clamp-2">{q.body}</p>
-                      <div className="flex items-center gap-2 text-[10px] text-slate-500 pt-1">
-                        <span>Asked by: <strong className="text-slate-300">{q.authorName}</strong></span>
+                      <h4 className="text-sm font-bold text-[#0F172A]">{q.title}</h4>
+                      <p className="text-xs text-slate-600 font-medium line-clamp-2 leading-relaxed">{q.body}</p>
+                      <div className="flex items-center gap-2.5 text-[11px] text-slate-500 pt-0.5">
+                        <span>Asked by: <strong className="text-slate-800 font-bold">{q.authorName}</strong></span>
                         <span>•</span>
-                        <span>Votes: {q.votes}</span>
+                        <span className="font-bold text-[#FF6B00]">Votes: {q.votes}</span>
                       </div>
                     </div>
 
                     <button
                       onClick={() => handleDeleteQuestion(q.id, q.title)}
-                      className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white transition-colors shrink-0"
+                      className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors shrink-0 cursor-pointer"
                       title="Delete question"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 ))}
@@ -1452,25 +1773,23 @@ export default function AdminDashboard() {
           </div>
         )}
 
-
-
         {/* ───────────────────────────────────────────────────────────── */}
-        {/* TAB 6: FACULTY DIRECTORY MANAGEMENT                           */}
+        {/* TAB 4: FACULTY DIRECTORY MANAGEMENT                           */}
         {/* ───────────────────────────────────────────────────────────── */}
         {activeTab === 'faculty' && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-3xl border border-white/10">
+          <div className="space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <UserCheck className="w-5 h-5 text-orange-400" />
+                <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
+                  <UserCheck className="w-4.5 h-4.5 text-[#FF6B00]" />
                   Faculty Directory Management ({facultyList.length})
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
                   Add, update, or remove faculty profiles, cabin office hours, designations, and department assignments.
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
@@ -1478,14 +1797,14 @@ export default function AdminDashboard() {
                     value={facultySearch}
                     onChange={(e) => setFacultySearch(e.target.value)}
                     placeholder="Search faculty..."
-                    className="bg-slate-950 border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-orange-500"
+                    className="bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                   />
                 </div>
                 <button
                   onClick={openAddFacultyModal}
-                  className="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-md shadow-orange-500/20 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#FF6B00] hover:bg-[#EA580C] text-white font-bold text-xs shadow-sm shadow-orange-500/20 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3.5 h-3.5" />
                   Add Faculty
                 </button>
               </div>
@@ -1502,35 +1821,35 @@ export default function AdminDashboard() {
                 .map((fac) => (
                   <div
                     key={fac.id}
-                    className="bg-slate-900/80 border border-white/10 rounded-2xl p-4 space-y-3 hover:border-white/20 transition-all flex flex-col justify-between"
+                    className="bg-white border border-slate-200/80 rounded-2xl p-4.5 space-y-3 hover:border-orange-300 hover:shadow-md transition-all flex flex-col justify-between shadow-sm"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <h4 className="text-xs font-bold text-white">{fac.name}</h4>
-                          <span className="text-[11px] font-medium text-orange-400 block mt-0.5">{fac.designation}</span>
+                          <h4 className="text-xs sm:text-sm font-bold text-[#0F172A]">{fac.name}</h4>
+                          <span className="text-[11px] font-bold text-[#FF6B00] block mt-0.5">{fac.designation}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => openEditFacultyModal(fac)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
+                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
                           >
                             <Edit className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteFaculty(fac.id, fac.name)}
-                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white"
+                            className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
 
-                      <div className="space-y-1 text-[11px] text-slate-400 pt-2 border-t border-white/10">
-                        <p>🎓 <strong className="text-slate-200">{fac.department}</strong></p>
-                        {fac.email && <p>✉️ <span className="text-slate-300">{fac.email}</span></p>}
-                        {(fac.office || fac.cabin) && <p>📍 <span className="text-slate-300">Cabin: {fac.office || fac.cabin}</span></p>}
-                        {fac.specialization && <p>⚡ <span className="text-slate-400">{fac.specialization}</span></p>}
+                      <div className="space-y-1 text-[11px] text-slate-600 font-medium pt-2 border-t border-slate-100">
+                        <p>🎓 <strong className="text-[#0F172A]">{fac.department}</strong></p>
+                        {fac.email && <p>✉️ <span className="text-slate-700">{fac.email}</span></p>}
+                        {(fac.office || fac.cabin) && <p>📍 <span className="text-slate-700">Cabin: {fac.office || fac.cabin}</span></p>}
+                        {fac.specialization && <p>⚡ <span className="text-slate-500">{fac.specialization}</span></p>}
                       </div>
                     </div>
                   </div>
@@ -1540,22 +1859,22 @@ export default function AdminDashboard() {
         )}
 
         {/* ───────────────────────────────────────────────────────────── */}
-        {/* TAB 7: CLUBS & CENTERS OF EXCELLENCE MANAGEMENT               */}
+        {/* TAB 5: CLUBS & CENTERS OF EXCELLENCE MANAGEMENT               */}
         {/* ───────────────────────────────────────────────────────────── */}
         {activeTab === 'clubs' && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900/60 p-5 rounded-3xl border border-white/10">
+          <div className="space-y-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-orange-400" />
+                <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
+                  <Building2 className="w-4.5 h-4.5 text-[#FF6B00]" />
                   Clubs & Centers of Excellence ({clubsList.length})
                 </h3>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
                   Manage student clubs, 15 Future Tech Centers of Excellence (CoEs), faculty lead contacts, and descriptions.
                 </p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
@@ -1563,14 +1882,14 @@ export default function AdminDashboard() {
                     value={clubsSearch}
                     onChange={(e) => setClubsSearch(e.target.value)}
                     placeholder="Search clubs & centers..."
-                    className="bg-slate-950 border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 outline-none focus:border-orange-500"
+                    className="bg-slate-50 border border-slate-300 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                   />
                 </div>
                 <button
                   onClick={openAddClubModal}
-                  className="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-md shadow-orange-500/20 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#FF6B00] hover:bg-[#EA580C] text-white font-bold text-xs shadow-sm shadow-orange-500/20 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3.5 h-3.5" />
                   Add Club / Center
                 </button>
               </div>
@@ -1587,44 +1906,44 @@ export default function AdminDashboard() {
                 .map((club) => (
                   <div
                     key={club.id}
-                    className="bg-slate-900/80 border border-white/10 rounded-2xl p-4 space-y-3 hover:border-white/20 transition-all flex flex-col justify-between"
+                    className="bg-white border border-slate-200/80 rounded-2xl p-4.5 space-y-3 hover:border-orange-300 hover:shadow-md transition-all flex flex-col justify-between shadow-sm"
                   >
                     <div>
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
                               club.type === 'Center' || club.category === 'Center of Excellence'
-                                ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                                : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                                ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                : 'bg-blue-50 text-blue-700 border-blue-200'
                             }`}>
                               {club.type || (club.category === 'Center of Excellence' ? 'Center' : 'Club')}
                             </span>
                           </div>
-                          <h4 className="text-xs font-bold text-white line-clamp-1">{club.name}</h4>
+                          <h4 className="text-xs sm:text-sm font-bold text-[#0F172A] line-clamp-1">{club.name}</h4>
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
                           <button
                             onClick={() => openEditClubModal(club)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
+                            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
                           >
                             <Edit className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDeleteClub(club.id, club.name)}
-                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white"
+                            className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
 
-                      <p className="text-[11px] text-slate-400 line-clamp-2 mt-2">{club.description}</p>
+                      <p className="text-[11px] text-slate-600 font-medium line-clamp-2 mt-1.5 leading-relaxed">{club.description}</p>
                     </div>
 
-                    <div className="pt-2 border-t border-white/10 text-[11px] text-slate-400 space-y-1">
-                      {club.coordinatorName && <p>👤 Lead: <strong className="text-slate-200">{club.coordinatorName}</strong></p>}
-                      {club.category && <p>🏷️ Category: <span className="text-orange-400">{club.category}</span></p>}
+                    <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-500 font-medium space-y-0.5">
+                      {club.coordinatorName && <p>👤 Lead: <strong className="text-[#0F172A]">{club.coordinatorName}</strong></p>}
+                      {club.category && <p>🏷️ Category: <span className="text-[#FF6B00] font-bold">{club.category}</span></p>}
                     </div>
                   </div>
                 ))}
@@ -1633,39 +1952,39 @@ export default function AdminDashboard() {
         )}
 
         {/* ───────────────────────────────────────────────────────────── */}
-        {/* TAB 8: GPA CALCULATOR CURRICULUM MANAGEMENT                  */}
+        {/* TAB 6: GPA CALCULATOR CURRICULUM MANAGEMENT                  */}
         {/* ───────────────────────────────────────────────────────────── */}
         {activeTab === 'curriculum' && (
-          <div className="space-y-6">
-            <div className="bg-slate-900/80 border border-white/10 rounded-3xl p-6 shadow-xl space-y-5">
+          <div className="space-y-5">
+            <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <Calculator className="w-5 h-5 text-orange-400" />
+                  <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
+                    <Calculator className="w-4.5 h-4.5 text-[#FF6B00]" />
                     Department Courses & Credits Management (GPA Calculator)
                   </h3>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
                     Assign and customize course codes, titles, and credit weightages for individual departments & semesters used in GPA calculations.
                   </p>
                 </div>
 
                 <button
                   onClick={openAddCourseModal}
-                  className="px-4 py-2.5 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-[#FF6B00] hover:bg-[#EA580C] text-white font-bold text-xs shadow-sm shadow-orange-500/20 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3.5 h-3.5" />
                   Add Course to {selectedGpaDept} Sem {selectedGpaSem}
                 </button>
               </div>
 
               {/* Department & Semester Selectors */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-950 p-4 rounded-2xl border border-white/10">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1.5">Select Department</label>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Select Department</label>
                   <select
                     value={selectedGpaDept}
                     onChange={(e) => setSelectedGpaDept(e.target.value)}
-                    className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white font-semibold outline-none focus:border-orange-500"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold outline-none focus:border-[#FF6B00]"
                   >
                     {['CSE', 'CSBS', 'AIML', 'AIDS', 'ECE', 'MECH', 'CIVIL', 'EEE', 'CCE', 'ECL', 'VLSI'].map((dept) => (
                       <option key={dept} value={dept}>{dept} - Department</option>
@@ -1674,11 +1993,11 @@ export default function AdminDashboard() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1.5">Select Semester</label>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">Select Semester</label>
                   <select
                     value={selectedGpaSem}
                     onChange={(e) => setSelectedGpaSem(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white font-semibold outline-none focus:border-orange-500"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold outline-none focus:border-[#FF6B00]"
                   >
                     {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
                       <option key={sem} value={sem}>Semester {sem}</option>
@@ -1688,13 +2007,13 @@ export default function AdminDashboard() {
               </div>
 
               {/* Courses Table for Selected Department & Semester */}
-              <div className="space-y-3 pt-2">
+              <div className="space-y-3 pt-1">
                 {(() => {
                   const currentSemCourses = (curriculumMap[selectedGpaDept] && curriculumMap[selectedGpaDept][selectedGpaSem]) || (DEPARTMENT_CURRICULUM[selectedGpaDept] && DEPARTMENT_CURRICULUM[selectedGpaDept][selectedGpaSem]) || [];
                   
                   return (
                     <>
-                      <span className="text-xs font-bold text-slate-300 block">
+                      <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
                         Configured Courses for {selectedGpaDept} - Semester {selectedGpaSem} ({currentSemCourses.length})
                       </span>
 
@@ -1703,35 +2022,35 @@ export default function AdminDashboard() {
                           currentSemCourses.map((course: any, idx: number) => (
                             <div
                               key={idx}
-                              className="bg-slate-950/70 border border-white/10 rounded-2xl p-4 flex items-center justify-between gap-4"
+                              className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex items-center justify-between gap-3 hover:border-slate-300 transition-all"
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-orange-400 font-extrabold text-xs shrink-0">
+                                <div className="w-8 h-8 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-[#FF6B00] font-bold text-xs shrink-0">
                                   {course.credits} Cr
                                 </div>
                                 <div>
-                                  <p className="text-xs font-bold text-white flex items-center gap-2">
+                                  <p className="text-xs font-bold text-[#0F172A] flex items-center gap-2">
                                     {course.name}
                                     {course.isElective && (
-                                      <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                      <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
                                         Elective Slot
                                       </span>
                                     )}
                                   </p>
-                                  <p className="text-[10px] text-slate-400">Credit Weightage: {course.credits} Units</p>
+                                  <p className="text-[11px] text-slate-500 font-medium">Credit Weightage: {course.credits} Units</p>
                                 </div>
                               </div>
 
-                              <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1.5">
                                 <button
                                   onClick={() => openEditCourseModal(idx, course)}
-                                  className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white"
+                                  className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
                                 >
                                   <Edit className="w-3.5 h-3.5" />
                                 </button>
                                 <button
                                   onClick={() => handleDeleteCourse(idx, course.name)}
-                                  className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white"
+                                  className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -1739,7 +2058,7 @@ export default function AdminDashboard() {
                             </div>
                           ))
                         ) : (
-                          <p className="text-xs text-slate-500 italic p-6 text-center bg-slate-950/40 rounded-2xl border border-white/5">
+                          <p className="text-xs text-slate-400 italic p-5 text-center bg-slate-50 rounded-2xl border border-slate-200/60">
                             No custom courses configured for {selectedGpaDept} Semester {selectedGpaSem} yet. Click "Add Course" above!
                           </p>
                         )}
@@ -1759,74 +2078,74 @@ export default function AdminDashboard() {
       {/* ───────────────────────────────────────────────────────────── */}
       <AnimatePresence>
         {isRouteModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl space-y-5"
+              className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl space-y-6"
             >
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <Bus className="w-5 h-5 text-orange-400" />
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <h3 className="text-lg font-extrabold text-[#0F172A] flex items-center gap-2.5">
+                  <Bus className="w-5 h-5 text-[#FF6B00]" />
                   {editingRoute ? `Edit Route ${editingRoute.number}` : 'Create New Bus Route'}
                 </h3>
                 <button
                   onClick={() => setIsRouteModalOpen(false)}
-                  className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
+                  className="p-2 rounded-xl bg-slate-100 text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors font-bold text-sm"
                 >
                   ✕
                 </button>
               </div>
 
               <form onSubmit={handleSaveRoute} className="space-y-4">
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 mb-1">Route Number *</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Route Number *</label>
                     <input
                       type="text"
                       value={routeFormData.number}
                       onChange={(e) => setRouteFormData({ ...routeFormData, number: e.target.value })}
                       placeholder="e.g. RIT-05"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm font-mono text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-bold"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 mb-1">Route Name *</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Route Name *</label>
                     <input
                       type="text"
                       value={routeFormData.name}
                       onChange={(e) => setRouteFormData({ ...routeFormData, name: e.target.value })}
                       placeholder="e.g. Tambaram Super Express"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 mb-1">Start Point (Origin) *</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Start Point (Origin) *</label>
                     <input
                       type="text"
                       value={routeFormData.from}
                       onChange={(e) => setRouteFormData({ ...routeFormData, from: e.target.value })}
                       placeholder="e.g. Tambaram"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 mb-1">End Point (Destination) *</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">End Point (Destination) *</label>
                     <input
                       type="text"
                       value={routeFormData.to}
                       onChange={(e) => setRouteFormData({ ...routeFormData, to: e.target.value })}
                       placeholder="e.g. RIT Campus"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                       required
                     />
                   </div>
@@ -1834,47 +2153,47 @@ export default function AdminDashboard() {
 
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 mb-1">Departure Time</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Departure Time</label>
                     <input
                       type="text"
                       value={routeFormData.departureTime}
                       onChange={(e) => setRouteFormData({ ...routeFormData, departureTime: e.target.value })}
                       placeholder="07:00 AM"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white font-mono outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono outline-none focus:bg-white focus:border-[#FF6B00]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 mb-1">Arrival Time</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Arrival Time</label>
                     <input
                       type="text"
                       value={routeFormData.arrivalTime}
                       onChange={(e) => setRouteFormData({ ...routeFormData, arrivalTime: e.target.value })}
                       placeholder="08:30 AM"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs text-white font-mono outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-mono outline-none focus:bg-white focus:border-[#FF6B00]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-300 mb-1">Badge Color</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Badge Color</label>
                     <input
                       type="text"
                       value={routeFormData.color}
                       onChange={(e) => setRouteFormData({ ...routeFormData, color: e.target.value })}
                       placeholder="#FF6B00"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-xs font-mono text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00]"
                     />
                   </div>
                 </div>
 
                 {/* Stops Builder */}
-                <div className="space-y-2 pt-2 border-t border-white/10">
+                <div className="space-y-2.5 pt-3 border-t border-slate-100">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-bold text-white">Route Stops & Timings</label>
+                    <label className="text-xs font-extrabold text-[#0F172A] uppercase tracking-wider">Route Stops & Timings</label>
                     <button
                       type="button"
                       onClick={addStopField}
-                      className="text-xs text-orange-400 font-bold hover:underline flex items-center gap-1"
+                      className="text-xs text-[#FF6B00] font-bold hover:underline flex items-center gap-1 cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       Add Stop
@@ -1884,7 +2203,7 @@ export default function AdminDashboard() {
                   <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                     {routeFormData.stops.map((stop, i) => (
                       <div key={i} className="flex items-center gap-2">
-                        <span className="w-6 text-center text-xs font-mono text-slate-500">{i + 1}.</span>
+                        <span className="w-6 text-center text-xs font-mono text-slate-400 font-bold">{i + 1}.</span>
                         <input
                           type="text"
                           value={stop.name}
@@ -1894,7 +2213,7 @@ export default function AdminDashboard() {
                             setRouteFormData({ ...routeFormData, stops: updated });
                           }}
                           placeholder="Stop Name (e.g. Chrompet)"
-                          className="flex-1 bg-slate-950 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-white outline-none focus:border-orange-500"
+                          className="flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                         />
                         <input
                           type="text"
@@ -1905,12 +2224,12 @@ export default function AdminDashboard() {
                             setRouteFormData({ ...routeFormData, stops: updated });
                           }}
                           placeholder="07:20 AM"
-                          className="w-24 bg-slate-950 border border-white/10 rounded-xl px-2.5 py-1.5 text-xs text-white font-mono outline-none focus:border-orange-500"
+                          className="w-24 bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 font-mono outline-none focus:bg-white focus:border-[#FF6B00]"
                         />
                         <button
                           type="button"
                           onClick={() => removeStopField(i)}
-                          className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-500/20"
+                          className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 cursor-pointer"
                         >
                           ✕
                         </button>
@@ -1919,17 +2238,17 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => setIsRouteModalOpen(false)}
-                    className="px-4 py-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300 hover:text-white"
+                    className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 border border-slate-200 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-xs font-bold text-white shadow-md shadow-orange-500/20 cursor-pointer"
+                    className="px-6 py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#EA580C] text-xs font-bold text-white shadow-md shadow-orange-500/20 cursor-pointer transition-all"
                   >
                     {editingRoute ? 'Save Changes' : 'Create Route'}
                   </button>
@@ -1945,97 +2264,97 @@ export default function AdminDashboard() {
       {/* ───────────────────────────────────────────────────────────── */}
       <AnimatePresence>
         {isFacultyModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4"
+              className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-5"
             >
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <UserCheck className="w-4 h-4 text-orange-400" />
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
+                <h3 className="text-base font-extrabold text-[#0F172A] flex items-center gap-2">
+                  <UserCheck className="w-5 h-5 text-[#FF6B00]" />
                   {editingFaculty ? `Edit Faculty: ${editingFaculty.name}` : 'Add New Faculty Member'}
                 </h3>
-                <button onClick={() => setIsFacultyModalOpen(false)} className="text-slate-400 hover:text-white text-sm">✕</button>
+                <button onClick={() => setIsFacultyModalOpen(false)} className="text-slate-400 hover:text-slate-700 text-base font-bold">✕</button>
               </div>
 
-              <form onSubmit={handleSaveFaculty} className="space-y-3 text-xs">
+              <form onSubmit={handleSaveFaculty} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Full Name *</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Full Name *</label>
                   <input
                     type="text"
                     value={facultyFormData.name}
                     onChange={(e) => setFacultyFormData({ ...facultyFormData, name: e.target.value })}
                     placeholder="e.g. Dr. ARTHI A."
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                     required
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3.5">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Designation</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Designation</label>
                     <input
                       type="text"
                       value={facultyFormData.designation}
                       onChange={(e) => setFacultyFormData({ ...facultyFormData, designation: e.target.value })}
                       placeholder="e.g. Associate Professor & HOD"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Department</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Department</label>
                     <input
                       type="text"
                       value={facultyFormData.department}
                       onChange={(e) => setFacultyFormData({ ...facultyFormData, department: e.target.value })}
                       placeholder="Computer Science & Engineering"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3.5">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Email</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email</label>
                     <input
                       type="email"
                       value={facultyFormData.email}
                       onChange={(e) => setFacultyFormData({ ...facultyFormData, email: e.target.value })}
                       placeholder="arthi.a@ritchennai.edu.in"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Cabin / Office Room</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Cabin / Office Room</label>
                     <input
                       type="text"
                       value={facultyFormData.office}
                       onChange={(e) => setFacultyFormData({ ...facultyFormData, office: e.target.value })}
                       placeholder="CSE HOD Cabin, 2nd Floor"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Specialization / Domain</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Specialization / Domain</label>
                   <input
                     type="text"
                     value={facultyFormData.specialization}
                     onChange={(e) => setFacultyFormData({ ...facultyFormData, specialization: e.target.value })}
                     placeholder="Machine Learning, Deep Learning, Cloud Computing"
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                   />
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
-                  <button type="button" onClick={() => setIsFacultyModalOpen(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300">Cancel</button>
-                  <button type="submit" className="px-5 py-2 rounded-xl bg-orange-500 font-bold text-white">Save Faculty</button>
+                <div className="flex items-center justify-end gap-3 pt-3.5 border-t border-slate-100">
+                  <button type="button" onClick={() => setIsFacultyModalOpen(false)} className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 border border-slate-200">Cancel</button>
+                  <button type="submit" className="px-6 py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#EA580C] font-bold text-xs text-white shadow-md shadow-orange-500/20 cursor-pointer">Save Faculty</button>
                 </div>
               </form>
             </motion.div>
@@ -2048,41 +2367,41 @@ export default function AdminDashboard() {
       {/* ───────────────────────────────────────────────────────────── */}
       <AnimatePresence>
         {isClubModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4"
+              className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl space-y-5"
             >
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-orange-400" />
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
+                <h3 className="text-base font-extrabold text-[#0F172A] flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-[#FF6B00]" />
                   {editingClub ? `Edit: ${editingClub.name}` : 'Add New Club / Center of Excellence'}
                 </h3>
-                <button onClick={() => setIsClubModalOpen(false)} className="text-slate-400 hover:text-white text-sm">✕</button>
+                <button onClick={() => setIsClubModalOpen(false)} className="text-slate-400 hover:text-slate-700 text-base font-bold">✕</button>
               </div>
 
-              <form onSubmit={handleSaveClub} className="space-y-3 text-xs">
+              <form onSubmit={handleSaveClub} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Name *</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Name *</label>
                   <input
                     type="text"
                     value={clubFormData.name}
                     onChange={(e) => setClubFormData({ ...clubFormData, name: e.target.value })}
                     placeholder="e.g. Center for Artificial Intelligence & Deep Learning"
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                     required
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3.5">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Type</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Type</label>
                     <select
                       value={clubFormData.type}
                       onChange={(e) => setClubFormData({ ...clubFormData, type: e.target.value as any })}
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 font-bold outline-none focus:bg-white focus:border-[#FF6B00]"
                     >
                       <option value="Center">Center of Excellence (CoE)</option>
                       <option value="Club">Student Club</option>
@@ -2090,56 +2409,56 @@ export default function AdminDashboard() {
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Category</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Category</label>
                     <input
                       type="text"
                       value={clubFormData.category}
                       onChange={(e) => setClubFormData({ ...clubFormData, category: e.target.value })}
                       placeholder="Center of Excellence / Technical / Cultural"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Description *</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Description *</label>
                   <textarea
                     rows={2}
                     value={clubFormData.description}
                     onChange={(e) => setClubFormData({ ...clubFormData, description: e.target.value })}
                     placeholder="Short description of research domain or club activities..."
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                     required
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3.5">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Faculty Lead / Coordinator</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Faculty Lead / Coordinator</label>
                     <input
                       type="text"
                       value={clubFormData.coordinatorName}
                       onChange={(e) => setClubFormData({ ...clubFormData, coordinatorName: e.target.value })}
                       placeholder="e.g. Dr. ARTHI A."
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Contact Email</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Contact Email</label>
                     <input
                       type="email"
                       value={clubFormData.contactEmail}
                       onChange={(e) => setClubFormData({ ...clubFormData, contactEmail: e.target.value })}
                       placeholder="coe.ai@ritchennai.edu.in"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                     />
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
-                  <button type="button" onClick={() => setIsClubModalOpen(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300">Cancel</button>
-                  <button type="submit" className="px-5 py-2 rounded-xl bg-orange-500 font-bold text-white">Save Entry</button>
+                <div className="flex items-center justify-end gap-3 pt-3.5 border-t border-slate-100">
+                  <button type="button" onClick={() => setIsClubModalOpen(false)} className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 border border-slate-200">Cancel</button>
+                  <button type="submit" className="px-6 py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#EA580C] font-bold text-xs text-white shadow-md shadow-orange-500/20 cursor-pointer">Save Entry</button>
                 </div>
               </form>
             </motion.div>
@@ -2152,66 +2471,465 @@ export default function AdminDashboard() {
       {/* ───────────────────────────────────────────────────────────── */}
       <AnimatePresence>
         {isCourseModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-slate-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4"
+              className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-5"
             >
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                  <Calculator className="w-4 h-4 text-orange-400" />
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3.5">
+                <h3 className="text-base font-extrabold text-[#0F172A] flex items-center gap-2">
+                  <Calculator className="w-5 h-5 text-[#FF6B00]" />
                   {editingCourseIndex !== null ? 'Edit Course' : `Add Course to ${selectedGpaDept} Sem ${selectedGpaSem}`}
                 </h3>
-                <button onClick={() => setIsCourseModalOpen(false)} className="text-slate-400 hover:text-white text-sm">✕</button>
+                <button onClick={() => setIsCourseModalOpen(false)} className="text-slate-400 hover:text-slate-700 text-base font-bold">✕</button>
               </div>
 
-              <form onSubmit={handleSaveCourse} className="space-y-3 text-xs">
+              <form onSubmit={handleSaveCourse} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Course Code & Title *</label>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Course Code & Title *</label>
                   <input
                     type="text"
                     value={courseFormData.name}
                     onChange={(e) => setCourseFormData({ ...courseFormData, name: e.target.value })}
                     placeholder="e.g. CS3301 - Data Structures"
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-medium"
                     required
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-3.5">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Credit Weightage (1-6)</label>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Credit Weightage (1-6)</label>
                     <input
                       type="number"
                       min={1}
                       max={6}
                       value={courseFormData.credits}
                       onChange={(e) => setCourseFormData({ ...courseFormData, credits: Number(e.target.value) })}
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-white outline-none focus:border-orange-500 font-mono"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-2.5 text-sm text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00] font-mono font-bold"
                       required
                     />
                   </div>
 
                   <div className="flex items-center pt-5">
-                    <label className="flex items-center gap-2 text-slate-300 font-semibold cursor-pointer">
+                    <label className="flex items-center gap-2 text-xs text-slate-700 font-bold cursor-pointer">
                       <input
                         type="checkbox"
                         checked={courseFormData.isElective}
                         onChange={(e) => setCourseFormData({ ...courseFormData, isElective: e.target.checked })}
-                        className="rounded border-white/10 bg-slate-950 text-orange-500 focus:ring-0"
+                        className="rounded border-slate-300 bg-slate-50 text-[#FF6B00] focus:ring-[#FF6B00] w-4 h-4"
                       />
-                      <span>Is Professional Elective</span>
+                      <span>Professional Elective</span>
                     </label>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-3 pt-3 border-t border-white/10">
-                  <button type="button" onClick={() => setIsCourseModalOpen(false)} className="px-4 py-2 rounded-xl bg-slate-800 text-slate-300">Cancel</button>
-                  <button type="submit" className="px-5 py-2 rounded-xl bg-orange-500 font-bold text-white">Save Course</button>
+                <div className="flex items-center justify-end gap-3 pt-3.5 border-t border-slate-100">
+                  <button type="button" onClick={() => setIsCourseModalOpen(false)} className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 border border-slate-200">Cancel</button>
+                  <button type="submit" className="px-6 py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#EA580C] font-bold text-xs text-white shadow-md shadow-orange-500/20 cursor-pointer">Save Course</button>
                 </div>
               </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* MODAL: MERGE BUS ROUTES                                       */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {isMergeModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 max-w-3xl w-full shadow-2xl space-y-5 my-8 max-h-[90vh] flex flex-col justify-between"
+            >
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
+                <div>
+                  <h3 className="text-base font-extrabold text-[#0F172A] flex items-center gap-2">
+                    <GitMerge className="w-5 h-5 text-[#FF6B00]" />
+                    Merge Bus Routes (Low-Occupancy Attachment)
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Select 2 or more buses to attach low-occupancy routes together. All intermediate stops will be auto-combined for custom editing.
+                  </p>
+                </div>
+                <button onClick={() => setIsMergeModalOpen(false)} className="text-slate-400 hover:text-slate-700 text-base font-bold shrink-0">✕</button>
+              </div>
+
+              <form onSubmit={handleSaveMergedRoute} className="space-y-5 overflow-y-auto pr-1 flex-1 text-xs">
+                
+                {/* Step 1: Route Selection Checklist */}
+                <div className="space-y-2.5">
+                  <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
+                    1. Select Bus Routes to Merge ({selectedRouteIdsForMerge.length} selected) *
+                  </span>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 max-h-48 overflow-y-auto p-3 bg-slate-50 border border-slate-200 rounded-2xl">
+                    {routes.map((route) => {
+                      const isChecked = selectedRouteIdsForMerge.includes(route.id);
+                      return (
+                        <label
+                          key={route.id}
+                          className={`flex items-center gap-2.5 p-2.5 rounded-xl border transition-all cursor-pointer ${
+                            isChecked
+                              ? 'bg-orange-50/80 border-[#FF6B00] shadow-sm'
+                              : 'bg-white border-slate-200 hover:border-slate-300'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => toggleSelectRouteForMerge(route.id)}
+                            className="rounded border-slate-300 text-[#FF6B00] focus:ring-[#FF6B00] w-4 h-4"
+                          />
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-slate-900 truncate">
+                              <span className="font-mono text-[#FF6B00] mr-1">[{route.number}]</span>
+                              {route.name}
+                            </p>
+                            <p className="text-[10px] text-slate-500 font-medium">
+                              {route.from} ({route.departureTime}) → {route.stops?.length || 0} stops
+                            </p>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Step 2: Merged Route Configuration Details */}
+                {selectedRouteIdsForMerge.length >= 2 && (
+                  <div className="space-y-4 pt-2 border-t border-slate-100">
+                    <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
+                      2. Combined Route Configuration
+                    </span>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Merged Route # *</label>
+                        <input
+                          type="text"
+                          value={mergedRouteFormData.number}
+                          onChange={(e) => setMergedRouteFormData({ ...mergedRouteFormData, number: e.target.value })}
+                          placeholder="e.g. R11-MERGED"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono font-bold text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00]"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Merged Route Name *</label>
+                        <input
+                          type="text"
+                          value={mergedRouteFormData.name}
+                          onChange={(e) => setMergedRouteFormData({ ...mergedRouteFormData, name: e.target.value })}
+                          placeholder="e.g. Ennore + Tondiarpet Combined Express"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00]"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Origin</label>
+                        <input
+                          type="text"
+                          value={mergedRouteFormData.from}
+                          onChange={(e) => setMergedRouteFormData({ ...mergedRouteFormData, from: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium text-slate-900"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Destination</label>
+                        <input
+                          type="text"
+                          value={mergedRouteFormData.to}
+                          onChange={(e) => setMergedRouteFormData({ ...mergedRouteFormData, to: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-medium text-slate-900"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Departure</label>
+                        <input
+                          type="text"
+                          value={mergedRouteFormData.departureTime}
+                          onChange={(e) => setMergedRouteFormData({ ...mergedRouteFormData, departureTime: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono font-medium text-slate-900"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Arrival</label>
+                        <input
+                          type="text"
+                          value={mergedRouteFormData.arrivalTime}
+                          onChange={(e) => setMergedRouteFormData({ ...mergedRouteFormData, arrivalTime: e.target.value })}
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono font-medium text-slate-900"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 pt-1">
+                      <label className="flex items-center gap-2 text-xs text-slate-700 font-bold cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={mergedRouteFormData.deactivateOriginals}
+                          onChange={(e) => setMergedRouteFormData({ ...mergedRouteFormData, deactivateOriginals: e.target.checked })}
+                          className="rounded border-slate-300 text-[#FF6B00] focus:ring-[#FF6B00] w-4 h-4"
+                        />
+                        <span>Deactivate original source routes after creating merged route</span>
+                      </label>
+                    </div>
+
+                    {/* Step 3: Combined Stops List with Deletion */}
+                    <div className="space-y-2.5 pt-3 border-t border-slate-100">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
+                          3. Combined Intermediate Stops ({mergedRouteFormData.stops.length} stops)
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleAddMergedStopField}
+                          className="text-[11px] font-bold text-[#FF6B00] hover:text-[#EA580C] flex items-center gap-1 cursor-pointer"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                          Add Extra Stop
+                        </button>
+                      </div>
+
+                      <p className="text-[11px] text-slate-500 font-medium italic">
+                        All stops from the selected buses are listed below. Click the <span className="text-rose-600 font-bold">✕</span> icon to remove any duplicate or unwanted stops today.
+                      </p>
+
+                      <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                        {mergedRouteFormData.stops.length > 0 ? (
+                          mergedRouteFormData.stops.map((stop, idx) => (
+                            <div key={idx} className="flex items-center gap-2.5 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                              <span className="px-2 py-0.5 rounded-lg bg-orange-100 text-[#FF6B00] font-mono font-bold text-[10px] shrink-0">
+                                {stop.sourceRoute || 'Custom'}
+                              </span>
+                              <input
+                                type="text"
+                                value={stop.name}
+                                onChange={(e) => {
+                                  const updated = [...mergedRouteFormData.stops];
+                                  updated[idx].name = e.target.value;
+                                  setMergedRouteFormData({ ...mergedRouteFormData, stops: updated });
+                                }}
+                                placeholder="Stop Name"
+                                className="flex-1 bg-white border border-slate-300 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-900 outline-none focus:border-[#FF6B00]"
+                              />
+                              <input
+                                type="text"
+                                value={stop.time}
+                                onChange={(e) => {
+                                  const updated = [...mergedRouteFormData.stops];
+                                  updated[idx].time = e.target.value;
+                                  setMergedRouteFormData({ ...mergedRouteFormData, stops: updated });
+                                }}
+                                placeholder="Time"
+                                className="w-24 bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs font-mono font-semibold text-slate-900 outline-none focus:border-[#FF6B00]"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveMergedStop(idx)}
+                                className="p-1 rounded-lg text-rose-500 hover:text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer shrink-0"
+                                title="Delete this stop from merged route"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="py-6 text-center text-xs text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                            Select 2 or more routes above to automatically pull and combine stops.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setIsMergeModalOpen(false)}
+                    className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 border border-slate-200 cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={selectedRouteIdsForMerge.length < 2}
+                    className={`px-5 py-2.5 rounded-xl font-bold text-xs text-white shadow-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                      selectedRouteIdsForMerge.length >= 2
+                        ? 'bg-gradient-to-r from-[#FF6B00] to-[#EA580C] hover:from-[#EA580C] hover:to-[#D97706] shadow-orange-500/20'
+                        : 'bg-slate-300 cursor-not-allowed'
+                    }`}
+                  >
+                    <GitMerge className="w-3.5 h-3.5" />
+                    Save Merged Bus Route
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ───────────────────────────────────────────────────────────── */}
+      {/* MODAL: BUS STATUS MANAGER (ACTIVE VS STOPPED)                 */}
+      {/* ───────────────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {isBusStatusModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-7 max-w-2xl w-full shadow-2xl space-y-5 my-8 max-h-[88vh] flex flex-col justify-between"
+            >
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3 shrink-0">
+                <div>
+                  <h3 className="text-base font-extrabold text-[#0F172A] flex items-center gap-2">
+                    <Power className="w-5 h-5 text-amber-500" />
+                    Bus Fleet Status Manager
+                  </h3>
+                  <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    Toggle service status (Active 🟢 vs Stopped 🔴) for individual buses or merged routes without deleting them.
+                  </p>
+                </div>
+                <button onClick={() => setIsBusStatusModalOpen(false)} className="text-slate-400 hover:text-slate-700 text-base font-bold shrink-0">✕</button>
+              </div>
+
+              {/* Status Controls & Quick Bulk Actions */}
+              <div className="space-y-3 shrink-0">
+                <div className="flex flex-wrap items-center justify-between gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1">Filter:</span>
+                    <button
+                      type="button"
+                      onClick={() => setBusStatusTabFilter('ALL')}
+                      className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                        busStatusTabFilter === 'ALL' ? 'bg-[#0F172A] text-white shadow-sm' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                      }`}
+                    >
+                      All ({routes.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBusStatusTabFilter('ACTIVE')}
+                      className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                        busStatusTabFilter === 'ACTIVE' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                      }`}
+                    >
+                      Active ({routes.filter(r => (r.status || 'ACTIVE') === 'ACTIVE').length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setBusStatusTabFilter('STOPPED')}
+                      className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                        busStatusTabFilter === 'STOPPED' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                      }`}
+                    >
+                      Stopped ({routes.filter(r => r.status === 'STOPPED').length})
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => handleSetAllRoutesStatus('ACTIVE')}
+                      className="px-2.5 py-1 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-[11px] font-bold transition-all"
+                    >
+                      Activate All
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSetAllRoutesStatus('STOPPED')}
+                      className="px-2.5 py-1 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 text-[11px] font-bold transition-all"
+                    >
+                      Stop All
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Route List with Status Toggles */}
+              <div className="space-y-2 max-h-80 overflow-y-auto pr-1 flex-1">
+                {routes
+                  .filter(r => {
+                    if (busStatusTabFilter === 'ACTIVE') return (r.status || 'ACTIVE') === 'ACTIVE';
+                    if (busStatusTabFilter === 'STOPPED') return r.status === 'STOPPED';
+                    return true;
+                  })
+                  .map((route) => {
+                    const isActive = (route.status || 'ACTIVE') === 'ACTIVE';
+                    return (
+                      <div
+                        key={route.id}
+                        className={`flex items-center justify-between p-3.5 rounded-2xl border transition-all ${
+                          isActive
+                            ? 'bg-white border-slate-200 hover:border-slate-300'
+                            : 'bg-rose-50/40 border-rose-200'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span
+                            className="px-2.5 py-1 rounded-xl text-xs font-bold font-mono text-white shadow-sm shrink-0"
+                            style={{ backgroundColor: route.color || '#FF6B00' }}
+                          >
+                            {route.number}
+                          </span>
+                          <div>
+                            <p className="text-xs font-bold text-slate-900 flex items-center gap-2">
+                              <span>{route.name}</span>
+                              {route.number.includes('MERGED') && (
+                                <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-orange-100 text-[#FF6B00] border border-orange-200">
+                                  Merged Route
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-[11px] text-slate-500 font-medium">
+                              {route.from} ({route.departureTime}) → {route.to} ({route.stops?.length || 0} stops)
+                            </p>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleToggleRouteStatus(route.id)}
+                          className={`px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1.5 border transition-all cursor-pointer ${
+                            isActive
+                              ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20 border-emerald-600'
+                              : 'bg-rose-600 hover:bg-rose-700 text-white shadow-sm shadow-rose-600/20 border-rose-600'
+                          }`}
+                        >
+                          <Power className="w-3.5 h-3.5" />
+                          {isActive ? 'Active 🟢' : 'Stopped 🔴'}
+                        </button>
+                      </div>
+                    );
+                  })}
+              </div>
+
+              <div className="flex items-center justify-between pt-3.5 border-t border-slate-100 shrink-0">
+                <span className="text-[11px] font-medium text-slate-500">
+                  Tip: Setting source buses (e.g. R11 & R11A) to 🔴 Stopped lets you reactivate them next week instantly!
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsBusStatusModalOpen(false)}
+                  className="px-5 py-2 rounded-xl bg-[#0F172A] text-white text-xs font-bold hover:bg-slate-800 transition-colors"
+                >
+                  Done
+                </button>
+              </div>
             </motion.div>
           </div>
         )}
