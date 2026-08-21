@@ -294,7 +294,7 @@ export default function Faculty() {
                   className="h-full pl-10 pr-10 py-3.5 rounded-2xl bg-[#F8FAFC] border-none text-sm font-medium text-[#475569] focus:ring-2 focus:ring-[#FF7A00]/20 focus:outline-none transition-all appearance-none cursor-pointer min-w-[200px]"
                   style={{ fontFamily: 'Inter, sans-serif', backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394A3B8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem top 50%', backgroundSize: '0.65rem auto' }}
                 >
-                  {DEPARTMENTS.filter(dept => dept === 'All Departments' || FACULTY_DATA.filter((f) => f.department === dept).length > 0).map((dept) => {
+                  {Array.from(new Set(['All Departments', ...DEPARTMENTS, ...FACULTY_DATA.map(f => f.department)])).filter(dept => dept === 'All Departments' || FACULTY_DATA.filter((f) => f.department === dept).length > 0).map((dept) => {
                     const count = dept === 'All Departments' ? FACULTY_DATA.length : FACULTY_DATA.filter((f) => f.department === dept).length;
                     return <option key={dept} value={dept}>{dept} ({count})</option>;
                   })}

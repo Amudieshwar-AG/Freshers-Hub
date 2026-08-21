@@ -670,8 +670,24 @@ export default function Toolkit() {
   const [calculationType, setCalculationType] = useState<'gpa' | 'internal' | null>(null);
   const [gpaStep, setGpaStep] = useState<1 | 2>(1);
   const [calculatedScore, setCalculatedScore] = useState<string | null>(null);
+  const resultCardRef = useRef<HTMLDivElement>(null);
   const [imsData, setImsData] = useState<any>(null);
   const [isImsAutoFilled, setIsImsAutoFilled] = useState(false);
+  const [cat1Input, setCat1Input] = useState('');
+  const [cat2Input, setCat2Input] = useState('');
+  const [cat3Input, setCat3Input] = useState('');
+  const [assignmentInput, setAssignmentInput] = useState('');
+  const [internalError, setInternalError] = useState<string | null>(null);
+  const [showWeightages, setShowWeightages] = useState<Record<string, boolean>>({
+    cat1: false,
+    cat2: false,
+    cat3: false,
+    assignment: false,
+  });
+
+  const toggleWeightage = (key: string) => {
+    setShowWeightages((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
 
   useEffect(() => {
     const session = getStoredImsSession();
@@ -699,6 +715,7 @@ export default function Toolkit() {
     grade: string;
     cat1: string;
     cat2: string;
+    cat3: string;
     assignment: string;
     attendance: string;
     isElective?: boolean;
@@ -706,13 +723,7 @@ export default function Toolkit() {
     electiveCode?: string;
   }
 
-  const [subjects, setSubjects] = useState<SubjectItem[]>([
-    { name: 'Subject 1', credits: 4, grade: 'O', cat1: '45', cat2: '48', assignment: '10', attendance: '95' },
-    { name: 'Subject 2', credits: 3, grade: 'A+', cat1: '42', cat2: '44', assignment: '9', attendance: '92' },
-    { name: 'Subject 3', credits: 3, grade: 'A', cat1: '38', cat2: '40', assignment: '8', attendance: '88' },
-    { name: 'Subject 4', credits: 4, grade: 'O', cat1: '46', cat2: '47', assignment: '10', attendance: '96' },
-    { name: 'Subject 5', credits: 2, grade: 'A+', cat1: '44', cat2: '45', assignment: '9', attendance: '94' },
-  ]);
+  const [subjects, setSubjects] = useState<SubjectItem[]>([]);
 
   const handleProceedToStep2 = (type: 'gpa' | 'internal') => {
     if (!gpaDepartment || !gpaSemester) return;
@@ -766,62 +777,47 @@ export default function Toolkit() {
             foundAnyImsMatch = true;
           }
 
-          const gradeVal = matchedGrade?.grade || 'O';
-          const cat1Val = matchedCat?.cat1 ? String(matchedCat.cat1) : '45';
-          const cat2Val = matchedCat?.cat2 ? String(matchedCat.cat2) : '45';
-          const assgnVal = matchedCat?.assignment ? String(matchedCat.assignment) : '9';
-
-          if (isElective) {
-            const slot = s.electiveSlot || electiveCounter++;
-            const defaultElectiveObj = PROFESSIONAL_ELECTIVES_LIST[(slot - 1) % PROFESSIONAL_ELECTIVES_LIST.length] || PROFESSIONAL_ELECTIVES_LIST[0];
-            return {
-              name: `${defaultElectiveObj.code} - ${defaultElectiveObj.name}`,
-              credits: s.credits,
-              grade: gradeVal,
-              cat1: cat1Val,
-              cat2: cat2Val,
-              assignment: assgnVal,
-              attendance: '95',
-              isElective: true,
-              electiveSlot: slot,
-              electiveCode: defaultElectiveObj.code,
-            };
-          }
+          const gradeVal = matchedGrade?.grade || '';
+          const cat1Val = matchedCat?.cat1 ? String(matchedCat.cat1) : '';
+          const cat2Val = matchedCat?.cat2 ? String(matchedCat.cat2) : '';
+          const cat3Val = matchedCat?.cat3 ? String(matchedCat.cat3) : '';
+          const assgnVal = matchedCat?.assignment ? String(matchedCat.assignment) : '';
           return {
             name: s.name,
             credits: s.credits,
             grade: gradeVal,
             cat1: cat1Val,
             cat2: cat2Val,
+            cat3: cat3Val,
             assignment: assgnVal,
             attendance: '95',
-            isElective: false,
           };
         });
       setSubjects(loaded);
 
       if (type === 'gpa') {
-        setIsImsAutoFilled(foundAnyImsMatch || imsGrades.length > 0);
-        let totalCredits = 0;
-        let totalPoints = 0;
-        const GRADE_POINTS: Record<string, number> = { 'O': 10, 'A+': 9, 'A': 8, 'B+': 7, 'B': 6, 'C': 5, 'RA': 0 };
-        loaded.forEach((sub: any) => {
-          const pts = GRADE_POINTS[sub.grade] ?? 10;
-          totalCredits += sub.credits;
-          totalPoints += pts * sub.credits;
-        });
-        if (totalCredits > 0) {
-          setCalculatedScore((totalPoints / totalCredits).toFixed(2));
+        setIsImsAutoFilled(foundAnyImsMatch && imsGrades.length > 0);
+        if (foundAnyImsMatch && imsGrades.length > 0) {
+          let totalCredits = 0;
+          let totalPoints = 0;
+          const GRADE_POINTS: Record<string, number> = { 'O': 10, 'A+': 9, 'A': 8, 'B+': 7, 'B': 6, 'C': 5, 'UA': 0, 'RA': 0 };
+          loaded.forEach((sub: any) => {
+            if (sub.grade) {
+              const pts = GRADE_POINTS[sub.grade] ?? 0;
+              totalCredits += sub.credits;
+              totalPoints += pts * sub.credits;
+            }
+          });
+          if (totalCredits > 0) {
+            setCalculatedScore((totalPoints / totalCredits).toFixed(2));
+          }
+        } else {
+          setCalculatedScore(null);
         }
       }
     } else {
-      setSubjects([
-        { name: 'Subject 1', credits: 4, grade: 'O', cat1: '45', cat2: '48', assignment: '10', attendance: '95' },
-        { name: 'Subject 2', credits: 3, grade: 'A+', cat1: '42', cat2: '44', assignment: '9', attendance: '92' },
-        { name: 'Subject 3', credits: 3, grade: 'A', cat1: '38', cat2: '40', assignment: '8', attendance: '88' },
-        { name: 'Subject 4', credits: 4, grade: 'O', cat1: '46', cat2: '47', assignment: '10', attendance: '96' },
-        { name: 'Subject 5', credits: 2, grade: 'A+', cat1: '44', cat2: '45', assignment: '9', attendance: '94' },
-      ]);
+      setSubjects([]);
+      setCalculatedScore(null);
     }
 
     setGpaStep(2);
@@ -946,10 +942,94 @@ export default function Toolkit() {
                 {/* Main Content Area */}
                 {selectedToolkit === 'gpa' ? (
                   <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="max-w-3xl mx-auto">
-                    {gpaStep === 1 ? (
-                      /* ── STEP 1: Department and Semester Selection ── */
+                    {calculationType === null ? (
+                      /* ── INITIAL MODE SELECTION: Calculate Internal Mark vs Calculate GPA ── */
+                      <div className="bg-white p-8 md:p-10 rounded-3xl border border-[#E5E7EB] shadow-xl relative overflow-hidden space-y-6">
+                        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#FF6B00] via-[#8B5CF6] to-[#7C3AED]" />
+
+                        <div className="text-center max-w-xl mx-auto space-y-2">
+                          <h3 className="text-2xl md:text-3xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                            GPA & Internal Calculator
+                          </h3>
+                          <p className="text-sm text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
+                            Select what you would like to calculate to begin.
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                          {/* Option 1: Internal Mark Calculator */}
+                          <div
+                            onClick={() => {
+                              setCalculationType('internal');
+                              setGpaStep(2);
+                              setCalculatedScore(null);
+                              setInternalError(null);
+                            }}
+                            className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#F5F3FF] via-[#FAF5FF] to-white border-2 border-[#DDD6FE] hover:border-[#7C3AED] hover:shadow-lg transition-all cursor-pointer group flex flex-col justify-between"
+                          >
+                            <div className="space-y-4">
+                              <div className="w-14 h-14 rounded-2xl bg-[#7C3AED] text-white flex items-center justify-center font-bold shadow-md group-hover:scale-110 transition-transform">
+                                <BarChart3 className="w-7 h-7" />
+                              </div>
+                              <div>
+                                <h4 className="text-xl font-extrabold text-[#1E293B] group-hover:text-[#7C3AED] transition-colors mb-1.5" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                                  Calculate Internal Mark
+                                </h4>
+                                <p className="text-xs text-[#64748B] leading-relaxed">
+                                  Calculate your converted internal mark out of 40 directly from CAT I, CAT II, CAT III, and Assignment marks. Direct calculation with no department or subject inputs needed.
+                                </p>
+                              </div>
+                            </div>
+                            <div className="mt-6 flex items-center gap-2 text-xs font-extrabold text-[#7C3AED]">
+                              <span>Open Internal Calculator</span>
+                              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                          </div>
+
+                          {/* Option 2: GPA Calculator */}
+                          <div
+                            onClick={() => {
+                              setCalculationType('gpa');
+                              setGpaStep(1);
+                              setCalculatedScore(null);
+                              setInternalError(null);
+                            }}
+                            className="p-6 md:p-8 rounded-3xl bg-gradient-to-br from-[#FFF7ED] via-[#FFFBEB] to-white border-2 border-[#FED7AA] hover:border-[#FF6B00] hover:shadow-lg transition-all cursor-pointer group flex flex-col justify-between"
+                          >
+                            <div className="space-y-4">
+                              <div className="w-14 h-14 rounded-2xl bg-[#FF6B00] text-white flex items-center justify-center font-bold shadow-md group-hover:scale-110 transition-transform">
+                                <Calculator className="w-7 h-7" />
+                              </div>
+                              <div>
+                                <h4 className="text-xl font-extrabold text-[#1E293B] group-hover:text-[#FF6B00] transition-colors mb-1.5" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                                  Calculate GPA
+                                </h4>
+                                <p className="text-xs text-[#64748B] leading-relaxed">
+                                  Select your department and semester to load curriculum subjects, enter your grades, and compute your Semester Grade Point Average (SGPA / 10.00).
+                                </p>
+                              </div>
+                            </div>
+                            <div className="mt-6 flex items-center gap-2 text-xs font-extrabold text-[#FF6B00]">
+                              <span>Select Department & Semester</span>
+                              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : calculationType === 'gpa' && gpaStep === 1 ? (
+                      /* ── STEP 1: Department and Semester Selection for GPA ── */
                       <div className="bg-white p-8 md:p-10 rounded-3xl border border-[#E5E7EB] shadow-xl relative overflow-hidden">
                         <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-[#FF6B00] via-[#EF4444] to-[#F97316]" />
+
+                        <button
+                          onClick={() => {
+                            setCalculationType(null);
+                            setGpaStep(1);
+                          }}
+                          className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FF6B00] hover:text-[#EA580C] transition-colors mb-4 cursor-pointer"
+                        >
+                          <ArrowLeft className="w-3.5 h-3.5" /> Back to Calculation Options
+                        </button>
 
                         <div className="flex items-center gap-4 mb-6">
                           <div className="w-14 h-14 rounded-2xl bg-[#FEF2F2] text-[#EF4444] flex items-center justify-center font-bold shadow-xs">
@@ -957,10 +1037,10 @@ export default function Toolkit() {
                           </div>
                           <div>
                             <h3 className="text-2xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                              GPA & Internal Calculator
+                              GPA Calculator
                             </h3>
                             <p className="text-sm text-[#64748B]" style={{ fontFamily: 'Inter, sans-serif' }}>
-                              Step 1 of 2: Select your department and semester to begin.
+                              Select your department and semester to load curriculum subjects.
                             </p>
                           </div>
                         </div>
@@ -1002,26 +1082,11 @@ export default function Toolkit() {
                             </select>
                           </div>
 
-                          {/* Two Action Buttons to proceed to Step 2 */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                            <button
-                              onClick={() => handleProceedToStep2('internal')}
-                              disabled={!gpaDepartment || !gpaSemester}
-                              className={`py-3.5 px-5 rounded-2xl text-sm font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
-                                gpaDepartment && gpaSemester
-                                  ? 'bg-gradient-to-r from-[#8B5CF6] to-[#7C3AED] hover:from-[#7C3AED] hover:to-[#6D28D9] text-white shadow-purple-500/20 hover:scale-[1.01]'
-                                  : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed shadow-none'
-                              }`}
-                              style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
-                            >
-                              <BarChart3 className="w-4 h-4" />
-                              Calculate Internal
-                            </button>
-
+                          <div className="pt-2">
                             <button
                               onClick={() => handleProceedToStep2('gpa')}
                               disabled={!gpaDepartment || !gpaSemester}
-                              className={`py-3.5 px-5 rounded-2xl text-sm font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
+                              className={`w-full py-4 px-5 rounded-2xl text-sm font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
                                 gpaDepartment && gpaSemester
                                   ? 'bg-gradient-to-r from-[#FF6B00] to-[#F97316] hover:from-[#EA580C] hover:to-[#DD6B20] text-white shadow-orange-500/20 hover:scale-[1.01]'
                                   : 'bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed shadow-none'
@@ -1029,29 +1094,38 @@ export default function Toolkit() {
                               style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
                             >
                               <Calculator className="w-4 h-4" />
-                              Calculate GPA
+                              Proceed to GPA Calculation
                             </button>
                           </div>
                         </div>
                       </div>
                     ) : (
-                      /* ── STEP 2: Subject Input and Marks Section ── */
+                      /* ── STEP 2: Calculation Form (GPA or Direct Internal) ── */
                       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="space-y-6">
                         <div className="bg-white p-6 md:p-8 rounded-3xl border border-[#E5E7EB] shadow-xl relative overflow-hidden">
                           <div className="flex items-center justify-between gap-4 mb-6 pb-4 border-b border-[#F1F5F9]">
                             <div>
                               <button
-                                onClick={() => setGpaStep(1)}
+                                onClick={() => {
+                                  if (calculationType === 'internal') {
+                                    setCalculationType(null);
+                                    setGpaStep(1);
+                                  } else {
+                                    setGpaStep(1);
+                                  }
+                                }}
                                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#FF6B00] hover:text-[#EA580C] transition-colors mb-2 cursor-pointer"
                               >
-                                <ArrowLeft className="w-3.5 h-3.5" /> Back to Selection
+                                <ArrowLeft className="w-3.5 h-3.5" /> {calculationType === 'internal' ? 'Back to Options' : 'Back to Department & Semester'}
                               </button>
                               <h3 className="text-xl md:text-2xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                                {calculationType === 'gpa' ? 'GPA Calculation' : 'Internal Marks Calculation'}
+                                {calculationType === 'gpa' ? 'GPA Calculation' : 'Internal Mark Calculator'}
                               </h3>
-                              <p className="text-xs font-semibold text-[#64748B] mt-0.5">
-                                {gpaDepartment} — <span className="text-[#FF6B00]">{gpaSemester}</span>
-                              </p>
+                              {calculationType === 'gpa' && (
+                                <p className="text-xs font-semibold text-[#64748B] mt-0.5">
+                                  {gpaDepartment} — <span className="text-[#FF6B00]">{gpaSemester}</span>
+                                </p>
+                              )}
                             </div>
                             <div className="w-12 h-12 rounded-2xl bg-[#FFF7ED] text-[#FF6B00] flex items-center justify-center font-bold shrink-0">
                               {calculationType === 'gpa' ? <Calculator className="w-6 h-6" /> : <BarChart3 className="w-6 h-6" />}
@@ -1086,190 +1160,273 @@ export default function Toolkit() {
                                 <span>Grade Achieved</span>
                               </div>
 
-                              {(() => {
-                                const selectedElectiveCodes = new Set(subjects.filter((s) => s.isElective && s.electiveCode).map((s) => s.electiveCode));
-
-                                return subjects.filter(s => s.credits > 0).map((sub, idx) => (
-                                  <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#CBD5E1] transition-all">
-                                    <div className="flex-1 min-w-0 pr-2">
-                                      {sub.isElective ? (
-                                        <div className="space-y-1">
-                                          <div className="text-[11px] font-bold text-[#FF6B00] uppercase tracking-wider">
-                                            Professional Elective {sub.electiveSlot}
-                                          </div>
-                                          <select
-                                            value={sub.electiveCode}
-                                            onChange={(e) => {
-                                              const newCode = e.target.value;
-                                              const found = PROFESSIONAL_ELECTIVES_LIST.find((el) => el.code === newCode);
-                                              const updated = [...subjects];
-                                              updated[idx].electiveCode = newCode;
-                                              updated[idx].name = found ? `${found.code} - ${found.name}` : newCode;
-                                              setSubjects(updated);
-                                              setCalculatedScore(null);
-                                            }}
-                                            className="w-full px-3 py-2 rounded-xl bg-white border border-[#CBD5E1] focus:border-[#FF6B00] text-xs font-bold text-[#1E293B] outline-none cursor-pointer"
-                                            style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
-                                          >
-                                            {PROFESSIONAL_ELECTIVES_LIST.filter((opt) => opt.code === sub.electiveCode || !selectedElectiveCodes.has(opt.code)).map((opt) => (
-                                              <option key={opt.code} value={opt.code}>
-                                                {opt.code} - {opt.name}
-                                              </option>
-                                            ))}
-                                          </select>
-                                        </div>
-                                      ) : (
-                                        <p className="text-sm font-bold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                                          {sub.name}
-                                        </p>
-                                      )}
-                                      <span className="inline-block mt-1 px-2.5 py-0.5 rounded-md bg-[#FFF7ED] text-[#FF6B00] text-[11px] font-bold border border-[#FFEDD5]">
-                                        {sub.credits} {sub.credits === 1 ? 'Credit' : 'Credits'}
-                                      </span>
-                                    </div>
-                                    <div className="w-full sm:w-60 shrink-0">
-                                      <select
-                                        value={sub.grade}
-                                        onChange={(e) => {
-                                          const updated = [...subjects];
-                                          updated[idx].grade = e.target.value;
-                                          setSubjects(updated);
-                                          setCalculatedScore(null);
-                                        }}
-                                        className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#CBD5E1] focus:border-[#FF6B00] focus:ring-2 focus:ring-[#FF6B00]/20 text-xs font-bold text-[#1E293B] outline-none cursor-pointer shadow-2xs"
-                                        style={{ fontFamily: 'Inter, sans-serif' }}
-                                      >
-                                        <option value="O">O</option>
-                                        <option value="A+">A+</option>
-                                        <option value="A">A</option>
-                                        <option value="B+">B+</option>
-                                        <option value="B">B</option>
-                                        <option value="C">C</option>
-                                        <option value="UA">UA</option>
-                                      </select>
-                                    </div>
+                              {subjects.filter(s => s.credits > 0).map((sub, idx) => (
+                                <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#CBD5E1] transition-all">
+                                  <div className="flex-1 min-w-0 pr-2">
+                                    <p className="text-sm font-bold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                                      {sub.name}
+                                    </p>
+                                    <span className="inline-block mt-1 px-2.5 py-0.5 rounded-md bg-[#FFF7ED] text-[#FF6B00] text-[11px] font-bold border border-[#FFEDD5]">
+                                      {sub.credits} {sub.credits === 1 ? 'Credit' : 'Credits'}
+                                    </span>
                                   </div>
-                                ));
-                              })()}
-                            </div>
-                          ) : (
-                            /* ── Internal Marks Layout ── */
-                            <div className="space-y-4 mb-6">
-                              <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
-                                <span>Subject Details</span>
-                                <span>{subjects.length} Subjects</span>
-                              </div>
-
-                              {subjects.map((sub, idx) => (
-                                <div key={idx} className="p-4 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] space-y-3">
-                                  <div className="flex items-center justify-between gap-2">
-                                    <input
-                                      type="text"
-                                      value={sub.name}
+                                  <div className="w-full sm:w-60 shrink-0">
+                                    <select
+                                      value={sub.grade}
                                       onChange={(e) => {
                                         const updated = [...subjects];
-                                        updated[idx].name = e.target.value;
+                                        updated[idx].grade = e.target.value;
                                         setSubjects(updated);
                                         setCalculatedScore(null);
+                                        setInternalError(null);
                                       }}
-                                      placeholder={`Subject ${idx + 1} Name`}
-                                      className="flex-1 px-3 py-2 rounded-xl bg-white border border-[#CBD5E1] text-xs font-bold text-[#1E293B] focus:border-[#FF6B00] outline-none"
-                                    />
-                                    {subjects.length > 1 && (
-                                      <button
-                                        onClick={() => {
-                                          setSubjects(subjects.filter((_, i) => i !== idx));
-                                          setCalculatedScore(null);
-                                        }}
-                                        className="p-2 rounded-xl text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
-                                        title="Remove subject"
-                                      >
-                                        <Trash2 className="w-4 h-4" />
-                                      </button>
-                                    )}
-                                  </div>
-
-                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                    <div>
-                                      <label className="block text-[10px] font-semibold text-[#64748B] mb-1">CAT 1 (/50)</label>
-                                      <input
-                                        type="number"
-                                        min="0"
-                                        max="50"
-                                        value={sub.cat1}
-                                        onChange={(e) => {
-                                          const updated = [...subjects];
-                                          updated[idx].cat1 = e.target.value;
-                                          setSubjects(updated);
-                                          setCalculatedScore(null);
-                                        }}
-                                        className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-[#CBD5E1] text-xs font-medium text-[#1E293B] outline-none"
-                                      />
-                                    </div>
-                                    <div>
-                                      <label className="block text-[10px] font-semibold text-[#64748B] mb-1">CAT 2 (/50)</label>
-                                      <input
-                                        type="number"
-                                        min="0"
-                                        max="50"
-                                        value={sub.cat2}
-                                        onChange={(e) => {
-                                          const updated = [...subjects];
-                                          updated[idx].cat2 = e.target.value;
-                                          setSubjects(updated);
-                                          setCalculatedScore(null);
-                                        }}
-                                        className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-[#CBD5E1] text-xs font-medium text-[#1E293B] outline-none"
-                                      />
-                                    </div>
-                                    <div>
-                                      <label className="block text-[10px] font-semibold text-[#64748B] mb-1">Assignment (/10)</label>
-                                      <input
-                                        type="number"
-                                        min="0"
-                                        max="10"
-                                        value={sub.assignment}
-                                        onChange={(e) => {
-                                          const updated = [...subjects];
-                                          updated[idx].assignment = e.target.value;
-                                          setSubjects(updated);
-                                          setCalculatedScore(null);
-                                        }}
-                                        className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-[#CBD5E1] text-xs font-medium text-[#1E293B] outline-none"
-                                      />
-                                    </div>
-                                    <div>
-                                      <label className="block text-[10px] font-semibold text-[#64748B] mb-1">Attendance %</label>
-                                      <input
-                                        type="number"
-                                        min="0"
-                                        max="100"
-                                        value={sub.attendance}
-                                        onChange={(e) => {
-                                          const updated = [...subjects];
-                                          updated[idx].attendance = e.target.value;
-                                          setSubjects(updated);
-                                          setCalculatedScore(null);
-                                        }}
-                                        className="w-full px-2.5 py-1.5 rounded-xl bg-white border border-[#CBD5E1] text-xs font-medium text-[#1E293B] outline-none"
-                                      />
-                                    </div>
+                                      className={`w-full px-3.5 py-2.5 rounded-xl bg-white border ${!sub.grade ? 'border-amber-300 bg-amber-50/20 text-[#64748B]' : 'border-[#CBD5E1] text-[#1E293B] focus:border-[#FF6B00]'} text-xs font-bold focus:ring-2 focus:ring-[#FF6B00]/20 outline-none cursor-pointer shadow-2xs`}
+                                      style={{ fontFamily: 'Inter, sans-serif' }}
+                                    >
+                                      <option value="" disabled>Select Grade</option>
+                                      <option value="O">O</option>
+                                      <option value="A+">A+</option>
+                                      <option value="A">A</option>
+                                      <option value="B+">B+</option>
+                                      <option value="B">B</option>
+                                      <option value="C">C</option>
+                                      <option value="UA">UA</option>
+                                    </select>
                                   </div>
                                 </div>
                               ))}
+                            </div>
+                          ) : (
+                            /* ── Direct Internal Marks Layout (Assigned 40-Mark Weightages & Per-Field Weightage Calculations) ── */
+                            (() => {
+                              const n1 = cat1Input === '' ? NaN : Number(cat1Input);
+                              const isCat1Err = cat1Input !== '' && (isNaN(n1) || n1 < 0 || n1 > 50);
 
-                              <button
-                                onClick={() => {
-                                  setSubjects([
-                                    ...subjects,
-                                    { name: `Subject ${subjects.length + 1}`, credits: 3, grade: 'A', cat1: '40', cat2: '40', assignment: '8', attendance: '90' }
-                                  ]);
-                                  setCalculatedScore(null);
-                                }}
-                                className="w-full py-2.5 rounded-2xl border-2 border-dashed border-[#CBD5E1] hover:border-[#FF6B00] text-xs font-bold text-[#64748B] hover:text-[#FF6B00] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                              >
-                                <Plus className="w-3.5 h-3.5" /> Add Subject
-                              </button>
+                              const n2 = cat2Input === '' ? NaN : Number(cat2Input);
+                              const isCat2Err = cat2Input !== '' && (isNaN(n2) || n2 < 0 || n2 > 25);
+
+                              const n3 = cat3Input === '' ? NaN : Number(cat3Input);
+                              const isCat3Err = cat3Input !== '' && (isNaN(n3) || n3 < 0 || n3 > 50);
+
+                              const nAss = assignmentInput === '' ? NaN : Number(assignmentInput);
+                              const isAssErr = assignmentInput !== '' && (isNaN(nAss) || nAss < 0 || nAss > 50);
+
+                              return (
+                                <div className="space-y-6 mb-6">
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {/* CAT I */}
+                                    <div className={`p-4 rounded-2xl ${isCat1Err ? 'bg-red-50/40 border border-red-300' : 'bg-[#F8FAFC] border border-[#E2E8F0] focus-within:border-[#8B5CF6]'} transition-all space-y-2.5`}>
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold text-[#1E293B]">CAT I Mark</span>
+                                        <div className="flex items-center gap-1">
+                                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${isCat1Err ? 'bg-red-100 text-red-700 border-red-200' : 'bg-[#F5F3FF] text-[#7C3AED] border-[#DDD6FE]'}`}>
+                                            Max 50
+                                          </span>
+                                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md border bg-purple-100/70 text-[#5B21B6] border-purple-200">
+                                            Assigned: 11.43 / 40
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <input
+                                        type="number"
+                                        value={cat1Input}
+                                        onChange={(e) => {
+                                          setCat1Input(e.target.value);
+                                          setCalculatedScore(null);
+                                          setInternalError(null);
+                                          setShowWeightages((prev) => ({ ...prev, cat1: false }));
+                                        }}
+                                        placeholder="Enter CAT 1 mark (0 - 50)"
+                                        className={`w-full px-3.5 py-2.5 rounded-xl bg-white border ${isCat1Err ? 'border-red-500 text-red-600 focus:ring-red-500/20' : 'border-[#CBD5E1] text-[#1E293B] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]/20'} text-sm font-bold focus:ring-2 outline-none`}
+                                      />
+                                      {isCat1Err ? (
+                                        <p className="text-[11px] font-bold text-red-500 mt-1 flex items-center gap-1">
+                                          <AlertTriangle className="w-3.5 h-3.5" /> Enter a valid mark between 0 and 50
+                                        </p>
+                                      ) : (
+                                        <div className="flex items-center justify-between pt-1">
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              if (cat1Input !== '' && !isCat1Err) {
+                                                setShowWeightages((prev) => ({ ...prev, cat1: true }));
+                                              }
+                                            }}
+                                            className="px-3 py-1.5 rounded-xl bg-[#7C3AED]/10 hover:bg-[#7C3AED]/20 text-[#7C3AED] text-[11px] font-extrabold flex items-center gap-1.5 transition-colors cursor-pointer"
+                                          >
+                                            <Calculator className="w-3.5 h-3.5" /> Calculate Weightage
+                                          </button>
+                                          {showWeightages['cat1'] && !isNaN(n1) && n1 >= 0 && n1 <= 50 && (
+                                            <span className="text-[11px] font-extrabold text-[#6D28D9] bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200 animate-in fade-in duration-200">
+                                              Obtained: {((n1 / 50) * 11.43).toFixed(2)} / 11.43
+                                            </span>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    {/* CAT II */}
+                                    <div className={`p-4 rounded-2xl ${isCat2Err ? 'bg-red-50/40 border border-red-300' : 'bg-[#F8FAFC] border border-[#E2E8F0] focus-within:border-[#8B5CF6]'} transition-all space-y-2.5`}>
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold text-[#1E293B]">CAT II Mark</span>
+                                        <div className="flex items-center gap-1">
+                                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${isCat2Err ? 'bg-red-100 text-red-700 border-red-200' : 'bg-[#F5F3FF] text-[#7C3AED] border-[#DDD6FE]'}`}>
+                                            Max 25
+                                          </span>
+                                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md border bg-purple-100/70 text-[#5B21B6] border-purple-200">
+                                            Assigned: 5.71 / 40
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <input
+                                        type="number"
+                                        value={cat2Input}
+                                        onChange={(e) => {
+                                          setCat2Input(e.target.value);
+                                          setCalculatedScore(null);
+                                          setInternalError(null);
+                                          setShowWeightages((prev) => ({ ...prev, cat2: false }));
+                                        }}
+                                        placeholder="Enter CAT 2 mark (0 - 25)"
+                                        className={`w-full px-3.5 py-2.5 rounded-xl bg-white border ${isCat2Err ? 'border-red-500 text-red-600 focus:ring-red-500/20' : 'border-[#CBD5E1] text-[#1E293B] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]/20'} text-sm font-bold focus:ring-2 outline-none`}
+                                      />
+                                      {isCat2Err ? (
+                                        <p className="text-[11px] font-bold text-red-500 mt-1 flex items-center gap-1">
+                                          <AlertTriangle className="w-3.5 h-3.5" /> Enter a valid mark between 0 and 25
+                                        </p>
+                                      ) : (
+                                        <div className="flex items-center justify-between pt-1">
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              if (cat2Input !== '' && !isCat2Err) {
+                                                setShowWeightages((prev) => ({ ...prev, cat2: true }));
+                                              }
+                                            }}
+                                            className="px-3 py-1.5 rounded-xl bg-[#7C3AED]/10 hover:bg-[#7C3AED]/20 text-[#7C3AED] text-[11px] font-extrabold flex items-center gap-1.5 transition-colors cursor-pointer"
+                                          >
+                                            <Calculator className="w-3.5 h-3.5" /> Calculate Weightage
+                                          </button>
+                                          {showWeightages['cat2'] && !isNaN(n2) && n2 >= 0 && n2 <= 25 && (
+                                            <span className="text-[11px] font-extrabold text-[#6D28D9] bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200 animate-in fade-in duration-200">
+                                              Obtained: {((n2 / 25) * 5.71).toFixed(2)} / 5.71
+                                            </span>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    {/* CAT III */}
+                                    <div className={`p-4 rounded-2xl ${isCat3Err ? 'bg-red-50/40 border border-red-300' : 'bg-[#F8FAFC] border border-[#E2E8F0] focus-within:border-[#8B5CF6]'} transition-all space-y-2.5`}>
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold text-[#1E293B]">CAT III Mark</span>
+                                        <div className="flex items-center gap-1">
+                                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${isCat3Err ? 'bg-red-100 text-red-700 border-red-200' : 'bg-[#F5F3FF] text-[#7C3AED] border-[#DDD6FE]'}`}>
+                                            Max 50
+                                          </span>
+                                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md border bg-purple-100/70 text-[#5B21B6] border-purple-200">
+                                            Assigned: 11.43 / 40
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <input
+                                        type="number"
+                                        value={cat3Input}
+                                        onChange={(e) => {
+                                          setCat3Input(e.target.value);
+                                          setCalculatedScore(null);
+                                          setInternalError(null);
+                                          setShowWeightages((prev) => ({ ...prev, cat3: false }));
+                                        }}
+                                        placeholder="Enter CAT 3 mark (0 - 50)"
+                                        className={`w-full px-3.5 py-2.5 rounded-xl bg-white border ${isCat3Err ? 'border-red-500 text-red-600 focus:ring-red-500/20' : 'border-[#CBD5E1] text-[#1E293B] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]/20'} text-sm font-bold focus:ring-2 outline-none`}
+                                      />
+                                      {isCat3Err ? (
+                                        <p className="text-[11px] font-bold text-red-500 mt-1 flex items-center gap-1">
+                                          <AlertTriangle className="w-3.5 h-3.5" /> Enter a valid mark between 0 and 50
+                                        </p>
+                                      ) : (
+                                        <div className="flex items-center justify-between pt-1">
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              if (cat3Input !== '' && !isCat3Err) {
+                                                setShowWeightages((prev) => ({ ...prev, cat3: true }));
+                                              }
+                                            }}
+                                            className="px-3 py-1.5 rounded-xl bg-[#7C3AED]/10 hover:bg-[#7C3AED]/20 text-[#7C3AED] text-[11px] font-extrabold flex items-center gap-1.5 transition-colors cursor-pointer"
+                                          >
+                                            <Calculator className="w-3.5 h-3.5" /> Calculate Weightage
+                                          </button>
+                                          {showWeightages['cat3'] && !isNaN(n3) && n3 >= 0 && n3 <= 50 && (
+                                            <span className="text-[11px] font-extrabold text-[#6D28D9] bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200 animate-in fade-in duration-200">
+                                              Obtained: {((n3 / 50) * 11.43).toFixed(2)} / 11.43
+                                            </span>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    {/* Assignment */}
+                                    <div className={`p-4 rounded-2xl ${isAssErr ? 'bg-red-50/40 border border-red-300' : 'bg-[#F8FAFC] border border-[#E2E8F0] focus-within:border-[#8B5CF6]'} transition-all space-y-2.5`}>
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-xs font-bold text-[#1E293B]">Assignment Mark</span>
+                                        <div className="flex items-center gap-1">
+                                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border ${isAssErr ? 'bg-red-100 text-red-700 border-red-200' : 'bg-[#F5F3FF] text-[#7C3AED] border-[#DDD6FE]'}`}>
+                                            Max 50
+                                          </span>
+                                          <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-md border bg-purple-100/70 text-[#5B21B6] border-purple-200">
+                                            Assigned: 11.43 / 40
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <input
+                                        type="number"
+                                        value={assignmentInput}
+                                        onChange={(e) => {
+                                          setAssignmentInput(e.target.value);
+                                          setCalculatedScore(null);
+                                          setInternalError(null);
+                                          setShowWeightages((prev) => ({ ...prev, assignment: false }));
+                                        }}
+                                        placeholder="Enter Assignment mark (0 - 50)"
+                                        className={`w-full px-3.5 py-2.5 rounded-xl bg-white border ${isAssErr ? 'border-red-500 text-red-600 focus:ring-red-500/20' : 'border-[#CBD5E1] text-[#1E293B] focus:border-[#8B5CF6] focus:ring-[#8B5CF6]/20'} text-sm font-bold focus:ring-2 outline-none`}
+                                      />
+                                      {isAssErr ? (
+                                        <p className="text-[11px] font-bold text-red-500 mt-1 flex items-center gap-1">
+                                          <AlertTriangle className="w-3.5 h-3.5" /> Enter a valid mark between 0 and 50
+                                        </p>
+                                      ) : (
+                                        <div className="flex items-center justify-between pt-1">
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              if (assignmentInput !== '' && !isAssErr) {
+                                                setShowWeightages((prev) => ({ ...prev, assignment: true }));
+                                              }
+                                            }}
+                                            className="px-3 py-1.5 rounded-xl bg-[#7C3AED]/10 hover:bg-[#7C3AED]/20 text-[#7C3AED] text-[11px] font-extrabold flex items-center gap-1.5 transition-colors cursor-pointer"
+                                          >
+                                            <Calculator className="w-3.5 h-3.5" /> Calculate Weightage
+                                          </button>
+                                          {showWeightages['assignment'] && !isNaN(nAss) && nAss >= 0 && nAss <= 50 && (
+                                            <span className="text-[11px] font-extrabold text-[#6D28D9] bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200 animate-in fade-in duration-200">
+                                              Obtained: {((nAss / 50) * 11.43).toFixed(2)} / 11.43
+                                            </span>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })()
+                          )}
+
+                          {internalError && (
+                            <div className="mb-4 p-3.5 rounded-2xl bg-red-50 border border-red-200 text-xs font-bold text-red-600 flex items-center gap-2">
+                              <AlertTriangle className="w-4 h-4 shrink-0 text-red-500" />
+                              <span>{internalError}</span>
                             </div>
                           )}
 
@@ -1277,26 +1434,52 @@ export default function Toolkit() {
                           <button
                             onClick={() => {
                               if (calculationType === 'gpa') {
+                                const unselected = subjects.filter(s => s.credits > 0 && !s.grade);
+                                if (unselected.length > 0) {
+                                  setInternalError('Please select a grade for all subjects before calculating GPA.');
+                                  setCalculatedScore(null);
+                                  return;
+                                }
+                                setInternalError(null);
                                 const GRADE_MAP: Record<string, number> = { 'O': 10, 'A+': 9, 'A': 8, 'B+': 7, 'B': 6, 'C': 5, 'UA': 0, 'RA': 0 };
                                 let totalPts = 0;
                                 let totalCreds = 0;
                                 subjects.forEach(s => {
-                                  const pts = GRADE_MAP[s.grade] ?? 0;
-                                  const cred = Number(s.credits) || 0;
-                                  totalPts += pts * cred;
-                                  totalCreds += cred;
+                                  if (s.credits > 0) {
+                                    const pts = GRADE_MAP[s.grade] ?? 0;
+                                    const cred = Number(s.credits) || 0;
+                                    totalPts += pts * cred;
+                                    totalCreds += cred;
+                                  }
                                 });
                                 setCalculatedScore(totalCreds > 0 ? (totalPts / totalCreds).toFixed(2) : '0.00');
+                                setTimeout(() => {
+                                  resultCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                }, 100);
                               } else {
-                                let total = 0;
-                                subjects.forEach(s => {
-                                  const c1 = (Number(s.cat1) || 0) / 50 * 15;
-                                  const c2 = (Number(s.cat2) || 0) / 50 * 15;
-                                  const ass = (Number(s.assignment) || 0) / 10 * 5;
-                                  const att = (Number(s.attendance) || 0) >= 80 ? 5 : 3;
-                                  total += (c1 + c2 + ass + att);
-                                });
-                                setCalculatedScore(subjects.length > 0 ? (total / subjects.length).toFixed(1) : '0.0');
+                                const c1 = Number(cat1Input);
+                                const c2 = Number(cat2Input);
+                                const c3 = Number(cat3Input);
+                                const ass = Number(assignmentInput);
+
+                                if (
+                                  cat1Input === '' || isNaN(c1) || c1 < 0 || c1 > 50 ||
+                                  cat2Input === '' || isNaN(c2) || c2 < 0 || c2 > 25 ||
+                                  cat3Input === '' || isNaN(c3) || c3 < 0 || c3 > 50 ||
+                                  assignmentInput === '' || isNaN(ass) || ass < 0 || ass > 50
+                                ) {
+                                  setInternalError('Please enter a valid mark for all fields within their maximum limits.');
+                                  setCalculatedScore(null);
+                                  return;
+                                }
+
+                                setInternalError(null);
+                                const totalRaw = c1 + c2 + c3 + ass; // max 175
+                                const internal40 = ((totalRaw / 175) * 40).toFixed(2);
+                                setCalculatedScore(internal40);
+                                setTimeout(() => {
+                                  resultCardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                }, 100);
                               }
                             }}
                             className={`w-full py-4 rounded-2xl text-sm font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md ${
@@ -1307,38 +1490,97 @@ export default function Toolkit() {
                             style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}
                           >
                             <CheckCircle2 className="w-4 h-4" />
-                            {calculationType === 'gpa' ? 'Calculate Final GPA' : 'Calculate Total Internal Marks'}
+                            {calculationType === 'gpa' ? 'Calculate Final GPA' : 'Calculate Total Internal Mark'}
                           </button>
 
                           {/* Calculated Result Card */}
                           {calculatedScore !== null && (
                             <motion.div
+                              ref={resultCardRef}
                               initial={{ opacity: 0, scale: 0.96, y: 10 }}
                               animate={{ opacity: 1, scale: 1, y: 0 }}
-                              className="mt-6 p-6 rounded-3xl bg-gradient-to-br from-[#FFF7ED] to-[#FFFBEB] border border-[#FED7AA] shadow-sm space-y-3"
+                              className="mt-6 p-6 rounded-3xl bg-gradient-to-br from-[#FFF7ED] to-[#FFFBEB] border border-[#FED7AA] shadow-sm space-y-4"
                             >
                               <div className="flex items-center justify-between">
                                 <span className="text-xs font-bold uppercase tracking-wider text-[#EA580C]">
-                                  {calculationType === 'gpa' ? 'Calculated SGPA' : 'Average Internal Score'}
+                                  {calculationType === 'gpa' ? 'Calculated SGPA' : 'Total Internal Mark'}
                                 </span>
-                                <span className="px-3 py-1 rounded-full bg-[#FF6B00]/10 text-[#FF6B00] text-xs font-bold">
-                                  {gpaSemester}
-                                </span>
+                                {gpaSemester && (
+                                  <span className="px-3 py-1 rounded-full bg-[#FF6B00]/10 text-[#FF6B00] text-xs font-bold">
+                                    {gpaSemester}
+                                  </span>
+                                )}
                               </div>
 
-                              <div className="p-4 rounded-2xl bg-white border border-[#FFEDD5] flex items-baseline justify-between">
+                              <div className="p-4 rounded-2xl bg-white border border-[#FFEDD5] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div>
-                                  <p className="text-xs font-semibold text-[#64748B] mb-1">{gpaDepartment}</p>
+                                  <p className="text-xs font-semibold text-[#64748B] mb-1">
+                                    {calculationType === 'gpa' ? gpaDepartment : 'Converted Internal Score'}
+                                  </p>
                                   <span className="text-4xl font-extrabold text-[#1E293B]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                                     {calculatedScore} {calculationType === 'gpa' ? '/ 10.00' : '/ 40.0'}
                                   </span>
                                 </div>
-                                <span className="px-3 py-1.5 rounded-xl bg-[#ECFDF5] text-[#10B981] text-xs font-bold">
-                                  {calculationType === 'gpa'
-                                    ? (Number(calculatedScore) >= 9.0 ? 'First Class with Distinction (O)' : Number(calculatedScore) >= 8.5 ? 'First Class with Distinction' : Number(calculatedScore) >= 7.0 ? 'First Class' : Number(calculatedScore) >= 5.0 ? 'Second Class' : 'UA / Reappear')
-                                    : (Number(calculatedScore) >= 35 ? 'Excellent' : 'Good')}
-                                </span>
+                                <div className="flex flex-col sm:items-end justify-center gap-1">
+                                  {calculationType === 'internal' && (() => {
+                                    const c1 = Math.min(50, Math.max(0, Number(cat1Input) || 0));
+                                    const c2 = Math.min(25, Math.max(0, Number(cat2Input) || 0));
+                                    const c3 = Math.min(50, Math.max(0, Number(cat3Input) || 0));
+                                    const ass = Math.min(50, Math.max(0, Number(assignmentInput) || 0));
+                                    const totalRaw = c1 + c2 + c3 + ass;
+                                    return (
+                                      <div className="sm:text-right">
+                                        <p className="text-xs text-[#64748B] font-semibold">Total Raw Marks Obtained</p>
+                                        <p className="text-xl font-extrabold text-[#7C3AED]">
+                                          {totalRaw} <span className="text-xs font-bold text-[#94A3B8]">/ 175 Marks</span>
+                                        </p>
+                                      </div>
+                                    );
+                                  })()}
+                                </div>
                               </div>
+
+                              {calculationType === 'internal' && (() => {
+                                const c1 = Math.min(50, Math.max(0, Number(cat1Input) || 0));
+                                const c2 = Math.min(25, Math.max(0, Number(cat2Input) || 0));
+                                const c3 = Math.min(50, Math.max(0, Number(cat3Input) || 0));
+                                const ass = Math.min(50, Math.max(0, Number(assignmentInput) || 0));
+
+                                const w1 = ((c1 / 50) * 11.43).toFixed(2);
+                                const w2 = ((c2 / 25) * 5.71).toFixed(2);
+                                const w3 = ((c3 / 50) * 11.43).toFixed(2);
+                                const wAss = ((ass / 50) * 11.43).toFixed(2);
+
+                                return (
+                                  <div className="p-4 rounded-2xl bg-white border border-purple-100 space-y-3">
+                                    <p className="text-xs font-bold text-[#5B21B6] uppercase tracking-wider flex items-center gap-1.5">
+                                      <Zap className="w-3.5 h-3.5 text-[#7C3AED]" /> Assigned 40-Mark Weightage Breakdown
+                                    </p>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+                                      <div className="p-2.5 rounded-xl bg-purple-50/50 border border-purple-100">
+                                        <p className="text-[10px] font-bold text-[#64748B]">CAT I (11.43)</p>
+                                        <p className="text-xs font-black text-[#6D28D9] mt-0.5">{w1} / 11.43</p>
+                                        <p className="text-[9px] text-[#94A3B8] font-medium">{c1}/50</p>
+                                      </div>
+                                      <div className="p-2.5 rounded-xl bg-purple-50/50 border border-purple-100">
+                                        <p className="text-[10px] font-bold text-[#64748B]">CAT II (5.71)</p>
+                                        <p className="text-xs font-black text-[#6D28D9] mt-0.5">{w2} / 5.71</p>
+                                        <p className="text-[9px] text-[#94A3B8] font-medium">{c2}/25</p>
+                                      </div>
+                                      <div className="p-2.5 rounded-xl bg-purple-50/50 border border-purple-100">
+                                        <p className="text-[10px] font-bold text-[#64748B]">CAT III (11.43)</p>
+                                        <p className="text-xs font-black text-[#6D28D9] mt-0.5">{w3} / 11.43</p>
+                                        <p className="text-[9px] text-[#94A3B8] font-medium">{c3}/50</p>
+                                      </div>
+                                      <div className="p-2.5 rounded-xl bg-purple-50/50 border border-purple-100">
+                                        <p className="text-[10px] font-bold text-[#64748B]">Assignment (11.43)</p>
+                                        <p className="text-xs font-black text-[#6D28D9] mt-0.5">{wAss} / 11.43</p>
+                                        <p className="text-[9px] text-[#94A3B8] font-medium">{ass}/50</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
                             </motion.div>
                           )}
                         </div>
