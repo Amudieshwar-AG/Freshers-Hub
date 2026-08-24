@@ -3832,9 +3832,5 @@ export const DEPARTMENTS = [
   'Computer Science & Engineering',
   'Electronics & Communication Engineering',
   'Electronics Engineering VLSI (Design and Technology)',
-  'Humanities & Sciences',
-  'M.E. (VLSI Design)',
-  'M.Tech (Data Science)',
-  'Mathematics',
   'Mechanical Engineering',
 ];
