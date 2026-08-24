@@ -102,8 +102,19 @@ function App() {
                     path="/leetcode"
                     element={
                       <ProtectedRoute
-                        title="RIT LeetCode Leaderboard"
-                        description="Track campus competitive programming rankings and see top RIT coders."
+                        title="RIT Student Leaderboard"
+                        description="Track campus competitive programming rankings (LeetCode & SkillRack) and verified skill certifications."
+                      >
+                        <LeetcodeLeaderboard />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/student-leaderboard"
+                    element={
+                      <ProtectedRoute
+                        title="RIT Student Leaderboard"
+                        description="Track campus competitive programming rankings (LeetCode & SkillRack) and verified skill certifications."
                       >
                         <LeetcodeLeaderboard />
                       </ProtectedRoute>
