@@ -241,7 +241,7 @@ export function deduceStudentDetails(regNumber: string): { department: string; d
 
 export function parseDepartmentCode(rawDept: string = ''): string {
   const d = rawDept.toLowerCase();
-  if (d.includes('artificial intelligence') && d.includes('data')) return 'AI&DS';
+  if (d.includes('artificial intelligence') && d.includes('data')) return 'AIDS';
   if (d.includes('artificial intelligence') || d.includes('machine learning') || d.includes('aiml')) return 'AIML';
   if (d.includes('computer science and business') || d.includes('csbs')) return 'CSBS';
   if (d.includes('computer science') || d.includes('cse')) return 'CSE';
@@ -251,7 +251,7 @@ export function parseDepartmentCode(rawDept: string = ''): string {
   if (d.includes('civil')) return 'CIVIL';
   if (d.includes('biotech')) return 'BIOTECH';
   if (d.includes('information technology') || d.includes('it')) return 'IT';
-  return rawDept ? rawDept.slice(0, 4).toUpperCase() : 'AI&DS';
+  return rawDept ? rawDept.slice(0, 4).toUpperCase() : 'AIDS';
 }
 
 export function generateCurriculumSchedule(deptCode: string, semester: number): WeeklySchedule {
@@ -460,7 +460,7 @@ export async function loginWithIms(regNumber: string, password: string): Promise
     // Step B: Get fresh CSRF token from login page
     const loginPageRes = await fetch('/ims/login', { credentials: 'same-origin' });
     if (!loginPageRes.ok) {
-      return { success: false, message: 'RIT IMS Portal is currently unavailable.' };
+      return { success: false, message: 'RIT IMS Portal is currently unreachable from server proxy.' };
     }
     const loginHtml = await loginPageRes.text();
     const loginDoc = new DOMParser().parseFromString(loginHtml, 'text/html');
@@ -469,7 +469,7 @@ export async function loginWithIms(regNumber: string, password: string): Promise
       csrfToken = loginDoc.querySelector('input[name="_token"]')?.getAttribute('value') || '';
     }
     if (!csrfToken) {
-      return { success: false, message: 'Could not initialize IMS session (CSRF missing).' };
+      return { success: false, message: 'Could not initialize IMS session (CSRF missing from /ims/login).' };
     }
 
     // Step C: POST login credentials
@@ -868,7 +868,7 @@ export async function fetchImsTimetable(_token: string, regNumber: string, _forc
 /**
  * 4. Lazy Fetch Attendance — Direct scraping of /ims/admin/student-personal-attendance/report
  */
-export async function fetchImsAttendance(_token: string, _regNumber: string, _forceRefresh = false): Promise<AttendanceReport> {
+export async function fetchImsAttendance(_token: string, regNumber: string, _forceRefresh = false): Promise<AttendanceReport> {
   const subjects: SubjectAttendance[] = [];
   let totalCond = 0, totalPres = 0, totalAbs = 0;
 
@@ -1064,7 +1064,7 @@ export function getExactSubjectCredits(deptCodeOrName: string, _semester: number
  */
 export async function fetchImsSemesterResults(_token: string, regNumber: string, currentSem = 4, _forceRefresh = false): Promise<{ results: SemesterResult[]; cgpa: number; totalCredits: number; activeArrears: number }> {
   const deduced = deduceStudentDetails(regNumber);
-  const deptCode = deduced.departmentCode || 'AIDS';
+  const deptCode = DEPARTMENT_CODE_MAP[deduced.department] || parseDepartmentCode(deduced.departmentCode) || 'AIDS';
   const results: SemesterResult[] = [];
   const maxSemToCheck = Math.max(2, currentSem || 4);
 
@@ -1133,50 +1133,6 @@ export async function fetchImsSemesterResults(_token: string, regNumber: string,
     } catch {}
   }
 
-  // If results were empty or fewer than previous semesters, generate exact curriculum results for finished semesters
-  if (results.length === 0 && DEPARTMENT_CURRICULUM[deptCode]) {
-    const completedSems = Math.min(4, Math.max(1, (currentSem || 5) - 1));
-    const gradeTemplates = ['O', 'A+', 'O', 'A+', 'O', 'A', 'A+', 'O', 'A+'];
-
-    for (let s = 1; s <= completedSems; s++) {
-      const semSubjects = DEPARTMENT_CURRICULUM[deptCode][s] || [];
-      let semCredits = 0;
-      let semPoints = 0;
-
-      const grades: SemesterGrade[] = semSubjects.map((sub, idx) => {
-        const matchCode = sub.name.match(/\(([A-Z0-9]+)\)/i)?.[1] || sub.code || `SUB${s}0${idx+1}`;
-        const cleanTitle = sub.name.replace(/\([A-Z0-9]+\)/gi, '').trim();
-        const credits = sub.credits;
-        const grade = sub.credits === 0 ? 'PASS' : (gradeTemplates[idx % gradeTemplates.length] || 'A+');
-        const gp = GRADE_POINTS[grade] ?? 9;
-
-        if (credits > 0) {
-          semCredits += credits;
-          semPoints += (gp * credits);
-        }
-
-        return {
-          code: matchCode,
-          name: cleanTitle,
-          credits,
-          internalMark: credits > 0 ? 38 + (idx % 3) * 3 : undefined,
-          externalMark: credits > 0 ? 52 + (idx % 3) * 3 : undefined,
-          totalMark: credits > 0 ? 90 + (idx % 3) * 3 : undefined,
-          grade,
-          result: 'PASS',
-        };
-      });
-
-      const sgpa = semCredits > 0 ? Number((semPoints / semCredits).toFixed(2)) : 0;
-      results.push({
-        semester: s,
-        gpa: sgpa,
-        totalCredits: semCredits,
-        subjects: grades,
-      });
-    }
-  }
-
   // Calculate Cumulative CGPA & Active Arrears strictly according to Anna University Regulations
   let cumCredits = 0;
   let cumPoints = 0;
@@ -1229,109 +1185,94 @@ export async function fetchStudentDashboard(regNumber?: string): Promise<{ resul
 /**
  * Fetch Assignment Marks from /ims/admin/assignment/student/mark/report
  */
-export async function fetchImsAssignmentMarks(): Promise<AssignmentMarkItem[]> {
+export async function fetchImsAssignmentMarks(_deptCodeOrName?: string, _semester?: number): Promise<AssignmentMarkItem[]> {
+  const items: AssignmentMarkItem[] = [];
   try {
     const response = await fetch('/ims/admin/assignment/student/mark/report', {
       method: 'GET',
       credentials: 'same-origin',
     });
-    if (!response.ok) return [];
+    if (response.ok) {
+      const html = await response.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const table = doc.querySelector('table');
+      if (table) {
+        const rows = Array.from(table.querySelectorAll('tr'));
+        rows.forEach((row) => {
+          const tds = Array.from(row.querySelectorAll('td')).map(td => td.textContent?.trim() || '');
+          if (tds.length >= 4) {
+            let subjectName = tds[0];
+            let subjectCode = tds[1];
+            let facultyName = tds[2];
 
-    const html = await response.text();
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    const table = doc.querySelector('table');
-    if (!table) return [];
+            if (/^[A-Z]{2,4}\d{2,5}$/i.test(tds[0])) {
+              subjectCode = tds[0];
+              subjectName = tds[1];
+            }
 
-    const rows = Array.from(table.querySelectorAll('tr'));
-    const items: AssignmentMarkItem[] = [];
+            const a1 = tds[3] || '-';
+            const a2 = tds[4] || '-';
+            const a3 = tds[5] || '-';
+            const a4 = tds[6] || '-';
+            const a5 = tds[7] || '-';
+            const total = tds[8] || tds[tds.length - 1] || '-';
 
-    rows.forEach((row) => {
-      const tds = Array.from(row.querySelectorAll('td')).map(td => td.textContent?.trim() || '');
-      if (tds.length >= 4) {
-        let subjectName = tds[0];
-        let subjectCode = tds[1];
-        let facultyName = tds[2];
-
-        if (/^[A-Z]{2,4}\d{2,5}$/i.test(tds[0])) {
-          subjectCode = tds[0];
-          subjectName = tds[1];
-        }
-
-        const a1 = tds[3] || '-';
-        const a2 = tds[4] || '-';
-        const a3 = tds[5] || '-';
-        const a4 = tds[6] || '-';
-        const a5 = tds[7] || '-';
-        const total = tds[8] || tds[tds.length - 1] || '-';
-
-        if (subjectName || subjectCode) {
-          items.push({
-            subjectName,
-            subjectCode,
-            facultyName,
-            a1, a2, a3, a4, a5,
-            total,
-          });
-        }
+            if (subjectName || subjectCode) {
+              items.push({ subjectName, subjectCode, facultyName, a1, a2, a3, a4, a5, total });
+            }
+          }
+        });
       }
-    });
-
-    return items;
+    }
   } catch (err) {
     console.warn('Failed to fetch assignment marks:', err);
-    return [];
   }
+
+  return items;
 }
 
 /**
  * Fetch LAB Marks from /ims/admin/student_lab_mark/report
  */
-export async function fetchImsLabMarks(): Promise<LabMarkItem[]> {
+export async function fetchImsLabMarks(_deptCodeOrName?: string, _semester?: number): Promise<LabMarkItem[]> {
+  const items: LabMarkItem[] = [];
+
   try {
     const response = await fetch('/ims/admin/student_lab_mark/report', {
       method: 'GET',
       credentials: 'same-origin',
     });
-    if (!response.ok) return [];
+    if (response.ok) {
+      const html = await response.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const table = doc.querySelector('table');
+      if (table) {
+        const rows = Array.from(table.querySelectorAll('tr'));
+        rows.forEach((row) => {
+          const tds = Array.from(row.querySelectorAll('td')).map(td => td.textContent?.trim() || '');
+          if (tds.length >= 3) {
+            let subjectName = tds[0];
+            let subjectCode = tds[1];
+            let facultyName = tds[2];
 
-    const html = await response.text();
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    const table = doc.querySelector('table');
-    if (!table) return [];
+            if (/^[A-Z]{2,4}\d{2,5}$/i.test(tds[0])) {
+              subjectCode = tds[0];
+              subjectName = tds[1];
+            }
 
-    const rows = Array.from(table.querySelectorAll('tr'));
-    const items: LabMarkItem[] = [];
+            const marks = tds[3] || '-';
+            const total = tds[tds.length - 1] || '-';
 
-    rows.forEach((row) => {
-      const tds = Array.from(row.querySelectorAll('td')).map(td => td.textContent?.trim() || '');
-      if (tds.length >= 3) {
-        let subjectName = tds[0];
-        let subjectCode = tds[1];
-        let facultyName = tds[2];
-
-        if (/^[A-Z]{2,4}\d{2,5}$/i.test(tds[0])) {
-          subjectCode = tds[0];
-          subjectName = tds[1];
-        }
-
-        const marks = tds[3] || '-';
-        const total = tds[tds.length - 1] || '-';
-
-        if (subjectName || subjectCode) {
-          items.push({
-            subjectName,
-            subjectCode,
-            facultyName,
-            marks,
-            total,
-          });
-        }
+            if (subjectName || subjectCode) {
+              items.push({ subjectName, subjectCode, facultyName, marks, total });
+            }
+          }
+        });
       }
-    });
-
-    return items;
+    }
   } catch (err) {
     console.warn('Failed to fetch lab marks:', err);
-    return [];
   }
+
+  return items;
 }

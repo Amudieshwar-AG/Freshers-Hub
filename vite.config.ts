@@ -87,25 +87,24 @@ export default defineConfig({
         secure: false,
         configure: (proxy) => {
           proxy.on('proxyRes', (proxyRes) => {
-            // Rewrite Location header to keep redirects through local proxy
+            // Rewrite Location header to keep redirects through local / VPS proxy
             const location = proxyRes.headers['location'];
             if (location) {
               let rewritten = location;
               if (rewritten.includes('ims.ritchennai.edu.in')) {
-                rewritten = rewritten.replace(/https?:\/\/ims\.ritchennai\.edu\.in/gi, 'http://localhost:5173/ims');
-              } else if (rewritten.startsWith('/')) {
+                rewritten = rewritten.replace(/https?:\/\/ims\.ritchennai\.edu\.in/gi, '/ims');
+              } else if (rewritten.startsWith('/') && !rewritten.startsWith('/ims')) {
                 rewritten = '/ims' + rewritten;
               }
               proxyRes.headers['location'] = rewritten;
             }
-            // Tweak cookies for localhost
+            // Strip domain from cookies so session cookies bind to current host (localhost or VPS domain)
             const setCookie = proxyRes.headers['set-cookie'];
             if (setCookie) {
               proxyRes.headers['set-cookie'] = (Array.isArray(setCookie) ? setCookie : [setCookie]).map((cookie: string) =>
                 cookie
-                  .replace(/Secure/gi, '')
-                  .replace(/samesite=none/gi, 'SameSite=Lax')
                   .replace(/domain=[^;]+/gi, '')
+                  .replace(/path=[^;]+/gi, 'Path=/')
               );
             }
           });

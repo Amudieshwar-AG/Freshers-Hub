@@ -176,6 +176,20 @@ export default function StudentDashboard() {
         );
         if (firstActive) setSelectedDay(firstActive);
       }
+
+      // Auto-load Attendance, Internal Marks, and Grades for immediate Overview KPI display
+      const [attData, catData, assignData, labData, gData] = await Promise.all([
+        fetchImsAttendance(token, p.registerNumber, force),
+        fetchImsCatMarks(token, p.registerNumber, force),
+        fetchImsAssignmentMarks(p.departmentCode || p.department, p.semester),
+        fetchImsLabMarks(p.departmentCode || p.department, p.semester),
+        fetchImsSemesterResults(token, p.registerNumber, p.semester, force)
+      ]);
+      setAttendance(attData);
+      setCatMarks(catData);
+      setAssignmentMarks(assignData);
+      setLabMarks(labData);
+      setGradesData(gData);
     } catch (err: any) {
       console.error('Error loading initial IMS data:', err);
       setError(err.message || 'Failed to load timetable.');
@@ -187,10 +201,10 @@ export default function StudentDashboard() {
   // ─── Lazy On-Demand Fetchers ────────────────────────────────────────
 
   const ensureAttendanceLoaded = async (force = false) => {
-    if ((attendance && !force) || !session?.token || !profile) return;
+    if ((attendance && attendance.subjects.length > 0 && !force) || !profile) return;
     setIsTabLoading(true);
     try {
-      const data = await fetchImsAttendance(session.token, profile.registerNumber, force);
+      const data = await fetchImsAttendance(session?.token || '', profile.registerNumber, force);
       setAttendance(data);
     } catch (err) {
       console.warn('Attendance load notice:', err);
@@ -200,13 +214,13 @@ export default function StudentDashboard() {
   };
 
   const ensureCatMarksLoaded = async (force = false) => {
-    if ((catMarks && assignmentMarks && labMarks && !force) || !session?.token || !profile) return;
+    if ((catMarks && catMarks.subjects.length > 0 && assignmentMarks && labMarks && !force) || !profile) return;
     setIsTabLoading(true);
     try {
       const [cat, assign, lab] = await Promise.all([
-        fetchImsCatMarks(session.token, profile.registerNumber, force),
-        fetchImsAssignmentMarks(),
-        fetchImsLabMarks(),
+        fetchImsCatMarks(session?.token || '', profile.registerNumber, force),
+        fetchImsAssignmentMarks(profile.departmentCode || profile.department, profile.semester),
+        fetchImsLabMarks(profile.departmentCode || profile.department, profile.semester),
       ]);
       setCatMarks(cat);
       setAssignmentMarks(assign);
@@ -219,10 +233,10 @@ export default function StudentDashboard() {
   };
 
   const ensureGradesLoaded = async (force = false) => {
-    if ((gradesData && !force) || !session?.token || !profile) return;
+    if ((gradesData && gradesData.results.length > 0 && !force) || !profile) return;
     setIsTabLoading(true);
     try {
-      const data = await fetchImsSemesterResults(session.token, profile.registerNumber, profile.semester, force);
+      const data = await fetchImsSemesterResults(session?.token || '', profile.registerNumber, profile.semester, force);
       setGradesData(data);
     } catch (err) {
       console.warn('Grades load notice:', err);
