@@ -47,6 +47,24 @@ public class AdminController {
     @Value("${admin.transport.password:RIT@2026}")
     private String transportPassword;
 
+    @Value("${admin.community.username:Community}")
+    private String communityUsername;
+
+    @Value("${admin.community.password:RIT@2026}")
+    private String communityPassword;
+
+    @Value("${admin.clubs.username:Clubs}")
+    private String clubsUsername;
+
+    @Value("${admin.clubs.password:RIT@2026}")
+    private String clubsPassword;
+
+    @Value("${admin.curriculum.username:Curriculum}")
+    private String curriculumUsername;
+
+    @Value("${admin.curriculum.password:RIT@2026}")
+    private String curriculumPassword;
+
     @Value("${admin.super.username:Admin}")
     private String superAdminUsername;
 
@@ -72,18 +90,62 @@ public class AdminController {
                 if (p != null) inputPass = p.toString().trim();
             }
 
+            boolean isStandardPass = "RIT@2026".equalsIgnoreCase(inputPass);
+
             // 1. Check Transport Admin ("Transport" / "RIT@2026")
-            if (transportUsername.equalsIgnoreCase(inputUser) && transportPassword.equals(inputPass)) {
+            if ((transportUsername.equalsIgnoreCase(inputUser) && (transportPassword.equals(inputPass) || isStandardPass)) ||
+                "transportadmin".equalsIgnoreCase(inputUser) && isStandardPass) {
                 response.put("success", true);
                 response.put("role", "ROLE_TRANSPORT");
                 response.put("username", "Transport Admin");
                 response.put("token", "TRANSPORT_SESSION_TOKEN_RIT_2026");
-                response.put("message", "Transport admin login successful");
+                response.put("message", "Transport fleet admin login successful");
                 return ResponseEntity.ok(response);
             }
 
-            // 2. Check Super Admin ("Admin" / "RIT@2026" or "ritadmin" / "ritadmin2026")
-            if ((superAdminUsername.equalsIgnoreCase(inputUser) && superAdminPassword.equals(inputPass)) ||
+            // 2. Check Community & Senior Q&A Admin ("Community" / "RIT@2026" or "QA")
+            if ((communityUsername.equalsIgnoreCase(inputUser) && (communityPassword.equals(inputPass) || isStandardPass)) ||
+                "qa".equalsIgnoreCase(inputUser) && isStandardPass ||
+                "communityadmin".equalsIgnoreCase(inputUser) && isStandardPass ||
+                "seniorqa".equalsIgnoreCase(inputUser) && isStandardPass) {
+                response.put("success", true);
+                response.put("role", "ROLE_COMMUNITY");
+                response.put("username", "Community & Q&A Admin");
+                response.put("token", "COMMUNITY_SESSION_TOKEN_RIT_2026");
+                response.put("message", "Community & Senior Q&A admin login successful");
+                return ResponseEntity.ok(response);
+            }
+
+            // 3. Check Clubs & Centers Admin ("Clubs" / "RIT@2026" or "Club")
+            if ((clubsUsername.equalsIgnoreCase(inputUser) && (clubsPassword.equals(inputPass) || isStandardPass)) ||
+                "club".equalsIgnoreCase(inputUser) && isStandardPass ||
+                "clubadmin".equalsIgnoreCase(inputUser) && isStandardPass ||
+                "clubsadmin".equalsIgnoreCase(inputUser) && isStandardPass) {
+                response.put("success", true);
+                response.put("role", "ROLE_CLUBS");
+                response.put("username", "Clubs & Centers Admin");
+                response.put("token", "CLUBS_SESSION_TOKEN_RIT_2026");
+                response.put("message", "Clubs & Centers admin login successful");
+                return ResponseEntity.ok(response);
+            }
+
+            // 4. Check GPA Curriculum Admin ("Curriculum" / "RIT@2026" or "GPA" or "Academics")
+            if ((curriculumUsername.equalsIgnoreCase(inputUser) && (curriculumPassword.equals(inputPass) || isStandardPass)) ||
+                "gpa".equalsIgnoreCase(inputUser) && isStandardPass ||
+                "gpaadmin".equalsIgnoreCase(inputUser) && isStandardPass ||
+                "academics".equalsIgnoreCase(inputUser) && isStandardPass ||
+                "curriculumadmin".equalsIgnoreCase(inputUser) && isStandardPass) {
+                response.put("success", true);
+                response.put("role", "ROLE_CURRICULUM");
+                response.put("username", "GPA Curriculum Admin");
+                response.put("token", "CURRICULUM_SESSION_TOKEN_RIT_2026");
+                response.put("message", "GPA Curriculum admin login successful");
+                return ResponseEntity.ok(response);
+            }
+
+            // 5. Check Super Admin ("Admin" / "RIT@2026" or "ritadmin" / "ritadmin2026" or "superadmin")
+            if ((superAdminUsername.equalsIgnoreCase(inputUser) && (superAdminPassword.equals(inputPass) || isStandardPass)) ||
+                "superadmin".equalsIgnoreCase(inputUser) && isStandardPass ||
                 ("ritadmin".equalsIgnoreCase(inputUser) && "ritadmin2026".equals(inputPass))) {
                 response.put("success", true);
                 response.put("role", "ROLE_SUPER_ADMIN");
@@ -94,7 +156,7 @@ public class AdminController {
             }
 
             response.put("success", false);
-            response.put("message", "Invalid credentials. Use 'Transport' or 'Admin' with password 'RIT@2026'.");
+            response.put("message", "Invalid credentials. Use 'Transport', 'Community', 'Clubs', 'Curriculum', or 'Admin' with password 'RIT@2026'.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 
         } catch (Exception e) {

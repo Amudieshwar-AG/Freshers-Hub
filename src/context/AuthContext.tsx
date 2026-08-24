@@ -14,7 +14,7 @@ export interface AuthUser {
   name: string;
   pictureUrl?: string;
   verifiedStudent: boolean;
-  role?: 'ROLE_STUDENT' | 'ROLE_TRANSPORT' | 'ROLE_SUPER_ADMIN' | 'ROLE_USER';
+  role?: 'ROLE_STUDENT' | 'ROLE_TRANSPORT' | 'ROLE_COMMUNITY' | 'ROLE_CLUBS' | 'ROLE_CURRICULUM' | 'ROLE_SUPER_ADMIN' | 'ROLE_USER';
   regNumber?: string;
   department?: string;
 }
@@ -32,6 +32,9 @@ interface AuthContextType {
   isVerifiedStudent: boolean;
   isAdmin: boolean;
   isTransportAdmin: boolean;
+  isCommunityAdmin: boolean;
+  isClubsAdmin: boolean;
+  isCurriculumAdmin: boolean;
   isLoading: boolean;
   isAuthModalOpen: boolean;
   loginWithGoogle: () => void;
@@ -59,6 +62,9 @@ const AuthContext = createContext<AuthContextType>({
   isVerifiedStudent: false,
   isAdmin: false,
   isTransportAdmin: false,
+  isCommunityAdmin: false,
+  isClubsAdmin: false,
+  isCurriculumAdmin: false,
   isLoading: true,
   isAuthModalOpen: false,
   loginWithGoogle: () => {},
@@ -200,9 +206,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: false, message: 'Please enter both username/register number and password.' };
     }
 
-    const isAdminUsername = ['admin', 'transport', 'ritadmin', 'superadmin'].includes(cleanedUser.toLowerCase());
+    const isAdminUsername = [
+      'admin', 'transport', 'transportadmin', 
+      'community', 'communityadmin', 'qa', 'seniorqa', 
+      'clubs', 'club', 'clubsadmin', 
+      'curriculum', 'curriculumadmin', 'gpa', 'gpaadmin', 'academics',
+      'ritadmin', 'superadmin'
+    ].includes(cleanedUser.toLowerCase());
 
-    // 1. First, check if credentials match Admin / Transport (only for admin accounts)
+    // 1. First, check if credentials match Admin / Role Endpoints
     if (isAdminUsername) {
       try {
         const adminRes = await fetch(getBackendUrl('/api/admin/login'), {
@@ -221,7 +233,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const adminUserObj: AuthUser = {
               id: 999999,
               name: data.username,
-              email: data.role === 'ROLE_TRANSPORT' ? 'transport@ritchennai.edu.in' : 'admin@ritchennai.edu.in',
+              email: `${cleanedUser.toLowerCase()}@ritchennai.edu.in`,
               verifiedStudent: false,
               role: data.role,
             };
@@ -241,11 +253,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    // Direct local check for Admin credentials fallback
-    if (
-      cleanedUser.toLowerCase() === 'transport' &&
-      cleanedPass === 'RIT@2026'
-    ) {
+    const isStdPass = cleanedPass === 'RIT@2026' || cleanedPass === 'rit@2026';
+
+    // Direct local check for Admin credentials fallbacks
+    if (['transport', 'transportadmin'].includes(cleanedUser.toLowerCase()) && isStdPass) {
       const role = 'ROLE_TRANSPORT';
       localStorage.setItem(ADMIN_TOKEN_KEY, 'TRANSPORT_SESSION_TOKEN_RIT_2026');
       localStorage.setItem(ADMIN_ROLE_KEY, role);
@@ -261,9 +272,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: true, role, redirectTo: '/admin' };
     }
 
+    if (['community', 'qa', 'communityadmin', 'seniorqa'].includes(cleanedUser.toLowerCase()) && isStdPass) {
+      const role = 'ROLE_COMMUNITY';
+      localStorage.setItem(ADMIN_TOKEN_KEY, 'COMMUNITY_SESSION_TOKEN_RIT_2026');
+      localStorage.setItem(ADMIN_ROLE_KEY, role);
+      localStorage.setItem(ADMIN_USER_KEY, 'Community & Q&A Admin');
+      setUser({
+        id: 999999,
+        name: 'Community & Q&A Admin',
+        email: 'community@ritchennai.edu.in',
+        verifiedStudent: false,
+        role,
+      });
+      setIsAuthModalOpen(false);
+      return { success: true, role, redirectTo: '/admin' };
+    }
+
+    if (['clubs', 'club', 'clubsadmin', 'clubadmin'].includes(cleanedUser.toLowerCase()) && isStdPass) {
+      const role = 'ROLE_CLUBS';
+      localStorage.setItem(ADMIN_TOKEN_KEY, 'CLUBS_SESSION_TOKEN_RIT_2026');
+      localStorage.setItem(ADMIN_ROLE_KEY, role);
+      localStorage.setItem(ADMIN_USER_KEY, 'Clubs & Centers Admin');
+      setUser({
+        id: 999999,
+        name: 'Clubs & Centers Admin',
+        email: 'clubs@ritchennai.edu.in',
+        verifiedStudent: false,
+        role,
+      });
+      setIsAuthModalOpen(false);
+      return { success: true, role, redirectTo: '/admin' };
+    }
+
+    if (['curriculum', 'gpa', 'academics', 'gpaadmin', 'curriculumadmin'].includes(cleanedUser.toLowerCase()) && isStdPass) {
+      const role = 'ROLE_CURRICULUM';
+      localStorage.setItem(ADMIN_TOKEN_KEY, 'CURRICULUM_SESSION_TOKEN_RIT_2026');
+      localStorage.setItem(ADMIN_ROLE_KEY, role);
+      localStorage.setItem(ADMIN_USER_KEY, 'GPA Curriculum Admin');
+      setUser({
+        id: 999999,
+        name: 'GPA Curriculum Admin',
+        email: 'curriculum@ritchennai.edu.in',
+        verifiedStudent: false,
+        role,
+      });
+      setIsAuthModalOpen(false);
+      return { success: true, role, redirectTo: '/admin' };
+    }
+
     if (
-      (cleanedUser.toLowerCase() === 'admin' && (cleanedPass === 'RIT@2026' || cleanedPass === 'rit@2026')) ||
-      (cleanedUser.toLowerCase() === 'ritadmin' && cleanedPass === 'ritadmin2026')
+      (['admin', 'superadmin'].includes(cleanedUser.toLowerCase()) && isStdPass) ||
+      (cleanedUser.toLowerCase() === 'ritadmin' && (cleanedPass === 'ritadmin2026' || isStdPass))
     ) {
       const role = 'ROLE_SUPER_ADMIN';
       localStorage.setItem(ADMIN_TOKEN_KEY, 'ADMIN_SESSION_TOKEN_RIT_2026');
@@ -299,23 +358,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return {
           success: true,
           role: 'ROLE_STUDENT',
-          redirectTo: '/timetable',
-          message: 'Student login successful',
+          redirectTo: '/dashboard',
+          message: `Welcome ${imsResult.student.name}!`,
         };
-      } else if (!imsResult.success && imsResult.message) {
+      } else {
         return {
           success: false,
-          message: imsResult.message,
+          message: imsResult.message || 'Authentication failed. Please check your credentials.',
         };
       }
-    } catch {
-      // Fallback
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err.message || 'Network error while attempting login. Please try again.',
+      };
     }
-
-    return {
-      success: false,
-      message: 'Invalid credentials. Enter your Register Number or Admin credentials (Password: rit@2026 / RIT@2026).',
-    };
   }, []);
 
   const logout = useCallback(() => {
@@ -333,8 +390,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthModalOpen(false);
   }, [user]);
 
-  const isAdmin = user?.role === 'ROLE_SUPER_ADMIN' || user?.role === 'ROLE_TRANSPORT';
+  const isSuperAdmin = user?.role === 'ROLE_SUPER_ADMIN';
   const isTransportAdmin = user?.role === 'ROLE_TRANSPORT';
+  const isCommunityAdmin = user?.role === 'ROLE_COMMUNITY';
+  const isClubsAdmin = user?.role === 'ROLE_CLUBS';
+  const isCurriculumAdmin = user?.role === 'ROLE_CURRICULUM';
+  const isAdmin = isSuperAdmin || isTransportAdmin || isCommunityAdmin || isClubsAdmin || isCurriculumAdmin;
 
   return (
     <AuthContext.Provider
@@ -344,6 +405,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isVerifiedStudent: !!user?.verifiedStudent,
         isAdmin,
         isTransportAdmin,
+        isCommunityAdmin,
+        isClubsAdmin,
+        isCurriculumAdmin,
         isLoading,
         isAuthModalOpen,
         loginWithGoogle,

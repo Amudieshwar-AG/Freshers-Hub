@@ -98,7 +98,7 @@ interface QuestionItem {
 export default function AdminDashboard() {
   const { user, loginWithCredentials, logout: authLogout } = useAuth();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userRole, setUserRole] = useState<'ROLE_TRANSPORT' | 'ROLE_SUPER_ADMIN' | null>(null);
+  const [userRole, setUserRole] = useState<'ROLE_TRANSPORT' | 'ROLE_COMMUNITY' | 'ROLE_CLUBS' | 'ROLE_CURRICULUM' | 'ROLE_SUPER_ADMIN' | null>(null);
   const [usernameDisplay, setUsernameDisplay] = useState('Admin');
   
   // Login State
@@ -232,27 +232,45 @@ export default function AdminDashboard() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
+  const getDefaultTabForRole = (role: string | null): 'transport' | 'telegram' | 'notes' | 'community' | 'subscribers' | 'faculty' | 'clubs' | 'curriculum' => {
+    switch (role) {
+      case 'ROLE_TRANSPORT': return 'transport';
+      case 'ROLE_COMMUNITY': return 'telegram';
+      case 'ROLE_CLUBS': return 'clubs';
+      case 'ROLE_CURRICULUM': return 'curriculum';
+      default: return 'transport';
+    }
+  };
+
+  const getRoleDisplayName = (role: string | null): string => {
+    switch (role) {
+      case 'ROLE_TRANSPORT': return 'Transport Fleet Admin';
+      case 'ROLE_COMMUNITY': return 'Community & Senior Q&A Admin';
+      case 'ROLE_CLUBS': return 'Clubs & Centers Admin';
+      case 'ROLE_CURRICULUM': return 'GPA Curriculum Admin';
+      case 'ROLE_SUPER_ADMIN': return 'Super Admin';
+      default: return 'Admin';
+    }
+  };
+
   // Restore session from AuthContext or localStorage
   useEffect(() => {
-    if (user?.role === 'ROLE_TRANSPORT' || user?.role === 'ROLE_SUPER_ADMIN') {
+    const validRoles = ['ROLE_TRANSPORT', 'ROLE_COMMUNITY', 'ROLE_CLUBS', 'ROLE_CURRICULUM', 'ROLE_SUPER_ADMIN'];
+    if (user?.role && validRoles.includes(user.role)) {
       setIsLoggedIn(true);
-      setUserRole(user.role);
-      setUsernameDisplay(user.name);
-      if (user.role === 'ROLE_TRANSPORT') {
-        setActiveTab('transport');
-      }
+      setUserRole(user.role as any);
+      setUsernameDisplay(user.name || getRoleDisplayName(user.role));
+      setActiveTab(getDefaultTabForRole(user.role));
       return;
     }
 
     const savedRole = localStorage.getItem('RIT_ADMIN_ROLE') as any;
     const savedToken = localStorage.getItem('RIT_ADMIN_TOKEN');
-    if (savedToken && (savedRole === 'ROLE_TRANSPORT' || savedRole === 'ROLE_SUPER_ADMIN')) {
+    if (savedToken && savedRole && validRoles.includes(savedRole)) {
       setIsLoggedIn(true);
       setUserRole(savedRole);
-      setUsernameDisplay(localStorage.getItem('RIT_ADMIN_USER') || (savedRole === 'ROLE_TRANSPORT' ? 'Transport Admin' : 'Super Admin'));
-      if (savedRole === 'ROLE_TRANSPORT') {
-        setActiveTab('transport');
-      }
+      setUsernameDisplay(localStorage.getItem('RIT_ADMIN_USER') || getRoleDisplayName(savedRole));
+      setActiveTab(getDefaultTabForRole(savedRole));
     }
   }, [user]);
 
@@ -281,13 +299,14 @@ export default function AdminDashboard() {
 
     try {
       const result = await loginWithCredentials(usernameInput.trim(), passwordInput.trim());
-      if (result.success && (result.role === 'ROLE_TRANSPORT' || result.role === 'ROLE_SUPER_ADMIN')) {
+      const validRoles = ['ROLE_TRANSPORT', 'ROLE_COMMUNITY', 'ROLE_CLUBS', 'ROLE_CURRICULUM', 'ROLE_SUPER_ADMIN'];
+      if (result.success && result.role && validRoles.includes(result.role)) {
         setIsLoggedIn(true);
         setUserRole(result.role as any);
-        setUsernameDisplay(result.role === 'ROLE_TRANSPORT' ? 'Transport Admin' : 'Super Admin');
-        setActiveTab('transport');
+        setUsernameDisplay(getRoleDisplayName(result.role));
+        setActiveTab(getDefaultTabForRole(result.role));
       } else {
-        setLoginError(result.message || 'Invalid admin credentials. Use Transport or Admin with password RIT@2026.');
+        setLoginError(result.message || 'Invalid admin credentials. Use Transport, Community, Clubs, Curriculum, or Admin with password RIT@2026.');
       }
     } catch (err: any) {
       setLoginError(err?.message || 'Authentication error.');
@@ -1397,30 +1416,60 @@ export default function AdminDashboard() {
             </form>
 
             {/* Quick Demo Credentials */}
-            <div className="pt-4 border-t border-slate-200/80 space-y-2">
+            <div className="pt-4 border-t border-slate-200/80 space-y-2.5">
               <span className="text-[11px] font-bold text-slate-500 block text-center uppercase tracking-wider">
                 Quick Role-Based Logins:
               </span>
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 <button
                   type="button"
                   onClick={() => { setUsernameInput('Transport'); setPasswordInput('RIT@2026'); }}
-                  className="p-3 rounded-xl bg-slate-50 hover:bg-orange-50/50 border border-slate-200 hover:border-orange-300 text-left transition-all cursor-pointer group"
+                  className="p-2.5 rounded-xl bg-slate-50 hover:bg-orange-50/50 border border-slate-200 hover:border-orange-300 text-left transition-all cursor-pointer group"
                 >
-                  <p className="text-xs font-bold text-slate-900 group-hover:text-[#FF6B00] flex items-center gap-1">
+                  <p className="text-[11px] font-bold text-slate-900 group-hover:text-[#FF6B00] flex items-center gap-1 truncate">
                     <span>🚌 Transport</span>
                   </p>
-                  <p className="text-[10px] text-slate-500 font-medium mt-0.5">Pass: RIT@2026</p>
+                  <p className="text-[9px] text-slate-500 font-medium">Pass: RIT@2026</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setUsernameInput('Community'); setPasswordInput('RIT@2026'); }}
+                  className="p-2.5 rounded-xl bg-slate-50 hover:bg-emerald-50/50 border border-slate-200 hover:border-emerald-300 text-left transition-all cursor-pointer group"
+                >
+                  <p className="text-[11px] font-bold text-slate-900 group-hover:text-emerald-600 flex items-center gap-1 truncate">
+                    <span>💬 Community & Q&A</span>
+                  </p>
+                  <p className="text-[9px] text-slate-500 font-medium">Pass: RIT@2026</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setUsernameInput('Clubs'); setPasswordInput('RIT@2026'); }}
+                  className="p-2.5 rounded-xl bg-slate-50 hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-300 text-left transition-all cursor-pointer group"
+                >
+                  <p className="text-[11px] font-bold text-slate-900 group-hover:text-indigo-600 flex items-center gap-1 truncate">
+                    <span>🏢 Clubs & Centers</span>
+                  </p>
+                  <p className="text-[9px] text-slate-500 font-medium">Pass: RIT@2026</p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setUsernameInput('Curriculum'); setPasswordInput('RIT@2026'); }}
+                  className="p-2.5 rounded-xl bg-slate-50 hover:bg-purple-50/50 border border-slate-200 hover:border-purple-300 text-left transition-all cursor-pointer group"
+                >
+                  <p className="text-[11px] font-bold text-slate-900 group-hover:text-purple-600 flex items-center gap-1 truncate">
+                    <span>🧮 GPA Curriculum</span>
+                  </p>
+                  <p className="text-[9px] text-slate-500 font-medium">Pass: RIT@2026</p>
                 </button>
                 <button
                   type="button"
                   onClick={() => { setUsernameInput('Admin'); setPasswordInput('RIT@2026'); }}
-                  className="p-3 rounded-xl bg-slate-50 hover:bg-blue-50/50 border border-slate-200 hover:border-blue-300 text-left transition-all cursor-pointer group"
+                  className="p-2.5 rounded-xl bg-slate-50 hover:bg-blue-50/50 border border-slate-200 hover:border-blue-300 text-left transition-all cursor-pointer group col-span-2 sm:col-span-2"
                 >
-                  <p className="text-xs font-bold text-slate-900 group-hover:text-blue-600 flex items-center gap-1">
-                    <span>⚡ Super Admin</span>
+                  <p className="text-[11px] font-bold text-slate-900 group-hover:text-blue-600 flex items-center gap-1">
+                    <span>⚡ Super Admin (All Access)</span>
                   </p>
-                  <p className="text-[10px] text-slate-500 font-medium mt-0.5">Pass: RIT@2026</p>
+                  <p className="text-[9px] text-slate-500 font-medium">Pass: RIT@2026</p>
                 </button>
               </div>
             </div>
@@ -1433,7 +1482,70 @@ export default function AdminDashboard() {
   // ─────────────────────────────────────────────────────────────
   // RENDER: AUTHENTICATED ADMIN DASHBOARD
   // ─────────────────────────────────────────────────────────────
+  const isSuperAdmin = userRole === 'ROLE_SUPER_ADMIN';
   const isTransportOnly = userRole === 'ROLE_TRANSPORT';
+  const isCommunityOnly = userRole === 'ROLE_COMMUNITY';
+  const isClubsOnly = userRole === 'ROLE_CLUBS';
+  const isCurriculumOnly = userRole === 'ROLE_CURRICULUM';
+
+  const ALL_ADMIN_TABS = [
+    { id: 'transport', label: 'Bus Fleet & Routes', icon: Bus, roles: ['ROLE_SUPER_ADMIN', 'ROLE_TRANSPORT'] },
+    { id: 'telegram', label: 'Telegram Q&A Seniors', icon: Bot, roles: ['ROLE_SUPER_ADMIN', 'ROLE_COMMUNITY'] },
+    { id: 'community', label: 'Community Q&A', icon: MessageCircle, roles: ['ROLE_SUPER_ADMIN', 'ROLE_COMMUNITY'] },
+    { id: 'faculty', label: 'Faculty Directory', icon: UserCheck, roles: ['ROLE_SUPER_ADMIN'] },
+    { id: 'clubs', label: 'Clubs & Centers', icon: Building2, roles: ['ROLE_SUPER_ADMIN', 'ROLE_CLUBS'] },
+    { id: 'curriculum', label: 'GPA Curriculum', icon: Calculator, roles: ['ROLE_SUPER_ADMIN', 'ROLE_CURRICULUM'] },
+  ];
+
+  const visibleTabs = ALL_ADMIN_TABS.filter((tab) => !userRole || tab.roles.includes(userRole));
+
+  const getHeaderDetails = () => {
+    switch (userRole) {
+      case 'ROLE_TRANSPORT':
+        return {
+          title: 'Transport Fleet Administration',
+          badge: 'Transport Manager',
+          badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+          desc: 'Manage college bus routes, stop timings, driver live tracking, and route allocation.',
+          icon: Bus,
+        };
+      case 'ROLE_COMMUNITY':
+        return {
+          title: 'Community & Senior Q&A Dispatch Console',
+          badge: 'Community & Q&A Admin',
+          badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+          desc: 'Manage Telegram Q&A senior responders, dispatch alerts, and moderate fresher questions.',
+          icon: Bot,
+        };
+      case 'ROLE_CLUBS':
+        return {
+          title: 'Clubs & Centers Directory Administration',
+          badge: 'Clubs & Centers Admin',
+          badgeColor: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+          desc: 'Manage college student clubs, Centers of Excellence, coordinators, and member rosters.',
+          icon: Building2,
+        };
+      case 'ROLE_CURRICULUM':
+        return {
+          title: 'GPA Academic Curriculum Management',
+          badge: 'Curriculum Admin',
+          badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+          desc: 'Manage semester course credits, electives, and GPA calculation tables across departments.',
+          icon: Calculator,
+        };
+      default:
+        return {
+          title: 'RIT Closed-Loop Admin Console',
+          badge: 'Super Admin',
+          badgeColor: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+          desc: 'Full closed-loop control panel for Bus Fleet, Telegram Q&A, Community, Faculty, Clubs, and GPA Curriculum.',
+          icon: ShieldCheck,
+        };
+    }
+  };
+
+  const headerInfo = getHeaderDetails();
+  const HeaderIcon = headerInfo.icon;
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 py-6 px-4 sm:px-6 lg:px-8 font-sans">
@@ -1458,24 +1570,20 @@ export default function AdminDashboard() {
           <div className="flex items-center gap-3.5">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#FF6B00] to-[#EA580C] p-0.5 shadow-md shadow-orange-500/20 shrink-0">
               <div className="w-full h-full bg-[#0F172A] rounded-[14px] flex items-center justify-center">
-                {isTransportOnly ? <Bus className="w-5.5 h-5.5 text-white" /> : <ShieldCheck className="w-5.5 h-5.5 text-white" />}
+                <HeaderIcon className="w-5.5 h-5.5 text-white" />
               </div>
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xl font-bold text-white tracking-tight">
-                  {isTransportOnly ? 'Transport Fleet Administration' : 'RIT Closed-Loop Admin Console'}
+                  {headerInfo.title}
                 </h1>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${
-                  isTransportOnly ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-orange-500/20 text-orange-400 border-orange-500/30'
-                }`}>
-                  {isTransportOnly ? 'Transport Manager' : 'Super Admin'}
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${headerInfo.badgeColor}`}>
+                  {headerInfo.badge}
                 </span>
               </div>
               <p className="text-xs text-slate-300 font-medium mt-0.5">
-                {isTransportOnly 
-                  ? 'Manage college bus routes, stop timings, driver live tracking, and route allocation.'
-                  : 'Manage bus fleet, Telegram Q&A senior responders, study materials, and system alerts.'}
+                {headerInfo.desc}
               </p>
             </div>
           </div>
@@ -1498,8 +1606,8 @@ export default function AdminDashboard() {
         </div>
 
         {/* Quick KPI Stats Overview Bar */}
-        {!isTransportOnly && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {(isSuperAdmin || isTransportOnly) && (
             <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-orange-50 text-[#FF6B00] border border-orange-100 flex items-center justify-center shrink-0">
                 <Bus className="w-4.5 h-4.5" />
@@ -1509,29 +1617,35 @@ export default function AdminDashboard() {
                 <p className="text-lg font-bold text-[#0F172A]">{routes.length}</p>
               </div>
             </div>
+          )}
 
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
-                <Bot className="w-4.5 h-4.5" />
+          {(isSuperAdmin || isCommunityOnly) && (
+            <>
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+                  <Bot className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Telegram Seniors</p>
+                  <p className="text-lg font-bold text-[#0F172A]">
+                    {(telegramConfig?.seniorHelpers?.length || telegramConfig?.helper_chat_ids?.length || 0)}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Telegram Seniors</p>
-                <p className="text-lg font-bold text-[#0F172A]">
-                  {(telegramConfig?.seniorHelpers?.length || telegramConfig?.helper_chat_ids?.length || 0)}
-                </p>
-              </div>
-            </div>
 
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
-                <MessageCircle className="w-4.5 h-4.5" />
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 border border-amber-100 flex items-center justify-center shrink-0">
+                  <MessageCircle className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Q&A Queue</p>
+                  <p className="text-lg font-bold text-[#0F172A]">{questions.length}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Q&A Queue</p>
-                <p className="text-lg font-bold text-[#0F172A]">{questions.length}</p>
-              </div>
-            </div>
+            </>
+          )}
 
+          {isSuperAdmin && (
             <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 border border-purple-100 flex items-center justify-center shrink-0">
                 <UserCheck className="w-4.5 h-4.5" />
@@ -1541,8 +1655,10 @@ export default function AdminDashboard() {
                 <p className="text-lg font-bold text-[#0F172A]">{facultyList.length}</p>
               </div>
             </div>
+          )}
 
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3 col-span-2 sm:col-span-1">
+          {(isSuperAdmin || isClubsOnly) && (
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
                 <Building2 className="w-4.5 h-4.5" />
               </div>
@@ -1551,20 +1667,30 @@ export default function AdminDashboard() {
                 <p className="text-lg font-bold text-[#0F172A]">{clubsList.length}</p>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Tab Navigation: Clean Static Grid (No Scrollbar Bar) */}
-        {!isTransportOnly && (
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-2 shadow-sm grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-            {[
-              { id: 'transport', label: 'Bus Fleet & Routes', icon: Bus },
-              { id: 'telegram', label: 'Telegram Q&A Seniors', icon: Bot },
-              { id: 'community', label: 'Community Q&A', icon: MessageCircle },
-              { id: 'faculty', label: 'Faculty Directory', icon: UserCheck },
-              { id: 'clubs', label: 'Clubs & Centers', icon: Building2 },
-              { id: 'curriculum', label: 'GPA Curriculum', icon: Calculator },
-            ].map((tab) => {
+          {(isSuperAdmin || isCurriculumOnly) && (
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-3.5 shadow-sm flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center justify-center shrink-0">
+                <Calculator className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Curriculum Depts</p>
+                <p className="text-lg font-bold text-[#0F172A]">{DEPARTMENTS.length}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Tab Navigation: Dynamic Grid per Role */}
+        {visibleTabs.length > 1 && (
+          <div className={`bg-white border border-slate-200/80 rounded-2xl p-2 shadow-sm grid gap-2 ${
+            visibleTabs.length === 2 ? 'grid-cols-2' :
+            visibleTabs.length === 3 ? 'grid-cols-3' :
+            visibleTabs.length === 4 ? 'grid-cols-2 sm:grid-cols-4' :
+            'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
+          }`}>
+            {visibleTabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
