@@ -10,7 +10,7 @@ const exploreLinks = [
   { label: 'Student Toolkit', path: '/toolkit', icon: Wrench },
   { label: 'RIT Chatbot', path: '/ai-assistant', icon: Bot },
   { label: 'Faculty Directory', path: '/faculty', icon: UserCheck },
-  { label: 'LeetCode Arena', path: '/leetcode', icon: Trophy },
+  { label: 'Student Leaderboard', path: '/student-leaderboard', icon: Trophy },
 ];
 
 const campusLinks = [

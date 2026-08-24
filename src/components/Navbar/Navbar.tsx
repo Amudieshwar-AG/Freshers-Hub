@@ -49,7 +49,7 @@ const MORE_LINKS: NavItem[] = [
   { label: 'Campus Map', path: '/campus', icon: Map },
   { label: 'Clubs & Centers', path: '/events', icon: Users },
   { label: 'Dev Collab', path: '/collab', icon: Code2 },
-  { label: 'LeetCode', path: '/leetcode', icon: Trophy },
+  { label: 'Student Leaderboard', path: '/student-leaderboard', icon: Trophy },
   { label: 'Student Gate Pass', path: '/notes?portal=gatepass', icon: Ticket },
   { label: 'Student Proficiency', path: '/notes?portal=proficiency', icon: Award },
 ];

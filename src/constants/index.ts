@@ -12,7 +12,7 @@ export const NAV_LINKS = [
   { label: 'Clubs & Centers', path: '/events' },
   { label: 'Community', path: '/community' },
   { label: 'Dev Collab', path: '/collab' },
-  { label: 'LeetCode', path: '/leetcode' },
+  { label: 'Student Leaderboard', path: '/student-leaderboard' },
 ];
 
 // ─── Stats ────────────────────────────────────────────────────────────────────
@@ -110,9 +110,9 @@ export const FEATURES: Feature[] = [
   {
     id: 'leetcode',
     icon: 'Trophy',
-    title: 'LeetCode Arena',
-    description: 'Track campus competitive programming rankings and see top RIT coders.',
-    path: '/leetcode',
+    title: 'Student Leaderboard',
+    description: 'Track campus competitive programming rankings (LeetCode & SkillRack) and verified skill certifications.',
+    path: '/student-leaderboard',
     color: '#F59E0B',
     bgColor: '#FFFBEB',
   },
