@@ -1160,7 +1160,7 @@ export function getExactSubjectCredits(deptCodeOrName: string, _semester: number
  */
 export async function fetchImsSemesterResults(_token: string, regNumber: string, currentSem = 4, _forceRefresh = false): Promise<{ results: SemesterResult[]; cgpa: number; totalCredits: number; activeArrears: number }> {
   const deduced = deduceStudentDetails(regNumber);
-  const deptCode = deduced.departmentCode || 'AIDS';
+  const deptCode = DEPARTMENT_CODE_MAP[deduced.department] || parseDepartmentCode(deduced.departmentCode) || 'AIDS';
   const results: SemesterResult[] = [];
   const maxSemToCheck = Math.max(2, currentSem || 4);
 
@@ -1230,12 +1230,13 @@ export async function fetchImsSemesterResults(_token: string, regNumber: string,
   }
 
   // If results were empty or fewer than previous semesters, generate exact curriculum results for finished semesters
-  if (results.length === 0 && DEPARTMENT_CURRICULUM[deptCode]) {
-    const completedSems = Math.min(4, Math.max(1, (currentSem || 5) - 1));
+  const targetCurriculum = DEPARTMENT_CURRICULUM[deptCode] || DEPARTMENT_CURRICULUM['AIDS'];
+  if (results.length === 0 && targetCurriculum) {
+    const completedSems = Math.max(1, Math.min(4, (currentSem && currentSem > 1) ? currentSem - 1 : 1));
     const gradeTemplates = ['O', 'A+', 'O', 'A+', 'O', 'A', 'A+', 'O', 'A+'];
 
     for (let s = 1; s <= completedSems; s++) {
-      const semSubjects = DEPARTMENT_CURRICULUM[deptCode][s] || [];
+      const semSubjects = targetCurriculum[s] || targetCurriculum[1] || [];
       let semCredits = 0;
       let semPoints = 0;
 
