@@ -442,14 +442,14 @@ export async function loginWithIms(regNumber: string, password: string): Promise
   try {
     // Step A: Logout any existing session first
     try {
-      const loginPageRes = await fetch('/ims/login', { credentials: 'same-origin' });
+      const loginPageRes = await fetch(`/ims/login?_t=${Date.now()}`, { credentials: 'same-origin', cache: 'no-store' });
       if (loginPageRes.ok) {
         const html = await loginPageRes.text();
         const doc = new DOMParser().parseFromString(html, 'text/html');
         const csrf = doc.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
         if (csrf) {
           await fetch('/ims/admin/logout-rit', {
-            method: 'POST', credentials: 'same-origin',
+            method: 'POST', credentials: 'same-origin', cache: 'no-store',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrf, 'X-Requested-With': 'XMLHttpRequest' },
             body: new URLSearchParams({ _token: csrf }),
           });
@@ -458,7 +458,7 @@ export async function loginWithIms(regNumber: string, password: string): Promise
     } catch { /* ignore */ }
 
     // Step B: Get fresh CSRF token from login page
-    const loginPageRes = await fetch('/ims/login', { credentials: 'same-origin' });
+    const loginPageRes = await fetch(`/ims/login?_t=${Date.now()}`, { credentials: 'same-origin', cache: 'no-store' });
     if (!loginPageRes.ok) {
       return { success: false, message: 'RIT IMS Portal is currently unreachable from server proxy.' };
     }
@@ -474,7 +474,7 @@ export async function loginWithIms(regNumber: string, password: string): Promise
 
     // Step C: POST login credentials
     const loginRes = await fetch('/ims/login', {
-      method: 'POST', credentials: 'same-origin',
+      method: 'POST', credentials: 'same-origin', cache: 'no-store',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest' },
       body: new URLSearchParams({ _token: csrfToken, email: cleanedReg, password: cleanedPass }),
     });
@@ -484,7 +484,7 @@ export async function loginWithIms(regNumber: string, password: string): Promise
     }
 
     // Step D: Fetch report page to verify auth + get student name + fresh CSRF
-    const reportRes = await fetch('/ims/admin/grade/student/mark/report', { credentials: 'same-origin' });
+    const reportRes = await fetch(`/ims/admin/grade/student/mark/report?_t=${Date.now()}`, { credentials: 'same-origin', cache: 'no-store' });
     if (!reportRes.ok) {
       return { success: false, message: 'Authentication failed — could not access student portal.' };
     }
@@ -868,12 +868,12 @@ export async function fetchImsTimetable(_token: string, regNumber: string, _forc
 /**
  * 4. Lazy Fetch Attendance — Direct scraping of /ims/admin/student-personal-attendance/report
  */
-export async function fetchImsAttendance(_token: string, regNumber: string, _forceRefresh = false): Promise<AttendanceReport> {
+export async function fetchImsAttendance(_token: string, _regNumber: string, _forceRefresh = false): Promise<AttendanceReport> {
   const subjects: SubjectAttendance[] = [];
   let totalCond = 0, totalPres = 0, totalAbs = 0;
 
   try {
-    const res = await fetch('/ims/admin/student-personal-attendance/report', { credentials: 'same-origin' });
+    const res = await fetch(`/ims/admin/student-personal-attendance/report?_t=${Date.now()}`, { credentials: 'same-origin', cache: 'no-store' });
     if (res.ok) {
       const html = await res.text();
       const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -912,7 +912,7 @@ export async function fetchImsCatMarks(_token: string, _regNumber: string, _forc
   const subjects: SubjectCatMark[] = [];
 
   try {
-    const res = await fetch('/ims/admin/student-cat-mark/report', { credentials: 'same-origin' });
+    const res = await fetch(`/ims/admin/student-cat-mark/report?_t=${Date.now()}`, { credentials: 'same-origin', cache: 'no-store' });
     if (res.ok) {
       const html = await res.text();
       const doc = new DOMParser().parseFromString(html, 'text/html');
@@ -1077,6 +1077,7 @@ export async function fetchImsSemesterResults(_token: string, regNumber: string,
       const res = await fetch('/ims/admin/grade/student/mark/get_marks', {
         method: 'POST',
         credentials: 'same-origin',
+        cache: 'no-store',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
           'X-CSRF-TOKEN': csrfToken,
@@ -1188,9 +1189,10 @@ export async function fetchStudentDashboard(regNumber?: string): Promise<{ resul
 export async function fetchImsAssignmentMarks(_deptCodeOrName?: string, _semester?: number): Promise<AssignmentMarkItem[]> {
   const items: AssignmentMarkItem[] = [];
   try {
-    const response = await fetch('/ims/admin/assignment/student/mark/report', {
+    const response = await fetch(`/ims/admin/assignment/student/mark/report?_t=${Date.now()}`, {
       method: 'GET',
       credentials: 'same-origin',
+      cache: 'no-store',
     });
     if (response.ok) {
       const html = await response.text();
@@ -1238,9 +1240,10 @@ export async function fetchImsLabMarks(_deptCodeOrName?: string, _semester?: num
   const items: LabMarkItem[] = [];
 
   try {
-    const response = await fetch('/ims/admin/student_lab_mark/report', {
+    const response = await fetch(`/ims/admin/student_lab_mark/report?_t=${Date.now()}`, {
       method: 'GET',
       credentials: 'same-origin',
+      cache: 'no-store',
     });
     if (response.ok) {
       const html = await response.text();
