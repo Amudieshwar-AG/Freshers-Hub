@@ -458,48 +458,18 @@ export async function loginWithIms(regNumber: string, password: string): Promise
     } catch { /* ignore */ }
 
     // Step B: Get fresh CSRF token from login page
-    let csrfToken = '';
-    try {
-      const loginPageRes = await fetch('/ims/login', { credentials: 'same-origin' });
-      if (loginPageRes.ok) {
-        const loginHtml = await loginPageRes.text();
-        const loginDoc = new DOMParser().parseFromString(loginHtml, 'text/html');
-        csrfToken = loginDoc.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-        if (!csrfToken) {
-          csrfToken = loginDoc.querySelector('input[name="_token"]')?.getAttribute('value') || '';
-        }
-      }
-    } catch {
-      csrfToken = '';
+    const loginPageRes = await fetch('/ims/login', { credentials: 'same-origin' });
+    if (!loginPageRes.ok) {
+      return { success: false, message: 'RIT IMS Portal is currently unreachable from server proxy.' };
     }
-
-    // Fallback: If /ims/login proxy is missing or CSRF token is unavailable (e.g. on VPS deployment),
-    // create a deduced student session so login succeeds seamlessly!
+    const loginHtml = await loginPageRes.text();
+    const loginDoc = new DOMParser().parseFromString(loginHtml, 'text/html');
+    let csrfToken = loginDoc.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
     if (!csrfToken) {
-      const deduced = deduceStudentDetails(cleanedReg);
-      const studentProfile: StudentProfile = {
-        name: deduced.studentName,
-        registerNumber: cleanedReg,
-        regNumber: cleanedReg,
-        department: deduced.department,
-        departmentCode: deduced.departmentCode,
-        batch: deduced.batch,
-        year: deduced.year,
-        semester: deduced.semester,
-        email: `${cleanedReg.toLowerCase()}@ritchennai.edu.in`,
-        degree: 'B.Tech',
-        regulation: '2021',
-        avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(deduced.studentName)}`,
-      };
-
-      saveImsSession('vps_session_token_' + Date.now(), studentProfile);
-      return {
-        success: true,
-        message: 'Logged in successfully.',
-        token: 'vps_session_token_' + Date.now(),
-        profile: studentProfile,
-        student: studentProfile,
-      };
+      csrfToken = loginDoc.querySelector('input[name="_token"]')?.getAttribute('value') || '';
+    }
+    if (!csrfToken) {
+      return { success: false, message: 'Could not initialize IMS session (CSRF missing from /ims/login).' };
     }
 
     // Step C: POST login credentials
@@ -676,30 +646,9 @@ export async function loginWithIms(regNumber: string, password: string): Promise
       student: profile,
     };
   } catch (err: any) {
-    console.warn('IMS Gateway network error, logging in with deduced student profile:', err);
-    const deduced = deduceStudentDetails(cleanedReg);
-    const studentProfile: StudentProfile = {
-      name: deduced.studentName,
-      registerNumber: cleanedReg,
-      regNumber: cleanedReg,
-      department: deduced.department,
-      departmentCode: deduced.departmentCode,
-      batch: deduced.batch,
-      year: deduced.year,
-      semester: deduced.semester,
-      email: `${cleanedReg.toLowerCase()}@ritchennai.edu.in`,
-      degree: 'B.Tech',
-      regulation: '2021',
-      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(deduced.studentName)}`,
-    };
-
-    saveImsSession('vps_session_token_' + Date.now(), studentProfile);
     return {
-      success: true,
-      message: 'Logged in successfully.',
-      token: 'vps_session_token_' + Date.now(),
-      profile: studentProfile,
-      student: studentProfile,
+      success: false,
+      message: err.message || 'Unable to connect to RIT IMS Gateway.',
     };
   }
 }
@@ -952,26 +901,6 @@ export async function fetchImsAttendance(_token: string, regNumber: string, _for
     console.warn('Direct attendance scrape failed:', err);
   }
 
-  // Fallback: If subjects is empty, generate attendance from curriculum for registered student
-  if (subjects.length === 0) {
-    const deduced = deduceStudentDetails(regNumber || '2117240070293');
-    const deptKey = DEPARTMENT_CODE_MAP[deduced.department] || parseDepartmentCode(deduced.departmentCode) || 'AIDS';
-    const semSubjects = (DEPARTMENT_CURRICULUM[deptKey] && DEPARTMENT_CURRICULUM[deptKey][deduced.semester]) || DEPARTMENT_CURRICULUM['AIDS'][5];
-
-    semSubjects.forEach((sub, idx) => {
-      const matchCode = sub.name.match(/\(([A-Z0-9]+)\)/i)?.[1] || sub.code || `SUB0${idx+1}`;
-      const cleanTitle = sub.name.replace(/\([A-Z0-9]+\)/gi, '').trim();
-      const cond = sub.credits === 0 ? 15 : (sub.credits >= 4 ? 60 : 45);
-      const pres = sub.credits === 0 ? 15 : cond - (idx % 3);
-      const abs = cond - pres;
-      const pct = Number(((pres / cond) * 100).toFixed(1));
-      subjects.push({ code: matchCode, name: cleanTitle, conducted: cond, present: pres, absent: abs, percentage: pct });
-      totalCond += cond;
-      totalPres += pres;
-      totalAbs += abs;
-    });
-  }
-
   const overallPct = totalCond > 0 ? Number(((totalPres / totalCond) * 100).toFixed(1)) : 0;
   return { overallPercentage: overallPct, totalConducted: totalCond, totalPresent: totalPres, totalAbsent: totalAbs, subjects };
 }
@@ -979,7 +908,7 @@ export async function fetchImsAttendance(_token: string, regNumber: string, _for
 /**
  * 5. Lazy Fetch CAT Marks — Direct scraping of /ims/admin/student-cat-mark/report
  */
-export async function fetchImsCatMarks(_token: string, regNumber: string, _forceRefresh = false): Promise<CatMarksReport> {
+export async function fetchImsCatMarks(_token: string, _regNumber: string, _forceRefresh = false): Promise<CatMarksReport> {
   const subjects: SubjectCatMark[] = [];
 
   try {
@@ -1007,31 +936,6 @@ export async function fetchImsCatMarks(_token: string, regNumber: string, _force
     }
   } catch (err) {
     console.warn('Direct CAT marks scrape failed:', err);
-  }
-
-  // Fallback: If subjects is empty, generate CAT marks from curriculum for registered student
-  if (subjects.length === 0) {
-    const deduced = deduceStudentDetails(regNumber || '2117240070293');
-    const deptKey = DEPARTMENT_CODE_MAP[deduced.department] || parseDepartmentCode(deduced.departmentCode) || 'AIDS';
-    const semSubjects = (DEPARTMENT_CURRICULUM[deptKey] && DEPARTMENT_CURRICULUM[deptKey][deduced.semester]) || DEPARTMENT_CURRICULUM['AIDS'][5];
-
-    semSubjects.forEach((sub, idx) => {
-      const matchCode = sub.name.match(/\(([A-Z0-9]+)\)/i)?.[1] || sub.code || `SUB0${idx+1}`;
-      const cleanTitle = sub.name.replace(/\([A-Z0-9]+\)/gi, '').trim();
-      const co1 = String(21 + (idx % 4));
-      const co2 = String(22 + (idx % 3));
-      const totalNum = Number(co1) + Number(co2);
-      const weightage = (totalNum * 0.4).toFixed(1);
-      subjects.push({
-        code: matchCode,
-        name: cleanTitle,
-        faculty: 'Handling Faculty In-Charge',
-        co1,
-        co2,
-        total: String(totalNum),
-        weightage: `${weightage} / 20`
-      });
-    });
   }
 
   return { subjects };
@@ -1229,51 +1133,6 @@ export async function fetchImsSemesterResults(_token: string, regNumber: string,
     } catch {}
   }
 
-  // If results were empty or fewer than previous semesters, generate exact curriculum results for finished semesters
-  const targetCurriculum = DEPARTMENT_CURRICULUM[deptCode] || DEPARTMENT_CURRICULUM['AIDS'];
-  if (results.length === 0 && targetCurriculum) {
-    const completedSems = Math.max(1, Math.min(4, (currentSem && currentSem > 1) ? currentSem - 1 : 1));
-    const gradeTemplates = ['O', 'A+', 'O', 'A+', 'O', 'A', 'A+', 'O', 'A+'];
-
-    for (let s = 1; s <= completedSems; s++) {
-      const semSubjects = targetCurriculum[s] || targetCurriculum[1] || [];
-      let semCredits = 0;
-      let semPoints = 0;
-
-      const grades: SemesterGrade[] = semSubjects.map((sub, idx) => {
-        const matchCode = sub.name.match(/\(([A-Z0-9]+)\)/i)?.[1] || sub.code || `SUB${s}0${idx+1}`;
-        const cleanTitle = sub.name.replace(/\([A-Z0-9]+\)/gi, '').trim();
-        const credits = sub.credits;
-        const grade = sub.credits === 0 ? 'PASS' : (gradeTemplates[idx % gradeTemplates.length] || 'A+');
-        const gp = GRADE_POINTS[grade] ?? 9;
-
-        if (credits > 0) {
-          semCredits += credits;
-          semPoints += (gp * credits);
-        }
-
-        return {
-          code: matchCode,
-          name: cleanTitle,
-          credits,
-          internalMark: credits > 0 ? 38 + (idx % 3) * 3 : undefined,
-          externalMark: credits > 0 ? 52 + (idx % 3) * 3 : undefined,
-          totalMark: credits > 0 ? 90 + (idx % 3) * 3 : undefined,
-          grade,
-          result: 'PASS',
-        };
-      });
-
-      const sgpa = semCredits > 0 ? Number((semPoints / semCredits).toFixed(2)) : 0;
-      results.push({
-        semester: s,
-        gpa: sgpa,
-        totalCredits: semCredits,
-        subjects: grades,
-      });
-    }
-  }
-
   // Calculate Cumulative CGPA & Active Arrears strictly according to Anna University Regulations
   let cumCredits = 0;
   let cumPoints = 0;
@@ -1326,7 +1185,7 @@ export async function fetchStudentDashboard(regNumber?: string): Promise<{ resul
 /**
  * Fetch Assignment Marks from /ims/admin/assignment/student/mark/report
  */
-export async function fetchImsAssignmentMarks(deptCodeOrName?: string, semester?: number): Promise<AssignmentMarkItem[]> {
+export async function fetchImsAssignmentMarks(_deptCodeOrName?: string, _semester?: number): Promise<AssignmentMarkItem[]> {
   const items: AssignmentMarkItem[] = [];
   try {
     const response = await fetch('/ims/admin/assignment/student/mark/report', {
@@ -1369,39 +1228,13 @@ export async function fetchImsAssignmentMarks(deptCodeOrName?: string, semester?
     console.warn('Failed to fetch assignment marks:', err);
   }
 
-  // Fallback: If no assignment items scraped, generate from curriculum
-  if (items.length === 0) {
-    const deptKey = (deptCodeOrName && (DEPARTMENT_CODE_MAP[deptCodeOrName] || parseDepartmentCode(deptCodeOrName))) || 'AIDS';
-    const sem = semester || 5;
-    const semSubjects = (DEPARTMENT_CURRICULUM[deptKey] && DEPARTMENT_CURRICULUM[deptKey][sem]) || DEPARTMENT_CURRICULUM['AIDS'][5];
-
-    semSubjects.forEach((sub, idx) => {
-      if (sub.credits === 0) return;
-      const matchCode = sub.name.match(/\(([A-Z0-9]+)\)/i)?.[1] || sub.code || `SUB0${idx+1}`;
-      const cleanTitle = sub.name.replace(/\([A-Z0-9]+\)/gi, '').trim();
-      const a1 = String(9 + (idx % 2));
-      const a2 = String(10);
-      const a3 = String(9 + (idx % 2));
-      const a4 = String(10);
-      const a5 = String(9 + (idx % 2));
-      const totalNum = Number(a1) + Number(a2) + Number(a3) + Number(a4) + Number(a5);
-      items.push({
-        subjectName: cleanTitle,
-        subjectCode: matchCode,
-        facultyName: 'Handling Faculty In-Charge',
-        a1, a2, a3, a4, a5,
-        total: `${totalNum} / 50`
-      });
-    });
-  }
-
   return items;
 }
 
 /**
  * Fetch LAB Marks from /ims/admin/student_lab_mark/report
  */
-export async function fetchImsLabMarks(deptCodeOrName?: string, semester?: number): Promise<LabMarkItem[]> {
+export async function fetchImsLabMarks(_deptCodeOrName?: string, _semester?: number): Promise<LabMarkItem[]> {
   const items: LabMarkItem[] = [];
 
   try {
@@ -1439,28 +1272,6 @@ export async function fetchImsLabMarks(deptCodeOrName?: string, semester?: numbe
     }
   } catch (err) {
     console.warn('Failed to fetch lab marks:', err);
-  }
-
-  // Fallback: If no lab items scraped, generate from lab subjects
-  if (items.length === 0) {
-    const deptKey = (deptCodeOrName && (DEPARTMENT_CODE_MAP[deptCodeOrName] || parseDepartmentCode(deptCodeOrName))) || 'AIDS';
-    const sem = semester || 5;
-    const semSubjects = (DEPARTMENT_CURRICULUM[deptKey] && DEPARTMENT_CURRICULUM[deptKey][sem]) || DEPARTMENT_CURRICULUM['AIDS'][5];
-
-    semSubjects.forEach((sub, idx) => {
-      const isLab = sub.name.toLowerCase().includes('lab') || sub.name.toLowerCase().includes('laboratory') || sub.credits === 1;
-      if (!isLab) return;
-      const matchCode = sub.name.match(/\(([A-Z0-9]+)\)/i)?.[1] || sub.code || `LAB0${idx+1}`;
-      const cleanTitle = sub.name.replace(/\([A-Z0-9]+\)/gi, '').trim();
-      const marks = String(92 + (idx % 7));
-      items.push({
-        subjectName: cleanTitle,
-        subjectCode: matchCode,
-        facultyName: 'Lab In-Charge',
-        marks: `${marks} / 100`,
-        total: '100'
-      });
-    });
   }
 
   return items;
