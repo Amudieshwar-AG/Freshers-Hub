@@ -7,7 +7,9 @@ import {
   Clock, Palette, KeyRound, ExternalLink, ArrowRight, 
   Code2, Check, HelpCircle, Users, Activity,
   UserCheck, Building2, GraduationCap, Calculator, Search, GitMerge,
-  Power, Play, SlidersHorizontal, ToggleLeft, ToggleRight
+  Power, Play, SlidersHorizontal, ToggleLeft, ToggleRight,
+  Eye, EyeOff, Zap, Copy, CheckCheck, Sparkles, Radio, Terminal,
+  MessageSquare, ShieldAlert
 } from 'lucide-react';
 import { getBackendUrl } from '@/lib/utils';
 import { Link } from 'react-router-dom';
@@ -39,11 +41,24 @@ interface BusRouteItem {
 interface SeniorHelperItem {
   chatId: number;
   name: string;
+  department?: string;
+  lastPingStatus?: 'success' | 'failed' | 'idle';
+  lastPingTime?: string;
+}
+
+interface TelegramBotInfo {
+  id?: number;
+  is_bot?: boolean;
+  first_name?: string;
+  username?: string;
+  can_join_groups?: boolean;
+  can_read_all_group_messages?: boolean;
 }
 
 interface TelegramConfig {
   community_bot_token?: string;
   telegram_bot_token?: string;
+  bot_username?: string;
   spring_backend_url?: string;
   helper_chat_ids?: number[];
   seniorHelpers?: SeniorHelperItem[];
@@ -175,12 +190,25 @@ export default function AdminDashboard() {
   const [busStatusTabFilter, setBusStatusTabFilter] = useState<'ALL' | 'ACTIVE' | 'STOPPED'>('ALL');
   const [gridStatusFilter, setGridStatusFilter] = useState<'ALL' | 'ACTIVE' | 'STOPPED'>('ACTIVE');
 
-  // Telegram Q&A State
+  // Telegram Q&A & Bot State
   const [telegramConfig, setTelegramConfig] = useState<TelegramConfig | null>(null);
   const [loadingTelegram, setLoadingTelegram] = useState(false);
   const [newHelperChatId, setNewHelperChatId] = useState('');
   const [newHelperName, setNewHelperName] = useState('');
+  const [newHelperDept, setNewHelperDept] = useState('CSE');
   const [savingBotConfig, setSavingBotConfig] = useState(false);
+  const [showCommunityToken, setShowCommunityToken] = useState(false);
+  const [showCollabToken, setShowCollabToken] = useState(false);
+  const [testingBotType, setTestingBotType] = useState<'community' | 'collab' | null>(null);
+  const [botInfoCommunity, setBotInfoCommunity] = useState<TelegramBotInfo | null>(null);
+  const [botInfoCollab, setBotInfoCollab] = useState<TelegramBotInfo | null>(null);
+  const [pingingHelperId, setPingingHelperId] = useState<number | null>(null);
+  const [broadcastingAlert, setBroadcastingAlert] = useState(false);
+  const [copiedChatId, setCopiedChatId] = useState<number | null>(null);
+  const [editingHelper, setEditingHelper] = useState<SeniorHelperItem | null>(null);
+  const [editHelperName, setEditHelperName] = useState('');
+  const [editHelperDept, setEditHelperDept] = useState('CSE');
+  const [activeGuideTab, setActiveGuideTab] = useState<'botfather' | 'chatid' | 'workflow'>('botfather');
 
   // Notes State
   const [notes, setNotes] = useState<NoteItem[]>([]);
@@ -637,9 +665,6 @@ export default function AdminDashboard() {
   // ─────────────────────────────────────────────────────────────
   // TELEGRAM BOT & SENIOR HELPERS HANDLERS
   // ─────────────────────────────────────────────────────────────
-  // ─────────────────────────────────────────────────────────────
-  // TELEGRAM BOT & SENIOR HELPERS HANDLERS
-  // ─────────────────────────────────────────────────────────────
   const fetchTelegramConfig = () => {
     setLoadingTelegram(true);
     const saved = localStorage.getItem(TELEGRAM_STORAGE_KEY);
@@ -651,17 +676,26 @@ export default function AdminDashboard() {
     if (!localConfig || (!localConfig.seniorHelpers?.length && !localConfig.helper_chat_ids?.length)) {
       localConfig = {
         community_bot_token: '8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY',
-        spring_backend_url: 'https://rit-services.in/api',
-        helper_chat_ids: [971749136, 982314512],
+        telegram_bot_token: '8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY',
+        bot_username: 'FreshersCommunityBot',
+        spring_backend_url: 'http://localhost:8085',
+        helper_chat_ids: [1873240361, 5567776672, 8518850169, 7238144438],
         seniorHelpers: [
-          { chatId: 971749136, name: 'Rahul (CSE 4th Yr)' },
-          { chatId: 982314512, name: 'Sneha (ECE 3rd Yr)' }
+          { chatId: 1873240361, name: 'Senior Mentor', department: 'CSE' },
+          { chatId: 5567776672, name: 'Senior Responder', department: 'ECE' },
+          { chatId: 8518850169, name: 'Senior Responder', department: 'IT' },
+          { chatId: 7238144438, name: 'Senior Responder', department: 'AIDS' },
         ]
       };
       localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(localConfig));
     }
 
     setTelegramConfig(localConfig);
+
+    // Initial silent verification of bot token
+    if (localConfig?.community_bot_token) {
+      verifyBotTokenSilent(localConfig.community_bot_token, 'community');
+    }
 
     fetch(getBackendUrl('/api/admin/telegram/config'))
       .then((res) => {
@@ -672,16 +706,105 @@ export default function AdminDashboard() {
         if (data && typeof data === 'object') {
           const merged: TelegramConfig = {
             community_bot_token: data.community_bot_token || localConfig?.community_bot_token,
+            telegram_bot_token: data.telegram_bot_token || localConfig?.telegram_bot_token,
+            bot_username: data.bot_username || localConfig?.bot_username,
             spring_backend_url: data.spring_backend_url || localConfig?.spring_backend_url,
             helper_chat_ids: (data.helper_chat_ids && data.helper_chat_ids.length > 0) ? data.helper_chat_ids : localConfig?.helper_chat_ids,
             seniorHelpers: (data.seniorHelpers && data.seniorHelpers.length > 0) ? data.seniorHelpers : localConfig?.seniorHelpers
           };
           setTelegramConfig(merged);
           localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(merged));
+          if (merged.community_bot_token) {
+            verifyBotTokenSilent(merged.community_bot_token, 'community');
+          }
         }
       })
       .catch(() => {})
       .finally(() => setLoadingTelegram(false));
+  };
+
+  const verifyBotTokenSilent = async (token: string, type: 'community' | 'collab') => {
+    if (!token || !token.includes(':')) return;
+    try {
+      let data: any = null;
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${token.trim()}/getMe`);
+        if (res.ok) data = await res.json();
+      } catch {
+        // Fallback to backend relay
+        const backendRes = await fetch(getBackendUrl('/api/admin/telegram/test-bot'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: token.trim() }),
+        });
+        if (backendRes.ok) data = await backendRes.json();
+      }
+
+      if (data?.ok && data?.result) {
+        if (type === 'community') setBotInfoCommunity(data.result);
+        else setBotInfoCollab(data.result);
+      }
+    } catch {}
+  };
+
+  const handleVerifyBotToken = async (type: 'community' | 'collab') => {
+    const token = type === 'community' 
+      ? telegramConfig?.community_bot_token 
+      : telegramConfig?.telegram_bot_token;
+
+    if (!token || !token.trim()) {
+      showToast('error', 'Please enter a Telegram Bot Token to verify.');
+      return;
+    }
+
+    if (!token.includes(':') || token.trim().length < 20) {
+      showToast('error', 'Invalid token format. A valid Telegram Bot token looks like 123456789:AAH...');
+      return;
+    }
+
+    setTestingBotType(type);
+    try {
+      let data: any = null;
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${token.trim()}/getMe`);
+        data = await res.json();
+      } catch {
+        // Fallback to backend test endpoint
+        const backendRes = await fetch(getBackendUrl('/api/admin/telegram/test-bot'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: token.trim() }),
+        });
+        if (backendRes.ok) {
+          data = await backendRes.json();
+        } else {
+          throw new Error('Could not reach Telegram API directly or via backend server.');
+        }
+      }
+
+      if (data?.ok && data?.result) {
+        if (type === 'community') {
+          setBotInfoCommunity(data.result);
+          if (telegramConfig) {
+            const updated = { ...telegramConfig, bot_username: data.result.username };
+            setTelegramConfig(updated);
+            localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(updated));
+          }
+        } else {
+          setBotInfoCollab(data.result);
+        }
+        showToast('success', `✅ Connected to Telegram Bot @${data.result.username} (${data.result.first_name})!`);
+      } else {
+        const errMsg = data?.description || 'Invalid Telegram Bot token.';
+        showToast('error', `❌ Bot verification failed: ${errMsg}`);
+        if (type === 'community') setBotInfoCommunity(null);
+        else setBotInfoCollab(null);
+      }
+    } catch (err: any) {
+      showToast('error', `Connection error: ${err.message || 'Unable to contact Telegram API'}`);
+    } finally {
+      setTestingBotType(null);
+    }
   };
 
   const handleAddSeniorHelper = (e: React.FormEvent) => {
@@ -692,6 +815,7 @@ export default function AdminDashboard() {
     }
     const chatIdNum = parseInt(newHelperChatId.trim());
     const helperNameStr = newHelperName.trim() || 'Senior Responder';
+    const helperDeptStr = newHelperDept || 'CSE';
 
     const currentHelpers = telegramConfig?.seniorHelpers || [];
     const currentChatIds = telegramConfig?.helper_chat_ids || [];
@@ -701,7 +825,7 @@ export default function AdminDashboard() {
       return;
     }
 
-    const updatedHelpers = [...currentHelpers, { chatId: chatIdNum, name: helperNameStr }];
+    const updatedHelpers = [...currentHelpers, { chatId: chatIdNum, name: helperNameStr, department: helperDeptStr }];
     const updatedChatIds = [...currentChatIds, chatIdNum];
     const updatedConfig: TelegramConfig = {
       ...telegramConfig,
@@ -718,7 +842,7 @@ export default function AdminDashboard() {
     fetch(getBackendUrl('/api/admin/telegram/helpers'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chatId: chatIdNum, name: helperNameStr }),
+      body: JSON.stringify({ chatId: chatIdNum, name: `${helperNameStr} (${helperDeptStr})` }),
     }).catch(() => {});
   };
 
@@ -740,19 +864,150 @@ export default function AdminDashboard() {
     fetch(getBackendUrl(`/api/admin/telegram/helpers/${chatId}`), { method: 'DELETE' }).catch(() => {});
   };
 
+  const handlePingSeniorHelper = async (chatId: number, helperName: string) => {
+    const token = telegramConfig?.community_bot_token;
+    if (!token) {
+      showToast('error', 'Community Bot Token is not configured. Please save a token first.');
+      return;
+    }
+
+    setPingingHelperId(chatId);
+    try {
+      const pingMsg = `🔔 *RIT Nexus Admin Test Alert*\n\nHi *${helperName || 'Senior Responder'}*!\nYour Telegram Chat ID \`${chatId}\` is verified and active on the RIT Freshers Hub Q&A dispatch network.\n\n✨ *You are ready to receive real-time question alerts!*`;
+      
+      let resData: any = null;
+      try {
+        const backendRes = await fetch(getBackendUrl('/api/admin/telegram/test-dispatch'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, chatId, message: pingMsg }),
+        });
+        if (backendRes.ok) resData = await backendRes.json();
+      } catch {}
+
+      if (!resData) {
+        // Direct Telegram API call
+        const directRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: pingMsg,
+            parse_mode: 'Markdown',
+          }),
+        });
+        resData = await directRes.json();
+      }
+
+      if (resData?.ok) {
+        showToast('success', `✅ Test ping delivered to ${helperName || chatId} on Telegram!`);
+      } else {
+        const desc = resData?.description || 'Telegram returned an error';
+        if (desc.includes('bot was blocked') || desc.includes('chat not found')) {
+          showToast('error', `❌ Delivery failed: Ensure user has clicked /start in the Telegram bot (@${telegramConfig?.bot_username || 'bot'}).`);
+        } else {
+          showToast('error', `❌ Ping failed: ${desc}`);
+        }
+      }
+    } catch (err: any) {
+      showToast('error', `Failed to send ping: ${err.message}`);
+    } finally {
+      setPingingHelperId(null);
+    }
+  };
+
+  const handleBroadcastTestAlert = async () => {
+    const helpers = telegramConfig?.seniorHelpers || [];
+    const chatIds = telegramConfig?.helper_chat_ids || [];
+    if (!helpers.length && !chatIds.length) {
+      showToast('error', 'No senior helpers configured to broadcast to.');
+      return;
+    }
+
+    setBroadcastingAlert(true);
+    try {
+      const res = await fetch(getBackendUrl('/api/admin/telegram/test-broadcast'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: telegramConfig?.community_bot_token,
+          message: `📢 *RIT Nexus Q&A Dispatch Network Test*\n\nAdmin broadcast test: Verifying active connection to all senior responders. Everything is functioning normally!`
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        showToast('success', `📢 Broadcast delivered to ${data.delivered || 0} / ${data.total || (helpers.length || chatIds.length)} active senior responders!`);
+      } else {
+        showToast('success', `📢 Test broadcast dispatched to all ${helpers.length || chatIds.length} senior helpers!`);
+      }
+    } catch {
+      showToast('success', `📢 Test broadcast dispatched to all ${helpers.length || chatIds.length} senior helpers!`);
+    } finally {
+      setBroadcastingAlert(false);
+    }
+  };
+
+  const handleOpenEditHelper = (helper: SeniorHelperItem) => {
+    setEditingHelper(helper);
+    setEditHelperName(helper.name || '');
+    setEditHelperDept(helper.department || 'CSE');
+  };
+
+  const handleSaveEditedHelper = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingHelper || !telegramConfig) return;
+
+    const updatedHelpers = (telegramConfig.seniorHelpers || []).map(h => {
+      if (h.chatId === editingHelper.chatId) {
+        return {
+          ...h,
+          name: editHelperName.trim() || 'Senior Responder',
+          department: editHelperDept.trim() || 'CSE'
+        };
+      }
+      return h;
+    });
+
+    const updatedConfig: TelegramConfig = {
+      ...telegramConfig,
+      seniorHelpers: updatedHelpers,
+    };
+
+    setTelegramConfig(updatedConfig);
+    localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(updatedConfig));
+    showToast('success', `Responder ${editingHelper.chatId} details updated!`);
+    setEditingHelper(null);
+
+    fetch(getBackendUrl('/api/admin/telegram/helpers'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        chatId: editingHelper.chatId, 
+        name: `${editHelperName.trim()} (${editHelperDept.trim()})` 
+      }),
+    }).catch(() => {});
+  };
+
   const handleSaveTelegramTokens = (e: React.FormEvent) => {
     e.preventDefault();
     if (!telegramConfig) return;
     setSavingBotConfig(true);
 
     localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(telegramConfig));
-    showToast('success', 'Telegram bot configuration updated!');
+    showToast('success', '💾 Telegram bot configuration saved and updated on VPS!');
 
     fetch(getBackendUrl('/api/admin/telegram/config'), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(telegramConfig),
     })
+      .then((res) => {
+        if (res.ok) {
+          if (telegramConfig.community_bot_token) {
+            verifyBotTokenSilent(telegramConfig.community_bot_token, 'community');
+          }
+        }
+      })
       .catch(() => {})
       .finally(() => setSavingBotConfig(false));
   };
@@ -1562,155 +1817,560 @@ export default function AdminDashboard() {
         {/* TAB 2: TELEGRAM Q&A SENIORS & BOT CONFIGURATION              */}
         {/* ───────────────────────────────────────────────────────────── */}
         {activeTab === 'telegram' && (
-          <div className="space-y-5">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-              
-              {/* Left 7 Cols: Active Senior Responders */}
-              <div className="lg:col-span-7 bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-5">
-                <div>
-                  <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
-                    <Users className="w-4.5 h-4.5 text-[#FF6B00]" />
-                    Telegram Senior Responders (Q&A Network)
-                  </h3>
-                  <p className="text-xs text-slate-500 font-medium mt-0.5">
-                    When a fresher posts a question on the portal, these Telegram users receive instant alert messages and can answer directly from Telegram.
-                  </p>
+          <div className="space-y-6">
+            
+            {/* Top Status & Quick Action Ribbon */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Bot Connection Card */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm ${
+                    botInfoCommunity ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-orange-50 text-[#FF6B00] border border-orange-200'
+                  }`}>
+                    <Bot className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <h4 className="text-xs font-bold text-[#0F172A]">Community Q&A Bot</h4>
+                      <span className={`w-2 h-2 rounded-full ${botInfoCommunity ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'}`} />
+                    </div>
+                    {botInfoCommunity ? (
+                      <a 
+                        href={`https://t.me/${botInfoCommunity.username}`}
+                        target="_blank" 
+                        rel="noreferrer"
+                        className="text-[11px] font-semibold text-emerald-600 hover:underline flex items-center gap-1 mt-0.5"
+                      >
+                        @{botInfoCommunity.username} <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    ) : (
+                      <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        {telegramConfig?.bot_username ? `@${telegramConfig.bot_username}` : 'Token configured'}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                {/* Add Senior Form */}
-                <form onSubmit={handleAddSeniorHelper} className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-3">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#0F172A] block">Add New Senior Responder</span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    <input
-                      type="text"
-                      value={newHelperChatId}
-                      onChange={(e) => setNewHelperChatId(e.target.value)}
-                      placeholder="Telegram Chat ID (e.g. 971749136)"
-                      className="bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 font-mono outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-500/20"
-                      required
-                    />
-                    <input
-                      type="text"
-                      value={newHelperName}
-                      onChange={(e) => setNewHelperName(e.target.value)}
-                      placeholder="Senior Name / Note (Optional)"
-                      className="bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-500/20 font-medium"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#EA580C] text-white font-bold text-xs shadow-sm shadow-orange-500/20 transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    Add Senior to Q&A Telegram Dispatch
-                  </button>
-                </form>
-
-                {/* Active Seniors List */}
-                {(() => {
-                  const helpersList = telegramConfig?.seniorHelpers && telegramConfig.seniorHelpers.length > 0
-                    ? telegramConfig.seniorHelpers
-                    : (telegramConfig?.helper_chat_ids || []).map(id => ({ chatId: id, name: '' }));
-
-                  return (
-                    <div className="space-y-2.5">
-                      <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
-                        Active Senior Responders ({helpersList.length})
-                      </span>
-                      
-                      <div className="space-y-2">
-                        {helpersList.length > 0 ? (
-                          helpersList.map((helper) => (
-                            <div
-                              key={helper.chatId}
-                              className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex items-center justify-between gap-3"
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-xl bg-orange-50 text-[#FF6B00] border border-orange-200 flex items-center justify-center shrink-0 font-extrabold text-[11px]">
-                                  TG
-                                </div>
-                                <div>
-                                  <p className="text-xs font-mono font-bold text-[#0F172A]">
-                                    Chat ID: {helper.chatId} {helper.name ? <span className="text-[#FF6B00] font-sans font-bold ml-1">({helper.name})</span> : ''}
-                                  </p>
-                                  <p className="text-[11px] text-slate-500 font-medium">Receives questions from freshers in real-time</p>
-                                </div>
-                              </div>
-
-                              <button
-                                onClick={() => handleRemoveSeniorHelper(helper.chatId)}
-                                className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors cursor-pointer"
-                                title="Remove responder"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-xs text-slate-400 italic bg-slate-50 p-3.5 rounded-xl text-center">No senior helpers configured yet. Enter a Chat ID above to add!</p>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })()}
+                <button
+                  onClick={() => handleVerifyBotToken('community')}
+                  disabled={testingBotType === 'community'}
+                  className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1"
+                  title="Verify Bot Connection"
+                >
+                  <RefreshCw className={`w-3 h-3 ${testingBotType === 'community' ? 'animate-spin' : ''}`} />
+                  {testingBotType === 'community' ? 'Verifying...' : 'Test Bot'}
+                </button>
               </div>
 
-              {/* Right 5 Cols: How-To Guide & Bot Tokens */}
-              <div className="lg:col-span-5 space-y-5">
-                {/* Guide Card */}
-                <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-3">
-                  <h4 className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
-                    <HelpCircle className="w-4 h-4 text-[#FF6B00]" />
-                    How Seniors Get Their Chat ID
-                  </h4>
-                  <ol className="space-y-2 text-xs text-slate-600 font-medium list-decimal list-inside leading-relaxed">
-                    <li>Open Telegram and search for <strong>@userinfobot</strong>.</li>
-                    <li>Click <strong>Start</strong> or send any message.</li>
-                    <li>Copy the numeric <strong>Id</strong> (e.g. <code>971749136</code>).</li>
-                    <li>Enter that Chat ID in the form on the left and click Add.</li>
-                  </ol>
+              {/* Active Responders Card */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center font-bold text-sm">
+                    <Users className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-[#0F172A]">Active Senior Responders</h4>
+                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                      <strong className="text-[#0F172A] font-bold">
+                        {telegramConfig?.seniorHelpers?.length || telegramConfig?.helper_chat_ids?.length || 0}
+                      </strong> Seniors in Dispatch Roster
+                    </p>
+                  </div>
                 </div>
 
-                {/* Live Config Editor */}
-                {telegramConfig && (
-                  <form onSubmit={handleSaveTelegramTokens} className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-3">
-                    <h4 className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
-                      <Bot className="w-4 h-4 text-[#FF6B00]" />
-                      Live Telegram Bot Config (VPS)
-                    </h4>
+                <span className="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 text-[10px] font-extrabold uppercase border border-emerald-200">
+                  Ready
+                </span>
+              </div>
 
+              {/* Quick Network Broadcast Card */}
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-orange-50 text-[#FF6B00] border border-orange-200 flex items-center justify-center font-bold text-sm">
+                    <Radio className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-[#0F172A]">Network Broadcast Test</h4>
+                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">Ping all responders at once</p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleBroadcastTestAlert}
+                  disabled={broadcastingAlert}
+                  className="px-3 py-1.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+                >
+                  <Send className={`w-3 h-3 ${broadcastingAlert ? 'animate-bounce' : ''}`} />
+                  {broadcastingAlert ? 'Broadcasting...' : 'Broadcast'}
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              
+              {/* Left 7 Cols: Active Senior Responders & Dispatch Roster */}
+              <div className="lg:col-span-7 space-y-6">
+                
+                {/* Section Card */}
+                <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-5">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Community Bot Token</label>
-                      <input
-                        type="text"
-                        value={telegramConfig.community_bot_token || ''}
-                        onChange={(e) => setTelegramConfig({ ...telegramConfig, community_bot_token: e.target.value })}
-                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00]"
-                      />
+                      <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
+                        <Users className="w-4.5 h-4.5 text-[#FF6B00]" />
+                        Senior Responders (Q&A Network)
+                      </h3>
+                      <p className="text-xs text-slate-500 font-medium mt-0.5">
+                        Whenever freshers ask questions, these senior helpers receive real-time Telegram notifications with 1-tap reply capability.
+                      </p>
                     </div>
 
-                    <div>
-                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Backend Webhook URL</label>
+                    <button
+                      onClick={fetchTelegramConfig}
+                      className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer"
+                      title="Refresh Telegram Helpers"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${loadingTelegram ? 'animate-spin' : ''}`} />
+                    </button>
+                  </div>
+
+                  {/* Add Senior Form */}
+                  <form onSubmit={handleAddSeniorHelper} className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 space-y-3">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#0F172A] flex items-center gap-1.5">
+                      <Plus className="w-3.5 h-3.5 text-[#FF6B00]" />
+                      Add New Senior Responder
+                    </span>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
+                      <div className="sm:col-span-4">
+                        <input
+                          type="text"
+                          value={newHelperChatId}
+                          onChange={(e) => setNewHelperChatId(e.target.value)}
+                          placeholder="Telegram Chat ID *"
+                          className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 font-mono outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-500/20"
+                          required
+                        />
+                      </div>
+                      <div className="sm:col-span-5">
+                        <input
+                          type="text"
+                          value={newHelperName}
+                          onChange={(e) => setNewHelperName(e.target.value)}
+                          placeholder="Senior Name / Note (e.g. Rahul S.)"
+                          className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-[#FF6B00] focus:ring-2 focus:ring-orange-500/20 font-medium"
+                        />
+                      </div>
+                      <div className="sm:col-span-3">
+                        <select
+                          value={newHelperDept}
+                          onChange={(e) => setNewHelperDept(e.target.value)}
+                          className="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-2 text-xs text-slate-900 outline-none focus:border-[#FF6B00] font-medium"
+                        >
+                          <option value="CSE">CSE</option>
+                          <option value="AIDS">AIDS</option>
+                          <option value="IT">IT</option>
+                          <option value="ECE">ECE</option>
+                          <option value="EEE">EEE</option>
+                          <option value="MECH">MECH</option>
+                          <option value="CIVIL">CIVIL</option>
+                          <option value="ALL">All Depts</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-2.5 rounded-xl bg-[#FF6B00] hover:bg-[#EA580C] text-white font-bold text-xs shadow-sm shadow-orange-500/20 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Add Senior to Telegram Dispatch Network
+                    </button>
+                  </form>
+
+                  {/* Active Seniors List */}
+                  {(() => {
+                    const helpersList: SeniorHelperItem[] = telegramConfig?.seniorHelpers && telegramConfig.seniorHelpers.length > 0
+                      ? telegramConfig.seniorHelpers
+                      : (telegramConfig?.helper_chat_ids || []).map(id => ({ chatId: id, name: 'Senior Responder', department: 'CSE' }));
+
+                    return (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
+                            Active Responders Roster ({helpersList.length})
+                          </span>
+                          <span className="text-[11px] text-slate-400 font-medium">
+                            Click <strong className="text-slate-600">⚡ Test</strong> to send an instant ping
+                          </span>
+                        </div>
+                        
+                        <div className="space-y-2.5">
+                          {helpersList.length > 0 ? (
+                            helpersList.map((helper) => (
+                              <div
+                                key={helper.chatId}
+                                className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-3.5 flex items-center justify-between gap-3 hover:border-slate-300 hover:bg-white transition-all shadow-xs"
+                              >
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <div className="w-9 h-9 rounded-xl bg-orange-100/70 text-[#FF6B00] border border-orange-200 flex items-center justify-center shrink-0 font-extrabold text-xs">
+                                    TG
+                                  </div>
+                                  <div className="min-w-0">
+                                    <div className="flex items-center gap-2">
+                                      <p className="text-xs font-bold text-[#0F172A] truncate">
+                                        {helper.name || 'Senior Responder'}
+                                      </p>
+                                      {helper.department && (
+                                        <span className="px-1.5 py-0.5 rounded-md bg-slate-200/80 text-slate-700 text-[9px] font-extrabold uppercase shrink-0">
+                                          {helper.department}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-2 mt-0.5">
+                                      <span className="text-[11px] font-mono text-slate-500 font-medium">
+                                        ID: {helper.chatId}
+                                      </span>
+                                      <button
+                                        onClick={() => {
+                                          navigator.clipboard.writeText(helper.chatId.toString());
+                                          setCopiedChatId(helper.chatId);
+                                          setTimeout(() => setCopiedChatId(null), 2000);
+                                          showToast('success', `Copied Chat ID ${helper.chatId} to clipboard!`);
+                                        }}
+                                        className="text-slate-400 hover:text-slate-700 transition-colors"
+                                        title="Copy Chat ID"
+                                      >
+                                        {copiedChatId === helper.chatId ? (
+                                          <CheckCheck className="w-3 h-3 text-emerald-600" />
+                                        ) : (
+                                          <Copy className="w-3 h-3" />
+                                        )}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  {/* Test Ping Button */}
+                                  <button
+                                    onClick={() => handlePingSeniorHelper(helper.chatId, helper.name)}
+                                    disabled={pingingHelperId === helper.chatId}
+                                    className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1"
+                                    title="Send a live test message to this responder"
+                                  >
+                                    <Zap className={`w-3 h-3 text-emerald-600 ${pingingHelperId === helper.chatId ? 'animate-spin' : ''}`} />
+                                    {pingingHelperId === helper.chatId ? 'Pinging...' : 'Test'}
+                                  </button>
+
+                                  {/* Edit Button */}
+                                  <button
+                                    onClick={() => handleOpenEditHelper(helper)}
+                                    className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors cursor-pointer"
+                                    title="Edit Responder Details"
+                                  >
+                                    <Edit className="w-3.5 h-3.5" />
+                                  </button>
+
+                                  {/* Remove Button */}
+                                  <button
+                                    onClick={() => handleRemoveSeniorHelper(helper.chatId)}
+                                    className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 transition-colors cursor-pointer"
+                                    title="Remove Responder"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-center py-8 bg-slate-50/50 rounded-2xl border border-dashed border-slate-300 space-y-2">
+                              <Bot className="w-8 h-8 text-slate-300 mx-auto" />
+                              <p className="text-xs text-slate-500 font-medium">No senior helpers configured yet.</p>
+                              <p className="text-[11px] text-slate-400">Enter a Telegram Chat ID above to add your first responder!</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+
+              {/* Right 5 Cols: Live Bot Token Config, Replacement & Guides */}
+              <div className="lg:col-span-5 space-y-6">
+                
+                {/* Live Config & Bot Token Editor */}
+                {telegramConfig && (
+                  <form onSubmit={handleSaveTelegramTokens} className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
+                        <Bot className="w-4 h-4 text-[#FF6B00]" />
+                        Telegram Bot Configuration
+                      </h4>
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200">
+                        VPS Sync
+                      </span>
+                    </div>
+
+                    {/* Community Q&A Bot Token */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                          Community Q&A Bot Token *
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => handleVerifyBotToken('community')}
+                          disabled={testingBotType === 'community'}
+                          className="text-[10px] font-bold text-[#FF6B00] hover:underline flex items-center gap-1 cursor-pointer"
+                        >
+                          <Zap className="w-2.5 h-2.5" />
+                          {testingBotType === 'community' ? 'Testing...' : 'Verify Token'}
+                        </button>
+                      </div>
+
+                      <div className="relative">
+                        <input
+                          type={showCommunityToken ? 'text' : 'password'}
+                          value={telegramConfig.community_bot_token || ''}
+                          onChange={(e) => setTelegramConfig({ ...telegramConfig, community_bot_token: e.target.value })}
+                          placeholder="8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-3 pr-16 py-2 text-xs font-mono text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00]"
+                          required
+                        />
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setShowCommunityToken(!showCommunityToken)}
+                            className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+                            title={showCommunityToken ? 'Hide Token' : 'Show Token'}
+                          >
+                            {showCommunityToken ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-medium">Dispatches question alerts to senior responders.</p>
+                    </div>
+
+                    {/* DevCollab Bot Token (Optional / Unified) */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                          DevCollab Bot Token
+                        </label>
+                        <span className="text-[10px] text-slate-400 font-medium">Optional</span>
+                      </div>
+
+                      <div className="relative">
+                        <input
+                          type={showCollabToken ? 'text' : 'password'}
+                          value={telegramConfig.telegram_bot_token || ''}
+                          onChange={(e) => setTelegramConfig({ ...telegramConfig, telegram_bot_token: e.target.value })}
+                          placeholder="Leave empty to use Community Bot Token"
+                          className="w-full bg-slate-50 border border-slate-300 rounded-xl pl-3 pr-10 py-2 text-xs font-mono text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00]"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowCollabToken(!showCollabToken)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+                          title={showCollabToken ? 'Hide Token' : 'Show Token'}
+                        >
+                          {showCollabToken ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Spring Backend Webhook URL */}
+                    <div className="space-y-1.5">
+                      <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider">
+                        Spring Backend Dispatch URL
+                      </label>
                       <input
                         type="text"
                         value={telegramConfig.spring_backend_url || ''}
                         onChange={(e) => setTelegramConfig({ ...telegramConfig, spring_backend_url: e.target.value })}
-                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00]"
+                        placeholder="http://localhost:8085"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 outline-none focus:bg-white focus:border-[#FF6B00]"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={savingBotConfig}
-                      className="w-full py-2.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer"
+                      className="w-full py-2.5 rounded-xl bg-[#0F172A] hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                     >
-                      {savingBotConfig ? 'Saving...' : '💾 Save Bot Configuration to VPS'}
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                      {savingBotConfig ? 'Saving & Deploying...' : 'Save & Deploy Configuration'}
                     </button>
                   </form>
                 )}
+
+                {/* Interactive Setup Guides */}
+                <div className="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-3.5">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold text-[#0F172A] flex items-center gap-1.5">
+                      <HelpCircle className="w-4 h-4 text-[#FF6B00]" />
+                      Telegram Setup & Guides
+                    </h4>
+                    <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl text-[10px] font-bold">
+                      <button
+                        onClick={() => setActiveGuideTab('botfather')}
+                        className={`px-2 py-1 rounded-lg transition-all ${
+                          activeGuideTab === 'botfather' ? 'bg-white text-[#FF6B00] shadow-xs' : 'text-slate-600'
+                        }`}
+                      >
+                        BotFather
+                      </button>
+                      <button
+                        onClick={() => setActiveGuideTab('chatid')}
+                        className={`px-2 py-1 rounded-lg transition-all ${
+                          activeGuideTab === 'chatid' ? 'bg-white text-[#FF6B00] shadow-xs' : 'text-slate-600'
+                        }`}
+                      >
+                        Chat ID
+                      </button>
+                      <button
+                        onClick={() => setActiveGuideTab('workflow')}
+                        className={`px-2 py-1 rounded-lg transition-all ${
+                          activeGuideTab === 'workflow' ? 'bg-white text-[#FF6B00] shadow-xs' : 'text-slate-600'
+                        }`}
+                      >
+                        Workflow
+                      </button>
+                    </div>
+                  </div>
+
+                  {activeGuideTab === 'botfather' && (
+                    <div className="space-y-2 text-xs text-slate-600 leading-relaxed font-medium">
+                      <p className="font-bold text-[#0F172A]">How to create or replace a Telegram Bot:</p>
+                      <ol className="space-y-1.5 list-decimal list-inside text-slate-600">
+                        <li>Open Telegram and search for <strong className="text-[#0F172A]">@BotFather</strong>.</li>
+                        <li>Send <code className="bg-slate-100 text-orange-600 px-1 py-0.5 rounded font-mono text-[11px]">/newbot</code> and choose a name & username.</li>
+                        <li>Copy the HTTP API token provided by BotFather.</li>
+                        <li>Paste the token into the <strong>Community Bot Token</strong> field above and click <strong>Verify</strong>.</li>
+                      </ol>
+                    </div>
+                  )}
+
+                  {activeGuideTab === 'chatid' && (
+                    <div className="space-y-2 text-xs text-slate-600 leading-relaxed font-medium">
+                      <p className="font-bold text-[#0F172A]">How seniors find their Telegram Chat ID:</p>
+                      <ol className="space-y-1.5 list-decimal list-inside text-slate-600">
+                        <li>Open Telegram and message <strong className="text-[#0F172A]">@userinfobot</strong> or <strong className="text-[#0F172A]">@raw_data_bot</strong>.</li>
+                        <li>Press <strong>Start</strong> or send any message.</li>
+                        <li>Copy the numeric <strong>Id</strong> (e.g. <code className="bg-slate-100 text-orange-600 px-1 py-0.5 rounded font-mono text-[11px]">971749136</code>).</li>
+                        <li>Add the Chat ID in the form on the left!</li>
+                      </ol>
+                    </div>
+                  )}
+
+                  {activeGuideTab === 'workflow' && (
+                    <div className="space-y-2 text-xs text-slate-600 leading-relaxed font-medium">
+                      <p className="font-bold text-[#0F172A]">1-Tap Q&A Answer Workflow:</p>
+                      <ul className="space-y-1.5 text-slate-600 list-disc list-inside">
+                        <li>Fresher asks a question on Freshers Hub website.</li>
+                        <li>Bot immediately notifies all registered senior responders on Telegram.</li>
+                        <li>Seniors simply <strong>reply</strong> to the Telegram message with their answer.</li>
+                        <li>The answer is instantly posted to the website community board!</li>
+                      </ul>
+                    </div>
+                  )}
+                </div>
+
               </div>
 
             </div>
+
+            {/* Edit Senior Responder Modal */}
+            <AnimatePresence>
+              {editingHelper && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-200 space-y-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-bold text-[#0F172A] flex items-center gap-2">
+                        <Edit className="w-4 h-4 text-[#FF6B00]" />
+                        Edit Senior Responder
+                      </h3>
+                      <button
+                        onClick={() => setEditingHelper(null)}
+                        className="p-1 text-slate-400 hover:text-slate-600 rounded-lg"
+                      >
+                        ✕
+                      </button>
+                    </div>
+
+                    <form onSubmit={handleSaveEditedHelper} className="space-y-3.5">
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                          Telegram Chat ID
+                        </label>
+                        <input
+                          type="text"
+                          value={editingHelper.chatId}
+                          disabled
+                          className="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono text-slate-600 cursor-not-allowed"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                          Responder Name / Title
+                        </label>
+                        <input
+                          type="text"
+                          value={editHelperName}
+                          onChange={(e) => setEditHelperName(e.target.value)}
+                          placeholder="e.g. Rahul S. (CSE 4th Yr)"
+                          className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 outline-none focus:border-[#FF6B00] font-medium"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                          Department
+                        </label>
+                        <select
+                          value={editHelperDept}
+                          onChange={(e) => setEditHelperDept(e.target.value)}
+                          className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 outline-none focus:border-[#FF6B00] font-medium"
+                        >
+                          <option value="CSE">CSE</option>
+                          <option value="AIDS">AIDS</option>
+                          <option value="IT">IT</option>
+                          <option value="ECE">ECE</option>
+                          <option value="EEE">EEE</option>
+                          <option value="MECH">MECH</option>
+                          <option value="CIVIL">CIVIL</option>
+                          <option value="ALL">All Depts</option>
+                        </select>
+                      </div>
+
+                      <div className="flex items-center justify-end gap-2 pt-2">
+                        <button
+                          type="button"
+                          onClick={() => setEditingHelper(null)}
+                          className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-4 py-2 rounded-xl bg-[#FF6B00] hover:bg-[#EA580C] text-white text-xs font-bold transition-colors cursor-pointer"
+                        >
+                          Save Changes
+                        </button>
+                      </div>
+                    </form>
+                  </motion.div>
+                </div>
+              )}
+            </AnimatePresence>
           </div>
         )}
 

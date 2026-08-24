@@ -1,6 +1,30 @@
 {
-  "community_bot_token" : "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY",
-  "telegram_bot_token" : "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY",
-  "helper_chat_ids" : [ 1873240361, 5567776672, 8518850169, 7238144438 ],
-  "spring_backend_url" : "http://localhost:8085"
+  "community_bot_token": "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY",
+  "telegram_bot_token": "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY",
+  "bot_username": "FreshersCommunityBot",
+  "helper_chat_ids": [
+    1873240361,
+    5567776672,
+    8518850169,
+    7238144438
+  ],
+  "seniorHelpers": [
+    {
+      "chatId": 1873240361,
+      "name": "Senior Mentor (CSE)"
+    },
+    {
+      "chatId": 5567776672,
+      "name": "Senior Responder (ECE)"
+    },
+    {
+      "chatId": 8518850169,
+      "name": "Senior Responder (IT)"
+    },
+    {
+      "chatId": 7238144438,
+      "name": "Senior Responder (AIDS)"
+    }
+  ],
+  "spring_backend_url": "http://localhost:8085"
 }

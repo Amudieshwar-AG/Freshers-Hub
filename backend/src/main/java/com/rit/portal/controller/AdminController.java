@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
@@ -257,15 +258,47 @@ public class AdminController {
         if (Files.exists(path)) {
             try {
                 byte[] bytes = Files.readAllBytes(path);
-                return objectMapper.readValue(bytes, Map.class);
+                Map<String, Object> loaded = objectMapper.readValue(bytes, Map.class);
+                if (loaded != null) {
+                    List<Object> rawChatIds = (List<Object>) loaded.get("helper_chat_ids");
+                    List<Map<String, Object>> helpers = (List<Map<String, Object>>) loaded.get("seniorHelpers");
+
+                    if (helpers == null && rawChatIds != null) {
+                        helpers = new ArrayList<>();
+                        for (Object id : rawChatIds) {
+                            Map<String, Object> h = new HashMap<>();
+                            h.put("chatId", Long.parseLong(id.toString()));
+                            h.put("name", "Senior Responder");
+                            helpers.add(h);
+                        }
+                        loaded.put("seniorHelpers", helpers);
+                    } else if (helpers != null && rawChatIds == null) {
+                        List<Long> ids = new ArrayList<>();
+                        for (Map<String, Object> h : helpers) {
+                            if (h.get("chatId") != null) {
+                                try {
+                                    ids.add(Long.parseLong(h.get("chatId").toString()));
+                                } catch (Exception ignored) {}
+                            }
+                        }
+                        loaded.put("helper_chat_ids", ids);
+                    }
+                    return loaded;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         Map<String, Object> defaultCfg = new HashMap<>();
-        defaultCfg.put("community_bot_token", "");
-        defaultCfg.put("telegram_bot_token", "");
-        defaultCfg.put("helper_chat_ids", new ArrayList<Long>(List.of(971749136L, 5567776672L, 1873240361L)));
+        defaultCfg.put("community_bot_token", "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY");
+        defaultCfg.put("telegram_bot_token", "8973721012:AAG37F4Q4q584m_2aS8rT6qSWuA-WuHRGMY");
+        defaultCfg.put("helper_chat_ids", new ArrayList<Long>(List.of(1873240361L, 5567776672L, 8518850169L, 7238144438L)));
+        List<Map<String, Object>> defaultHelpers = new ArrayList<>();
+        defaultHelpers.add(Map.of("chatId", 1873240361L, "name", "Senior Mentor (CSE)"));
+        defaultHelpers.add(Map.of("chatId", 5567776672L, "name", "Senior Responder (ECE)"));
+        defaultHelpers.add(Map.of("chatId", 8518850169L, "name", "Senior Responder (IT)"));
+        defaultHelpers.add(Map.of("chatId", 7238144438L, "name", "Senior Responder (AIDS)"));
+        defaultCfg.put("seniorHelpers", defaultHelpers);
         defaultCfg.put("spring_backend_url", "http://localhost:8085");
         return defaultCfg;
     }
@@ -293,6 +326,25 @@ public class AdminController {
         if (payload.containsKey("community_bot_token")) current.put("community_bot_token", payload.get("community_bot_token"));
         if (payload.containsKey("telegram_bot_token")) current.put("telegram_bot_token", payload.get("telegram_bot_token"));
         if (payload.containsKey("spring_backend_url")) current.put("spring_backend_url", payload.get("spring_backend_url"));
+        if (payload.containsKey("bot_username")) current.put("bot_username", payload.get("bot_username"));
+        if (payload.containsKey("seniorHelpers")) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> helpers = (List<Map<String, Object>>) payload.get("seniorHelpers");
+            current.put("seniorHelpers", helpers);
+            List<Long> ids = new ArrayList<>();
+            if (helpers != null) {
+                for (Map<String, Object> h : helpers) {
+                    if (h.get("chatId") != null) {
+                        try {
+                            ids.add(Long.parseLong(h.get("chatId").toString()));
+                        } catch (Exception ignored) {}
+                    }
+                }
+            }
+            current.put("helper_chat_ids", ids);
+        } else if (payload.containsKey("helper_chat_ids")) {
+            current.put("helper_chat_ids", payload.get("helper_chat_ids"));
+        }
         saveTelegramConfigFile(current);
         return ResponseEntity.ok(Map.of("success", true, "config", current));
     }
@@ -300,6 +352,7 @@ public class AdminController {
     @PostMapping("/telegram/helpers")
     public ResponseEntity<?> addSeniorHelper(@RequestBody Map<String, Object> payload) {
         Object chatIdObj = payload.get("chatId");
+        String nameStr = payload.get("name") != null ? payload.get("name").toString().trim() : "Senior Responder";
         if (chatIdObj == null) {
             return ResponseEntity.badRequest().body(Map.of("error", "chatId is required"));
         }
@@ -313,38 +366,142 @@ public class AdminController {
 
         Map<String, Object> config = readTelegramConfigFile();
         @SuppressWarnings("unchecked")
-        List<Object> rawHelpers = (List<Object>) config.getOrDefault("helper_chat_ids", new ArrayList<>());
-        List<Long> helpers = new ArrayList<>();
-        for (Object o : rawHelpers) {
-            helpers.add(Long.parseLong(o.toString()));
+        List<Map<String, Object>> helpers = (List<Map<String, Object>>) config.getOrDefault("seniorHelpers", new ArrayList<>());
+        if (helpers == null) helpers = new ArrayList<>();
+        List<Long> helperIds = new ArrayList<>();
+
+        boolean found = false;
+        for (Map<String, Object> h : helpers) {
+            if (h.get("chatId") != null) {
+                Long cId = Long.parseLong(h.get("chatId").toString());
+                helperIds.add(cId);
+                if (cId.equals(chatId)) {
+                    h.put("name", nameStr);
+                    found = true;
+                }
+            }
         }
 
-        if (!helpers.contains(chatId)) {
-            helpers.add(chatId);
-            config.put("helper_chat_ids", helpers);
-            saveTelegramConfigFile(config);
+        if (!found) {
+            Map<String, Object> newHelper = new HashMap<>();
+            newHelper.put("chatId", chatId);
+            newHelper.put("name", nameStr);
+            helpers.add(newHelper);
+            helperIds.add(chatId);
         }
 
-        return ResponseEntity.ok(Map.of("success", true, "helpers", helpers));
+        config.put("seniorHelpers", helpers);
+        config.put("helper_chat_ids", helperIds);
+        saveTelegramConfigFile(config);
+
+        return ResponseEntity.ok(Map.of("success", true, "helpers", helpers, "helper_chat_ids", helperIds));
     }
 
     @DeleteMapping("/telegram/helpers/{chatId}")
     public ResponseEntity<?> removeSeniorHelper(@PathVariable Long chatId) {
         Map<String, Object> config = readTelegramConfigFile();
         @SuppressWarnings("unchecked")
-        List<Object> rawHelpers = (List<Object>) config.getOrDefault("helper_chat_ids", new ArrayList<>());
-        List<Long> helpers = new ArrayList<>();
-        for (Object o : rawHelpers) {
-            helpers.add(Long.parseLong(o.toString()));
+        List<Map<String, Object>> helpers = (List<Map<String, Object>>) config.getOrDefault("seniorHelpers", new ArrayList<>());
+        if (helpers != null) {
+            helpers.removeIf(h -> h.get("chatId") != null && Long.parseLong(h.get("chatId").toString()) == chatId);
+        } else {
+            helpers = new ArrayList<>();
         }
 
-        boolean removed = helpers.removeIf(id -> id.equals(chatId));
-        if (removed) {
-            config.put("helper_chat_ids", helpers);
-            saveTelegramConfigFile(config);
+        List<Long> helperIds = new ArrayList<>();
+        for (Map<String, Object> h : helpers) {
+            if (h.get("chatId") != null) {
+                try {
+                    helperIds.add(Long.parseLong(h.get("chatId").toString()));
+                } catch (Exception ignored) {}
+            }
         }
 
-        return ResponseEntity.ok(Map.of("success", true, "helpers", helpers));
+        config.put("seniorHelpers", helpers);
+        config.put("helper_chat_ids", helperIds);
+        saveTelegramConfigFile(config);
+
+        return ResponseEntity.ok(Map.of("success", true, "helpers", helpers, "helper_chat_ids", helperIds));
+    }
+
+    @PostMapping("/telegram/test-bot")
+    public ResponseEntity<?> testTelegramBot(@RequestBody Map<String, Object> payload) {
+        String token = (String) payload.get("token");
+        if (token == null || token.trim().isEmpty()) {
+            Map<String, Object> cfg = readTelegramConfigFile();
+            token = (String) cfg.getOrDefault("community_bot_token", "");
+        }
+        if (token == null || token.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("ok", false, "description", "Bot token is required"));
+        }
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "https://api.telegram.org/bot" + token.trim() + "/getMe";
+            ResponseEntity<Map> response = restTemplate.getForEntity(url, Map.class);
+            return ResponseEntity.ok(response.getBody());
+        } catch (Exception e) {
+            return ResponseEntity.ok(Map.of("ok", false, "description", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/telegram/test-dispatch")
+    public ResponseEntity<?> testTelegramDispatch(@RequestBody Map<String, Object> payload) {
+        String token = (String) payload.get("token");
+        Object chatIdObj = payload.get("chatId");
+        String message = (String) payload.get("message");
+        if (token == null || token.trim().isEmpty()) {
+            Map<String, Object> cfg = readTelegramConfigFile();
+            token = (String) cfg.getOrDefault("community_bot_token", "");
+        }
+        if (token == null || token.trim().isEmpty() || chatIdObj == null) {
+            return ResponseEntity.badRequest().body(Map.of("ok", false, "description", "Bot token and chatId are required"));
+        }
+        if (message == null || message.trim().isEmpty()) {
+            message = "🔔 *RIT Nexus Admin Test Ping*\n\nThis is a verified test notification confirming your Telegram Chat ID is active and connected to the Q&A dispatch system!";
+        }
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "https://api.telegram.org/bot" + token.trim() + "/sendMessage";
+            Map<String, Object> body = new HashMap<>();
+            body.put("chat_id", chatIdObj);
+            body.put("text", message);
+            body.put("parse_mode", "Markdown");
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, body, Map.class);
+            return ResponseEntity.ok(response.getBody());
+        } catch (Exception e) {
+            return ResponseEntity.ok(Map.of("ok", false, "description", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/telegram/test-broadcast")
+    public ResponseEntity<?> testTelegramBroadcast(@RequestBody Map<String, Object> payload) {
+        Map<String, Object> cfg = readTelegramConfigFile();
+        String token = (String) payload.getOrDefault("token", cfg.get("community_bot_token"));
+        String message = (String) payload.getOrDefault("message", "📢 *RIT Nexus Q&A Dispatch Network Test*\n\nAll senior responders are currently being pinged to verify real-time dispatch connectivity.");
+
+        @SuppressWarnings("unchecked")
+        List<Object> rawHelpers = (List<Object>) cfg.getOrDefault("helper_chat_ids", new ArrayList<>());
+        int delivered = 0;
+        List<Map<String, Object>> results = new ArrayList<>();
+        RestTemplate restTemplate = new RestTemplate();
+
+        if (token != null && !token.trim().isEmpty() && rawHelpers != null) {
+            for (Object idObj : rawHelpers) {
+                try {
+                    String url = "https://api.telegram.org/bot" + token.trim() + "/sendMessage";
+                    Map<String, Object> body = new HashMap<>();
+                    body.put("chat_id", idObj);
+                    body.put("text", message);
+                    body.put("parse_mode", "Markdown");
+                    ResponseEntity<Map> res = restTemplate.postForEntity(url, body, Map.class);
+                    results.add(Map.of("chatId", idObj, "status", "success", "response", res.getBody()));
+                    delivered++;
+                } catch (Exception e) {
+                    results.add(Map.of("chatId", idObj, "status", "failed", "error", e.getMessage()));
+                }
+            }
+        }
+        return ResponseEntity.ok(Map.of("success", true, "delivered", delivered, "total", rawHelpers != null ? rawHelpers.size() : 0, "details", results));
     }
 
     // ─────────────────────────────────────────────────────────────
