@@ -1483,14 +1483,14 @@ export default function LeetcodeLeaderboard() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1 flex items-center gap-1">
-                    <Mail className="w-3.5 h-3.5 text-[#FF6B00]" /> SkillRack Email
+                    <User className="w-3.5 h-3.5 text-[#FF6B00]" /> SkillRack Login ID (or Username)
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={srEmail}
                     onChange={(e) => setSrEmail(e.target.value)}
-                    placeholder="e.g. student@ritchennai.edu.in"
+                    placeholder="e.g. 2117240070293@rgit"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#E2E8F0] text-sm text-[#1E293B] focus:outline-none focus:border-[#F97316]"
                   />
                 </div>

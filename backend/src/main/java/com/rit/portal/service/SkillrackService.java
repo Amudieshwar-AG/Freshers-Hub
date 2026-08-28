@@ -75,89 +75,46 @@ public class SkillrackService {
     }
 
     /**
-     * Core scraping method:
-     * 1. GET the SkillRack login page to obtain JSESSIONID cookie + ViewState
-     * 2. POST login form with email + password + ViewState
-     * 3. Parse the resulting profile/dashboard page for stats
+     * Core scraping method using SkillRack's container security:
+     * 1. GET https://www.skillrack.com/faces/ui/profile.xhtml to establish JSESSIONID session
+     * 2. POST to https://www.skillrack.com/faces/ui/j_security_check with j_username (Login ID) & j_password
+     * 3. GET https://www.skillrack.com/faces/candidate/profileview.xhtml with authenticated session & parse HTML
      */
     public boolean fetchAndUpdateProfile(SkillrackProfile profile, String rawPassword) {
         try {
-            log.info("Fetching SkillRack stats for: {}", profile.getSkillrackEmail());
+            log.info("Fetching SkillRack stats for Login ID: {}", profile.getSkillrackEmail());
 
-            // Step 1: GET login page to get session cookie + ViewState
-            Connection.Response loginPageRes = Jsoup.connect(LOGIN_URL)
+            String loginPageUrl = SKILLRACK_BASE + "/faces/ui/profile.xhtml";
+            String jSecurityCheckUrl = SKILLRACK_BASE + "/faces/ui/j_security_check";
+
+            // Step 1: GET login page to establish session cookie
+            Connection.Response pageRes = Jsoup.connect(loginPageUrl)
                     .method(Connection.Method.GET)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
                     .timeout(15000)
                     .execute();
 
-            Map<String, String> cookies = new HashMap<>(loginPageRes.cookies());
-            Document loginDoc = loginPageRes.parse();
+            Map<String, String> cookies = new HashMap<>(pageRes.cookies());
 
-            // Extract ViewState from hidden input
-            String viewState = "";
-            Element vsEl = loginDoc.selectFirst("input[name=javax.faces.ViewState]");
-            if (vsEl != null) {
-                viewState = vsEl.attr("value");
-            }
-
-            // Find the login form and its ID
-            Element loginForm = loginDoc.selectFirst("form[id]");
-            String formId = loginForm != null ? loginForm.attr("id") : "j_idt4";
-
-            // Step 2: POST login credentials
+            // Step 2: POST login credentials to j_security_check
             Map<String, String> formData = new LinkedHashMap<>();
-            formData.put(formId, formId);
-            formData.put("javax.faces.ViewState", viewState);
+            formData.put("j_username", profile.getSkillrackEmail().trim());
+            formData.put("j_password", rawPassword);
 
-            // Find email/username and password input fields
-            Elements inputs = loginDoc.select("input[type=text], input[type=email], input[type=password]");
-            String emailFieldName = formId + ":j_idt6";
-            String passwordFieldName = formId + ":j_idt8";
-
-            for (Element input : inputs) {
-                String name = input.attr("name");
-                String type = input.attr("type");
-                if (type.equals("text") || type.equals("email")) {
-                    emailFieldName = name;
-                } else if (type.equals("password")) {
-                    passwordFieldName = name;
-                }
-            }
-
-            formData.put(emailFieldName, profile.getSkillrackEmail());
-            formData.put(passwordFieldName, rawPassword);
-
-            // Find submit button name
-            Element submitBtn = loginDoc.selectFirst("input[type=submit], button[type=submit]");
-            if (submitBtn != null && submitBtn.hasAttr("name")) {
-                formData.put(submitBtn.attr("name"), submitBtn.attr("value"));
-            }
-
-            String formAction = LOGIN_URL;
-            if (loginForm != null && loginForm.hasAttr("action")) {
-                String action = loginForm.attr("action");
-                if (action.startsWith("http")) {
-                    formAction = action;
-                } else {
-                    formAction = SKILLRACK_BASE + action;
-                }
-            }
-
-            Connection.Response loginRes = Jsoup.connect(formAction)
+            Connection.Response loginRes = Jsoup.connect(jSecurityCheckUrl)
                     .method(Connection.Method.POST)
                     .cookies(cookies)
                     .data(formData)
                     .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
                     .header("Content-Type", "application/x-www-form-urlencoded")
-                    .header("Referer", LOGIN_URL)
+                    .header("Referer", loginPageUrl)
                     .followRedirects(true)
                     .timeout(15000)
                     .execute();
 
             cookies.putAll(loginRes.cookies());
 
-            // Step 3: Fetch the profile/dashboard page with authenticated session
+            // Step 3: Fetch candidate profile page with authenticated session
             Connection.Response profileRes = Jsoup.connect(PROFILE_URL)
                     .method(Connection.Method.GET)
                     .cookies(cookies)
@@ -168,11 +125,11 @@ public class SkillrackService {
 
             cookies.putAll(profileRes.cookies());
             Document profileDoc = profileRes.parse();
-
-            // Check if we're still on the login page (auth failed)
             String bodyText = profileDoc.body().text();
-            if (bodyText.contains("Incorrect email") || bodyText.contains("Login") && !bodyText.contains("Total Points")) {
-                // Try alternative dashboard URL
+
+            // Check if login failed (still redirected back to login page containing Login Id input)
+            if (bodyText.contains("Login Id") || bodyText.contains("Invalid") || !bodyText.contains("Candidate")) {
+                // Try alternative candidate manage profile page
                 Connection.Response dashRes = Jsoup.connect(SKILLRACK_BASE + "/faces/candidate/manageprofile.xhtml")
                         .method(Connection.Method.GET)
                         .cookies(cookies)
@@ -181,8 +138,12 @@ public class SkillrackService {
                         .timeout(15000)
                         .execute();
                 cookies.putAll(dashRes.cookies());
-                profileDoc = dashRes.parse();
-                bodyText = profileDoc.body().text();
+                Document dashDoc = dashRes.parse();
+                String dashText = dashDoc.body().text();
+                if (!dashText.contains("Login Id")) {
+                    profileDoc = dashDoc;
+                    bodyText = dashText;
+                }
             }
 
             // Step 4: Parse profile stats from the HTML
@@ -215,53 +176,47 @@ public class SkillrackService {
     // ─── HTML Parsing ─────────────────────────────────────────────────
 
     private boolean parseProfileStats(Document doc, SkillrackProfile profile) {
+        String html = doc.html();
         boolean foundAnything = false;
-        String fullText = doc.body().text();
 
-        // Try to find stats from structured HTML elements (cards, spans, divs)
-        // SkillRack typically shows stats in card-like containers
-
-        // Look for numbers near keywords
-        foundAnything = parseFromRawText(fullText, profile);
-
-        // Also try parsing from any table structures
-        Elements tables = doc.select("table");
-        for (Element table : tables) {
-            Elements rows = table.select("tr");
-            for (Element row : rows) {
-                Elements cells = row.select("td, th");
-                if (cells.size() >= 2) {
-                    String label = cells.get(0).text().trim().toLowerCase();
-                    String value = cells.get(cells.size() - 1).text().trim();
-                    int num = parseIntSafe(value);
-
-                    if (label.contains("code test") || label.contains("codetest")) {
-                        profile.setCodeTestSolved(num);
-                        foundAnything = true;
-                    } else if (label.contains("code tutor") || label.contains("codetutor")) {
-                        profile.setCodeTutorSolved(num);
-                        foundAnything = true;
-                    } else if (label.contains("code track") || label.contains("codetrack")) {
-                        profile.setCodeTrackSolved(num);
-                        foundAnything = true;
-                    } else if (label.contains("daily challenge") || label.contains("dc")) {
-                        profile.setDcSolved(num);
-                        foundAnything = true;
-                    } else if (label.contains("gold")) {
-                        profile.setGoldMedals(num);
-                        foundAnything = true;
-                    } else if (label.contains("silver")) {
-                        profile.setSilverMedals(num);
-                        foundAnything = true;
-                    } else if (label.contains("bronze")) {
-                        profile.setBronzeMedals(num);
-                        foundAnything = true;
-                    } else if (label.contains("total") && label.contains("point")) {
-                        profile.setTotalPoints(num);
-                        foundAnything = true;
-                    }
+        // 1. Extract Real Name from .ui-chip-text if available
+        Element chipEl = doc.selectFirst(".ui-chip-text");
+        if (chipEl != null) {
+            String chipText = chipEl.text().trim();
+            if (chipText.contains("-")) {
+                String[] parts = chipText.split("-");
+                if (parts.length >= 1 && !parts[0].trim().isEmpty()) {
+                    profile.setStudentName(parts[0].trim());
                 }
             }
+        }
+
+        // 2. Gold Medals (orange medal icon)
+        Matcher goldM = Pattern.compile("ion-md-medal\"\\s+style=\"color:orange\"></i>\\s*(\\d+)").matcher(html);
+        if (goldM.find()) {
+            profile.setGoldMedals(Integer.parseInt(goldM.group(1)));
+            foundAnything = true;
+        }
+
+        // 3. Silver Medals (grey medal icon)
+        Matcher silverM = Pattern.compile("ion-md-medal\"\\s+style=\"color:grey\"></i>\\s*(\\d+)").matcher(html);
+        if (silverM.find()) {
+            profile.setSilverMedals(Integer.parseInt(silverM.group(1)));
+            foundAnything = true;
+        }
+
+        // 4. Bronze Medals (brown medal icon)
+        Matcher bronzeM = Pattern.compile("ion-md-medal\"\\s+style=\"color:brown\"></i>\\s*(\\d+)").matcher(html);
+        if (bronzeM.find()) {
+            profile.setBronzeMedals(Integer.parseInt(bronzeM.group(1)));
+            foundAnything = true;
+        }
+
+        // 5. Total Points / Score (brown flag icon)
+        Matcher pointsM = Pattern.compile("ion-md-flag\"\\s+style=\"color:brown\"></i>\\s*(\\d+)").matcher(html);
+        if (pointsM.find()) {
+            profile.setTotalPoints(Integer.parseInt(pointsM.group(1)));
+            foundAnything = true;
         }
 
         return foundAnything;
