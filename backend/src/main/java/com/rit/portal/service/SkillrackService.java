@@ -30,8 +30,8 @@ public class SkillrackService {
     // AES-128 key (16 bytes) — in production, move to environment variable
     private static final String AES_KEY = "RitSkillR@ck2026";
     private static final String SKILLRACK_BASE = "https://www.skillrack.com";
-    private static final String LOGIN_URL = SKILLRACK_BASE + "/faces/candidate/profileview.xhtml";
-    private static final String PROFILE_URL = SKILLRACK_BASE + "/faces/candidate/profileview.xhtml";
+    private static final String LOGIN_URL = SKILLRACK_BASE + "/faces/ui/profile.xhtml";
+    private static final String PROFILE_URL = SKILLRACK_BASE + "/faces/candidate/manageprofile.xhtml";
 
     // ─── Public API ───────────────────────────────────────────────────
 
@@ -127,23 +127,10 @@ public class SkillrackService {
             Document profileDoc = profileRes.parse();
             String bodyText = profileDoc.body().text();
 
-            // Check if login failed (still redirected back to login page containing Login Id input)
-            if (bodyText.contains("Login Id") || bodyText.contains("Invalid") || !bodyText.contains("Candidate")) {
-                // Try alternative candidate manage profile page
-                Connection.Response dashRes = Jsoup.connect(SKILLRACK_BASE + "/faces/candidate/manageprofile.xhtml")
-                        .method(Connection.Method.GET)
-                        .cookies(cookies)
-                        .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
-                        .followRedirects(true)
-                        .timeout(15000)
-                        .execute();
-                cookies.putAll(dashRes.cookies());
-                Document dashDoc = dashRes.parse();
-                String dashText = dashDoc.body().text();
-                if (!dashText.contains("Login Id")) {
-                    profileDoc = dashDoc;
-                    bodyText = dashText;
-                }
+            // Check if login failed (still on login page containing j_security_check form)
+            if (bodyText.contains("j_security_check") || bodyText.contains("Invalid User ID")) {
+                log.warn("SkillRack authentication failed for: {}", profile.getSkillrackEmail());
+                return false;
             }
 
             // Step 4: Parse profile stats from the HTML
